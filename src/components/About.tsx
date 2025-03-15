@@ -46,7 +46,7 @@ const About = () => {
               Frontend Developer & UI/UX Tasarımcı
             </h3>
             <p className="mb-4 animate-on-scroll">
-              Merhaba! Ben {personalData.name}, {personalData.location}'da yaşayan tutkulu bir frontend geliştirici ve UI/UX tasarımcıyım.
+              Merhaba! Ben {personalData.name}, {personalData.location}&apos;da yaşayan tutkulu bir frontend geliştirici ve UI/UX tasarımcıyım.
               Modern web teknolojileri ile kullanıcı dostu, performanslı ve estetik web uygulamaları geliştiriyorum.
             </p>
             <p className="mb-6 animate-on-scroll">

@@ -41,7 +41,7 @@ const Contact = () => {
         message: "Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağım.",
       });
       setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch (error) {
+    } catch {
       setSubmitStatus({
         success: false,
         message: "Mesajınız gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
