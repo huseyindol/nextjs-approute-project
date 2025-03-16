@@ -79,6 +79,6 @@ MIT
 
 ## İletişim
 
-Hüseyin DOL - [info@huseyindol.site](mailto:info@huseyindol.site)
+Hüseyin DOL - [info@next.huseyindol.site](mailto:info@next.huseyindol.site)
 
 Proje Linki: [https://github.com/huseyindol/portfolio](https://github.com/huseyindol/portfolio)

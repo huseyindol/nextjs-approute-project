@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    url: "https://huseyindol.site",
+    url: "https://next.huseyindol.site",
     title: "Hüseyin DOL | Portfolio",
     description: "Hüseyin DOL'un kişisel portfolio sitesi",
     siteName: "Hüseyin DOL Portfolio",

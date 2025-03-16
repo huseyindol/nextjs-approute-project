@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'İletişim | Hüseyin DOL Portfolio',
   description: 'Benimle iletişime geçin, projeleriniz için iletişim bilgilerim',
   alternates: {
-    canonical: 'https://huseyindol.site/contact'
+    canonical: 'https://next.huseyindol.site/contact'
   }
 }
 

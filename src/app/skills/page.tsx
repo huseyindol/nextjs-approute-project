@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Yetenekler | Hüseyin DOL Portfolio',
   description: 'Frontend geliştirme, UI/UX tasarım ve diğer teknik yeteneklerim',
   alternates: {
-    canonical: 'https://huseyindol.site/skills'
+    canonical: 'https://next.huseyindol.site/skills'
   }
 }
 

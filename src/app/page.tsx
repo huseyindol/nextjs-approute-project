@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Ana Sayfa | Hüseyin DOL Portfolio',
   description: 'Frontend Developer & UI/UX Designer olarak çalışmalarım ve deneyimlerim',
   alternates: {
-    canonical: 'https://huseyindol.site'
+    canonical: 'https://next.huseyindol.site'
   }
 }
 
