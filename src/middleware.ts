@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
     const response = NextResponse.next()
     
     // X-Robots-Tag header'ını ekle
-    response.headers.set('X-Robots-Tag', 'googlebot: nofollow')
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
     
     return response
   }
