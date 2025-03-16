@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -23,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    url: "https://huseyindol.com",
+    url: "https://huseyindol.site",
     title: "Hüseyin DOL | Portfolio",
     description: "Hüseyin DOL'un kişisel portfolio sitesi",
     siteName: "Hüseyin DOL Portfolio",
@@ -42,10 +45,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className="scroll-smooth">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
+        <Header />
         {children}
+        <Footer />
+        <ScrollToTop />
         <Analytics />
         <SpeedInsights />
       </body>

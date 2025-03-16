@@ -1,23 +1,20 @@
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import About from "@/components/About";
-import Skills from "@/components/Skills";
-import Projects from "@/components/Projects";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
-import ScrollToTop from "@/components/ScrollToTop";
+import Hero from '@/components/Hero'
+import About from '@/components/About'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Ana Sayfa | Hüseyin DOL Portfolio',
+  description: 'Frontend Developer & UI/UX Designer olarak çalışmalarım ve deneyimlerim',
+  alternates: {
+    canonical: 'https://huseyindol.site'
+  }
+}
 
 export default function Home() {
   return (
-    <main>
-      <Header />
+    <main className="min-h-screen">
       <Hero />
       <About />
-      <Skills />
-      <Projects />
-      <Contact />
-      <Footer />
-      <ScrollToTop />
     </main>
-  );
+  )
 }
