@@ -2,16 +2,11 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { getPosts, type Post } from '@/services/typicode/typicode';
-import { DehydratedState } from '@tanstack/react-query';
 
-interface PostsProps {
-  dehydratedState: DehydratedState;
-}
-
-export default function Posts({ dehydratedState }: PostsProps) {
+export default function Posts() {
   const { data: posts, isLoading, error } = useQuery<Post[]>({
     queryKey: ['posts'],
-    queryFn: () => getPosts('comments'),
+    queryFn: () => getPosts('posts'),
   });
 
   if (isLoading) {

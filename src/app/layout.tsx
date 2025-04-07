@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import Providers from "@/components/Providers";
+import Providers from "@/providers/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,7 +49,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
         <Providers>
           <Header />
-          <main className="flex-grow">
+          <main className="flex-grow mt-8">
             {children}
           </main>
           <Footer />
