@@ -7,6 +7,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "@/providers/Providers";
+import { VWOScript } from "vwo-smartcode-nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +22,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Hüseyin DOL | Portfolio",
   description: "Hüseyin DOL'un kişisel portfolio sitesi",
-  keywords: ["Hüseyin DOL", "Portfolio", "Web Developer", "Frontend Developer", "React", "Next.js"],
+  keywords: [
+    "Hüseyin DOL",
+    "Portfolio",
+    "Web Developer",
+    "Frontend Developer",
+    "React",
+    "Next.js",
+  ],
   authors: [{ name: "Hüseyin DOL" }],
   creator: "Hüseyin DOL",
   openGraph: {
@@ -45,13 +53,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className="scroll-smooth dark" style={{ colorScheme: "dark" }}>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}>
+    <html
+      lang="tr"
+      className="scroll-smooth dark"
+      style={{ colorScheme: "dark" }}
+    >
+      <head>
+        <VWOScript accountId="1083777" />
+      </head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
+      >
         <Providers>
           <Header />
-          <main className="flex-grow mt-8">
-            {children}
-          </main>
+          <main className="flex-grow mt-8">{children}</main>
           <Footer />
           <ScrollToTop />
           <Analytics />
