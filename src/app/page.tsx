@@ -1,5 +1,6 @@
-import About from '@/components/About'
 import Hero from '@/components/Hero'
+import Skills from '@/components/Skills'
+import Experience from '@/components/experience'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -14,7 +15,8 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <Hero />
-      <About />
+      <Skills />
+      <Experience />
     </main>
   )
 }

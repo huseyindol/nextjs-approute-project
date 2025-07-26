@@ -7,7 +7,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "@/providers/Providers";
-import { VWOScript } from "vwo-smartcode-nextjs";
+import { ThemeProvider } from "next-themes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,8 +27,7 @@ export const metadata: Metadata = {
     "Portfolio",
     "Web Developer",
     "Frontend Developer",
-    "React",
-    "Next.js",
+    "JavaScript, TypeScript, React, Next.js, Node.js, Express, MongoDB, MySQL, PostgreSQL, Docker, Kubernetes",
   ],
   authors: [{ name: "Hüseyin DOL" }],
   creator: "Hüseyin DOL",
@@ -53,25 +52,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="tr"
-      className="scroll-smooth dark"
-      style={{ colorScheme: "dark" }}
-    >
-      <head>
-        <VWOScript accountId="1083777" />
-      </head>
+    <html suppressHydrationWarning>
+      <head />
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        <Providers>
-          <Header />
-          <main className="flex-grow mt-8">{children}</main>
-          <Footer />
-          <ScrollToTop />
-          <Analytics />
-          <SpeedInsights />
-        </Providers>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={true}
+          themes={['light', 'dark']}
+          disableTransitionOnChange
+        >
+          <Providers>
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+            <ScrollToTop />
+            <Analytics />
+            <SpeedInsights />
+          </Providers>
+        </ThemeProvider>
       </body>
     </html>
   );
