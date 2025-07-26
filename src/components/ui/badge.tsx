@@ -28,10 +28,6 @@ export interface BadgeProps
   VariantProps<typeof badgeVariants> { xatt?: string }
 
 function Badge({ className, variant, ...props }: BadgeProps) {
-  if (props.xatt === "hero") {
-    console.log('variant :>> ', props.xatt, variant);
-    console.log('cn :>> ', cn(badgeVariants({ variant }), className));
-  }
   return (
     <div className={cn(badgeVariants({ variant }), className)} {...props} />
   )

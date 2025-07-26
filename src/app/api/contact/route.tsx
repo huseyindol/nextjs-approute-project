@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Send email using Resend
     const { error } = await resend.emails.send({
-      from: `Website <${process.env.NEXT_PUBLIC_RESEND_FROM_EMAIL || 'noreply@huseyindol.site'}>`, // Bu domaininizi kullanın
+      from: `Website <${process.env.NEXT_PUBLIC_RESEND_FROM_EMAIL || 'noreply@huseyindol.site'}>`, // Doğrulanmış domain kullan
       to: [process.env.NEXT_PUBLIC_RESEND_TO_EMAIL || 'huseyindol@gmail.com'], // Sizin email adresiniz
       subject: `🌐 Website İletişim - ${name}`,
       html: emailHtml,
@@ -65,8 +65,7 @@ export async function POST(request: NextRequest) {
       { message: 'Mesajınız başarıyla gönderildi!' },
       { status: 200 }
     )
-  } catch (error) {
-    console.error('API error:', error)
+  } catch {
     return NextResponse.json(
       { error: 'Sunucu hatası oluştu.' },
       { status: 500 }
