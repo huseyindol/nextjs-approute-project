@@ -15,13 +15,13 @@ const experiences = [
     location: "İstanbul",
     industry: "Fintech",
     description: "Türkiye'nin en büyük karşılaştırmalı finansal ürünler sunan şirketi. React ve Next.js kullanarak fintech uygulamaları geliştiriyorum. bulunduğum squadın developer ekibine liderlik ediyorum.",
-    technologies: ["React", "Next.js", "React Query", "TypeScript", "C# .Net", "MVC Razor", "SCSS", "Context API", "SignalR", "Tailwind CSS", "CSR & SSR Rendering"],
+    technologies: ["React", "Next.js", "React Query", "TypeScript", "C# .Net", "MVC Razor", "SCSS", "Context API", "SignalR", "Tailwind CSS", "CSR & SSR Rendering", "Docker", "Jenkins", "CI/CD", "Gulp"],
     achievements: [
       "40% performans artışı sağlayan optimizasyonlar",
       "NPM paketi kurulumu",
       "SEO, Analytics ve Datalayer entegrasyonları",
       "CI/CD Jenkins ve Docker kullanarak pipeline kurulumu",
-      "Junior developer mentorlığı"
+      "Junior developer mentorluğu"
     ]
   },
   {
@@ -47,7 +47,7 @@ const experiences = [
     location: "İstanbul",
     industry: "Media",
     description: "Kullanıcıların oyun oynayabildiği, oyunlara puan verebildiği, yorum yapabildiği ve gerçek zamanlı sohbetle iletişim kurabildiği çok oyunculu bir oyun platformu ve medya gruplarına ait whitelabel oyun portalları geliştirmelerinde yer aldım.",
-    technologies: ["JavaScript", "jQuery", "Bootstrap", "React", "Redux", "TypeScript", "SCSS", "Context API", "GraphQL", "Express", "Socket.io"],
+    technologies: ["JavaScript", "jQuery", "Bootstrap", "React", "Redux", "TypeScript", "SCSS", "Context API", "GraphQL", "Express", "Socket.io", "Docker", "Jenkins", "CI/CD"],
     achievements: [
       "Medya gruplarına ait oyun portalları geliştirme",
       "SEO optimizasyonları",
