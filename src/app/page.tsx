@@ -5,8 +5,8 @@ import { Metadata } from 'next'
 
 // Force Static Site Generation (SSG) for this route
 export const dynamic = 'force-static'
-// 5 saat sonra yeniden oluştur
-export const revalidate = 60 * 60 * 5
+// 5 saat (18000 sn) sonra yeniden oluştur — değer statik olmalı
+export const revalidate = 18000
 
 export const metadata: Metadata = {
   title: 'Ana Sayfa | Hüseyin DOL Portfolio',
