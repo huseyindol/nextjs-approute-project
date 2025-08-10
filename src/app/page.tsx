@@ -3,12 +3,18 @@ import Skills from '@/components/Skills'
 import Experience from '@/components/experience'
 import { Metadata } from 'next'
 
+// Force Static Site Generation (SSG) for this route
+export const dynamic = 'force-static'
+// 5 saat sonra yeniden oluştur
+export const revalidate = 60 * 60 * 5
+
 export const metadata: Metadata = {
   title: 'Ana Sayfa | Hüseyin DOL Portfolio',
-  description: 'Frontend Developer & UI/UX Designer olarak çalışmalarım ve deneyimlerim',
+  description:
+    'Frontend Developer & UI/UX Designer olarak çalışmalarım ve deneyimlerim',
   alternates: {
-    canonical: 'https://next.huseyindol.site'
-  }
+    canonical: 'https://next.huseyindol.site',
+  },
 }
 
 export default function Home() {

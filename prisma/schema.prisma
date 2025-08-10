@@ -1,0 +1,30 @@
+// Define database connection via the `NEXT_PUBLIC_PRISMA_DATABASE_URL` env var
+datasource db {
+  provider = "postgresql"
+  url      = env("NEXT_PUBLIC_PRISMA_DATABASE_URL")
+}
+
+// Define custom output path for generated Prisma Client
+generator client {
+  provider = "prisma-client-js"
+  // Use default output (node_modules/.prisma/client) to avoid absolute paths
+}
+
+// Example data model
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  email     String   @unique
+  name      String?
+  posts     Post[]
+}
+
+model Post {
+  id        Int     @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean @default(false)
+  authorId  Int
+  author    User    @relation(fields: [authorId], references: [id])
+}

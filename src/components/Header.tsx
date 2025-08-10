@@ -1,35 +1,44 @@
-"use client"
+'use client'
 
-import { useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { useState } from 'react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Menu, X } from "lucide-react";
+} from '@/components/ui/dropdown-menu'
+import { Menu, X } from 'lucide-react'
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
         <div className="text-xl font-bold text-gradient">
-          Hüseyin DOL
+          <Link href="/">Hüseyin DOL</Link>
         </div>
 
         <nav className="hidden md:flex items-center space-x-6">
-          <Link href="#about" className="text-muted-foreground hover:text-primary transition-colors">
+          <Link
+            href="#about"
+            className="text-muted-foreground hover:text-primary transition-colors"
+          >
             Hakkında
           </Link>
-          <Link href="#skills" className="text-muted-foreground hover:text-primary transition-colors">
+          <Link
+            href="#skills"
+            className="text-muted-foreground hover:text-primary transition-colors"
+          >
             Yetenekler
           </Link>
-          <Link href="#experience" className="text-muted-foreground hover:text-primary transition-colors">
+          <Link
+            href="#experience"
+            className="text-muted-foreground hover:text-primary transition-colors"
+          >
             Deneyim
           </Link>
           <ThemeToggle />
@@ -41,7 +50,11 @@ export default function Header() {
           <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
-                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {isOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -65,5 +78,5 @@ export default function Header() {
         </div>
       </div>
     </header>
-  );
+  )
 }
