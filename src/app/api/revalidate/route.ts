@@ -12,7 +12,7 @@ function isAuthorized(
   request: Request,
   providedSecret?: string | null,
 ): boolean {
-  const configuredSecret = process.env.REVALIDATE_SECRET
+  const configuredSecret = process.env.NEXT_PUBLIC_REVALIDATE_SECRET
   if (!configuredSecret) return true
 
   // Prefer Authorization header (Bearer <token>), fallback to body/query secret
