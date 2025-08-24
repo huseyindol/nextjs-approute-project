@@ -6,10 +6,10 @@ export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/_next/')) {
     // Response'u al
     const response = NextResponse.next()
-    
+
     // X-Robots-Tag header'ını ekle
     response.headers.set('X-Robots-Tag', 'noindex, nofollow')
-    
+
     return response
   }
 
@@ -18,5 +18,5 @@ export function middleware(request: NextRequest) {
 
 // Middleware'in hangi path'lerde çalışacağını belirt
 export const config = {
-  matcher: '/_next/:path*'
-} 
+  matcher: '/_next/:path*',
+}

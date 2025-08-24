@@ -1,157 +1,186 @@
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
-import Link from "next/link";
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
+import Image from 'next/image'
+import Link from 'next/link'
 
 const skills = [
   {
-    name: "HTML5",
-    level: "Expert",
-    years: "10+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg",
-    url: "https://www.w3.org/html/"
+    name: 'HTML5',
+    level: 'Expert',
+    years: '10+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg',
+    url: 'https://www.w3.org/html/',
   },
   {
-    name: "CSS3",
-    level: "Expert",
-    years: "10+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg",
-    url: "https://www.w3schools.com/css/"
+    name: 'CSS3',
+    level: 'Expert',
+    years: '10+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg',
+    url: 'https://www.w3schools.com/css/',
   },
   {
-    name: "Bootstrap",
-    level: "Advanced",
-    years: "8+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-original.svg",
-    url: "https://getbootstrap.com"
+    name: 'Bootstrap',
+    level: 'Advanced',
+    years: '8+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-original.svg',
+    url: 'https://getbootstrap.com',
   },
   {
-    name: "Sass",
-    level: "Advanced",
-    years: "6+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/sass/sass-original.svg",
-    url: "https://sass-lang.com"
+    name: 'Sass',
+    level: 'Advanced',
+    years: '6+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/sass/sass-original.svg',
+    url: 'https://sass-lang.com',
   },
   {
-    name: "JavaScript",
-    level: "Expert",
-    years: "10+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg",
-    url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript"
+    name: 'JavaScript',
+    level: 'Expert',
+    years: '10+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg',
+    url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
   },
   {
-    name: "React",
-    level: "Expert",
-    years: "8+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original-wordmark.svg",
-    url: "https://reactjs.org/"
+    name: 'React',
+    level: 'Expert',
+    years: '8+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original-wordmark.svg',
+    url: 'https://reactjs.org/',
   },
   {
-    name: "VS Code",
-    level: "Expert",
-    years: "8+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/vscode/vscode-original.svg",
-    url: "https://code.visualstudio.com/"
+    name: 'VS Code',
+    level: 'Expert',
+    years: '8+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/vscode/vscode-original.svg',
+    url: 'https://code.visualstudio.com/',
   },
   {
-    name: "Figma",
-    level: "Advanced",
-    years: "5+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/figma/figma-original.svg",
-    url: "https://www.figma.com/"
+    name: 'Figma',
+    level: 'Advanced',
+    years: '5+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/figma/figma-original.svg',
+    url: 'https://www.figma.com/',
   },
   {
-    name: "Redux",
-    level: "Expert",
-    years: "6+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/redux/redux-original.svg",
-    url: "https://redux.js.org"
+    name: 'Redux',
+    level: 'Expert',
+    years: '6+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/redux/redux-original.svg',
+    url: 'https://redux.js.org',
   },
   {
-    name: "Next.js",
-    level: "Expert",
-    years: "5+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-original.svg",
-    url: "https://nextjs.org/"
+    name: 'Next.js',
+    level: 'Expert',
+    years: '5+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-original.svg',
+    url: 'https://nextjs.org/',
   },
   {
-    name: "Trello",
-    level: "Advanced",
-    years: "6+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/trello/trello-original.svg",
-    url: "https://trello.com/en"
+    name: 'Trello',
+    level: 'Advanced',
+    years: '6+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/trello/trello-original.svg',
+    url: 'https://trello.com/en',
   },
   {
-    name: "Git",
-    level: "Expert",
-    years: "10+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg",
-    url: "https://git-scm.com/"
+    name: 'Git',
+    level: 'Expert',
+    years: '10+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg',
+    url: 'https://git-scm.com/',
   },
   {
-    name: "Node.js",
-    level: "Advanced",
-    years: "7+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg",
-    url: "https://nodejs.org"
+    name: 'Node.js',
+    level: 'Advanced',
+    years: '7+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg',
+    url: 'https://nodejs.org',
   },
   {
-    name: "Docker",
-    level: "Intermediate",
-    years: "3+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg",
-    url: "https://www.docker.com/"
+    name: 'Docker',
+    level: 'Intermediate',
+    years: '3+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg',
+    url: 'https://www.docker.com/',
   },
   {
-    name: "Express",
-    level: "Advanced",
-    years: "6+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original-wordmark.svg",
-    url: "https://expressjs.com"
+    name: 'Express',
+    level: 'Advanced',
+    years: '6+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original-wordmark.svg',
+    url: 'https://expressjs.com',
   },
   {
-    name: "MongoDB",
-    level: "Advanced",
-    years: "5+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original-wordmark.svg",
-    url: "https://www.mongodb.com/"
+    name: 'Prisma',
+    level: 'Advanced',
+    years: '6+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/prisma/prisma-original.svg',
+    url: 'https://www.prisma.io/',
   },
   {
-    name: "Nginx",
-    level: "Intermediate",
-    years: "4+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/nginx/nginx-original.svg",
-    url: "https://www.nginx.com"
+    name: 'MongoDB',
+    level: 'Advanced',
+    years: '5+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original-wordmark.svg',
+    url: 'https://www.mongodb.com/',
   },
   {
-    name: "Postman",
-    level: "Advanced",
-    years: "6+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/postman/postman-original.svg",
-    url: "https://postman.com"
+    name: 'Nginx',
+    level: 'Intermediate',
+    years: '4+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/nginx/nginx-original.svg',
+    url: 'https://www.nginx.com',
   },
   {
-    name: "PostgreSQL",
-    level: "Intermediate",
-    years: "3+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg",
-    url: "https://www.postgresql.org"
+    name: 'Postman',
+    level: 'Advanced',
+    years: '6+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/postman/postman-original.svg',
+    url: 'https://postman.com',
   },
   {
-    name: "Java",
-    level: "Intermediate",
-    years: "4+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg",
-    url: "https://www.oracle.com/java/"
+    name: 'PostgreSQL',
+    level: 'Intermediate',
+    years: '3+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg',
+    url: 'https://www.postgresql.org',
   },
   {
-    name: "Spring",
-    level: "Intermediate",
-    years: "3+",
-    imageUrl: "https://raw.githubusercontent.com/devicons/devicon/master/icons/spring/spring-original.svg",
-    url: "https://spring.io/"
-  }
-];
+    name: 'Java',
+    level: 'Intermediate',
+    years: '4+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg',
+    url: 'https://www.oracle.com/java/',
+  },
+  {
+    name: 'Spring',
+    level: 'Intermediate',
+    years: '3+',
+    imageUrl:
+      'https://raw.githubusercontent.com/devicons/devicon/master/icons/spring/spring-original.svg',
+    url: 'https://spring.io/',
+  },
+]
 
 export default function Skills() {
   return (
@@ -171,10 +200,17 @@ export default function Skills() {
             {[...skills].map((skill, index) => (
               <Card
                 key={`${skill.name}-${index}`}
-                className={`flex-shrink-0 p-6 py-3 bg-card hover:shadow-lg transition-all duration-300 border-0 ${skills.length === index + 1 ? "mb-4" : ""}`}
+                className={`flex-shrink-0 p-6 py-3 bg-card hover:shadow-lg transition-all duration-300 border-0 ${skills.length === index + 1 ? 'mb-4' : ''}`}
               >
-                <Link href={skill.url} title={skill.name} target="_blank" className="w-full h-full text-center flex flex-col items-center justify-center">
-                  <div className={`flex items-center justify-between mb-4 ${skill.name === "Express" ? "bg-gray-200 rounded-full p-1" : ""}`}>
+                <Link
+                  href={skill.url}
+                  title={skill.name}
+                  target="_blank"
+                  className="w-full h-full text-center flex flex-col items-center justify-center"
+                >
+                  <div
+                    className={`flex items-center justify-between mb-4 ${skill.name === 'Express' ? 'bg-gray-200 rounded-full p-1' : ''}`}
+                  >
                     <div className="w-10 h-10 flex items-center justify-center">
                       <Image
                         src={skill.imageUrl}
@@ -184,7 +220,9 @@ export default function Skills() {
                         className="object-contain"
                       />
                     </div>
-                    <Badge variant="secondary" className="hidden">{skill.years}</Badge>
+                    <Badge variant="secondary" className="hidden">
+                      {skill.years}
+                    </Badge>
                   </div>
 
                   <h3 className="text-sm font-semibold">{skill.name}</h3>
@@ -198,5 +236,5 @@ export default function Skills() {
         </div>
       </div>
     </section>
-  );
+  )
 }

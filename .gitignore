@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# openapi
+/public/openapi-generated.json
+
 # next.js
 /.next/
 /out/

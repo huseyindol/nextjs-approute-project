@@ -53,6 +53,52 @@ bun dev
 
 4. Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresini açın.
 
+## 📚 API Dokümantasyonu
+
+Bu proje, modern **Scalar UI** ile otomatik API dokümantasyonu kullanır:
+
+### 🎯 Scalar UI Dokümantasyonu (Next OpenAPI Gen)
+
+- **Ana URL:** [http://localhost:3000/api-docs-auto](http://localhost:3000/api-docs-auto)
+- **Alternatif:** [http://localhost:3000/docs](http://localhost:3000/docs) _(otomatik yönlendirme)_
+- **Kaynak:** Zod şemaları + minimal JSDoc yorumları
+- **Özellikler:**
+  - ⚡ Otomatik şema üretimi
+  - 🔐 TypeScript tip güvenliği
+  - 🎨 Modern interaktif arayüz
+  - 📊 Gerçek zamanlı validasyon
+
+### 🔗 OpenAPI Spesifikasyonu
+
+- **JSON Endpoint:** [http://localhost:3000/openapi.json](http://localhost:3000/openapi.json)
+- **Format:** OpenAPI 3.0.0 standardı
+
+### 🛠️ Mevcut API'lar
+
+| **Endpoint**      | **Açıklama**             | **Özellikler**               |
+| ----------------- | ------------------------ | ---------------------------- |
+| `/api/users`      | Kullanıcı CRUD işlemleri | Pagination, Search, Posts    |
+| `/api/users/[id]` | Tek kullanıcı işlemleri  | GET, PUT, DELETE             |
+| `/api/posts`      | Gönderi CRUD işlemleri   | Author filtering, Publishing |
+| `/api/contact`    | E-posta gönderme         | Resend entegrasyonu          |
+| `/api/revalidate` | Cache yenileme           | Tag/Path based               |
+
+### ⚙️ Dokümantasyon Oluşturma
+
+```bash
+# Otomatik dokümantasyon üret
+bun run build:docs
+
+# Build ile otomatik oluştur
+bun run build
+```
+
+### 🔧 Geliştirme
+
+- **Şema Düzenleme:** `src/schemas/` klasöründeki Zod dosyaları
+- **Minimal JSDoc:** Sadece 3-4 satır yorum yeterli
+- **Otomatik Sync:** Kod değişikliklerinde otomatik güncelleme
+
 ## Yapı
 
 - `src/app`: Next.js App Router yapısı

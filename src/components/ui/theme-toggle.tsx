@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { useState, useEffect } from 'react'
 import { useTheme } from 'next-themes'
@@ -15,7 +15,11 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="hover:bg-primary hover:text-white transition-all">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="hover:bg-primary hover:text-white transition-all"
+      >
         <Sun className="h-5 w-5" />
       </Button>
     )
@@ -31,17 +35,19 @@ export function ThemeToggle() {
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
     >
       <Sun
-        className={`h-5 w-5 transition-all duration-300 ease-in-out ${isDark
-          ? 'rotate-90 scale-0 opacity-0'
-          : 'rotate-0 scale-100 opacity-100'
-          }`}
+        className={`h-5 w-5 transition-all duration-300 ease-in-out ${
+          isDark
+            ? 'rotate-90 scale-0 opacity-0'
+            : 'rotate-0 scale-100 opacity-100'
+        }`}
       />
       <Moon
-        className={`absolute h-5 w-5 transition-all duration-300 ease-in-out ${isDark
-          ? 'rotate-0 scale-100 opacity-100'
-          : '-rotate-90 scale-0 opacity-0'
-          }`}
+        className={`absolute h-5 w-5 transition-all duration-300 ease-in-out ${
+          isDark
+            ? 'rotate-0 scale-100 opacity-100'
+            : '-rotate-90 scale-0 opacity-0'
+        }`}
       />
     </Button>
   )
-} 
+}

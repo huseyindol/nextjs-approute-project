@@ -44,9 +44,7 @@ export default function ContactEmailTemplate({
               <strong>Mesaj:</strong>
             </Text>
 
-            <Text style={messageStyle}>
-              {message}
-            </Text>
+            <Text style={messageStyle}>{message}</Text>
 
             <Hr style={hr} />
 
@@ -111,4 +109,4 @@ const footer = {
   color: '#8898aa',
   fontSize: '12px',
   lineHeight: '16px',
-} 
+}

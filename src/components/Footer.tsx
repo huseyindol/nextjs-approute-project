@@ -1,37 +1,39 @@
-"use client"
+'use client'
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Github, Linkedin, Mail, Phone, MapPin, Heart } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import Link from "next/link";
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Github, Linkedin, Mail, Phone, MapPin, Heart } from 'lucide-react'
+import { Card } from '@/components/ui/card'
+import Link from 'next/link'
 
-const currentYear = new Date().getFullYear();
+const currentYear = new Date().getFullYear()
 
 export default function Footer() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
-  });
-  const [isLoading, setIsLoading] = useState(false);
+    message: '',
+  })
+  const [isLoading, setIsLoading] = useState(false)
   const [status, setStatus] = useState<{
-    type: 'success' | 'error' | null;
-    message: string;
-  }>({ type: null, message: '' });
+    type: 'success' | 'error' | null
+    message: string
+  }>({ type: null, message: '' })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
-    }));
-  };
+      [name]: value,
+    }))
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setStatus({ type: null, message: '' });
+    e.preventDefault()
+    setIsLoading(true)
+    setStatus({ type: null, message: '' })
 
     try {
       const response = await fetch('/api/contact', {
@@ -40,31 +42,31 @@ export default function Footer() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
-      });
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (response.ok) {
         setStatus({
           type: 'success',
-          message: data.message || 'Mesajınız başarıyla gönderildi!'
-        });
-        setFormData({ name: '', email: '', message: '' });
+          message: data.message || 'Mesajınız başarıyla gönderildi!',
+        })
+        setFormData({ name: '', email: '', message: '' })
       } else {
         setStatus({
           type: 'error',
-          message: data.error || 'Bir hata oluştu. Lütfen tekrar deneyin.'
-        });
+          message: data.error || 'Bir hata oluştu. Lütfen tekrar deneyin.',
+        })
       }
     } catch {
       setStatus({
         type: 'error',
-        message: 'Ağ hatası oluştu. Lütfen tekrar deneyin.'
-      });
+        message: 'Ağ hatası oluştu. Lütfen tekrar deneyin.',
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <footer id="contact" className="bg-muted/30 py-20">
@@ -86,11 +88,17 @@ export default function Footer() {
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <Mail className="h-5 w-5 text-primary" />
-                  <span><a href="mailto:huseyindol@gmail.com">huseyindol@gmail.com</a></span>
+                  <span>
+                    <a href="mailto:huseyindol@gmail.com">
+                      huseyindol@gmail.com
+                    </a>
+                  </span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="h-5 w-5 text-primary" />
-                  <span><a href="tel:+905445582825">+90 (544) 558 28 25</a></span>
+                  <span>
+                    <a href="tel:+905445582825">+90 (544) 558 28 25</a>
+                  </span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-5 w-5 text-primary" />
@@ -101,13 +109,24 @@ export default function Footer() {
               <div className="mt-8">
                 <h4 className="font-semibold mb-4">Sosyal Medya</h4>
                 <div className="flex space-x-4">
-                  <Link href="https://github.com/huseyindol" target="_blank" className="hover:bg-primary hover:text-white">
+                  <Link
+                    href="https://github.com/huseyindol"
+                    target="_blank"
+                    className="hover:bg-primary hover:text-white"
+                  >
                     <Github className="h-5 w-5" />
                   </Link>
-                  <Link href="https://www.linkedin.com/in/huseyindol/" target="_blank" className="hover:bg-primary hover:text-white">
+                  <Link
+                    href="https://www.linkedin.com/in/huseyindol/"
+                    target="_blank"
+                    className="hover:bg-primary hover:text-white"
+                  >
                     <Linkedin className="h-5 w-5" />
                   </Link>
-                  <Link href="mailto:huseyindol@gmail.com" className="hover:bg-primary hover:text-white">
+                  <Link
+                    href="mailto:huseyindol@gmail.com"
+                    className="hover:bg-primary hover:text-white"
+                  >
                     <Mail className="h-5 w-5" />
                   </Link>
                 </div>
@@ -118,10 +137,13 @@ export default function Footer() {
               <h3 className="text-2xl font-bold mb-6">Hızlı Mesaj</h3>
 
               {status.type && (
-                <div className={`p-4 rounded-md mb-4 ${status.type === 'success'
-                  ? 'bg-green-50 text-green-800 border border-green-200'
-                  : 'bg-red-50 text-red-800 border border-red-200'
-                  }`}>
+                <div
+                  className={`p-4 rounded-md mb-4 ${
+                    status.type === 'success'
+                      ? 'bg-green-50 text-green-800 border border-green-200'
+                      : 'bg-red-50 text-red-800 border border-red-200'
+                  }`}
+                >
                   {status.message}
                 </div>
               )}
@@ -184,5 +206,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
 }
