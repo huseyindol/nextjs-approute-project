@@ -1,18 +1,33 @@
-import React from 'react'
+import ContactEmailTemplate from '@/components/email-template'
+import { render } from '@react-email/render'
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
-import { render } from '@react-email/render'
-import ContactEmailTemplate from '@/components/email-template'
 
 const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY || 'dummy-key')
 
+/**
+ * Send contact form email
+ * @description Sends an email using the contact form data via Resend service
+ * @body ContactRequest
+ * @response 200:ContactResponse:Email sent successfully
+ * @add 400:ContactErrorResponse:Missing required fields or invalid email
+ * @add 500:ContactErrorResponse:Email sending failed
+ * @add 503:ContactErrorResponse:Email service not configured
+ * @openapi
+ */
 export async function POST(request: NextRequest) {
   try {
     // Check if API key is configured
-    if (!process.env.NEXT_PUBLIC_RESEND_API_KEY || process.env.NEXT_PUBLIC_RESEND_API_KEY === 'dummy-key') {
+    if (
+      !process.env.NEXT_PUBLIC_RESEND_API_KEY ||
+      process.env.NEXT_PUBLIC_RESEND_API_KEY === 'dummy-key'
+    ) {
       return NextResponse.json(
-        { error: 'Email servisi yapılandırılmamış. Lütfen daha sonra tekrar deneyin.' },
-        { status: 503 }
+        {
+          error:
+            'Email servisi yapılandırılmamış. Lütfen daha sonra tekrar deneyin.',
+        },
+        { status: 503 },
       )
     }
 
@@ -22,7 +37,7 @@ export async function POST(request: NextRequest) {
     if (!name || !email || !message) {
       return NextResponse.json(
         { error: 'Tüm alanlar gereklidir.' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
@@ -31,17 +46,13 @@ export async function POST(request: NextRequest) {
     if (!emailRegex.test(email)) {
       return NextResponse.json(
         { error: 'Geçerli bir e-posta adresi giriniz.' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     // Render email template
     const emailHtml = await render(
-      <ContactEmailTemplate
-        name={name}
-        email={email}
-        message={message}
-      />
+      <ContactEmailTemplate name={name} email={email} message={message} />,
     )
 
     // Send email using Resend
@@ -57,18 +68,18 @@ export async function POST(request: NextRequest) {
       console.error('Resend error:', error)
       return NextResponse.json(
         { error: 'E-posta gönderilirken bir hata oluştu.' },
-        { status: 500 }
+        { status: 500 },
       )
     }
 
     return NextResponse.json(
       { message: 'Mesajınız başarıyla gönderildi!' },
-      { status: 200 }
+      { status: 200 },
     )
   } catch {
     return NextResponse.json(
       { error: 'Sunucu hatası oluştu.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
-} 
+}

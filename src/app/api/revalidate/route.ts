@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
+import { NextResponse } from 'next/server'
 
 type RevalidateBody = {
   tag?: string
@@ -24,6 +24,16 @@ function isAuthorized(
   return token === configuredSecret
 }
 
+/**
+ * Revalidate cache by tag or path
+ * @description Revalidates Next.js cache using revalidateTag or revalidatePath. Requires authorization if secret is configured.
+ * @body RevalidateRequest
+ * @response RevalidateResponse:Successfully revalidated
+ * @add 400:RevalidateErrorResponse:No tag or path provided
+ * @add 401:RevalidateErrorResponse:Unauthorized
+ * @add 500:RevalidateErrorResponse:Internal server error
+ * @openapi
+ */
 export async function POST(request: Request) {
   try {
     const body = (await request.json().catch(() => ({}))) as RevalidateBody
@@ -63,6 +73,15 @@ export async function POST(request: Request) {
   }
 }
 
+/**
+ * Revalidate cache via query parameters
+ * @description Simple GET endpoint for debugging - revalidates cache using query parameters
+ * @params { tag?: string, path?: string, type?: string, secret?: string }
+ * @response RevalidateResponse:Successfully revalidated
+ * @add 400:RevalidateErrorResponse:Bad request
+ * @add 401:RevalidateErrorResponse:Unauthorized
+ * @openapi
+ */
 export async function GET(request: Request) {
   // Simple GET for debugging: /api/revalidate?path=/ or /api/revalidate?tag=mytag
   const url = new URL(request.url)
