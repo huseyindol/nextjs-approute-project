@@ -1,8 +1,7 @@
-import { getUsers } from '@/services/users'
-import React from 'react'
+import prisma from '@/lib/prisma'
 
 export default async function PrismaPage() {
-  const users = await getUsers()
+  const users = await prisma.user.findMany()
   return (
     <section
       id="about"

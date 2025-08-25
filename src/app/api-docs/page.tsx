@@ -6,11 +6,13 @@ import '@scalar/api-reference-react/style.css'
 
 export default function ApiDocsPage() {
   return (
-    <ApiReferenceReact
-      configuration={{
-        _integration: 'nextjs',
-        url: '/openapi.json',
-      }}
-    />
+    <section className="py-24 pt-24">
+      <ApiReferenceReact
+        configuration={{
+          _integration: 'nextjs',
+          url: '/openapi.json',
+        }}
+      />
+    </section>
   )
 }
