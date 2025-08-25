@@ -1,10 +1,10 @@
 -- CreateTable
-CREATE TABLE "dbprisma"."User" (
+CREATE TABLE "public"."User" (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "firstName" TEXT,
     "lastName" TEXT,
-    "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -12,7 +12,7 @@ CREATE TABLE "dbprisma"."User" (
 );
 
 -- CreateTable
-CREATE TABLE "dbprisma"."Post" (
+CREATE TABLE "public"."Post" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "content" TEXT,
@@ -23,7 +23,7 @@ CREATE TABLE "dbprisma"."Post" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "dbprisma"."User"("email");
+CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
 
 -- AddForeignKey
-ALTER TABLE "dbprisma"."Post" ADD CONSTRAINT "Post_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "dbprisma"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."Post" ADD CONSTRAINT "Post_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
