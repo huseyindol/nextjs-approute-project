@@ -4,7 +4,7 @@ import { ApiReferenceReact } from '@scalar/api-reference-react'
 
 export default function AutoApiDocs() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white py-24 pt-16">
       <ApiReferenceReact
         configuration={{
           url: '/openapi.json',

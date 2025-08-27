@@ -6,7 +6,7 @@ import '@scalar/api-reference-react/style.css'
 
 export default function ApiDocsPage() {
   return (
-    <section className="py-24 pt-24">
+    <section className="py-24 pt-16">
       <ApiReferenceReact
         configuration={{
           _integration: 'nextjs',
