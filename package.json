@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev --turbopack",
     "build": "bun run prisma:generate && bun run build:docs && next build",
-    "build:docs": "npx next-openapi-gen generate",
+    "build:docs": "node scripts/generate-openapi-config.mjs && npx next-openapi-gen generate",
+    "prebuild:docs": "node scripts/generate-openapi-config.mjs",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
@@ -58,6 +59,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.1",
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
     "next-openapi-gen": "^0.7.3",

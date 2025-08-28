@@ -15,6 +15,7 @@
 
 # openapi
 /public/openapi-generated.json
+next.openapi.json
 
 # next.js
 /.next/
