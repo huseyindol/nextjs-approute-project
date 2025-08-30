@@ -8,6 +8,9 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: [
+    'text-gradient', // Dinamik HTML içindeki sınıflar için
+  ],
   theme: {
     extend: {
       colors: {

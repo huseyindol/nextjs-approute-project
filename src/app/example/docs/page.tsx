@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 export default function SSGDocsPage() {
   return (
     <div className="py-24 md:pt-32">
-      <div className="container mx-auto px-6 max-w-4xl">
+      <div className="container mx-auto max-w-4xl px-6">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+        <div className="mb-12 text-center">
+          <h1 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white">
             SSG & ISR Documentation
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300">
@@ -23,11 +23,11 @@ export default function SSGDocsPage() {
         </div>
 
         {/* Table of Contents */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-12">
-          <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-4">
+        <div className="mb-12 rounded-lg border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-900/20">
+          <h2 className="mb-4 text-xl font-semibold text-blue-900 dark:text-blue-100">
             📖 İçindekiler
           </h2>
-          <ul className="text-blue-800 dark:text-blue-200 space-y-2">
+          <ul className="space-y-2 text-blue-800 dark:text-blue-200">
             <li>
               <Link href="#ssg-basics" className="hover:underline">
                 1. SSG Temelleri
@@ -58,25 +58,25 @@ export default function SSGDocsPage() {
 
         {/* SSG Basics */}
         <section id="ssg-basics" className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+          <h2 className="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
             1. SSG Temelleri
           </h2>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+            <h3 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
               Static Site Generation Nedir?
             </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
+            <p className="mb-4 text-gray-600 dark:text-gray-300">
               SSG, sayfaların build time&apos;da önceden oluşturulması
               tekniğidir. Bu sayede HTML dosyalar CDN&apos;de cache&apos;lenir
               ve kullanıcılara çok hızlı sunulur.
             </p>
 
-            <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+            <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
+              <h4 className="mb-2 font-semibold text-gray-900 dark:text-white">
                 Avantajlar:
               </h4>
-              <ul className="text-gray-600 dark:text-gray-300 space-y-1">
+              <ul className="space-y-1 text-gray-600 dark:text-gray-300">
                 <li>• ⚡ Maksimum performans</li>
                 <li>• 🔍 Mükemmel SEO</li>
                 <li>• 💰 Düşük hosting maliyeti</li>
@@ -86,9 +86,9 @@ export default function SSGDocsPage() {
             </div>
           </div>
 
-          <div className="bg-gray-900 text-white rounded-lg p-6">
-            <h4 className="font-semibold mb-4">Basic SSG Example:</h4>
-            <pre className="text-sm overflow-x-auto">
+          <div className="rounded-lg bg-gray-900 p-6 text-white">
+            <h4 className="mb-4 font-semibold">Basic SSG Example:</h4>
+            <pre className="overflow-x-auto text-sm">
               {`// app/blog/page.tsx
 export default async function BlogPage() {
   // Build time'da çalışır
@@ -113,26 +113,26 @@ export default async function BlogPage() {
 
         {/* generateStaticParams */}
         <section id="generatestaticparams" className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+          <h2 className="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
             2. generateStaticParams
           </h2>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+            <h3 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
               Dinamik Rotalar için SSG
             </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
+            <p className="mb-4 text-gray-600 dark:text-gray-300">
               generateStaticParams fonksiyonu, dinamik segment&apos;ler için
               build time&apos;da hangi path&apos;lerin oluşturulacağını
               belirler.
             </p>
           </div>
 
-          <div className="bg-gray-900 text-white rounded-lg p-6 mb-6">
-            <h4 className="font-semibold mb-4">
+          <div className="mb-6 rounded-lg bg-gray-900 p-6 text-white">
+            <h4 className="mb-4 font-semibold">
               generateStaticParams Example:
             </h4>
-            <pre className="text-sm overflow-x-auto">
+            <pre className="overflow-x-auto text-sm">
               {`// app/blog/[slug]/page.tsx
 export async function generateStaticParams() {
   const posts = await fetch('https://api.example.com/posts')
@@ -156,20 +156,20 @@ export default async function PostPage({
             </pre>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-              <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+              <h4 className="mb-2 font-semibold text-green-900 dark:text-green-100">
                 Build Time
               </h4>
-              <p className="text-green-800 dark:text-green-200 text-sm">
+              <p className="text-sm text-green-800 dark:text-green-200">
                 generateStaticParams çalışır ve tüm rotalar oluşturulur
               </p>
             </div>
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+              <h4 className="mb-2 font-semibold text-blue-900 dark:text-blue-100">
                 Runtime
               </h4>
-              <p className="text-blue-800 dark:text-blue-200 text-sm">
+              <p className="text-sm text-blue-800 dark:text-blue-200">
                 Sayfa anında yüklenir, server processing yok
               </p>
             </div>
@@ -178,23 +178,23 @@ export default async function PostPage({
 
         {/* ISR */}
         <section id="isr" className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+          <h2 className="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
             3. Incremental Static Regeneration (ISR)
           </h2>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
-            <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+          <div className="mb-6 rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+            <h3 className="mb-4 text-xl font-semibold text-gray-900 dark:text-white">
               ISR ile Statik + Dinamik
             </h3>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
+            <p className="mb-4 text-gray-600 dark:text-gray-300">
               ISR, statik sayfaların belirli aralıklarla background&apos;da
               güncellenmesini sağlar. Kullanıcılar her zaman hızlı sayfa görür.
             </p>
           </div>
 
-          <div className="bg-gray-900 text-white rounded-lg p-6 mb-6">
-            <h4 className="font-semibold mb-4">ISR Example:</h4>
-            <pre className="text-sm overflow-x-auto">
+          <div className="mb-6 rounded-lg bg-gray-900 p-6 text-white">
+            <h4 className="mb-4 font-semibold">ISR Example:</h4>
+            <pre className="overflow-x-auto text-sm">
               {`// app/products/page.tsx
 async function getProducts() {
   const res = await fetch('https://api.example.com/products', {
@@ -218,11 +218,11 @@ export default async function ProductsPage() {
             </pre>
           </div>
 
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
-            <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-4">
+          <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-6 dark:border-yellow-800 dark:bg-yellow-900/20">
+            <h4 className="mb-4 font-semibold text-yellow-900 dark:text-yellow-100">
               🔄 ISR Workflow
             </h4>
-            <ol className="text-yellow-800 dark:text-yellow-200 space-y-2">
+            <ol className="space-y-2 text-yellow-800 dark:text-yellow-200">
               <li>1. Build time&apos;da initial versiyon oluşturulur</li>
               <li>2. Kullanıcılar cache&apos;li versiyonu görür (hızlı)</li>
               <li>3. Background&apos;da yeni versiyon oluşturulur</li>
@@ -233,66 +233,66 @@ export default async function ProductsPage() {
 
         {/* Examples */}
         <section id="examples" className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+          <h2 className="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
             4. Örnek Implementasyonlar
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+              <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
                 📝 Static Todos
               </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+              <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
                 generateStaticParams ile dinamik todo sayfaları
               </p>
               <Link
                 href="/example/static-todos"
-                className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                className="text-sm text-blue-600 hover:underline dark:text-blue-400"
               >
                 Örneği görüntüle →
               </Link>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+            <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+              <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
                 🔄 ISR Products
               </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+              <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
                 60 saniyede bir güncellenen ürün katalogu
               </p>
               <Link
                 href="/example/isr-products"
-                className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                className="text-sm text-blue-600 hover:underline dark:text-blue-400"
               >
                 Örneği görüntüle →
               </Link>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+            <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+              <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
                 📰 Static Posts
               </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+              <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
                 External API ile statik blog post&apos;ları
               </p>
               <Link
                 href="/example/static-posts"
-                className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                className="text-sm text-blue-600 hover:underline dark:text-blue-400"
               >
                 Örneği görüntüle →
               </Link>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+            <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+              <h3 className="mb-3 text-lg font-semibold text-gray-900 dark:text-white">
                 🛣️ Dynamic Routes
               </h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
+              <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
                 generateStaticParams detaylı açıklama
               </p>
               <Link
                 href="/example/dynamic-routes"
-                className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                className="text-sm text-blue-600 hover:underline dark:text-blue-400"
               >
                 Örneği görüntüle →
               </Link>
@@ -302,16 +302,16 @@ export default async function ProductsPage() {
 
         {/* Best Practices */}
         <section id="best-practices" className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+          <h2 className="mb-6 text-3xl font-bold text-gray-900 dark:text-white">
             5. Best Practices
           </h2>
 
           <div className="space-y-6">
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-3">
+            <div className="rounded-lg border border-green-200 bg-green-50 p-6 dark:border-green-800 dark:bg-green-900/20">
+              <h3 className="mb-3 text-lg font-semibold text-green-900 dark:text-green-100">
                 ✅ Yapılması Gerekenler
               </h3>
-              <ul className="text-green-800 dark:text-green-200 space-y-2">
+              <ul className="space-y-2 text-green-800 dark:text-green-200">
                 <li>
                   • Build time&apos;da veri çekme için async components kullanın
                 </li>
@@ -326,11 +326,11 @@ export default async function ProductsPage() {
               </ul>
             </div>
 
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-red-900 dark:text-red-100 mb-3">
+            <div className="rounded-lg border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-900/20">
+              <h3 className="mb-3 text-lg font-semibold text-red-900 dark:text-red-100">
                 ❌ Yapılmaması Gerekenler
               </h3>
-              <ul className="text-red-800 dark:text-red-200 space-y-2">
+              <ul className="space-y-2 text-red-800 dark:text-red-200">
                 <li>
                   • Client-side data fetching SSG sayfalarında kullanmayın
                 </li>
@@ -353,7 +353,7 @@ export default async function ProductsPage() {
         <div className="text-center">
           <Link
             href="/example"
-            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
           >
             ← SSG Examples&apos;a Dön
           </Link>

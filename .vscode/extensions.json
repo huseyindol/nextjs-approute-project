@@ -1,13 +1,30 @@
 {
   "recommendations": [
-    "ms-vscode.vscode-typescript-next",
-    "bradlc.vscode-tailwindcss",
+    // Code formatting
     "esbenp.prettier-vscode",
-    "ms-vscode.vscode-eslint",
-    "bierner.typescript-hero",
-    "formulahendry.auto-rename-tag",
+    
+    // Linting
+    "dbaeumer.vscode-eslint",
+    
+    // React/Next.js
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-typescript-next",
+    
+    // Utility
     "christian-kohler.path-intellisense",
-    "wix.vscode-import-cost",
-    "usernamehw.errorlens"
+    "formulahendry.auto-rename-tag",
+    "ms-vscode.vscode-json",
+    
+    // Git
+    "eamodio.gitlens",
+    
+    // Theme & Icons
+    "pkief.material-icon-theme",
+    
+    // Database
+    "ms-vscode.vscode-mysql",
+    
+    // API Testing
+    "humao.rest-client"
   ]
 }

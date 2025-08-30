@@ -36,19 +36,19 @@ async function AbortExamplePage() {
   return (
     <section
       id="about"
-      className="py-24 md:pt-32 flex items-center justify-center pt-24"
+      className="flex items-center justify-center py-24 pt-24 md:pt-32"
     >
       <div className="container mx-auto px-6">
-        <h1 className="text-3xl font-bold mb-4">SSG Posts Example</h1>
-        <p className="text-lg mb-8">
+        <h1 className="mb-4 text-3xl font-bold">SSG Posts Example</h1>
+        <p className="mb-8 text-lg">
           Bu sayfa Static Site Generation (SSG) kullanarak build time&apos;da
           oluşturuldu. AbortController örneği yerine statik post listesi
           gösteriliyor.
         </p>
 
-        <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg mb-8">
-          <h2 className="text-xl font-semibold mb-4">Posts (Statik Veri)</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <div className="mb-8 rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
+          <h2 className="mb-4 text-xl font-semibold">Posts (Statik Veri)</h2>
+          <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
             {posts.length} post statik olarak yüklendi.
           </p>
 
@@ -56,20 +56,20 @@ async function AbortExamplePage() {
             {posts.map((post: Post) => (
               <article
                 key={post.id}
-                className="bg-white dark:bg-gray-700 p-6 rounded-lg border shadow-sm"
+                className="rounded-lg border bg-white p-6 shadow-sm dark:bg-gray-700"
               >
-                <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
+                <h3 className="mb-3 text-xl font-semibold text-gray-900 dark:text-white">
                   {post.title}
                 </h3>
-                <p className="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                <p className="mb-4 leading-relaxed text-gray-700 dark:text-gray-300">
                   {post.body}
                 </p>
 
-                <div className="flex flex-wrap gap-2 mb-4">
+                <div className="mb-4 flex flex-wrap gap-2">
                   {post.tags.map((tag, index) => (
                     <span
                       key={index}
-                      className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full"
+                      className="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                     >
                       #{tag}
                     </span>

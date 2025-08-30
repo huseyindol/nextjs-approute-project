@@ -30,8 +30,8 @@ const ScrollToTop = () => {
   return (
     <button
       onClick={scrollToTop}
-      className={`fixed bottom-6 right-6 p-3 rounded-full bg-[var(--primary)] text-white shadow-lg transition-opacity duration-300 z-50 ${
-        isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+      className={`fixed right-6 bottom-6 z-50 rounded-full bg-[var(--primary)] p-3 text-white shadow-lg transition-opacity duration-300 ${
+        isVisible ? 'opacity-100' : 'pointer-events-none opacity-0'
       }`}
       aria-label="Yukarı Kaydır"
     >

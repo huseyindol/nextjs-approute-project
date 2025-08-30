@@ -18,7 +18,7 @@ export function ThemeToggle() {
       <Button
         variant="ghost"
         size="icon"
-        className="hover:bg-primary hover:text-white transition-all"
+        className="hover:bg-primary transition-all hover:text-white"
       >
         <Sun className="h-5 w-5" />
       </Button>
@@ -31,21 +31,21 @@ export function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="hover:bg-primary hover:text-white transition-all relative"
+      className="hover:bg-primary relative transition-all hover:text-white"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
     >
       <Sun
         className={`h-5 w-5 transition-all duration-300 ease-in-out ${
           isDark
-            ? 'rotate-90 scale-0 opacity-0'
-            : 'rotate-0 scale-100 opacity-100'
+            ? 'scale-0 rotate-90 opacity-0'
+            : 'scale-100 rotate-0 opacity-100'
         }`}
       />
       <Moon
         className={`absolute h-5 w-5 transition-all duration-300 ease-in-out ${
           isDark
-            ? 'rotate-0 scale-100 opacity-100'
-            : '-rotate-90 scale-0 opacity-0'
+            ? 'scale-100 rotate-0 opacity-100'
+            : 'scale-0 -rotate-90 opacity-0'
         }`}
       />
     </Button>

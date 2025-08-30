@@ -17,7 +17,14 @@
     "prisma:migrate": "prisma migrate dev --name init",
     "prisma:seed": "prisma db seed",
     "prisma:studio": "prisma studio",
-    "db:push": "prisma db push"
+    "db:push": "prisma db push",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -62,8 +69,11 @@
     "dotenv": "^17.2.1",
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
     "next-openapi-gen": "^0.7.3",
     "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "prisma": "^6.13.0",
     "tailwindcss": "^4",
     "tsx": "^4.20.3",

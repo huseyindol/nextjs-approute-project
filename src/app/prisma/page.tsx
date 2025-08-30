@@ -17,16 +17,16 @@ export default async function PrismaPage() {
   return (
     <section
       id="about"
-      className="py-12 flex items-center justify-center pt-24 flex-col gap-4"
+      className="flex flex-col items-center justify-center gap-4 py-12 pt-24"
     >
       <h1>Prisma Page</h1>
       {error ? (
-        <div className="text-red-500 p-4 border border-red-300 rounded">
+        <div className="rounded border border-red-300 p-4 text-red-500">
           <h2 className="font-bold">Database Error:</h2>
           <p>{error}</p>
           <p className="mt-2 text-sm">
             Run:{' '}
-            <code className="bg-gray-100 px-1 rounded">bun run db:push</code> to
+            <code className="rounded bg-gray-100 px-1">bun run db:push</code> to
             setup the database
           </p>
         </div>
@@ -35,14 +35,14 @@ export default async function PrismaPage() {
           {users.length === 0 ? (
             <p>
               No users found. Run{' '}
-              <code className="bg-gray-100 px-1 rounded">
+              <code className="rounded bg-gray-100 px-1">
                 bun run prisma:seed
               </code>{' '}
               to add sample data.
             </p>
           ) : (
             users.map(user => (
-              <div key={user.id} className="p-2 border rounded">
+              <div key={user.id} className="rounded border p-2">
                 {user.email}
               </div>
             ))

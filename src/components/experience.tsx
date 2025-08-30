@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
-import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { Building, Calendar, MapPin } from 'lucide-react'
+import { useState } from 'react'
 
 const experiences = [
   {
@@ -139,6 +139,45 @@ const experiences = [
       'Performans optimizasyonları (Code splitting, Lazy loading, Image optimization, Bundling optimization...)',
     ],
   },
+  {
+    id: 6,
+    company: 'Freelancer',
+    position: 'Full Stack Developer',
+    period: 'Temmuz 2017 - Nisan 2019',
+    location: 'İstanbul',
+    industry: 'Freelancer',
+    description:
+      'Freelancer olarak çeşitli firmaların sistemlerinde frontend ve backend geliştirmelerinde yer aldım. Intranet projeler olduğundan panel geliştirmeleri, önyüz geliştirmeleri, Rest API ve entegrasyonları gibi geliştirmeler yapıyordum.',
+    technologies: [
+      'JavaScript',
+      'jQuery',
+      'Bootstrap',
+      'SCSS',
+      'PHP',
+      'Twig',
+      'Codeigniter',
+      'mysql',
+    ],
+    achievements: [
+      'Bir çok firmanın sistemlerinde frontend ve backend geliştirmelerinde yer aldım.',
+      'Rest API ve entegrasyonları gibi geliştirmeleri.',
+      'Intranet projelerinde panel geliştirmeleri.',
+    ],
+  },
+  {
+    id: 7,
+    company: 'Projesoft',
+    position: 'Frontend Developer',
+    period: 'Aralık 2011 - Temmuz 2017',
+    location: 'İstanbul',
+    industry: 'E-commerce',
+    description:
+      "Projesoft'un frontend geliştirme ekibine katıldım. Bir çok firmanın E-Ticaret sistemlerinin frontend geliştirmelerinde yer aldım. bunlardan bazıları: kitapisler.com, kuyumcu.com.tr, feyioglu.com.tr, network.com.tr, divarese.com, beymen.com gibi.",
+    technologies: ['JavaScript', 'jQuery', 'Bootstrap', 'SCSS', 'PHP', 'Twig'],
+    achievements: [
+      'Bir çok firmanın E-Ticaret sistemlerinin frontend geliştirmelerinde yer aldım.',
+    ],
+  },
 ]
 
 const industries = ['Tümü', 'Fintech', 'E-commerce', 'Agency', 'Media']
@@ -154,11 +193,11 @@ export default function Experience() {
   return (
     <section id="experience" className="py-20">
       <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">
+        <div className="mx-auto mb-16 max-w-4xl text-center">
+          <h2 className="text-gradient mb-6 text-4xl font-bold md:text-5xl">
             Profesyonel Deneyim
           </h2>
-          <p className="text-xl text-muted-foreground mb-8">
+          <p className="text-muted-foreground mb-8 text-xl">
             Çeşitli sektörlerde edindiğim deneyimler ve başarılar
           </p>
 
@@ -177,19 +216,19 @@ export default function Experience() {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="mx-auto max-w-4xl space-y-8">
           {filteredExperiences.map((exp, index) => (
             <Card
               key={exp.id}
-              className="p-8 hover:shadow-elegant transition-all duration-300 animate-fade-in-up"
+              className="hover:shadow-elegant animate-fade-in-up p-8 transition-all duration-300"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-6">
+              <div className="mb-6 flex flex-col md:flex-row md:items-start md:justify-between">
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-primary mb-2">
+                  <h3 className="text-primary mb-2 text-2xl font-bold">
                     {exp.position}
                   </h3>
-                  <div className="flex flex-wrap items-center gap-4 text-muted-foreground mb-4">
+                  <div className="text-muted-foreground mb-4 flex flex-wrap items-center gap-4">
                     <div className="flex items-center gap-2">
                       <Building className="h-4 w-4" />
                       <span className="font-semibold">{exp.company}</span>
@@ -213,9 +252,9 @@ export default function Experience() {
                 {exp.description}
               </p>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid gap-6 md:grid-cols-2">
                 <div>
-                  <h4 className="font-semibold mb-3">Teknolojiler</h4>
+                  <h4 className="mb-3 font-semibold">Teknolojiler</h4>
                   <div className="flex flex-wrap gap-2">
                     {exp.technologies.map(tech => (
                       <Badge
@@ -230,12 +269,12 @@ export default function Experience() {
                 </div>
 
                 <div>
-                  <h4 className="font-semibold mb-3">Başlıca Başarılar</h4>
+                  <h4 className="mb-3 font-semibold">Başlıca Başarılar</h4>
                   <ul className="space-y-2">
                     {exp.achievements.map((achievement, idx) => (
                       <li
                         key={idx}
-                        className="text-sm text-muted-foreground flex items-start"
+                        className="text-muted-foreground flex items-start text-sm"
                       >
                         <span className="text-primary mr-2">•</span>
                         {achievement}

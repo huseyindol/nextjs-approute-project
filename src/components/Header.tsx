@@ -16,13 +16,13 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b">
-      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <div className="text-xl font-bold text-gradient">
+    <header className="bg-background/80 fixed top-0 z-50 w-full border-b backdrop-blur-md">
+      <div className="container mx-auto flex items-center justify-between px-6 py-4">
+        <div className="text-gradient text-xl font-bold">
           <Link href="/">Hüseyin DOL</Link>
         </div>
 
-        <nav className="hidden md:flex items-center space-x-6">
+        <nav className="hidden items-center space-x-6 md:flex">
           <Link
             href="#about"
             className="text-muted-foreground hover:text-primary transition-colors"
@@ -45,7 +45,7 @@ export default function Header() {
         </nav>
 
         {/* Mobile menu */}
-        <div className="md:hidden flex items-center space-x-2">
+        <div className="flex items-center space-x-2 md:hidden">
           <ThemeToggle />
           <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
