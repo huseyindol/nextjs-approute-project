@@ -10,13 +10,31 @@ generator client {
   // Use default output (node_modules/.prisma/client) to avoid absolute paths
 }
 
+model User {
+  id        Int          @id @default(autoincrement())
+  email     String       @unique
+  password  String
+  firstName String?
+  lastName  String?
+  posts     PostAuthor[]
+  pages     Page[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @default(now())
+}
+
 model Page {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  PageSEO   PageSEO? @relation(fields: [pageSEOId], references: [id])
-  pageSEOId Int?
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  description String?
+  content     String?
+  status      String   @default("draft")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  PageSEO     PageSEO? @relation(fields: [pageSEOId], references: [id])
+  pageSEOId   Int?
+  User        User?    @relation(fields: [userId], references: [id])
+  userId      Int?
 }
 
 model PageSEO {
@@ -32,17 +50,6 @@ model PageSEO {
   Page        Page[]
 }
 
-model User {
-  id        Int          @id @default(autoincrement())
-  email     String       @unique
-  password  String
-  firstName String?
-  lastName  String?
-  posts     PostAuthor[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @default(now())
-}
-
 model Post {
   id        Int          @id @default(autoincrement())
   title     String
@@ -53,10 +60,11 @@ model Post {
 }
 
 model PostAuthor {
-  postId   Int
-  authorId Int
-  post     Post @relation(fields: [postId], references: [id])
-  author   User @relation(fields: [authorId], references: [id])
+  postId    Int
+  authorId  Int
+  post      Post     @relation(fields: [postId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
 
   @@id([postId, authorId])
 }

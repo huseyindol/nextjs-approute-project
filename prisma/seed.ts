@@ -4,52 +4,6 @@ import { UserType } from '../src/types/userTypes'
 const prisma = new PrismaClient()
 
 async function main() {
-  await prisma.pageSEO.createMany({
-    data: [
-      {
-        title: 'Ana Sayfa | Hüseyin DOL Portfolio',
-        description:
-          'Full Stack Developer & UI/UX Designer olarak çalışmalarım ve deneyimlerim',
-        keywords: [
-          'Hüseyin DOL',
-          'Portfolio',
-          'Full Stack Developer',
-          'Frontend Developer',
-          'JavaScript, TypeScript, React, Next.js, Node.js, Express, MongoDB, MySQL, PostgreSQL, Docker, Kubernetes',
-        ],
-        canonical: 'https://next.huseyindol.site',
-        noIndex: false,
-        noFollow: false,
-      },
-      {
-        title: 'Hakkımda | Hüseyin DOL Portfolio',
-        description:
-          'Hakkımda sayfasına hoş geldiniz. Ben Hüseyin DOL, bir frontend developer ve UI/UX tasarımcısıyım.',
-        keywords: [
-          'Hüseyin DOL',
-          'Hakkımda',
-          'Full Stack Developer',
-          'Frontend Developer',
-          'JavaScript, TypeScript, React, Next.js, Node.js, Express, MongoDB, MySQL, PostgreSQL, Docker, Kubernetes',
-        ],
-        canonical: 'https://next.huseyindol.site',
-        noIndex: false,
-        noFollow: false,
-      },
-    ],
-  })
-  await prisma.page.createMany({
-    data: [
-      {
-        name: 'Ana Sayfa',
-        pageSEOId: 1,
-      },
-      {
-        name: 'Hakkımda',
-        pageSEOId: 2,
-      },
-    ],
-  })
   // Create 4 users
   await prisma.user.createMany({
     data: [
@@ -91,6 +45,64 @@ async function main() {
     )?.id,
     salim: userRecords.find(user => user.email === 'salim@gmail.com')?.id,
   }
+  // Create page SEO
+  await prisma.pageSEO.createMany({
+    data: [
+      {
+        title: 'Ana Sayfa | Hüseyin DOL Portfolio',
+        description:
+          'Full Stack Developer & UI/UX Designer olarak çalışmalarım ve deneyimlerim',
+        keywords: [
+          'Hüseyin DOL',
+          'Portfolio',
+          'Full Stack Developer',
+          'Frontend Developer',
+          'JavaScript, TypeScript, React, Next.js, Node.js, Express, MongoDB, MySQL, PostgreSQL, Docker, Kubernetes',
+        ],
+        canonical: 'https://next.huseyindol.site',
+        noIndex: false,
+        noFollow: false,
+      },
+      {
+        title: 'Hakkımda | Hüseyin DOL Portfolio',
+        description:
+          'Hakkımda sayfasına hoş geldiniz. Ben Hüseyin DOL, bir frontend developer ve UI/UX tasarımcısıyım.',
+        keywords: [
+          'Hüseyin DOL',
+          'Hakkımda',
+          'Full Stack Developer',
+          'Frontend Developer',
+          'JavaScript, TypeScript, React, Next.js, Node.js, Express, MongoDB, MySQL, PostgreSQL, Docker, Kubernetes',
+        ],
+        canonical: 'https://next.huseyindol.site',
+        noIndex: false,
+        noFollow: false,
+      },
+    ],
+  })
+  // Create pages
+  await prisma.page.createMany({
+    data: [
+      {
+        name: 'Ana Sayfa',
+        slug: 'home',
+        description: 'Ana Sayfa',
+        content: '',
+        status: 'published',
+        pageSEOId: 1,
+        userId: userIdMapping.huseyindol!,
+      },
+      {
+        name: 'Hakkımda',
+        slug: 'about',
+        description: 'Hakkımda',
+        content: 'Hakkımda',
+        status: '',
+        pageSEOId: 2,
+        userId: userIdMapping.yagizefedol!,
+      },
+    ],
+  })
 
   // Create posts distributed among users
   await prisma.post.createMany({
