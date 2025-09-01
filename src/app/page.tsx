@@ -1,21 +1,15 @@
 import Hero from '@/components/Hero'
 import Skills from '@/components/Skills'
 import Experience from '@/components/experience'
-import { Metadata } from 'next'
+import { metadataHomePage } from '@/data/mockData'
 
 // Force Static Site Generation (SSG) for this route
 export const dynamic = 'force-static'
 // 5 saat (18000 sn) sonra yeniden oluştur — değer statik olmalı
 export const revalidate = 18000
 
-export const metadata: Metadata = {
-  title: 'Ana Sayfa | Hüseyin DOL Portfolio',
-  description:
-    'Frontend Developer & UI/UX Designer olarak çalışmalarım ve deneyimlerim',
-  alternates: {
-    canonical: 'https://next.huseyindol.site',
-  },
-}
+// Export metadata from service data
+export const metadata = metadataHomePage
 
 export default function Home() {
   return (
