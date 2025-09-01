@@ -1,10 +1,56 @@
-import { UserType } from '@/types/userTypes'
 import { PrismaClient } from '@prisma/client'
+import { UserType } from '../src/types/userTypes'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  // Create 5 users
+  await prisma.pageSEO.createMany({
+    data: [
+      {
+        title: 'Ana Sayfa | Hüseyin DOL Portfolio',
+        description:
+          'Full Stack Developer & UI/UX Designer olarak çalışmalarım ve deneyimlerim',
+        keywords: [
+          'Hüseyin DOL',
+          'Portfolio',
+          'Full Stack Developer',
+          'Frontend Developer',
+          'JavaScript, TypeScript, React, Next.js, Node.js, Express, MongoDB, MySQL, PostgreSQL, Docker, Kubernetes',
+        ],
+        canonical: 'https://next.huseyindol.site',
+        noIndex: false,
+        noFollow: false,
+      },
+      {
+        title: 'Hakkımda | Hüseyin DOL Portfolio',
+        description:
+          'Hakkımda sayfasına hoş geldiniz. Ben Hüseyin DOL, bir frontend developer ve UI/UX tasarımcısıyım.',
+        keywords: [
+          'Hüseyin DOL',
+          'Hakkımda',
+          'Full Stack Developer',
+          'Frontend Developer',
+          'JavaScript, TypeScript, React, Next.js, Node.js, Express, MongoDB, MySQL, PostgreSQL, Docker, Kubernetes',
+        ],
+        canonical: 'https://next.huseyindol.site',
+        noIndex: false,
+        noFollow: false,
+      },
+    ],
+  })
+  await prisma.page.createMany({
+    data: [
+      {
+        name: 'Ana Sayfa',
+        pageSEOId: 1,
+      },
+      {
+        name: 'Hakkımda',
+        pageSEOId: 2,
+      },
+    ],
+  })
+  // Create 4 users
   await prisma.user.createMany({
     data: [
       {
@@ -14,156 +60,199 @@ async function main() {
         lastName: 'Test Last Name',
       },
       {
-        email: 'alice@example.com',
+        email: 'huseyindol@gmail.com',
         password: '123456',
-        firstName: 'Alice',
-        lastName: 'Smith',
+        firstName: 'Hüseyin',
+        lastName: 'DOL',
       },
       {
-        email: 'charlie@example.com',
+        email: 'dolyagizefe@gmail.com',
         password: '123456',
-        firstName: 'Charlie',
-        lastName: 'Brown',
+        firstName: 'Yagiz Efe',
+        lastName: 'DOL',
       },
       {
-        email: 'diana@example.com',
+        email: 'salim@gmail.com',
         password: '123456',
-        firstName: 'Diana',
-        lastName: 'Johnson',
-      },
-      {
-        email: 'edward@example.com',
-        password: '123456',
-        firstName: 'Edward',
-        lastName: 'Davis',
+        firstName: 'Salim',
+        lastName: 'Koç',
       },
     ],
   })
-
   // Find all users to get their IDs
   const userRecords: UserType[] = await prisma.user.findMany()
 
   const userIdMapping = {
-    alice: userRecords.find(user => user.email === 'alice@example.com')?.id,
-    charlie: userRecords.find(user => user.email === 'charlie@example.com')?.id,
-    diana: userRecords.find(user => user.email === 'diana@example.com')?.id,
-    edward: userRecords.find(user => user.email === 'edward@example.com')?.id,
     test: userRecords.find(user => user.email === 'test@test.com')?.id,
+    huseyindol: userRecords.find(user => user.email === 'huseyindol@gmail.com')
+      ?.id,
+    yagizefedol: userRecords.find(
+      user => user.email === 'dolyagizefe@gmail.com',
+    )?.id,
+    salim: userRecords.find(user => user.email === 'salim@gmail.com')?.id,
   }
 
   // Create posts distributed among users
   await prisma.post.createMany({
     data: [
-      // Alice's posts
+      // Test's posts
       {
         title: 'Getting Started with TypeScript and Prisma',
         content:
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce id erat a lorem tincidunt ultricies. Vivamus porta bibendum nulla vel accumsan.',
         published: true,
-        authorId: userIdMapping.alice!,
       },
       {
         title: 'How ORMs Simplify Complex Queries',
         content:
           'Duis sagittis urna ut sapien tristique convallis. Aenean vel ligula felis. Phasellus bibendum sem at elit dictum volutpat.',
         published: false,
-        authorId: userIdMapping.alice!,
       },
 
-      // Test's posts
+      // Hüseyin's posts
       {
         title: 'Mastering Prisma: Efficient Database Migrations',
         content:
           'Ut ullamcorper nec erat id auctor. Nullam nec ligula in ex feugiat tincidunt. Cras accumsan vehicula tortor ut eleifend.',
         published: true,
-        authorId: userIdMapping.test!,
       },
       {
         title: 'Best Practices for Type Safety in ORMs',
         content:
           'Aliquam erat volutpat. Suspendisse potenti. Maecenas fringilla elit vel eros laoreet, et tempor sapien vulputate.',
         published: true,
-        authorId: userIdMapping.test!,
       },
       {
         title: 'TypeScript Utility Types for Database Models',
         content:
           'Donec ac magna facilisis, vestibulum ligula at, elementum nisl. Morbi volutpat eget velit eu egestas.',
         published: false,
-        authorId: userIdMapping.test!,
       },
 
-      // Charlie's posts (no posts for Charlie)
-
-      // Diana's posts
-      {
-        title: 'Exploring Database Indexes and Their Performance Impact',
-        content:
-          'Vivamus ac velit tincidunt, sollicitudin erat quis, fringilla enim. Aenean posuere est a risus placerat suscipit.',
-        published: true,
-        authorId: userIdMapping.diana!,
-      },
-      {
-        title: 'Choosing the Right Database for Your TypeScript Project',
-        content:
-          'Sed vel suscipit lorem. Duis et arcu consequat, sagittis justo quis, pellentesque risus. Curabitur sed consequat est.',
-        published: false,
-        authorId: userIdMapping.diana!,
-      },
-      {
-        title: 'Designing Scalable Schemas with Prisma',
-        content:
-          'Phasellus ut erat nec elit ultricies egestas. Vestibulum rhoncus urna eget magna varius pharetra.',
-        published: true,
-        authorId: userIdMapping.diana!,
-      },
-      {
-        title: 'Handling Relations Between Models in ORMs',
-        content:
-          'Integer luctus ac augue at tristique. Curabitur varius nisl vitae mi fringilla, vel tincidunt nunc dictum.',
-        published: false,
-        authorId: userIdMapping.diana!,
-      },
-
-      // Edward's posts
+      // Yagiz Efe's posts
       {
         title: 'Why TypeORM Still Has Its Place in 2025',
         content:
           'Morbi non arcu nec velit cursus feugiat sit amet sit amet mi. Etiam porttitor ligula id sem molestie, in tempor arcu bibendum.',
         published: true,
-        authorId: userIdMapping.edward!,
       },
       {
         title: 'NoSQL vs SQL: The Definitive Guide for Developers',
         content:
           'Suspendisse a ligula sit amet risus ullamcorper tincidunt. Curabitur tincidunt, sapien id fringilla auctor, risus libero gravida odio, nec volutpat libero orci nec lorem.',
         published: true,
-        authorId: userIdMapping.edward!,
       },
       {
         title: 'Optimizing Queries with Prisma’s Select and Include',
         content:
           'Proin vel diam vel nisi facilisis malesuada. Sed vitae diam nec magna mollis commodo a vitae nunc.',
         published: false,
-        authorId: userIdMapping.edward!,
       },
       {
         title: 'PostgreSQL Optimizations Every Developer Should Know',
         content:
           'Nullam mollis quam sit amet lacus interdum, at suscipit libero pellentesque. Suspendisse in mi vitae magna finibus pretium.',
         published: true,
-        authorId: userIdMapping.edward!,
       },
       {
         title: 'Scaling Applications with Partitioned Tables in PostgreSQL',
         content:
           'Cras vitae tortor in mauris tristique elementum non id ipsum. Nunc vitae pulvinar purus.',
         published: true,
-        authorId: userIdMapping.edward!,
       },
     ],
   })
 
+  // Create images
+  await prisma.images.createMany({
+    data: [
+      {
+        url: '/assets/img/code1.jpeg',
+        postId: 1,
+      },
+      {
+        url: '/assets/img/code2.jpeg',
+        postId: 2,
+      },
+      {
+        url: '/assets/img/code1.jpeg',
+        postId: 3,
+      },
+      {
+        url: '/assets/img/code2.jpeg',
+        postId: 4,
+      },
+      {
+        url: '/assets/img/code3.jpeg',
+        postId: 5,
+      },
+      {
+        url: '/assets/img/code4.jpeg',
+        postId: 6,
+      },
+      {
+        url: '/assets/img/code1.jpeg',
+        postId: 7,
+      },
+      {
+        url: '/assets/img/code2.jpeg',
+        postId: 8,
+      },
+      {
+        url: '/assets/img/code3.jpeg',
+        postId: 9,
+      },
+      {
+        url: '/assets/img/code4.jpeg',
+        postId: 10,
+      },
+    ],
+  })
+
+  await prisma.postAuthor.createMany({
+    data: [
+      {
+        postId: 1,
+        authorId: userIdMapping.test!,
+      },
+      {
+        postId: 2,
+        authorId: userIdMapping.test!,
+      },
+      {
+        postId: 3,
+        authorId: userIdMapping.huseyindol!,
+      },
+      {
+        postId: 4,
+        authorId: userIdMapping.huseyindol!,
+      },
+      {
+        postId: 5,
+        authorId: userIdMapping.huseyindol!,
+      },
+      {
+        postId: 6,
+        authorId: userIdMapping.yagizefedol!,
+      },
+      {
+        postId: 7,
+        authorId: userIdMapping.yagizefedol!,
+      },
+      {
+        postId: 8,
+        authorId: userIdMapping.yagizefedol!,
+      },
+      {
+        postId: 9,
+        authorId: userIdMapping.yagizefedol!,
+      },
+      {
+        postId: 10,
+        authorId: userIdMapping.yagizefedol!,
+      },
+    ],
+  })
   console.log('Seeding completed.')
 }
 
