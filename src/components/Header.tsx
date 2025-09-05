@@ -1,16 +1,17 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Menu, X } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useState } from 'react'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -19,7 +20,15 @@ export default function Header() {
     <header className="bg-background/80 fixed top-0 z-50 w-full border-b backdrop-blur-md">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         <div className="text-gradient text-xl font-bold">
-          <Link href="/">Hüseyin DOL</Link>
+          <Link href="/" className="flex items-center justify-center space-x-2">
+            <Image
+              src="/assets/img/huseyindol.png"
+              alt="Hüseyin DOL"
+              width={52}
+              height={52}
+            />
+            <span className="text-2xl font-bold">Hüseyin DOL</span>
+          </Link>
         </div>
 
         <nav className="hidden items-center space-x-6 md:flex">

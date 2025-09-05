@@ -1,13 +1,14 @@
-import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import './globals.css'
-import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import Header from '@/components/Header'
 import ScrollToTop from '@/components/ScrollToTop'
+import Providers from '@/providers/Providers'
+import { GoogleTagManager } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import Providers from '@/providers/Providers'
+import type { Metadata } from 'next'
 import { ThemeProvider } from 'next-themes'
+import { Geist, Geist_Mono } from 'next/font/google'
+import './globals.css'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -38,11 +39,21 @@ export const metadata: Metadata = {
     title: 'Hüseyin DOL | Portfolio',
     description: "Hüseyin DOL'un kişisel portfolio sitesi",
     siteName: 'Hüseyin DOL Portfolio',
+    images: {
+      url: '/assets/img/huseyindol.png',
+      width: 500,
+      height: 500,
+      alt: 'Hüseyin DOL',
+    },
   },
   twitter: {
     card: 'summary',
     title: 'Hüseyin DOL | Portfolio',
     description: "Hüseyin DOL'un kişisel portfolio sitesi",
+  },
+  icons: {
+    icon: '/assets/img/favicon.ico',
+    apple: '/assets/img/favicon.ico',
   },
 }
 
@@ -53,7 +64,10 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning>
-      <head />
+      <head>
+        <link rel="icon" href="/assets/img/favicon.ico" />
+        <GoogleTagManager gtmId="G-749L34H6ZZ" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
