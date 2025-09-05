@@ -43,11 +43,15 @@ export async function GET(request: NextRequest) {
         updatedAt: true,
         ...(includePosts && {
           posts: {
-            select: {
-              id: true,
-              title: true,
-              content: true,
-              published: true,
+            include: {
+              post: {
+                select: {
+                  id: true,
+                  title: true,
+                  content: true,
+                  published: true,
+                },
+              },
             },
           },
         }),

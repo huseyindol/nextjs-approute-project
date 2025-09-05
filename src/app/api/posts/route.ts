@@ -31,7 +31,11 @@ export async function GET(request: NextRequest) {
     if (authorId) {
       const id = parseInt(authorId)
       if (!isNaN(id)) {
-        where.authorId = id
+        where.authors = {
+          some: {
+            authorId: id,
+          },
+        }
       }
     }
 
@@ -52,14 +56,17 @@ export async function GET(request: NextRequest) {
         title: true,
         content: true,
         published: true,
-        authorId: true,
         ...(includeAuthor && {
-          author: {
+          authors: {
             select: {
-              id: true,
-              email: true,
-              firstName: true,
-              lastName: true,
+              author: {
+                select: {
+                  id: true,
+                  email: true,
+                  firstName: true,
+                  lastName: true,
+                },
+              },
             },
           },
         }),
@@ -132,15 +139,23 @@ export async function POST(request: NextRequest) {
         title,
         content: content || null,
         published: Boolean(published),
-        authorId,
+        authors: {
+          create: {
+            authorId,
+          },
+        },
       },
       include: {
-        author: {
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
+        authors: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
           },
         },
       },
