@@ -80,9 +80,11 @@ export const DeleteSuccessResponse = z.object({
   message: z.string().describe('Success message'),
 })
 
-// Error response
-export const ErrorResponse = z.object({
-  error: z.string().describe('Error message'),
+// Login success response schema
+export const LoginResponse = z.object({
+  token: z.string().describe('Authentication token'),
+  user: UserResponse,
+  error: z.string().optional().describe('Error message'),
 })
 
 // Export types for use in components
@@ -95,4 +97,4 @@ export type UserWithPostsResponseType = z.infer<typeof UserWithPostsResponse>
 export type UsersListResponseType = z.infer<typeof UsersListResponse>
 export type UserSuccessResponseType = z.infer<typeof UserSuccessResponse>
 export type DeleteSuccessResponseType = z.infer<typeof DeleteSuccessResponse>
-export type ErrorResponseType = z.infer<typeof ErrorResponse>
+export type LoginResponseType = z.infer<typeof LoginResponse>
