@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
   // _next/static/chunks ile başlayan path'leri kontrol et
@@ -12,7 +12,6 @@ export function middleware(request: NextRequest) {
 
     return response
   }
-
   return NextResponse.next()
 }
 

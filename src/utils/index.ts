@@ -17,8 +17,6 @@ export const absoluteUrl = (path: string) => {
 export const formatMetadata = (
   page: Page & { pageSEO: PageSEO | null },
 ): Metadata => {
-  console.log('page :>> ', page)
-
   // Eğer pageSEO yoksa, page bilgilerini kullan
   if (!page.pageSEO) {
     return {

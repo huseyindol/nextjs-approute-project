@@ -1,17 +1,29 @@
 import Hero from '@/components/Hero'
 import Skills from '@/components/Skills'
 import Experience from '@/components/experience'
-import { metadataHomePage } from '@/data/mockData'
+import { formatMetadata } from '@/utils'
+import { fetcher } from '@/utils/services/fetcher'
+import { Page, PageSEO } from '@prisma/client'
+import { Metadata } from 'next'
 
-// Force Static Site Generation (SSG) for this route
-export const dynamic = 'force-static'
-// 5 saat (18000 sn) sonra yeniden oluştur — değer statik olmalı
-export const revalidate = 18000
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await fetcher(
+    `${process.env.NEXT_PUBLIC_HOST}/api/page?slug=home`,
+    {
+      next: {
+        revalidate: 300,
+      },
+    },
+  )
+  const formatMeta = formatMetadata(
+    page as unknown as Page & { pageSEO: PageSEO },
+  )
+  return {
+    ...formatMeta,
+  }
+}
 
-// Export metadata from service data
-export const metadata = metadataHomePage
-
-export default function Home() {
+export default async function Home() {
   return (
     <main className="min-h-screen">
       <Hero />
