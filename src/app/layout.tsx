@@ -11,6 +11,7 @@ import './globals.css'
 export const metadata: Metadata = {
   icons: {
     icon: '/assets/img/favicon.ico',
+    shortcut: '/assets/img/favicon.ico',
     apple: '/assets/img/favicon.ico',
   },
 }
