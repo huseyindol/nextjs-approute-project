@@ -3,9 +3,17 @@ import Providers from '@/providers/Providers'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Metadata } from 'next'
 import { ThemeProvider } from 'next-themes'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
+
+export const metadata: Metadata = {
+  icons: {
+    icon: '/assets/img/favicon.ico',
+    apple: '/assets/img/favicon.ico',
+  },
+}
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -24,13 +32,10 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="/assets/img/favicon.ico" />
-        <GoogleTagManager gtmId="G-749L34H6ZZ" />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
+        <GoogleTagManager gtmId="G-749L34H6ZZ" />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

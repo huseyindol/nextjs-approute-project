@@ -15,9 +15,9 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100)
     const published = searchParams.get('published')
-    const authorId = searchParams.get('author_id')
+    const userId = searchParams.get('user_id')
     const search = searchParams.get('search') || ''
-    const includeAuthor = searchParams.get('include_author') === 'true'
+    const includeUser = searchParams.get('include_user') === 'true'
 
     const skip = (page - 1) * limit
 
@@ -28,12 +28,12 @@ export async function GET(request: NextRequest) {
       where.published = published === 'true'
     }
 
-    if (authorId) {
-      const id = parseInt(authorId)
+    if (userId) {
+      const id = parseInt(userId)
       if (!isNaN(id)) {
-        where.authors = {
+        where.users = {
           some: {
-            authorId: id,
+            userId: id,
           },
         }
       }
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       ]
     }
 
-    // Get posts with optional author
+    // Get posts with optional user
     const posts = await prisma.post.findMany({
       where,
       skip,
@@ -56,10 +56,10 @@ export async function GET(request: NextRequest) {
         title: true,
         content: true,
         published: true,
-        ...(includeAuthor && {
-          authors: {
+        ...(includeUser && {
+          users: {
             select: {
-              author: {
+              user: {
                 select: {
                   id: true,
                   email: true,
@@ -102,34 +102,34 @@ export async function GET(request: NextRequest) {
  * @body CreatePostBody
  * @response 201:PostSuccessResponse:Post created successfully
  * @add 400:PostErrorResponse:Invalid input data
- * @add 404:PostErrorResponse:Author not found
+ * @add 404:PostErrorResponse:User not found
  * @openapi
  */
 export async function POST(request: NextRequest) {
   try {
-    const { title, content, published = false, authorId } = await request.json()
+    const { title, content, published = false, userId } = await request.json()
 
     // Input validation
-    if (!title || !authorId) {
+    if (!title || !userId) {
       return NextResponse.json(
         { error: "Başlık ve yazar ID'si gereklidir." },
         { status: 400 },
       )
     }
 
-    if (typeof authorId !== 'number' || authorId <= 0) {
+    if (typeof userId !== 'number' || userId <= 0) {
       return NextResponse.json(
         { error: "Geçerli bir yazar ID'si giriniz." },
         { status: 400 },
       )
     }
 
-    // Check if author exists
-    const author = await prisma.user.findUnique({
-      where: { id: authorId },
+    // Check if user exists
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
     })
 
-    if (!author) {
+    if (!user) {
       return NextResponse.json({ error: 'Yazar bulunamadı.' }, { status: 404 })
     }
 
@@ -139,16 +139,16 @@ export async function POST(request: NextRequest) {
         title,
         content: content || null,
         published: Boolean(published),
-        authors: {
+        users: {
           create: {
-            authorId,
+            userId,
           },
         },
       },
       include: {
-        authors: {
+        users: {
           include: {
-            author: {
+            user: {
               select: {
                 id: true,
                 email: true,

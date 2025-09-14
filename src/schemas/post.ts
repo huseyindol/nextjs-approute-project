@@ -8,12 +8,12 @@ export const PostsQueryParams = z.object({
     .boolean()
     .optional()
     .describe('Filter posts by published status'),
-  author_id: z.number().optional().describe('Filter posts by author ID'),
+  user_id: z.number().optional().describe('Filter posts by user ID'),
   search: z.string().optional().describe('Search posts by title or content'),
-  include_author: z
+  include_user: z
     .boolean()
     .optional()
-    .describe('Include author details in response'),
+    .describe('Include user details in response'),
 })
 
 // Path Parameters for post by ID
@@ -30,7 +30,7 @@ export const CreatePostBody = z.object({
     .optional()
     .default(false)
     .describe('Whether the post is published'),
-  authorId: z.number().describe('Author ID'),
+  userId: z.number().describe('User ID'),
 })
 
 // Request body for updating post
@@ -46,26 +46,26 @@ export const PostResponse = z.object({
   title: z.string().describe('Post title'),
   content: z.string().nullable().describe('Post content'),
   published: z.boolean().describe('Whether the post is published'),
-  authorId: z.number().describe('Author ID'),
+  userId: z.number().describe('User ID'),
 })
 
-// Author schema for included author
-export const AuthorResponse = z.object({
-  id: z.number().describe('Author ID'),
-  email: z.string().email().describe('Author email address'),
-  firstName: z.string().nullable().describe('Author first name'),
-  lastName: z.string().nullable().describe('Author last name'),
+// User schema for included user
+export const UserResponse = z.object({
+  id: z.number().describe('User ID'),
+  email: z.string().email().describe('User email address'),
+  firstName: z.string().nullable().describe('User first name'),
+  lastName: z.string().nullable().describe('User last name'),
 })
 
-// Extended post response with author
-export const PostWithAuthorResponse = PostResponse.extend({
-  author: AuthorResponse.optional().describe('Post author details'),
+// Extended post response with user
+export const PostWithUserResponse = PostResponse.extend({
+  user: UserResponse.optional().describe('Post user details'),
 })
 
 // Posts list response
 export const PostsListResponse = z.object({
   posts: z
-    .array(PostResponse.or(PostWithAuthorResponse))
+    .array(PostResponse.or(PostWithUserResponse))
     .describe('List of posts'),
   pagination: z
     .object({
@@ -99,7 +99,7 @@ export type PostParamsType = z.infer<typeof PostParams>
 export type CreatePostBodyType = z.infer<typeof CreatePostBody>
 export type UpdatePostBodyType = z.infer<typeof UpdatePostBody>
 export type PostResponseType = z.infer<typeof PostResponse>
-export type PostWithAuthorResponseType = z.infer<typeof PostWithAuthorResponse>
+export type PostWithUserResponseType = z.infer<typeof PostWithUserResponse>
 export type PostsListResponseType = z.infer<typeof PostsListResponse>
 export type PostSuccessResponseType = z.infer<typeof PostSuccessResponse>
 export type DeletePostSuccessResponseType = z.infer<

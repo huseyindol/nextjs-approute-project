@@ -221,47 +221,47 @@ async function main() {
     ],
   })
 
-  await prisma.postAuthor.createMany({
+  await prisma.postUser.createMany({
     data: [
       {
         postId: 1,
-        authorId: userIdMapping.test!,
+        userId: userIdMapping.test!,
       },
       {
         postId: 2,
-        authorId: userIdMapping.test!,
+        userId: userIdMapping.test!,
       },
       {
         postId: 3,
-        authorId: userIdMapping.huseyindol!,
+        userId: userIdMapping.huseyindol!,
       },
       {
         postId: 4,
-        authorId: userIdMapping.huseyindol!,
+        userId: userIdMapping.huseyindol!,
       },
       {
         postId: 5,
-        authorId: userIdMapping.huseyindol!,
+        userId: userIdMapping.huseyindol!,
       },
       {
         postId: 6,
-        authorId: userIdMapping.yagizefedol!,
+        userId: userIdMapping.yagizefedol!,
       },
       {
         postId: 7,
-        authorId: userIdMapping.yagizefedol!,
+        userId: userIdMapping.yagizefedol!,
       },
       {
         postId: 8,
-        authorId: userIdMapping.yagizefedol!,
+        userId: userIdMapping.yagizefedol!,
       },
       {
         postId: 9,
-        authorId: userIdMapping.yagizefedol!,
+        userId: userIdMapping.yagizefedol!,
       },
       {
         postId: 10,
-        authorId: userIdMapping.yagizefedol!,
+        userId: userIdMapping.yagizefedol!,
       },
     ],
   })

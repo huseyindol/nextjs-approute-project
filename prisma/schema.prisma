@@ -1,7 +1,7 @@
 // Define database connection via the `NEXT_PUBLIC_PRISMA_DATABASE_URL` env var
 datasource db {
   provider = "postgresql"
-  url      = env("LOCAL_PRISMA_DATABASE_URL")
+  url      = env("PRISMA_DATABASE_URL")
 }
 
 // Define custom output path for generated Prisma Client
@@ -11,34 +11,33 @@ generator client {
 }
 
 model User {
-  id        Int          @id @default(autoincrement())
-  email     String       @unique
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
   password  String
   firstName String?
   lastName  String?
-  posts     PostAuthor[]
-  pages     Page[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @default(now())
+  posts     PostUser[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now())
 }
 
 model Post {
-  id        Int          @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   title     String
   content   String?
-  published Boolean      @default(false)
-  authors   PostAuthor[]
+  published Boolean    @default(false)
+  users     PostUser[]
   images    Images[]
 }
 
-model PostAuthor {
+model PostUser {
   postId    Int
-  authorId  Int
+  userId    Int
   post      Post     @relation(fields: [postId], references: [id])
-  author    User     @relation(fields: [authorId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
 
-  @@id([postId, authorId])
+  @@id([postId, userId])
 }
 
 model Images {
@@ -59,10 +58,9 @@ model Page {
   status      String   @default("draft")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
-  PageSEO     PageSEO? @relation(fields: [pageSEOId], references: [id])
-  pageSEOId   Int?
-  User        User?    @relation(fields: [userId], references: [id])
-  userId      Int?
+  userId      Int? // Son güncelleyen kullanıcı ID'si
+  pageSEO     PageSEO? @relation(fields: [pageSEOId], references: [id])
+  pageSEOId   Int?     @unique // One-to-one için unique foreign key
 }
 
 model PageSEO {
@@ -75,5 +73,5 @@ model PageSEO {
   noFollow    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
-  Page        Page[]
+  page        Page? // Back-reference (opsiyonel)
 }

@@ -3,6 +3,10 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   output: 'standalone',
   /* config options here */
+  experimental: {
+    // Geliştirme ortamında metadata sorunu için
+    optimizeCss: false,
+  },
   images: {
     remotePatterns: [
       {
