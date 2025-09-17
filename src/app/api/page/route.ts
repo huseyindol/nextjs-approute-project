@@ -1,6 +1,15 @@
 import prisma from '@/lib/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 
+/**
+ * Get page by slug
+ * @description Retrieves a specific page by its slug with SEO information
+ * @params PageParams
+ * @response PageWithSEOResponse:Page with SEO data retrieved successfully
+ * @add 400:ErrorResponse:Slug is required
+ * @add 404:ErrorResponse:Page not found
+ * @openapi
+ */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const slug = searchParams.get('slug')
