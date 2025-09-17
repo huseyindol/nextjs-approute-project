@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "dbprisma"."User" (
+CREATE TABLE "public"."User" (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE "dbprisma"."User" (
 );
 
 -- CreateTable
-CREATE TABLE "dbprisma"."Post" (
+CREATE TABLE "public"."Post" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "content" TEXT,
@@ -22,7 +22,7 @@ CREATE TABLE "dbprisma"."Post" (
 );
 
 -- CreateTable
-CREATE TABLE "dbprisma"."PostUser" (
+CREATE TABLE "public"."PostUser" (
     "postId" INTEGER NOT NULL,
     "userId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -31,7 +31,7 @@ CREATE TABLE "dbprisma"."PostUser" (
 );
 
 -- CreateTable
-CREATE TABLE "dbprisma"."Images" (
+CREATE TABLE "public"."Images" (
     "id" SERIAL NOT NULL,
     "url" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -42,7 +42,7 @@ CREATE TABLE "dbprisma"."Images" (
 );
 
 -- CreateTable
-CREATE TABLE "dbprisma"."Page" (
+CREATE TABLE "public"."Page" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE "dbprisma"."Page" (
 );
 
 -- CreateTable
-CREATE TABLE "dbprisma"."PageSEO" (
+CREATE TABLE "public"."PageSEO" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
@@ -73,22 +73,22 @@ CREATE TABLE "dbprisma"."PageSEO" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "dbprisma"."User"("email");
+CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Page_slug_key" ON "dbprisma"."Page"("slug");
+CREATE UNIQUE INDEX "Page_slug_key" ON "public"."Page"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Page_pageSEOId_key" ON "dbprisma"."Page"("pageSEOId");
+CREATE UNIQUE INDEX "Page_pageSEOId_key" ON "public"."Page"("pageSEOId");
 
 -- AddForeignKey
-ALTER TABLE "dbprisma"."PostUser" ADD CONSTRAINT "PostUser_postId_fkey" FOREIGN KEY ("postId") REFERENCES "dbprisma"."Post"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."PostUser" ADD CONSTRAINT "PostUser_postId_fkey" FOREIGN KEY ("postId") REFERENCES "public"."Post"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "dbprisma"."PostUser" ADD CONSTRAINT "PostUser_userId_fkey" FOREIGN KEY ("userId") REFERENCES "dbprisma"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "public"."PostUser" ADD CONSTRAINT "PostUser_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "dbprisma"."Images" ADD CONSTRAINT "Images_postId_fkey" FOREIGN KEY ("postId") REFERENCES "dbprisma"."Post"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "public"."Images" ADD CONSTRAINT "Images_postId_fkey" FOREIGN KEY ("postId") REFERENCES "public"."Post"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "dbprisma"."Page" ADD CONSTRAINT "Page_pageSEOId_fkey" FOREIGN KEY ("pageSEOId") REFERENCES "dbprisma"."PageSEO"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "public"."Page" ADD CONSTRAINT "Page_pageSEOId_fkey" FOREIGN KEY ("pageSEOId") REFERENCES "public"."PageSEO"("id") ON DELETE SET NULL ON UPDATE CASCADE;

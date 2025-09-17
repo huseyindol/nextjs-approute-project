@@ -6,4 +6,10 @@ export default defineConfig({
   migrations: {
     seed: 'tsx prisma/seed.ts',
   },
+  // Ensure environment variables are available
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
 })
