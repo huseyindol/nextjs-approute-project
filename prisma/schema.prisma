@@ -1,7 +1,7 @@
 // Define database connection via the `NEXT_PUBLIC_PRISMA_DATABASE_URL` env var
 datasource db {
   provider = "postgresql"
-  url      = env("PRISMA_DATABASE_URL")
+  url      = env("LOCAL_PRISMA_DATABASE_URL")
 }
 
 // Define custom output path for generated Prisma Client
