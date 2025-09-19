@@ -50,6 +50,11 @@ export async function GET(request: NextRequest) {
                   title: true,
                   content: true,
                   published: true,
+                  users: {
+                    select: {
+                      role: true,
+                    },
+                  },
                 },
               },
             },

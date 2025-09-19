@@ -10,6 +10,12 @@ generator client {
   // Use default output (node_modules/.prisma/client) to avoid absolute paths
 }
 
+enum PostRole {
+  AUTHOR
+  EDITOR  
+  ADMIN
+  CONTRIBUTOR
+}
 model User {
   id        Int        @id @default(autoincrement())
   email     String     @unique
@@ -33,6 +39,7 @@ model Post {
 model PostUser {
   postId    Int
   userId    Int
+  role      PostRole   @default(AUTHOR) // AUTHOR, EDITOR, ADMIN, CONTRIBUTOR
   post      Post     @relation(fields: [postId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())

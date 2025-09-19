@@ -3,7 +3,6 @@ import 'swagger-ui-react/swagger-ui.css'
 
 export default async function IndexPage() {
   const spec = await getApiDocs()
-  console.log('Swagger spec loaded:', spec)
   return (
     <section className="container mx-auto p-4">
       <h1 className="mb-4 text-2xl font-bold">API Documentation</h1>

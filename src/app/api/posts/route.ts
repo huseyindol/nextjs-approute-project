@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import { PostRole, Prisma } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 /**
@@ -67,6 +67,7 @@ export async function GET(request: NextRequest) {
                   lastName: true,
                 },
               },
+              role: true,
             },
           },
         }),
@@ -107,7 +108,13 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const { title, content, published = false, userId } = await request.json()
+    const {
+      title,
+      content,
+      published = false,
+      userId,
+      role = PostRole.AUTHOR,
+    } = await request.json()
 
     // Input validation
     if (!title || !userId) {
@@ -142,6 +149,7 @@ export async function POST(request: NextRequest) {
         users: {
           create: {
             userId,
+            role,
           },
         },
       },
