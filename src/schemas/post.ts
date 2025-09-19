@@ -1,5 +1,10 @@
 import { z } from 'zod'
 
+// PostRole enum matching Prisma schema
+export const PostRole = z
+  .enum(['AUTHOR', 'EDITOR', 'ADMIN', 'CONTRIBUTOR'])
+  .describe('Post role - AUTHOR, EDITOR, ADMIN, or CONTRIBUTOR')
+
 // Query Parameters for GET /api/posts
 export const PostsQueryParams = z.object({
   page: z.number().optional().describe('Page number for pagination'),
@@ -9,6 +14,10 @@ export const PostsQueryParams = z.object({
     .optional()
     .describe('Filter posts by published status'),
   user_id: z.number().optional().describe('Filter posts by user ID'),
+  role: z
+    .enum(['AUTHOR', 'EDITOR', 'ADMIN', 'CONTRIBUTOR'])
+    .optional()
+    .describe('Filter posts by role'),
   search: z.string().optional().describe('Search posts by title or content'),
   include_user: z
     .boolean()
@@ -31,6 +40,10 @@ export const CreatePostBody = z.object({
     .default(false)
     .describe('Whether the post is published'),
   userId: z.number().describe('User ID'),
+  role: z
+    .enum(['AUTHOR', 'EDITOR', 'ADMIN', 'CONTRIBUTOR'])
+    .optional()
+    .describe('Post role'),
 })
 
 // Request body for updating post
@@ -47,6 +60,10 @@ export const PostResponse = z.object({
   content: z.string().nullable().describe('Post content'),
   published: z.boolean().describe('Whether the post is published'),
   userId: z.number().describe('User ID'),
+  role: z
+    .enum(['AUTHOR', 'EDITOR', 'ADMIN', 'CONTRIBUTOR'])
+    .optional()
+    .describe('Post role'),
 })
 
 // User schema for included user
@@ -60,6 +77,10 @@ export const UserResponse = z.object({
 // Extended post response with user
 export const PostWithUserResponse = PostResponse.extend({
   user: UserResponse.optional().describe('Post user details'),
+  role: z
+    .enum(['AUTHOR', 'EDITOR', 'ADMIN', 'CONTRIBUTOR'])
+    .optional()
+    .describe('Post role'),
 })
 
 // Posts list response
@@ -94,6 +115,7 @@ export const PostErrorResponse = z.object({
 })
 
 // Export types for use in components
+export type PostRoleType = z.infer<typeof PostRole>
 export type PostsQueryParamsType = z.infer<typeof PostsQueryParams>
 export type PostParamsType = z.infer<typeof PostParams>
 export type CreatePostBodyType = z.infer<typeof CreatePostBody>
