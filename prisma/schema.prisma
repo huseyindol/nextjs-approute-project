@@ -9,42 +9,12 @@ generator client {
   provider = "prisma-client-js"
   // Use default output (node_modules/.prisma/client) to avoid absolute paths
 }
-
+// Enum definitions for the application
 enum PostRole {
   AUTHOR
-  EDITOR  
+  EDITOR
   ADMIN
   CONTRIBUTOR
-}
-model User {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique
-  password  String
-  firstName String?
-  lastName  String?
-  posts     PostUser[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @default(now())
-}
-
-model Post {
-  id        Int        @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean    @default(false)
-  users     PostUser[]
-  images    Images[]
-}
-
-model PostUser {
-  postId    Int
-  userId    Int
-  role      PostRole   @default(AUTHOR) // AUTHOR, EDITOR, ADMIN, CONTRIBUTOR
-  post      Post     @relation(fields: [postId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-
-  @@id([postId, userId])
 }
 
 model Images {
@@ -52,10 +22,11 @@ model Images {
   url       String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  Post      Post?    @relation(fields: [postId], references: [id])
   postId    Int?
-}
 
+  post Post? @relation(fields: [postId], references: [id])
+}
+// CMS (Content Management System) models - Pages and SEO
 model Page {
   id          Int      @id @default(autoincrement())
   name        String
@@ -66,8 +37,9 @@ model Page {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
   userId      Int? // Son güncelleyen kullanıcı ID'si
-  pageSEO     PageSEO? @relation(fields: [pageSEOId], references: [id])
   pageSEOId   Int?     @unique // One-to-one için unique foreign key
+
+  pageSEO PageSEO? @relation(fields: [pageSEOId], references: [id])
 }
 
 model PageSEO {
@@ -81,4 +53,36 @@ model PageSEO {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now())
   page        Page? // Back-reference (opsiyonel)
+}
+// Content management models - Posts, Images, and User-Post relationships
+model Post {
+  id        Int        @id @default(autoincrement())
+  title     String
+  content   String?
+  published Boolean    @default(false)
+  users     PostUser[]
+  images    Images[]
+}
+
+model PostUser {
+  postId    Int
+  userId    Int
+  role      PostRole @default(AUTHOR) // AUTHOR, EDITOR, ADMIN, CONTRIBUTOR
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([postId, userId])
+}
+// User management models
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  password  String
+  firstName String?
+  lastName  String?
+  posts     PostUser[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now())
 }

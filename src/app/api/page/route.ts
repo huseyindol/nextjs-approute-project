@@ -29,3 +29,23 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(page)
 }
+
+/**
+ * Create a new page
+ * @description Creates a new page with the provided information
+ * @body CreatePageBody
+ * @response PageWithSEOResponse:Page with SEO data retrieved successfully
+ * @openapi
+ */
+export async function POST(request: NextRequest) {
+  const { slug, name, description, content, userId } = await request.json()
+
+  const page = await prisma.page.create({
+    data: { slug, name, description, content, userId },
+    include: {
+      pageSEO: true,
+    },
+  })
+
+  return NextResponse.json(page)
+}

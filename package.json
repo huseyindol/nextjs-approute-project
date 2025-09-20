@@ -15,6 +15,7 @@
     "format:check": "prettier --check .",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:generate": "prisma generate --no-engine",
+    "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate dev --name init",
     "prisma:seed": "prisma db seed",
     "prisma:studio": "prisma studio",
