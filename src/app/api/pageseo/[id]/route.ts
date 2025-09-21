@@ -87,9 +87,7 @@ export async function GET(
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
-): Promise<
-  NextResponse<APIResponseSuccessType<PageSEO> | APIResponseErrorType>
-> {
+) {
   try {
     // 1. ID'yi al ve kontrol et
     const { id: idStr } = await params

@@ -85,8 +85,6 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  console.log('User PUT request :>> ', await request.json())
-  return false
   try {
     const { id: idStr } = await params
     const id = parseInt(idStr)
