@@ -9,7 +9,6 @@ import { NextRequest, NextResponse } from 'next/server'
  * Get a page SEO
  * @description Get a page SEO with the provided information
  * @pathParams PageSEOParams
- * @response PageSEOResponse:Page SEO get successfully
  * @openapi
  */
 export async function GET(
@@ -24,7 +23,7 @@ export async function GET(
     const id = parseInt(idStr)
 
     if (isNaN(id)) {
-      return NextResponse.json<APIResponseErrorType>(
+      return NextResponse.json(
         {
           success: false,
           error: 'Geçerli bir sayısal ID giriniz.',
@@ -41,7 +40,7 @@ export async function GET(
     })
 
     if (!pageseo) {
-      return NextResponse.json<APIResponseErrorType>(
+      return NextResponse.json(
         {
           success: false,
           error: 'PageSEO bulunamadı.',
@@ -53,7 +52,7 @@ export async function GET(
     }
 
     // 3. Success response döndür
-    return NextResponse.json<APIResponseSuccessType<PageSEO>>(
+    return NextResponse.json(
       {
         success: true,
         data: pageseo,
@@ -64,7 +63,7 @@ export async function GET(
     )
   } catch (error) {
     console.error('PageSEO GET error:', error)
-    return NextResponse.json<APIResponseErrorType>(
+    return NextResponse.json(
       {
         success: false,
         error: 'PageSEO alınırken hata oluştu.',
@@ -81,20 +80,21 @@ export async function GET(
  * @description Updates a page SEO with the provided information
  * @pathParams PageSEOParams
  * @body UpdatePageSEOBody
- * @response PageSEOResponse:Page SEO updated successfully
  * @openapi
  */
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
-) {
+): Promise<
+  NextResponse<APIResponseSuccessType<PageSEO> | APIResponseErrorType>
+> {
   try {
     // 1. ID'yi al ve kontrol et
     const { id: idStr } = await params
     const id = parseInt(idStr)
 
     if (isNaN(id)) {
-      return NextResponse.json<APIResponseErrorType>(
+      return NextResponse.json(
         {
           success: false,
           error: 'Geçerli bir sayısal ID giriniz.',
@@ -110,7 +110,7 @@ export async function PUT(
     try {
       requestBody = await request.json()
     } catch (parseError) {
-      return NextResponse.json<APIResponseErrorType>(
+      return NextResponse.json(
         {
           success: false,
           error: 'Geçersiz JSON formatı.',
@@ -134,7 +134,7 @@ export async function PUT(
     })
 
     if (!existingPageSEO) {
-      return NextResponse.json<APIResponseErrorType>(
+      return NextResponse.json(
         {
           success: false,
           error: 'PageSEO bulunamadı.',
@@ -160,7 +160,7 @@ export async function PUT(
     })
 
     // 5. Success response döndür
-    return NextResponse.json<APIResponseSuccessType<PageSEO>>(
+    return NextResponse.json(
       {
         success: true,
         data: updatedPageSEO,
@@ -172,7 +172,7 @@ export async function PUT(
   } catch (error) {
     console.error('PageSEO PUT error:', error)
 
-    return NextResponse.json<APIResponseErrorType>(
+    return NextResponse.json(
       {
         success: false,
         error: 'Sunucu hatası.',

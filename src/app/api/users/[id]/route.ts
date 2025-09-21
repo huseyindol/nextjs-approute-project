@@ -1,4 +1,6 @@
 import prisma from '@/lib/prisma'
+import { APIResponseErrorType, APIResponseSuccessType } from '@/types/APITypes'
+import { User } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 /**
@@ -13,14 +15,23 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
-) {
+): Promise<
+  NextResponse<
+    APIResponseSuccessType<Omit<User, 'password'>> | APIResponseErrorType
+  >
+> {
   try {
     const { id: idStr } = await params
     const id = parseInt(idStr)
 
     if (isNaN(id)) {
       return NextResponse.json(
-        { error: "Geçerli bir kullanıcı ID'si giriniz." },
+        {
+          success: false,
+          error: "Geçerli bir kullanıcı ID'si giriniz.",
+          message: "Geçerli bir kullanıcı ID'si giriniz.",
+          status: 400,
+        },
         { status: 400 },
       )
     }
@@ -56,16 +67,34 @@ export async function GET(
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Kullanıcı bulunamadı.' },
+        {
+          success: false,
+          error: 'Kullanıcı bulunamadı.',
+          message: 'Kullanıcı bulunamadı.',
+          status: 404,
+        },
         { status: 404 },
       )
     }
 
-    return NextResponse.json(user)
+    return NextResponse.json(
+      {
+        success: true,
+        data: user,
+        message: 'Kullanıcı başarıyla alındı.',
+        status: 200,
+      },
+      { status: 200 },
+    )
   } catch (error) {
     console.error('User GET by ID error:', error)
     return NextResponse.json(
-      { error: 'Kullanıcı alınırken hata oluştu.' },
+      {
+        success: false,
+        error: 'Kullanıcı alınırken hata oluştu.',
+        message: 'Kullanıcı alınırken hata oluştu.',
+        status: 500,
+      },
       { status: 500 },
     )
   }
@@ -84,14 +113,23 @@ export async function GET(
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
-) {
+): Promise<
+  NextResponse<
+    APIResponseSuccessType<Omit<User, 'password'>> | APIResponseErrorType
+  >
+> {
   try {
     const { id: idStr } = await params
     const id = parseInt(idStr)
 
     if (isNaN(id)) {
       return NextResponse.json(
-        { error: "Geçerli bir kullanıcı ID'si giriniz." },
+        {
+          success: false,
+          error: "Geçerli bir kullanıcı ID'si giriniz.",
+          message: "Geçerli bir kullanıcı ID'si giriniz.",
+          status: 400,
+        },
         { status: 400 },
       )
     }
@@ -105,7 +143,12 @@ export async function PUT(
 
     if (!existingUser) {
       return NextResponse.json(
-        { error: 'Kullanıcı bulunamadı.' },
+        {
+          success: false,
+          error: 'Kullanıcı bulunamadı.',
+          message: 'Kullanıcı bulunamadı.',
+          status: 404,
+        },
         { status: 404 },
       )
     }
@@ -115,7 +158,12 @@ export async function PUT(
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       if (!emailRegex.test(email)) {
         return NextResponse.json(
-          { error: 'Geçerli bir e-posta adresi giriniz.' },
+          {
+            success: false,
+            error: 'Geçerli bir e-posta adresi giriniz.',
+            message: 'Geçerli bir e-posta adresi giriniz.',
+            status: 400,
+          },
           { status: 400 },
         )
       }
@@ -130,7 +178,12 @@ export async function PUT(
 
       if (emailExists) {
         return NextResponse.json(
-          { error: 'Bu e-posta adresi zaten kullanılmakta.' },
+          {
+            success: false,
+            error: 'Bu e-posta adresi zaten kullanılmakta.',
+            message: 'Bu e-posta adresi zaten kullanılmakta.',
+            status: 409,
+          },
           { status: 409 },
         )
       }
@@ -154,14 +207,24 @@ export async function PUT(
       },
     })
 
-    return NextResponse.json({
-      user,
-      message: 'Kullanıcı başarıyla güncellendi.',
-    })
+    return NextResponse.json(
+      {
+        success: true,
+        data: user,
+        message: 'Kullanıcı başarıyla güncellendi.',
+        status: 200,
+      },
+      { status: 200 },
+    )
   } catch (error) {
     console.error('User PUT error:', error)
     return NextResponse.json(
-      { error: 'Kullanıcı güncellenirken hata oluştu.' },
+      {
+        success: false,
+        error: 'Kullanıcı güncellenirken hata oluştu.',
+        message: 'Kullanıcı güncellenirken hata oluştu.',
+        status: 500,
+      },
       { status: 500 },
     )
   }
@@ -178,14 +241,23 @@ export async function PUT(
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
-) {
+): Promise<
+  NextResponse<
+    APIResponseSuccessType<Omit<User, 'password'>> | APIResponseErrorType
+  >
+> {
   try {
     const { id: idStr } = await params
     const id = parseInt(idStr)
 
     if (isNaN(id)) {
       return NextResponse.json(
-        { error: "Geçerli bir kullanıcı ID'si giriniz." },
+        {
+          success: false,
+          error: "Geçerli bir kullanıcı ID'si giriniz.",
+          message: "Geçerli bir kullanıcı ID'si giriniz.",
+          status: 400,
+        },
         { status: 400 },
       )
     }
@@ -197,7 +269,12 @@ export async function DELETE(
 
     if (!existingUser) {
       return NextResponse.json(
-        { error: 'Kullanıcı bulunamadı.' },
+        {
+          success: false,
+          error: 'Kullanıcı bulunamadı.',
+          message: 'Kullanıcı bulunamadı.',
+          status: 404,
+        },
         { status: 404 },
       )
     }
@@ -207,13 +284,24 @@ export async function DELETE(
       where: { id },
     })
 
-    return NextResponse.json({
-      message: 'Kullanıcı başarıyla silindi.',
-    })
+    return NextResponse.json(
+      {
+        success: true,
+        data: existingUser,
+        message: 'Kullanıcı başarıyla silindi.',
+        status: 200,
+      },
+      { status: 200 },
+    )
   } catch (error) {
     console.error('User DELETE error:', error)
     return NextResponse.json(
-      { error: 'Kullanıcı silinirken hata oluştu.' },
+      {
+        success: false,
+        error: 'Kullanıcı silinirken hata oluştu.',
+        message: 'Kullanıcı silinirken hata oluştu.',
+        status: 500,
+      },
       { status: 500 },
     )
   }

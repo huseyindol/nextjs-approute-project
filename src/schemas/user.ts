@@ -17,6 +17,12 @@ export const UserParams = z.object({
 })
 
 // Request body for creating user
+export const LoginBody = z.object({
+  email: z.string().email().describe('User email address'),
+  password: z.string().min(6).describe('User password'),
+})
+
+// Request body for creating user
 export const CreateUserBody = z.object({
   email: z.string().email().describe('User email address'),
   password: z.string().min(6).describe('User password'),

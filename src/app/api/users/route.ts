@@ -1,5 +1,26 @@
 import prisma from '@/lib/prisma'
+import { PostRole, User } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  APIResponseErrorType,
+  APIResponseSuccessType,
+} from '../../../types/APITypes'
+
+// Type definition for users with posts response
+type UserWithPosts = {
+  id: number
+  email: string
+  firstName: string | null
+  lastName: string | null
+  createdAt: Date
+  updatedAt: Date
+  posts?: {
+    postId: number
+    userId: number
+    role: PostRole
+    createdAt: Date
+  }[]
+}
 
 /**
  * Get all users with pagination and filtering
@@ -8,15 +29,15 @@ import { NextRequest, NextResponse } from 'next/server'
  * @response UsersListResponse
  * @openapi
  */
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+): Promise<
+  NextResponse<APIResponseSuccessType<UserWithPosts[]> | APIResponseErrorType>
+> {
   try {
     const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page') || '1')
-    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100)
     const includePosts = searchParams.get('include_posts') === 'true'
     const search = searchParams.get('search') || ''
-
-    const skip = (page - 1) * limit
 
     // Build where clause for search
     const where = search
@@ -32,8 +53,6 @@ export async function GET(request: NextRequest) {
     // Get users with optional posts
     const users = await prisma.user.findMany({
       where,
-      skip,
-      take: limit,
       select: {
         id: true,
         email: true,
@@ -64,23 +83,24 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     })
 
-    // Get total count for pagination
-    const total = await prisma.user.count({ where })
-    const pages = Math.ceil(total / limit)
-
-    return NextResponse.json({
-      users,
-      pagination: {
-        page,
-        limit,
-        total,
-        pages,
+    return NextResponse.json(
+      {
+        success: true,
+        data: users,
+        message: 'Kullanıcılar başarıyla alındı.',
+        status: 200,
       },
-    })
+      { status: 200 },
+    )
   } catch (error) {
     console.error('Users GET error:', error)
     return NextResponse.json(
-      { error: 'Kullanıcılar alınırken hata oluştu.' },
+      {
+        success: false,
+        error: 'Kullanıcılar alınırken hata oluştu.',
+        message: 'Kullanıcılar alınırken hata oluştu.',
+        status: 500,
+      },
       { status: 500 },
     )
   }
@@ -94,21 +114,37 @@ export async function GET(request: NextRequest) {
  * @add 409:ErrorResponse:Email already exists
  * @openapi
  */
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+): Promise<
+  NextResponse<
+    APIResponseSuccessType<Omit<User, 'password'>> | APIResponseErrorType
+  >
+> {
   try {
     const { email, password, firstName, lastName } = await request.json()
 
     // Input validation
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'E-posta ve şifre gereklidir.' },
+        {
+          success: false,
+          error: 'E-posta ve şifre gereklidir.',
+          message: 'E-posta ve şifre gereklidir.',
+          status: 400,
+        },
         { status: 400 },
       )
     }
 
     if (password.length < 6) {
       return NextResponse.json(
-        { error: 'Şifre en az 6 karakter olmalıdır.' },
+        {
+          success: false,
+          error: 'Şifre en az 6 karakter olmalıdır.',
+          message: 'Şifre en az 6 karakter olmalıdır.',
+          status: 400,
+        },
         { status: 400 },
       )
     }
@@ -117,7 +153,12 @@ export async function POST(request: NextRequest) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'Geçerli bir e-posta adresi giriniz.' },
+        {
+          success: false,
+          error: 'Geçerli bir e-posta adresi giriniz.',
+          message: 'Geçerli bir e-posta adresi giriniz.',
+          status: 400,
+        },
         { status: 400 },
       )
     }
@@ -129,7 +170,12 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Bu e-posta adresi zaten kullanılmakta.' },
+        {
+          success: false,
+          error: 'Bu e-posta adresi zaten kullanılmakta.',
+          message: 'Bu e-posta adresi zaten kullanılmakta.',
+          status: 409,
+        },
         { status: 409 },
       )
     }
@@ -154,15 +200,22 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        user,
+        success: true,
+        data: user,
         message: 'Kullanıcı başarıyla oluşturuldu.',
+        status: 201,
       },
       { status: 201 },
     )
   } catch (error) {
     console.error('User POST error:', error)
     return NextResponse.json(
-      { error: 'Kullanıcı oluşturulurken hata oluştu.' },
+      {
+        success: false,
+        error: 'Kullanıcı oluşturulurken hata oluştu.',
+        message: 'Kullanıcı oluşturulurken hata oluştu.',
+        status: 500,
+      },
       { status: 500 },
     )
   }

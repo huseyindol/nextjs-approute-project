@@ -1,22 +1,35 @@
 import prisma from '@/lib/prisma'
+import { APIResponseErrorType, APIResponseSuccessType } from '@/types/APITypes'
+import { User } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 
 /**
  * Admin login endpoint
  * @description Authenticates admin user credentials
  * @body LoginBody
- * @response 200:LoginSuccessResponse:Login successful
- * @add 401:ErrorResponse:Invalid credentials
+ * @response LoginSuccessResponse:User successful
  * @openapi
  */
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+): Promise<
+  NextResponse<
+    APIResponseSuccessType<Omit<User, 'password'>> | APIResponseErrorType
+  >
+> {
   try {
     const { email, password } = await request.json()
+    console.log(email, password)
 
     // Input validation
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'E-posta ve şifre gereklidir.' },
+        {
+          success: false,
+          error: 'E-posta ve şifre gereklidir.',
+          message: 'E-posta ve şifre gereklidir.',
+          status: 400,
+        },
         { status: 400 },
       )
     }
@@ -24,46 +37,51 @@ export async function POST(request: NextRequest) {
     // Find user by email
     const user = await prisma.user.findUnique({
       where: { email },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        password: true,
-      },
     })
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Geçersiz e-posta veya şifre.' },
+        {
+          success: false,
+          error: 'Geçersiz e-posta veya şifre.',
+          message: 'Geçersiz e-posta veya şifre.',
+          status: 400,
+        },
         { status: 400 },
       )
     }
 
-    // TODO: In production, use proper password hashing comparison
     // For now, direct comparison (replace with bcrypt.compare in production)
     if (user.password !== password) {
       return NextResponse.json(
-        { error: 'Geçersiz e-posta veya şifre.' },
+        {
+          success: false,
+          error: 'Geçersiz e-posta veya şifre.',
+          message: 'Geçersiz e-posta veya şifre.',
+          status: 400,
+        },
         { status: 400 },
       )
     }
 
-    // Create session token (simple approach for demo)
-    const sessionToken = `session_${user.id}_${Date.now()}`
-
-    // Return user data without password
-    const { password: _, ...userWithoutPassword } = user
-
-    return NextResponse.json({
-      user: userWithoutPassword,
-      token: sessionToken,
-      message: 'Giriş başarılı.',
-    })
+    return NextResponse.json(
+      {
+        success: true,
+        data: user,
+        message: 'Giriş başarılı.',
+        status: 200,
+      },
+      { status: 200 },
+    )
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
-      { error: 'Giriş yapılırken hata oluştu.' },
+      {
+        success: false,
+        error: 'Giriş yapılırken hata oluştu.',
+        message: 'Giriş yapılırken hata oluştu.',
+        status: 500,
+      },
       { status: 500 },
     )
   }
