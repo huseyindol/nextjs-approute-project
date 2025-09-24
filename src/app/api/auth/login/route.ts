@@ -6,8 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 /**
  * Admin login endpoint
  * @description Authenticates admin user credentials
- * @body LoginBody
- * @response LoginSuccessResponse:User successful
+ * @body LoginSchema
  * @openapi
  */
 export async function POST(

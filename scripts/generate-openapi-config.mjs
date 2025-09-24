@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
+import dotenv from 'dotenv'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import dotenv from 'dotenv'
 
 // Get __dirname equivalent for ES modules
 const __filename = fileURLToPath(import.meta.url)

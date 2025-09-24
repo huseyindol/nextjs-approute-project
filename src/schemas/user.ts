@@ -17,9 +17,15 @@ export const UserParams = z.object({
 })
 
 // Request body for creating user
-export const LoginBody = z.object({
-  email: z.string().email().describe('User email address'),
-  password: z.string().min(6).describe('User password'),
+export const LoginSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: 'E-posta adresi gereklidir.' })
+    .email({ message: 'Lütfen geçerli bir e-posta adresi giriniz.' }),
+  password: z
+    .string()
+    .min(1, { message: 'Şifre gereklidir.' })
+    .min(6, { message: 'Şifre en az 6 karakter olmalıdır.' }),
 })
 
 // Request body for creating user

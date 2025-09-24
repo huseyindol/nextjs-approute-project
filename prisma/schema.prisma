@@ -9,6 +9,7 @@ generator client {
   provider = "prisma-client-js"
   // Use default output (node_modules/.prisma/client) to avoid absolute paths
 }
+
 // Enum definitions for the application
 enum PostRole {
   AUTHOR
@@ -26,6 +27,7 @@ model Images {
 
   post Post? @relation(fields: [postId], references: [id])
 }
+
 // CMS (Content Management System) models - Pages and SEO
 model Page {
   id          Int      @id @default(autoincrement())
@@ -54,6 +56,7 @@ model PageSEO {
   updatedAt   DateTime @default(now())
   page        Page? // Back-reference (opsiyonel)
 }
+
 // Content management models - Posts, Images, and User-Post relationships
 model Post {
   id        Int        @id @default(autoincrement())
@@ -75,6 +78,7 @@ model PostUser {
 
   @@id([postId, userId])
 }
+
 // User management models
 model User {
   id        Int        @id @default(autoincrement())

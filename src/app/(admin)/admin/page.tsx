@@ -11,63 +11,40 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { LoginResponseType } from '@/schemas/user'
-import { validateForm } from '@/utils/form/validate'
+import { LoginResponseType, LoginSchema } from '@/schemas/user'
 import { fetcher } from '@/utils/services/fetcher'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertCircle, Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 // Zod validation schema
-const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: 'E-posta adresi gereklidir.' })
-    .email({ message: 'Lütfen geçerli bir e-posta adresi giriniz.' }),
-  password: z
-    .string()
-    .min(1, { message: 'Şifre gereklidir.' })
-    .min(6, { message: 'Şifre en az 6 karakter olmalıdır.' }),
-})
-
-type LoginFormData = z.infer<typeof loginSchema>
+type LoginFormData = z.infer<typeof LoginSchema>
 
 const AdminLoginPage = () => {
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: '',
-  })
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [errors, setErrors] = useState<Partial<LoginFormData>>({})
   const [generalError, setGeneralError] = useState('')
   const router = useRouter()
 
-  // Handle form field changes
-  const handleChange =
-    (field: keyof LoginFormData) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value
-      setFormData(prev => ({ ...prev, [field]: value }))
+  // React Hook Form setup with Zod resolver
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    clearErrors,
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
 
-      // Clear field-specific error when user starts typing
-      if (errors[field]) {
-        setErrors(prev => ({ ...prev, [field]: undefined }))
-      }
-    }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+  const onSubmit = async (formData: LoginFormData) => {
     setGeneralError('')
-    setErrors({})
-
-    // Validate form with Zod
-    if (!validateForm(loginSchema, formData, setErrors)) {
-      setIsLoading(false)
-      return
-    }
+    clearErrors()
 
     try {
       const response = await fetcher<LoginResponseType>('/api/auth/login', {
@@ -93,8 +70,6 @@ const AdminLoginPage = () => {
       setGeneralError(
         'Giriş yapılırken bir hata oluştu. Lütfen tekrar deneyiniz.',
       )
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -121,7 +96,7 @@ const AdminLoginPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {generalError && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
@@ -138,15 +113,16 @@ const AdminLoginPage = () => {
                     id="email"
                     type="email"
                     placeholder="admin@example.com"
-                    value={formData.email}
-                    onChange={handleChange('email')}
+                    {...register('email')}
                     className="pl-10"
-                    disabled={isLoading}
+                    disabled={isSubmitting}
                     autoComplete="email"
                   />
                 </div>
                 {errors.email && (
-                  <p className="text-destructive text-sm">{errors.email}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
@@ -159,10 +135,9 @@ const AdminLoginPage = () => {
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Şifrenizi giriniz"
-                    value={formData.password}
-                    onChange={handleChange('password')}
+                    {...register('password')}
                     className="pr-10 pl-10"
-                    disabled={isLoading}
+                    disabled={isSubmitting}
                     autoComplete="current-password"
                   />
                   <Button
@@ -171,7 +146,7 @@ const AdminLoginPage = () => {
                     size="icon"
                     className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
-                    disabled={isLoading}
+                    disabled={isSubmitting}
                   >
                     {showPassword ? (
                       <EyeOff className="text-muted-foreground h-4 w-4" />
@@ -181,13 +156,15 @@ const AdminLoginPage = () => {
                   </Button>
                 </div>
                 {errors.password && (
-                  <p className="text-destructive text-sm">{errors.password}</p>
+                  <p className="text-destructive text-sm">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
 
               {/* Submit Button */}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? (
                   <>
                     <div className="border-background mr-2 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
                     Giriş Yapılıyor...

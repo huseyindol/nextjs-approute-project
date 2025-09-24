@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev --turbopack",
-    "build": "bun run prisma:generate && bun run api && next build",
+    "build": "bun run prisma:deploy && bun run prisma:generate && bun run api && next build",
+    "build:debug": "bun run prisma:deploy && bun run prisma:generate && bun run api && next build --debug",
     "api": "node scripts/generate-openapi-config.mjs && npx next-openapi-gen generate",
     "prebuild:docs": "node scripts/generate-openapi-config.mjs",
     "start": "next start",
@@ -30,6 +31,7 @@
     ]
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@next/third-parties": "^15.5.2",
     "@prisma/client": "^6.13.0",
     "@prisma/extension-accelerate": "^2.0.2",
@@ -56,6 +58,7 @@
     "prisma-docs-generator": "^0.8.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.63.0",
     "react-icons": "^5.5.0",
     "resend": "^4.7.0",
     "swagger-ui-react": "^5.29.0",
