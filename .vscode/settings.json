@@ -72,7 +72,4 @@
   // Git ayarları
   "git.autofetch": true,
   "git.confirmSync": false,
-  "[prisma]": {
-    "editor.defaultFormatter": "Prisma.prisma-insider"
-  }
 }

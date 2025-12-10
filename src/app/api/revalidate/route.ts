@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     const actions: string[] = []
 
     if (body.tag) {
-      revalidateTag(body.tag)
+      revalidateTag(body.tag, { expire: 60 })
       actions.push(`tag:${body.tag}`)
     }
 
@@ -100,7 +100,7 @@ export async function GET(request: Request) {
 
   const actions: string[] = []
   if (tag) {
-    revalidateTag(tag)
+    revalidateTag(tag, { expire: 60 })
     actions.push(`tag:${tag}`)
   }
   if (path) {
