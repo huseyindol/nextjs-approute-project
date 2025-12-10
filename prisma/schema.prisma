@@ -87,6 +87,22 @@ model User {
   firstName String?
   lastName  String?
   posts     PostUser[]
+  tokens    Token[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @default(now())
+}
+
+model Token {
+  id                    Int      @id @default(autoincrement())
+  accessToken           String
+  refreshToken          String
+  accessTokenExpiresAt  DateTime
+  refreshTokenExpiresAt DateTime
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @default(now())
+  userId                Int
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([accessToken, refreshToken, userId])
 }
