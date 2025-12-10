@@ -55,9 +55,30 @@ export async function POST(request: NextRequest) {
       <ContactEmailTemplate name={name} email={email} message={message} />,
     )
 
+    // Determine sender email
+    let senderEmail =
+      process.env.NEXT_PUBLIC_RESEND_FROM_EMAIL || 'noreply@huseyindol.site'
+
+    // Resend doesn't allow sending from public domains like gmail.com without verification
+    // Fallback to testing domain if a public domain is detected or if we are in development
+    const publicDomains = [
+      'gmail.com',
+      'yahoo.com',
+      'hotmail.com',
+      'outlook.com',
+    ]
+    const domain = senderEmail.split('@')[1]
+
+    if (publicDomains.includes(domain) || !domain) {
+      console.warn(
+        `⚠️ Warning: Cannot send from public domain ${domain}. Falling back to onboarding@resend.dev`,
+      )
+      senderEmail = 'onboarding@resend.dev'
+    }
+
     // Send email using Resend
     const { error } = await resend.emails.send({
-      from: `Website <${process.env.NEXT_PUBLIC_RESEND_FROM_EMAIL || 'noreply@huseyindol.site'}>`, // Doğrulanmış domain kullan
+      from: `Website <${senderEmail}>`,
       to: [process.env.NEXT_PUBLIC_RESEND_TO_EMAIL || 'huseyindol@gmail.com'], // Sizin email adresiniz
       subject: `🌐 Website İletişim - ${name}`,
       html: emailHtml,
