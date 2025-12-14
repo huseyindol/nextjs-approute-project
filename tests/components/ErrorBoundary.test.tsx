@@ -1,6 +1,6 @@
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 // Component that throws an error
 function ThrowError({ shouldThrow }: { shouldThrow?: boolean }) {
@@ -91,8 +91,7 @@ describe('ErrorBoundary', () => {
   })
 
   it('should show detailed error in development mode', () => {
-    const originalEnv = process.env.NODE_ENV
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
 
     render(
       <ErrorBoundary>
@@ -102,6 +101,6 @@ describe('ErrorBoundary', () => {
 
     expect(screen.getByText(/Hata Detayları/i)).toBeInTheDocument()
 
-    process.env.NODE_ENV = originalEnv
+    vi.unstubAllEnvs()
   })
 })

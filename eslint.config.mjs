@@ -12,6 +12,7 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
+    files: ['**/*.{js,jsx,ts,tsx}'],
     rules: {
       'react/no-unescaped-entities': 'off',
       '@typescript-eslint/no-unused-vars': [
@@ -23,6 +24,21 @@ const eslintConfig = [
         },
       ],
       'no-unused-vars': 'off', // TypeScript handles this
+    },
+  },
+  {
+    files: ['tests/**/*.{ts,tsx}', '**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        vi: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        expect: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+      },
     },
   },
 ]

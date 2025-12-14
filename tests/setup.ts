@@ -39,8 +39,8 @@ beforeAll(() => {
   }))
 
   // Mock environment variables
-  process.env.NODE_ENV = 'test'
-  process.env.NEXT_PUBLIC_HOST = 'http://localhost:3000'
+  vi.stubEnv('NODE_ENV', 'test')
+  vi.stubEnv('NEXT_PUBLIC_HOST', 'http://localhost:3000')
 })
 
 // Mock window.matchMedia

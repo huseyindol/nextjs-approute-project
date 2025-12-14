@@ -51,8 +51,7 @@ describe('Contact API', () => {
     })
 
     it('should return 503 when API key is not configured', async () => {
-      const originalKey = process.env.NEXT_PUBLIC_RESEND_API_KEY
-      delete process.env.NEXT_PUBLIC_RESEND_API_KEY
+      vi.stubEnv('NEXT_PUBLIC_RESEND_API_KEY', '')
 
       const request = createMockRequest({
         method: 'POST',
@@ -70,15 +69,11 @@ describe('Contact API', () => {
       expect(response.status).toBe(503)
       expect(data.error).toContain('Email servisi yapılandırılmamış')
 
-      // Restore
-      if (originalKey) {
-        process.env.NEXT_PUBLIC_RESEND_API_KEY = originalKey
-      }
+      vi.unstubAllEnvs()
     })
 
     it('should return 200 for valid request', async () => {
-      // Set dummy API key
-      process.env.NEXT_PUBLIC_RESEND_API_KEY = 're_test_key'
+      vi.stubEnv('NEXT_PUBLIC_RESEND_API_KEY', 're_test_key')
 
       const request = createMockRequest({
         method: 'POST',
@@ -95,6 +90,8 @@ describe('Contact API', () => {
 
       expect(response.status).toBe(200)
       expect(data.message).toContain('başarıyla gönderildi')
+
+      vi.unstubAllEnvs()
     })
   })
 })

@@ -26,7 +26,7 @@ describe('Revalidate API', () => {
     })
 
     it('should return 401 when unauthorized', async () => {
-      process.env.NEXT_PUBLIC_REVALIDATE_SECRET = 'secret-key'
+      vi.stubEnv('NEXT_PUBLIC_REVALIDATE_SECRET', 'secret-key')
 
       const request = createMockRequest({
         method: 'POST',
@@ -43,8 +43,7 @@ describe('Revalidate API', () => {
       expect(response.status).toBe(401)
       expect(data.error).toBe('Unauthorized')
 
-      // Cleanup
-      delete process.env.NEXT_PUBLIC_REVALIDATE_SECRET
+      vi.unstubAllEnvs()
     })
 
     it('should revalidate by tag', async () => {
@@ -82,7 +81,7 @@ describe('Revalidate API', () => {
     })
 
     it('should accept authorization header', async () => {
-      process.env.NEXT_PUBLIC_REVALIDATE_SECRET = 'secret-key'
+      vi.stubEnv('NEXT_PUBLIC_REVALIDATE_SECRET', 'secret-key')
 
       const request = createMockRequest({
         method: 'POST',
@@ -101,8 +100,7 @@ describe('Revalidate API', () => {
       expect(response.status).toBe(200)
       expect(data.ok).toBe(true)
 
-      // Cleanup
-      delete process.env.NEXT_PUBLIC_REVALIDATE_SECRET
+      vi.unstubAllEnvs()
     })
   })
 
