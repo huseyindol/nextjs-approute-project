@@ -34,7 +34,7 @@ const envSchema = z.object({
     .transform(val => val === 'true')
     .pipe(z.boolean())
     .optional()
-    .default('true'),
+    .default(true),
 
   // Database (Optional - for future use)
   DATABASE_URL: z.string().url().optional(),
@@ -72,7 +72,7 @@ function validateEnv(): Env {
 
       // In development, show detailed errors
       if (process.env.NODE_ENV === 'development') {
-        const missingVars = parsed.error.errors
+        const missingVars = parsed.error.issues
           .map(err => `  - ${err.path.join('.')}: ${err.message}`)
           .join('\n')
 
@@ -87,7 +87,7 @@ function validateEnv(): Env {
     return parsed.data
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error('❌ Environment validation error:', error.errors)
+      console.error('❌ Environment validation error:', error.issues)
     }
     throw error
   }

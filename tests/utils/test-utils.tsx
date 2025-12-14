@@ -1,5 +1,7 @@
 import { render, RenderOptions } from '@testing-library/react'
+import { NextRequest } from 'next/server'
 import { ReactElement, ReactNode } from 'react'
+import { vi } from 'vitest'
 
 /**
  * Custom render function that includes providers

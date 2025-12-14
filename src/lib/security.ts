@@ -2,8 +2,6 @@
  * Security utility functions
  */
 
-import { createHash, randomBytes } from 'crypto'
-
 /**
  * Generate a secure random token
  */
@@ -12,20 +10,30 @@ export function generateSecureToken(length: number = 32): string {
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   let token = ''
 
-  // Use crypto for secure random generation
-  if (typeof window !== 'undefined' && window.crypto) {
+  // Use Web Crypto API (works in both browser and Edge Runtime)
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
     const array = new Uint32Array(length)
-    window.crypto.getRandomValues(array)
+    crypto.getRandomValues(array)
 
     for (let i = 0; i < length; i++) {
       token += characters[array[i] % characters.length]
     }
   } else {
-    // Fallback for Node.js
-    const buffer = randomBytes(length)
+    // Fallback for Node.js (only in non-edge environments)
+    try {
+      // Dynamic import for Node.js crypto
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { randomBytes } = require('crypto')
+      const buffer = randomBytes(length)
 
-    for (let i = 0; i < length; i++) {
-      token += characters[buffer[i] % characters.length]
+      for (let i = 0; i < length; i++) {
+        token += characters[buffer[i] % characters.length]
+      }
+    } catch {
+      // If crypto is not available, use Math.random (less secure, but works everywhere)
+      for (let i = 0; i < length; i++) {
+        token += characters[Math.floor(Math.random() * characters.length)]
+      }
     }
   }
 
@@ -150,15 +158,22 @@ export function validateCSRFToken(
  * Hash a string using SHA-256
  */
 export async function hashString(input: string): Promise<string> {
-  if (typeof window !== 'undefined' && window.crypto?.subtle) {
-    // Browser
+  // Use Web Crypto API (works in browser, Edge Runtime, and Node.js 19+)
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
     const encoder = new TextEncoder()
     const data = encoder.encode(input)
-    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
   } else {
-    // Node.js
-    return createHash('sha256').update(input).digest('hex')
+    // Fallback for older Node.js versions
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { createHash } = require('crypto')
+      return createHash('sha256').update(input).digest('hex')
+    } catch {
+      // If crypto is not available, throw an error
+      throw new Error('Crypto API not available')
+    }
   }
 }

@@ -3,7 +3,7 @@ import {
   RateLimiter,
   RateLimitPresets,
 } from '@/lib/rate-limiter'
-import { describe, expect, it, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 describe('RateLimiter', () => {
   let rateLimiter: RateLimiter
@@ -53,10 +53,14 @@ describe('RateLimiter', () => {
     })
 
     it('should return correct limit and reset values', async () => {
+      const before = Date.now()
       const result = await rateLimiter.check('test-ip')
+      const after = Date.now()
 
       expect(result.limit).toBe(3)
-      expect(result.reset).toBeGreaterThan(Date.now())
+      // Reset time should be within the time window (1 second)
+      expect(result.reset).toBeGreaterThanOrEqual(before)
+      expect(result.reset).toBeLessThanOrEqual(after + 1000)
     })
 
     it('should reset after time window', async () => {

@@ -3,8 +3,42 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [main, develop]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'bun.lock'
+      - '*.config.*'
+      - 'tsconfig.json'
+      - '.github/workflows/**'
+      - 'prisma/**'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.vscode/**'
+      - '.cursor/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.prettierignore'
   pull_request:
     branches: [main, develop]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'bun.lock'
+      - '*.config.*'
+      - 'tsconfig.json'
+      - '.github/workflows/**'
+      - 'prisma/**'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.vscode/**'
+      - '.cursor/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.prettierignore'
 
 jobs:
   lint-and-typecheck:

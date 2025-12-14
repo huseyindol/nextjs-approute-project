@@ -1,6 +1,6 @@
 import { POST } from '@/app/api/contact/route'
 import { createMockRequest } from '@tests/utils/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock Resend
 vi.mock('resend', () => ({
@@ -18,6 +18,15 @@ vi.mock('@react-email/render', () => ({
 
 describe('Contact API', () => {
   describe('POST /api/contact', () => {
+    beforeEach(() => {
+      // Set default API key for all tests
+      vi.stubEnv('NEXT_PUBLIC_RESEND_API_KEY', 're_default_test_key')
+    })
+
+    afterEach(() => {
+      vi.unstubAllEnvs()
+    })
+
     it('should return 400 for missing fields', async () => {
       const request = createMockRequest({
         method: 'POST',

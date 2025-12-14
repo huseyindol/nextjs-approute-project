@@ -3,6 +3,23 @@ name: PR Tests
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'bun.lock'
+      - '*.config.*'
+      - 'tsconfig.json'
+      - '.github/workflows/**'
+      - 'prisma/**'
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.vscode/**'
+      - '.cursor/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.prettierignore'
 
 jobs:
   quick-test:
