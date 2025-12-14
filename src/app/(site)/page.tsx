@@ -1,7 +1,8 @@
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import ExperienceWithErrorDemo from '@/components/ExperienceWithErrorDemo'
 import Hero from '@/components/Hero'
 import Skills from '@/components/Skills'
 import Experience from '@/components/experience'
-
 // export async function generateMetadata(): Promise<Metadata> {
 //   const page: APIResponseSuccessType<Page> = await fetcher(
 //     `${process.env.NEXT_PUBLIC_HOST}/api/page?slug=home`,
@@ -23,9 +24,22 @@ import Experience from '@/components/experience'
 export default async function Home() {
   return (
     <main className="min-h-screen">
-      <Hero />
-      <Skills />
-      <Experience />
+      <ErrorBoundary>
+        <Hero />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Skills />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Experience />
+      </ErrorBoundary>
+
+      {/* 🧪 ErrorBoundary Demo Section - Sadece Development */}
+      {process.env.NODE_ENV === 'development' && (
+        <ErrorBoundary>
+          <ExperienceWithErrorDemo />
+        </ErrorBoundary>
+      )}
 
       {/* Server Actions Demo Section */}
       {/* <section className="bg-gray-50 py-16 dark:bg-gray-900">

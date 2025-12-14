@@ -1,21 +1,112 @@
+import { RateLimiter, RateLimitPresets } from '@/lib/rate-limiter'
+import { generateCSP, getClientIp } from '@/lib/security'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-export function middleware(request: NextRequest) {
-  // _next/static/chunks ile başlayan path'leri kontrol et
-  if (request.nextUrl.pathname.startsWith('/_next/')) {
-    // Response'u al
-    const response = NextResponse.next()
+// Initialize rate limiters for different routes
+const apiRateLimiter = new RateLimiter(RateLimitPresets.api)
+const generalRateLimiter = new RateLimiter(RateLimitPresets.moderate)
 
-    // X-Robots-Tag header'ını ekle
-    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+/**
+ * Middleware to handle security headers and rate limiting
+ */
+export async function middleware(request: NextRequest) {
+  const response = NextResponse.next()
 
-    return response
+  // Get client IP for rate limiting
+  const clientIp = getClientIp(request.headers)
+
+  // Apply rate limiting
+  const isApiRoute = request.nextUrl.pathname.startsWith('/api/')
+  const rateLimiter = isApiRoute ? apiRateLimiter : generalRateLimiter
+
+  const rateLimitResult = await rateLimiter.check(clientIp)
+
+  // Add rate limit headers
+  response.headers.set('X-RateLimit-Limit', String(rateLimitResult.limit))
+  response.headers.set(
+    'X-RateLimit-Remaining',
+    String(rateLimitResult.remaining),
+  )
+  response.headers.set(
+    'X-RateLimit-Reset',
+    new Date(rateLimitResult.reset).toISOString(),
+  )
+
+  // If rate limit exceeded, return 429
+  if (!rateLimitResult.success) {
+    return new NextResponse('Too Many Requests', {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': String(
+          Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
+        ),
+        'X-RateLimit-Limit': String(rateLimitResult.limit),
+        'X-RateLimit-Remaining': '0',
+        'X-RateLimit-Reset': new Date(rateLimitResult.reset).toISOString(),
+      },
+    })
   }
-  return NextResponse.next()
+
+  // Security Headers
+  // Prevent DNS prefetching
+  response.headers.set('X-DNS-Prefetch-Control', 'on')
+
+  // Strict Transport Security (HTTPS only)
+  response.headers.set(
+    'Strict-Transport-Security',
+    'max-age=63072000; includeSubDomains; preload',
+  )
+
+  // Prevent clickjacking attacks
+  response.headers.set('X-Frame-Options', 'SAMEORIGIN')
+
+  // Prevent MIME type sniffing
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+
+  // XSS Protection (legacy but still useful)
+  response.headers.set('X-XSS-Protection', '1; mode=block')
+
+  // Referrer Policy
+  response.headers.set('Referrer-Policy', 'origin-when-cross-origin')
+
+  // Permissions Policy (limit browser features)
+  response.headers.set(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+  )
+
+  // Content Security Policy
+  if (process.env.NODE_ENV === 'production') {
+    response.headers.set('Content-Security-Policy', generateCSP())
+  }
+
+  // Remove server header for security
+  response.headers.delete('X-Powered-By')
+
+  // Add custom security headers
+  response.headers.set('X-Content-Type-Options', 'nosniff')
+  response.headers.set('X-Application-Name', 'Next.js Portfolio')
+
+  // _next/static için özel header
+  if (request.nextUrl.pathname.startsWith('/_next/')) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+  }
+
+  return response
 }
 
 // Middleware'in hangi path'lerde çalışacağını belirt
 export const config = {
-  matcher: '/_next/:path*',
+  matcher: [
+    /*
+     * Match all request paths except for:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder files
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }

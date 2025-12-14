@@ -184,6 +184,12 @@ const industries = ['Tümü', 'Fintech', 'E-commerce', 'Agency', 'Media']
 
 export default function Experience() {
   const [selectedIndustry, setSelectedIndustry] = useState('Tümü')
+  const [shouldThrowError, setShouldThrowError] = useState(false)
+
+  // 🔴 TEST: Error throw etme
+  if (shouldThrowError) {
+    throw new Error('🚨 Test Error: Experience component hatası!')
+  }
 
   const filteredExperiences =
     selectedIndustry === 'Tümü'
@@ -214,6 +220,25 @@ export default function Experience() {
               </Button>
             ))}
           </div>
+
+          {/* 🧪 ERROR TEST BUTTON - Geliştirme ortamında göster */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mt-6 rounded-lg border-2 border-dashed border-red-500 bg-red-50 p-4 dark:bg-red-950">
+              <p className="mb-3 text-sm font-semibold text-red-600 dark:text-red-400">
+                🧪 ErrorBoundary Test Alanı (Sadece Development)
+              </p>
+              <Button
+                variant="destructive"
+                onClick={() => setShouldThrowError(true)}
+                className="w-full sm:w-auto"
+              >
+                🚨 Test Error Fırlat
+              </Button>
+              <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+                Bu butona tıklayınca ErrorBoundary devreye girecek!
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="mx-auto max-w-4xl space-y-8">
