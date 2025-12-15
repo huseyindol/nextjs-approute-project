@@ -19,33 +19,35 @@ const envSchema = z.object({
 
   // Email Service (Resend)
   NEXT_PUBLIC_RESEND_API_KEY: z.string().optional(),
-  NEXT_PUBLIC_RESEND_FROM_EMAIL: z.string().email().optional(),
-  NEXT_PUBLIC_RESEND_TO_EMAIL: z.string().email().optional(),
+  NEXT_PUBLIC_RESEND_FROM_EMAIL: z
+    .string()
+    .optional()
+    .refine(
+      val => !val || val === '' || z.string().email().safeParse(val).success,
+      {
+        message: 'Must be a valid email or empty',
+      },
+    ),
+  NEXT_PUBLIC_RESEND_TO_EMAIL: z
+    .string()
+    .optional()
+    .refine(
+      val => !val || val === '' || z.string().email().safeParse(val).success,
+      {
+        message: 'Must be a valid email or empty',
+      },
+    ),
 
   // Analytics
   NEXT_PUBLIC_GA_ID: z.string().optional(),
 
   // Revalidation
-  NEXT_PUBLIC_REVALIDATE_SECRET: z.string().min(16).optional(),
-
-  // Feature Flags
-  NEXT_PUBLIC_ENABLE_ANALYTICS: z
+  NEXT_PUBLIC_REVALIDATE_SECRET: z
     .string()
-    .transform(val => val === 'true')
-    .pipe(z.boolean())
     .optional()
-    .default(true),
-
-  // Database (Optional - for future use)
-  DATABASE_URL: z.string().url().optional(),
-
-  // Authentication (Optional - for future use)
-  NEXTAUTH_SECRET: z.string().min(32).optional(),
-  NEXTAUTH_URL: z.string().url().optional(),
-
-  // Monitoring (Optional)
-  SENTRY_DSN: z.string().url().optional(),
-  NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
+    .refine(val => !val || val === '' || val.length >= 16, {
+      message: 'Secret must be at least 16 characters or empty',
+    }),
 
   // Vercel
   VERCEL_URL: z.string().optional(),
@@ -167,7 +169,6 @@ export function printEnvInfo(): void {
   console.log('=================================')
   console.log(`NODE_ENV: ${env.NODE_ENV}`)
   console.log(`Base URL: ${getBaseUrl()}`)
-  console.log(`Analytics: ${env.NEXT_PUBLIC_ENABLE_ANALYTICS ? '✅' : '❌'}`)
   console.log(`Email Service: ${env.NEXT_PUBLIC_RESEND_API_KEY ? '✅' : '❌'}`)
   console.log(
     `Revalidation: ${env.NEXT_PUBLIC_REVALIDATE_SECRET ? '✅' : '❌'}`,
