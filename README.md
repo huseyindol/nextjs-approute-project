@@ -89,7 +89,7 @@ NEXT_PUBLIC_HOST=http://localhost:3000
 NEXT_PUBLIC_RESEND_API_KEY=your_api_key
 NEXT_PUBLIC_RESEND_FROM_EMAIL=noreply@yourdomain.com
 NEXT_PUBLIC_RESEND_TO_EMAIL=your@email.com
-NEXT_PUBLIC_REVALIDATE_SECRET=your-secret-key-min-16-chars
+NEXT_PUBLIC_REVALIDATE_SECRET=your-secret-key-min-6-chars
 ```
 
 ### 4. Geliştirme Sunucusunu Başlatın

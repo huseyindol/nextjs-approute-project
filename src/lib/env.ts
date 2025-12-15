@@ -45,8 +45,8 @@ const envSchema = z.object({
   NEXT_PUBLIC_REVALIDATE_SECRET: z
     .string()
     .optional()
-    .refine(val => !val || val === '' || val.length >= 16, {
-      message: 'Secret must be at least 16 characters or empty',
+    .refine(val => !val || val === '' || val.length >= 6, {
+      message: 'Secret must be at least 6 characters or empty',
     }),
 
   // Vercel

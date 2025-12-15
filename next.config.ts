@@ -10,7 +10,6 @@ const nextConfig: NextConfig = {
     // Geliştirme ortamında metadata sorunu için
     optimizeCss: false,
   },
-  serverExternalPackages: ['@prisma/client'],
   images: {
     remotePatterns: [
       {
