@@ -8,25 +8,10 @@
       "command": "bun run dev"
     },
     {
-      "name": "Next.js: debug client-side",
-      "type": "chrome",
+      "name": "Vitest: run",
+      "type": "node-terminal",
       "request": "launch",
-      "url": "http://localhost:3000"
-    },
-    {
-      "name": "Next.js: debug full stack",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/node_modules/.bin/next",
-      "runtimeArgs": ["--inspect"],
-      "skipFiles": ["<node_internals>/**"],
-      "serverReadyAction": {
-        "action": "debugWithEdge",
-        "killOnServerStop": true,
-        "pattern": "- Local:.+(https?://.+)",
-        "uriFormat": "%s",
-        "webRoot": "${workspaceFolder}"
-      }
+      "command": "bun run test:run"
     },
     {
       "name": "Vitest: Debug Tests",

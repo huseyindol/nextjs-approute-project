@@ -60,9 +60,9 @@ export default function Header() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
                 {isOpen ? (
-                  <X className="h-6 w-6" />
+                  <X id="close-icon" className="h-6 w-6" />
                 ) : (
-                  <Menu className="h-6 w-6" />
+                  <Menu id="menu-icon" className="h-6 w-6" />
                 )}
               </Button>
             </DropdownMenuTrigger>

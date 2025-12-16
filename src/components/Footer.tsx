@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Github, Linkedin, Mail, Phone, MapPin, Heart } from 'lucide-react'
 import { Card } from '@/components/ui/card'
+import { Github, Heart, Linkedin, Mail, MapPin, Phone } from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
 
 const currentYear = new Date().getFullYear()
 
@@ -113,6 +113,7 @@ export default function Footer() {
                     href="https://github.com/huseyindol"
                     target="_blank"
                     className="hover:bg-primary hover:text-white"
+                    title="Github"
                   >
                     <Github className="h-5 w-5" />
                   </Link>
@@ -120,12 +121,14 @@ export default function Footer() {
                     href="https://www.linkedin.com/in/huseyindol/"
                     target="_blank"
                     className="hover:bg-primary hover:text-white"
+                    title="Linkedin"
                   >
                     <Linkedin className="h-5 w-5" />
                   </Link>
                   <Link
                     href="mailto:huseyindol@gmail.com"
                     className="hover:bg-primary hover:text-white"
+                    title="E-posta"
                   >
                     <Mail className="h-5 w-5" />
                   </Link>
