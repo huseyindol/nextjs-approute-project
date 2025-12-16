@@ -114,6 +114,7 @@ export default function Footer() {
                     target="_blank"
                     className="hover:bg-primary hover:text-white"
                     title="Github"
+                    aria-label="Github"
                   >
                     <Github className="h-5 w-5" />
                   </Link>
@@ -122,6 +123,7 @@ export default function Footer() {
                     target="_blank"
                     className="hover:bg-primary hover:text-white"
                     title="Linkedin"
+                    aria-label="Linkedin"
                   >
                     <Linkedin className="h-5 w-5" />
                   </Link>
@@ -129,6 +131,7 @@ export default function Footer() {
                     href="mailto:huseyindol@gmail.com"
                     className="hover:bg-primary hover:text-white"
                     title="E-posta"
+                    aria-label="E-posta"
                   >
                     <Mail className="h-5 w-5" />
                   </Link>

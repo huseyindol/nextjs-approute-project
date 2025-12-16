@@ -36,7 +36,7 @@ export default function Skills() {
                     <div className="flex h-10 w-10 items-center justify-center">
                       <Image
                         src={skill.imageUrl}
-                        alt={skill.name}
+                        alt=""
                         width={40}
                         height={40}
                         className="object-contain"

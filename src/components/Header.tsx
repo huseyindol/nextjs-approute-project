@@ -23,7 +23,7 @@ export default function Header() {
           <Link href="/" className="flex items-center justify-center space-x-2">
             <Image
               src="/assets/img/huseyindol.png"
-              alt="Hüseyin DOL"
+              alt=""
               width={52}
               height={52}
             />
