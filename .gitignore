@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# performance reports
+/reports
+
 # openapi
 /public/openapi-generated.json
 next.openapi.json

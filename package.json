@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS='--inspect' next dev --turbopack",
+    "dev": "NODE_OPTIONS='--inspect' next dev",
+    "dev:turbo": "NODE_OPTIONS='--inspect' next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
@@ -17,7 +18,14 @@
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
     "test:ci": "vitest run --coverage --reporter=verbose",
-    "prepare": "husky"
+    "prepare": "husky",
+    "analyze": "ANALYZE=true next build",
+    "lighthouse": "lhci autorun",
+    "lighthouse:local": "mkdir -p reports && lighthouse http://localhost:3000 --output=html --output-path=./reports/lighthouse.html --chrome-flags='--headless --no-sandbox'",
+    "perf:audit": "node scripts/performance-audit.mjs",
+    "perf:build": "ANALYZE=true next build && node scripts/performance-audit.mjs",
+    "load-test": "k6 run scripts/load-test.k6.js",
+    "load-test:quick": "k6 run --vus 10 --duration 30s scripts/load-test.k6.js"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md}": [
@@ -60,6 +68,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@lhci/cli": "^0.15.1",
+    "@next/bundle-analyzer": "^16.0.10",
     "@tailwindcss/postcss": "^4",
     "@tanstack/eslint-plugin-query": "^5.68.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -76,12 +86,14 @@
     "eslint-config-next": "15.2.2",
     "husky": "^9.1.7",
     "jsdom": "^25.0.1",
+    "lighthouse": "^13.0.1",
     "lint-staged": "^16.1.5",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4",
     "tsx": "^4.20.3",
     "typescript": "^5",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "web-vitals": "^5.1.0"
   }
 }

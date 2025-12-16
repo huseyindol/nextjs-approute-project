@@ -1,25 +1,34 @@
 import { ErrorBoundary } from '@/components/ErrorBoundary'
-import ExperienceWithErrorDemo from '@/components/ExperienceWithErrorDemo'
-import Hero from '@/components/Hero'
-import Skills from '@/components/Skills'
-import Experience from '@/components/experience'
-// export async function generateMetadata(): Promise<Metadata> {
-//   const page: APIResponseSuccessType<Page> = await fetcher(
-//     `${process.env.NEXT_PUBLIC_HOST}/api/page?slug=home`,
-//     {
-//       next: {
-//         revalidate: 300,
-//       },
-//     },
-//   )
+import dynamicImport from 'next/dynamic'
+// import ExperienceWithErrorDemo from '@/components/ExperienceWithErrorDemo'
+// import Hero from '@/components/Hero'
+// import Skills from '@/components/Skills'
+// import Experience from '@/components/experience'
 
-//   const formatMeta = formatMetadata(
-//     page.data as unknown as Page & { pageSEO: PageSEO },
-//   )
-//   return {
-//     ...formatMeta,
-//   }
-// }
+const Hero = dynamicImport(() => import('@/components/Hero'), {
+  loading: () => <div>Loading...</div>,
+  ssr: true,
+})
+const Skills = dynamicImport(() => import('@/components/Skills'), {
+  loading: () => <div>Loading...</div>,
+  ssr: true,
+})
+const Experience = dynamicImport(() => import('@/components/experience'), {
+  loading: () => <div>Loading...</div>,
+  ssr: true,
+})
+const ExperienceWithErrorDemo = dynamicImport(
+  () => import('@/components/ExperienceWithErrorDemo'),
+  {
+    loading: () => <div>Loading...</div>,
+    ssr: true,
+  },
+)
+
+// ✨ Cache Strategy: ISR (Incremental Static Regeneration)
+export const revalidate = 3600 // 1 saat (3600 saniye) sonra yeniden oluştur
+export const dynamic = 'force-static' // Statik olarak oluştur
+export const dynamicParams = true // Dynamic segments için
 
 export default async function Home() {
   return (

@@ -1,31 +1,71 @@
-import type { NextConfig } from 'next'
+import bundleAnalyzer from '@next/bundle-analyzer'
 
 // Validate environment variables at build time
 import './src/lib/env'
 
-const nextConfig: NextConfig = {
-  output: 'standalone',
-  /* config options here */
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+  openAnalyzer: true,
+})
+
+const nextConfig = {
+  output: 'standalone' as const,
+
   experimental: {
-    // Geliştirme ortamında metadata sorunu için
-    optimizeCss: false,
+    optimizeCss: true,
+    ppr: false,
   },
+
+  // Force metadata to be in head for all bots
+  // Empty regex = matches nothing = no bots are HTML-limited
+  htmlLimitedBots: /.*/,
+
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
+        protocol: 'https' as const,
         hostname: 'raw.githubusercontent.com',
         port: '',
         pathname: '/**',
       },
       {
-        protocol: 'https',
+        protocol: 'https' as const,
         hostname: 'avatars.githubusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https' as const,
+        hostname: 'cdn.dummyjson.com',
         port: '',
         pathname: '/**',
       },
     ],
   },
+
+  // Performance: Headers for caching
+  async headers() {
+    return [
+      {
+        source: '/assets/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/:all*(svg|jpg|jpeg|png|webp|avif|ico)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ]
+  },
 }
 
-export default nextConfig
+export default withBundleAnalyzer(nextConfig)
