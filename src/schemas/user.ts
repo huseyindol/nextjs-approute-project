@@ -18,10 +18,11 @@ export const UserParams = z.object({
 
 // Request body for creating user
 export const LoginSchema = z.object({
-  email: z
+  usernameOrEmail: z
     .string()
     .min(1, { message: 'E-posta adresi gereklidir.' })
-    .email({ message: 'Lütfen geçerli bir e-posta adresi giriniz.' }),
+    .or(z.string().min(1, { message: 'Kullanıcı adı gereklidir.' }))
+    .describe('E-posta adresi veya kullanıcı adı'),
   password: z
     .string()
     .min(1, { message: 'Şifre gereklidir.' })

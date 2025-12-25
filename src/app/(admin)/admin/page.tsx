@@ -37,7 +37,7 @@ const AdminLoginPage = () => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: '',
+      usernameOrEmail: '',
       password: '',
     },
   })
@@ -47,22 +47,22 @@ const AdminLoginPage = () => {
     clearErrors()
 
     try {
-      const response = await fetcher<LoginResponseType>('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetcher<LoginResponseType>(
+        'http://localhost:8080/api/v1/auth/login',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
         },
-        body: JSON.stringify(formData),
-      })
+      )
 
       if (response.error) {
         setGeneralError(response.error || 'Giriş yapılırken bir hata oluştu.')
         return
       }
-
-      // Store authentication token
-      localStorage.setItem('admin-auth', response.token)
-      localStorage.setItem('admin-user', JSON.stringify(response.user))
 
       // Redirect to admin dashboard
       router.push('/admin/dashboard')
@@ -106,22 +106,23 @@ const AdminLoginPage = () => {
 
               {/* Email Field */}
               <div className="space-y-2">
-                <Label htmlFor="email">E-posta Adresi</Label>
+                <Label htmlFor="usernameOrEmail">
+                  E-posta Adresi veya Kullanıcı Adı
+                </Label>
                 <div className="relative">
                   <Mail className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="admin@example.com"
-                    {...register('email')}
+                    id="usernameOrEmail"
+                    placeholder="admin@example.com veya admin"
+                    {...register('usernameOrEmail')}
                     className="pl-10"
                     disabled={isSubmitting}
-                    autoComplete="email"
+                    autoComplete="usernameOrEmail"
                   />
                 </div>
-                {errors.email && (
+                {errors.usernameOrEmail && (
                   <p className="text-destructive text-sm">
-                    {errors.email.message}
+                    {errors.usernameOrEmail.message}
                   </p>
                 )}
               </div>
