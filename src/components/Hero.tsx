@@ -2,10 +2,17 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { siteInfo } from '@/data/mockData'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { Download, Github, Linkedin, Mail } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function Hero() {
+  const pathname = usePathname()
+  useEffect(() => {
+    console.log('pathname', pathname)
+  }, [pathname])
   return (
     <section
       id="about"
@@ -34,7 +41,14 @@ export default function Hero() {
             <Button
               size="lg"
               className="hero-gradient shadow-elegant text-white transition-all hover:cursor-pointer hover:shadow-lg"
-              onClick={() => window.open(siteInfo.email, '_blank')}
+              onClick={() => {
+                sendGTMEvent({
+                  virtual: '/',
+                  event: 'buttonClick',
+                  platform: 'email',
+                })
+                window.open(siteInfo.email, '_blank')
+              }}
             >
               <Mail className="mr-2 h-5 w-5" />
               İletişime Geç
@@ -43,7 +57,14 @@ export default function Hero() {
               variant="outline"
               size="lg"
               className="border-primary text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
-              onClick={() => window.open(siteInfo.cvUrl, '_blank')}
+              onClick={() => {
+                sendGTMEvent({
+                  virtual: '/',
+                  event: 'buttonClick',
+                  platform: 'cv-download',
+                })
+                window.open(siteInfo.cvUrl, '_blank')
+              }}
             >
               <Download className="mr-2 h-5 w-5" />
               CV İndir

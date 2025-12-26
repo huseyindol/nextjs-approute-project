@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -20,7 +21,17 @@ export default function Header() {
     <header className="bg-background/80 fixed top-0 z-50 w-full border-b backdrop-blur-md">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         <div className="text-gradient text-xl font-bold">
-          <Link href="/" className="flex items-center justify-center space-x-2">
+          <Link
+            href="/"
+            className="flex items-center justify-center space-x-2"
+            onClick={() =>
+              sendGTMEvent({
+                virtual: '/',
+                event: 'buttonClick',
+                target: 'home',
+              })
+            }
+          >
             <Image
               src="/assets/img/huseyindol.png"
               alt=""
@@ -35,18 +46,39 @@ export default function Header() {
           <Link
             href="#about"
             className="text-muted-foreground hover:text-primary transition-colors"
+            onClick={() =>
+              sendGTMEvent({
+                virtual: '#about',
+                event: 'buttonClick',
+                target: 'about',
+              })
+            }
           >
             Hakkında
           </Link>
           <Link
             href="#skills"
             className="text-muted-foreground hover:text-primary transition-colors"
+            onClick={() =>
+              sendGTMEvent({
+                virtual: '#skills',
+                event: 'buttonClick',
+                target: 'skills',
+              })
+            }
           >
             Yetenekler
           </Link>
           <Link
             href="#experience"
             className="text-muted-foreground hover:text-primary transition-colors"
+            onClick={() =>
+              sendGTMEvent({
+                virtual: '#experience',
+                event: 'buttonClick',
+                target: 'experience',
+              })
+            }
           >
             Deneyim
           </Link>

@@ -8,6 +8,7 @@ import type { Metadata } from 'next'
 import { ThemeProvider } from 'next-themes'
 import { Geist, Geist_Mono } from 'next/font/google'
 import Script from 'next/script'
+import Datalayer from '../components/Datalayer'
 import './globals.css'
 
 const geistSans = Geist({
@@ -108,6 +109,7 @@ export default function RootLayout({
         >
           <Providers>
             <WebVitals />
+            <Datalayer />
             {children}
             <ScrollToTop />
             <Analytics />
