@@ -110,4 +110,3 @@ export type UserWithPostsResponseType = z.infer<typeof UserWithPostsResponse>
 export type UsersListResponseType = z.infer<typeof UsersListResponse>
 export type UserSuccessResponseType = z.infer<typeof UserSuccessResponse>
 export type DeleteSuccessResponseType = z.infer<typeof DeleteSuccessResponse>
-export type LoginResponseType = z.infer<typeof LoginResponse>

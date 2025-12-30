@@ -7,6 +7,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import { ThemeProvider } from 'next-themes'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { cookies } from 'next/headers'
 import Script from 'next/script'
 import Datalayer from '../components/Datalayer'
 import './globals.css'
@@ -83,11 +84,19 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const cookieStore = await cookies()
+
+  // ReadonlyRequestCookies objesini serialize edilebilir formata çevir
+  const cookiesData: Record<string, string> = {}
+  cookieStore.getAll().forEach(cookie => {
+    cookiesData[cookie.name] = cookie.value
+  })
+  console.log('APP - LAYOUT')
   return (
     <html lang="tr" suppressHydrationWarning>
       <body
@@ -107,7 +116,7 @@ export default function RootLayout({
           themes={['light', 'dark']}
           disableTransitionOnChange
         >
-          <Providers>
+          <Providers cookiesData={cookiesData}>
             <WebVitals />
             <Datalayer />
             {children}

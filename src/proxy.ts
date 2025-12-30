@@ -2,6 +2,8 @@ import { RateLimiter, RateLimitPresets } from '@/lib/rate-limiter'
 import { generateCSP, getClientIp } from '@/lib/security'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+import { refreshTokenProxy } from './proxy/refreshTokenProxy'
+import { CookieEnum } from './utils/constant/cookieConstant'
 
 // Initialize rate limiters for different routes
 const apiRateLimiter = new RateLimiter(RateLimitPresets.api)
@@ -10,7 +12,7 @@ const generalRateLimiter = new RateLimiter(RateLimitPresets.moderate)
 /**
  * Middleware to handle security headers and rate limiting
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const response = NextResponse.next()
 
   // Get client IP for rate limiting
@@ -92,6 +94,23 @@ export async function middleware(request: NextRequest) {
   // _next/static için özel header
   if (request.nextUrl.pathname.startsWith('/_next/')) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+  }
+
+  // TODO: cookies'teki expired_time degerini GMT zone'a cevir
+  // expired olduysa refresh token ile yeni token ve refresh token olustur
+  // yeni token ve refresh token'i cookies'a yaz
+
+  console.log('PROXY', request.nextUrl.pathname)
+  const expiredDate = request.cookies.get(CookieEnum.EXPIRED_DATE)
+  console.log('expiredDate-START', expiredDate)
+  if (expiredDate) {
+    const expiredDateCheck = new Date(Number(expiredDate.value))
+    console.log('expiredDate-CHECK', expiredDateCheck, 'new Date()', new Date())
+    if (expiredDateCheck < new Date()) {
+      console.log('PROXY - refresh token proxy started')
+      await refreshTokenProxy(request, response)
+      console.log('PROXY - refresh token proxy finished')
+    }
   }
 
   return response

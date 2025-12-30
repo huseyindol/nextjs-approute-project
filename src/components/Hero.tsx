@@ -5,14 +5,8 @@ import { siteInfo } from '@/data/mockData'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { Download, Github, Linkedin, Mail } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useEffect } from 'react'
 
 export default function Hero() {
-  const pathname = usePathname()
-  useEffect(() => {
-    console.log('pathname', pathname)
-  }, [pathname])
   return (
     <section
       id="about"

@@ -1,15 +1,11 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
+import js from '@eslint/js'
+import nextPlugin from '@next/eslint-plugin-next'
+import reactPlugin from 'eslint-plugin-react'
+import reactHooksPlugin from 'eslint-plugin-react-hooks'
+import tseslint from 'typescript-eslint'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
-
-const eslintConfig = [
+/** @type {import('eslint').Linter.Config[]} */
+export default [
   {
     ignores: [
       '.next/**',
@@ -23,10 +19,33 @@ const eslintConfig = [
       '*.config.mjs',
     ],
   },
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
+    plugins: {
+      react: reactPlugin,
+      'react-hooks': reactHooksPlugin,
+      '@next/next': nextPlugin,
+    },
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
     rules: {
+      ...reactPlugin.configs.recommended.rules,
+      ...reactHooksPlugin.configs.recommended.rules,
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
+      'react/react-in-jsx-scope': 'off',
       'react/no-unescaped-entities': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
@@ -36,7 +55,7 @@ const eslintConfig = [
           ignoreRestSiblings: true,
         },
       ],
-      'no-unused-vars': 'off', // TypeScript handles this
+      'no-unused-vars': 'off',
     },
   },
   {
@@ -55,5 +74,3 @@ const eslintConfig = [
     },
   },
 ]
-
-export default eslintConfig

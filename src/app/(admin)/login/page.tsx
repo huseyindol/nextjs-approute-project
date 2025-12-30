@@ -11,7 +11,10 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { LoginResponseType, LoginSchema } from '@/schemas/user'
+import { updateGlobalCookie, useCookie } from '@/context/CookieContext'
+import { LoginSchema } from '@/schemas/user'
+import { LoginResponseType } from '@/types/AuthResponse'
+import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { fetcher } from '@/utils/services/fetcher'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertCircle, Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react'
@@ -27,6 +30,7 @@ const AdminLoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [generalError, setGeneralError] = useState('')
   const router = useRouter()
+  const { cookies, updateCookie } = useCookie()
 
   // React Hook Form setup with Zod resolver
   const {
@@ -58,11 +62,18 @@ const AdminLoginPage = () => {
           body: JSON.stringify(formData),
         },
       )
-
+      console.log('onSubmit - response', response)
       if (response.error) {
         setGeneralError(response.error || 'Giriş yapılırken bir hata oluştu.')
         return
       }
+      console.log('onSubmit - cookies', updateGlobalCookie)
+      updateGlobalCookie(CookieEnum.ACCESS_TOKEN, response.data.token)
+      updateGlobalCookie(CookieEnum.REFRESH_TOKEN, response.data.refreshToken)
+      updateGlobalCookie(CookieEnum.EXPIRED_DATE, response.data.expiredDate)
+      updateCookie(CookieEnum.ACCESS_TOKEN, response.data.token)
+      updateCookie(CookieEnum.REFRESH_TOKEN, response.data.refreshToken)
+      updateCookie(CookieEnum.EXPIRED_DATE, response.data.expiredDate)
 
       // Redirect to admin dashboard
       router.push('/admin/dashboard')
