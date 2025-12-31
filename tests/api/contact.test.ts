@@ -2,14 +2,17 @@ import { POST } from '@/app/api/contact/route'
 import { createMockRequest } from '@tests/utils/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-// Mock Resend
-vi.mock('resend', () => ({
-  Resend: vi.fn().mockImplementation(() => ({
-    emails: {
-      send: vi.fn().mockResolvedValue({ error: null }),
-    },
-  })),
-}))
+// Mock Resend with proper class constructor
+vi.mock('resend', () => {
+  const MockResend = vi.fn().mockImplementation(function () {
+    return {
+      emails: {
+        send: vi.fn().mockResolvedValue({ error: null }),
+      },
+    }
+  })
+  return { Resend: MockResend }
+})
 
 // Mock react-email render
 vi.mock('@react-email/render', () => ({
