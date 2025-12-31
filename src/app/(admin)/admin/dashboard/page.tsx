@@ -7,7 +7,7 @@ import DashboardClientPage from './page.client'
 async function DashboardPage() {
   const cookiesStore = await cookies()
   const accessToken = cookiesStore.get(CookieEnum.ACCESS_TOKEN)
-  const response = await fetcher<Promise<PageResponseType>>(
+  await fetcher<Promise<PageResponseType>>(
     'http://localhost:8080/api/v1/pages/home',
     {
       keepalive: true,
@@ -21,7 +21,7 @@ async function DashboardPage() {
       },
     },
   )
-  const data = await response.data
+
   return <DashboardClientPage />
 }
 

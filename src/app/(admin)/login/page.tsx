@@ -30,7 +30,7 @@ const AdminLoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [generalError, setGeneralError] = useState('')
   const router = useRouter()
-  const { cookies, updateCookie } = useCookie()
+  const { updateCookie } = useCookie()
 
   // React Hook Form setup with Zod resolver
   const {

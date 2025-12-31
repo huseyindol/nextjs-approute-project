@@ -16,6 +16,12 @@ const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY || 'dummy-key')
  * @openapi
  */
 export async function POST(request: NextRequest) {
+  const { name, email, message } = await request.json()
+
+  const emailHtml = await render(
+    <ContactEmailTemplate name={name} email={email} message={message} />,
+  )
+
   try {
     // Check if API key is configured
     if (
@@ -30,8 +36,6 @@ export async function POST(request: NextRequest) {
         { status: 503 },
       )
     }
-
-    const { name, email, message } = await request.json()
 
     // Input validation
     if (!name || !email || !message) {
@@ -49,11 +53,6 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       )
     }
-
-    // Render email template
-    const emailHtml = await render(
-      <ContactEmailTemplate name={name} email={email} message={message} />,
-    )
 
     // Determine sender email
     let senderEmail =
