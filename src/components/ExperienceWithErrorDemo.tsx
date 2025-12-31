@@ -63,10 +63,10 @@ function ExperienceCard({ exp }: { exp: (typeof mockExperiences)[0] }) {
     <Card className="p-6">
       <div className="mb-4 flex items-start justify-between">
         <div>
-          <h3 className="text-primary mb-2 text-xl font-bold">
+          <h3 className="mb-2 text-xl font-bold text-primary">
             {exp.position}
           </h3>
-          <div className="text-muted-foreground mb-2 flex flex-wrap gap-3 text-sm">
+          <div className="mb-2 flex flex-wrap gap-3 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Building className="h-4 w-4" />
               <span>{exp.company}</span>
@@ -123,18 +123,18 @@ function ExperienceCard({ exp }: { exp: (typeof mockExperiences)[0] }) {
 // Custom Error Fallback
 function CustomErrorFallback({ error }: { error: Error }) {
   return (
-    <Card className="border-destructive bg-destructive/5 p-6">
+    <Card className="bg-destructive/5 border-destructive p-6">
       <div className="flex items-start gap-3">
-        <AlertTriangle className="text-destructive h-6 w-6 flex-shrink-0" />
+        <AlertTriangle className="h-6 w-6 flex-shrink-0 text-destructive" />
         <div className="flex-1">
-          <h3 className="text-destructive mb-2 text-lg font-bold">
+          <h3 className="mb-2 text-lg font-bold text-destructive">
             Bu Kart Hata Verdi!
           </h3>
-          <p className="text-muted-foreground mb-3 text-sm">
+          <p className="mb-3 text-sm text-muted-foreground">
             ErrorBoundary bu hatayı yakaladı ve özel bir UI gösteriyor.
           </p>
           {process.env.NODE_ENV === 'development' && (
-            <details className="bg-muted rounded p-2">
+            <details className="rounded bg-muted p-2">
               <summary className="cursor-pointer text-xs font-semibold">
                 Hata Detayları
               </summary>
@@ -163,7 +163,7 @@ export default function ExperienceWithErrorDemo() {
           <h2 className="text-gradient mb-4 text-4xl font-bold">
             🧪 ErrorBoundary Demo
           </h2>
-          <p className="text-muted-foreground mb-6 text-lg">
+          <p className="mb-6 text-lg text-muted-foreground">
             Bu bölümde ErrorBoundary'nin nasıl çalıştığını test edebilirsiniz
           </p>
 
@@ -171,12 +171,12 @@ export default function ExperienceWithErrorDemo() {
           {process.env.NODE_ENV === 'development' && (
             <Card className="border-destructive/50 mx-auto max-w-2xl p-6">
               <div className="flex items-start gap-4">
-                <AlertTriangle className="text-destructive h-6 w-6 flex-shrink-0" />
+                <AlertTriangle className="h-6 w-6 flex-shrink-0 text-destructive" />
                 <div className="flex-1 text-left">
                   <h3 className="mb-2 font-bold">
                     🚨 Global Error (Tüm Section)
                   </h3>
-                  <p className="text-muted-foreground mb-4 text-sm">
+                  <p className="mb-4 text-sm text-muted-foreground">
                     Bu butona tıklarsan tüm Experience section'ı kıracak ve
                     page.tsx'teki ErrorBoundary devreye girecek!
                   </p>
@@ -197,7 +197,7 @@ export default function ExperienceWithErrorDemo() {
           <h3 className="mb-4 text-xl font-semibold">
             💡 Scenario 1: ErrorBoundary Olmadan
           </h3>
-          <p className="text-muted-foreground mb-4 text-sm">
+          <p className="mb-4 text-sm text-muted-foreground">
             Bu kartlar ErrorBoundary ile SARILI DEĞİL. Hata olursa tüm sayfa
             kırılır.
           </p>
@@ -208,10 +208,10 @@ export default function ExperienceWithErrorDemo() {
             <ExperienceCard exp={mockExperiences[0]} />
           </div>
 
-          <h3 className="mt-12 mb-4 text-xl font-semibold">
+          <h3 className="mb-4 mt-12 text-xl font-semibold">
             💚 Scenario 2: ErrorBoundary İle (Her Kart Ayrı)
           </h3>
-          <p className="text-muted-foreground mb-4 text-sm">
+          <p className="mb-4 text-sm text-muted-foreground">
             Her kart kendi ErrorBoundary'si ile sarılı. Bir kart hata verse
             diğeri çalışmaya devam eder.
           </p>
@@ -233,10 +233,10 @@ export default function ExperienceWithErrorDemo() {
             </ErrorBoundary>
           </div>
 
-          <h3 className="mt-12 mb-4 text-xl font-semibold">
+          <h3 className="mb-4 mt-12 text-xl font-semibold">
             💙 Scenario 3: Tek ErrorBoundary (Tüm Liste)
           </h3>
-          <p className="text-muted-foreground mb-4 text-sm">
+          <p className="mb-4 text-sm text-muted-foreground">
             Tüm liste tek ErrorBoundary ile sarılı. Bir kart hata verse tüm
             liste gider.
           </p>
@@ -258,7 +258,7 @@ export default function ExperienceWithErrorDemo() {
         {/* Açıklama */}
         <Card className="mx-auto mt-12 max-w-4xl p-6">
           <h3 className="mb-4 text-lg font-bold">📚 ErrorBoundary Notları</h3>
-          <ul className="text-muted-foreground space-y-2 text-sm">
+          <ul className="space-y-2 text-sm text-muted-foreground">
             <li>
               ✅ <strong>ErrorBoundary ile:</strong> Hata olan kısım fallback UI
               gösterir, diğerleri çalışmaya devam eder

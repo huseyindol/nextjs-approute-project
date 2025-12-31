@@ -13,7 +13,7 @@ export default function Hero() {
       className="flex items-center justify-center py-24 pt-24 md:pt-32"
     >
       <div className="container mx-auto px-6">
-        <div className="animate-fade-in-up mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-4xl animate-fade-in-up text-center">
           <div className="mb-6">
             <Badge variant="secondary" xatt="hero" className="mb-4 text-sm">
               {siteInfo.sayHi}
@@ -27,7 +27,7 @@ export default function Hero() {
           </h1>
 
           <p
-            className="text-muted-foreground mx-auto mb-8 max-w-3xl text-xl leading-relaxed md:text-2xl"
+            className="mx-auto mb-8 max-w-3xl text-xl leading-relaxed text-muted-foreground md:text-2xl"
             dangerouslySetInnerHTML={{ __html: siteInfo.description }}
           ></p>
 
@@ -50,7 +50,7 @@ export default function Hero() {
             <Button
               variant="outline"
               size="lg"
-              className="border-primary text-primary hover:bg-primary hover:cursor-pointer hover:text-white"
+              className="border-primary text-primary hover:cursor-pointer hover:bg-primary hover:text-white"
               onClick={() => {
                 sendGTMEvent({
                   virtual: '/',
@@ -71,7 +71,7 @@ export default function Hero() {
                 key={link.platform}
                 href={link.url}
                 target="_blank"
-                className="hover:bg-primary transition-all hover:cursor-pointer hover:text-white"
+                className="transition-all hover:cursor-pointer hover:bg-primary hover:text-white"
               >
                 {SocialIcon(link.platform)}
               </Link>

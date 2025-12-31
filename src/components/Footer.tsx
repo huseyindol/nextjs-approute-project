@@ -76,7 +76,7 @@ export default function Footer() {
             <h2 className="text-gradient mb-6 text-4xl font-bold md:text-5xl">
               İletişime Geçin
             </h2>
-            <p className="text-muted-foreground text-xl">
+            <p className="text-xl text-muted-foreground">
               Yeni projeler, iş birlikleri veya sadece merhaba demek için!
             </p>
           </div>
@@ -87,7 +87,7 @@ export default function Footer() {
 
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
-                  <Mail className="text-primary h-5 w-5" />
+                  <Mail className="h-5 w-5 text-primary" />
                   <span>
                     <a href="mailto:huseyindol@gmail.com">
                       huseyindol@gmail.com
@@ -95,13 +95,13 @@ export default function Footer() {
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Phone className="text-primary h-5 w-5" />
+                  <Phone className="h-5 w-5 text-primary" />
                   <span>
                     <a href="tel:+905445582825">+90 (544) 558 28 25</a>
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <MapPin className="text-primary h-5 w-5" />
+                  <MapPin className="h-5 w-5 text-primary" />
                   <span>Maltepe, İstanbul, Türkiye</span>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default function Footer() {
                     onChange={handleInputChange}
                     required
                     disabled={isLoading}
-                    className="border-input bg-background w-full rounded-md border p-3 disabled:opacity-50"
+                    className="w-full rounded-md border border-input bg-background p-3 disabled:opacity-50"
                   />
                 </div>
                 <div>
@@ -176,7 +176,7 @@ export default function Footer() {
                     onChange={handleInputChange}
                     required
                     disabled={isLoading}
-                    className="border-input bg-background w-full rounded-md border p-3 disabled:opacity-50"
+                    className="w-full rounded-md border border-input bg-background p-3 disabled:opacity-50"
                   />
                 </div>
                 <div>
@@ -188,7 +188,7 @@ export default function Footer() {
                     onChange={handleInputChange}
                     required
                     disabled={isLoading}
-                    className="border-input bg-background w-full resize-none rounded-md border p-3 disabled:opacity-50"
+                    className="w-full resize-none rounded-md border border-input bg-background p-3 disabled:opacity-50"
                   ></textarea>
                 </div>
                 <Button
@@ -202,8 +202,8 @@ export default function Footer() {
             </Card>
           </div>
 
-          <div className="border-border border-t pt-8 text-center">
-            <p className="text-muted-foreground flex items-center justify-center gap-2">
+          <div className="border-t border-border pt-8 text-center">
+            <p className="flex items-center justify-center gap-2 text-muted-foreground">
               © {currentYear} Hüseyin DOL. Made with
               <Heart className="h-4 w-4 fill-current text-red-500" />
               using React & TypeScript & Spring Boot

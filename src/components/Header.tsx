@@ -45,7 +45,7 @@ export default function Header() {
         <nav className="hidden items-center space-x-6 md:flex">
           <Link
             href="#about"
-            className="text-muted-foreground hover:text-primary transition-colors"
+            className="text-muted-foreground transition-colors hover:text-primary"
             onClick={() =>
               sendGTMEvent({
                 virtual: '#about',
@@ -58,7 +58,7 @@ export default function Header() {
           </Link>
           <Link
             href="#skills"
-            className="text-muted-foreground hover:text-primary transition-colors"
+            className="text-muted-foreground transition-colors hover:text-primary"
             onClick={() =>
               sendGTMEvent({
                 virtual: '#skills',
@@ -71,7 +71,7 @@ export default function Header() {
           </Link>
           <Link
             href="#experience"
-            className="text-muted-foreground hover:text-primary transition-colors"
+            className="text-muted-foreground transition-colors hover:text-primary"
             onClick={() =>
               sendGTMEvent({
                 virtual: '#experience',

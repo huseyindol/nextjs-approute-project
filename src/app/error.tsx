@@ -31,32 +31,32 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="bg-background flex min-h-screen items-center justify-center p-4">
-      <div className="border-destructive/50 bg-card w-full max-w-md space-y-6 rounded-lg border p-8 shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="border-destructive/50 w-full max-w-md space-y-6 rounded-lg border bg-card p-8 shadow-lg">
         <div className="flex items-center gap-4">
           <div className="bg-destructive/10 rounded-full p-3">
-            <AlertCircle className="text-destructive h-8 w-8" />
+            <AlertCircle className="h-8 w-8 text-destructive" />
           </div>
           <div>
-            <h1 className="text-foreground text-2xl font-bold">
+            <h1 className="text-2xl font-bold text-foreground">
               Bir Hata Oluştu
             </h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Üzgünüz, beklenmeyen bir hata oluştu
             </p>
           </div>
         </div>
 
         {process.env.NODE_ENV === 'development' && (
-          <div className="bg-muted rounded-md p-4">
-            <p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
+          <div className="rounded-md bg-muted p-4">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Hata Detayları (Sadece Geliştirme)
             </p>
-            <p className="text-destructive font-mono text-sm">
+            <p className="font-mono text-sm text-destructive">
               {error.message}
             </p>
             {error.digest && (
-              <p className="text-muted-foreground mt-2 font-mono text-xs">
+              <p className="mt-2 font-mono text-xs text-muted-foreground">
                 Digest: {error.digest}
               </p>
             )}
@@ -79,7 +79,7 @@ export default function Error({
           </Button>
         </div>
 
-        <p className="text-muted-foreground text-center text-xs">
+        <p className="text-center text-xs text-muted-foreground">
           Sorun devam ederse lütfen bizimle iletişime geçin
         </p>
       </div>

@@ -85,15 +85,15 @@ const AdminLoginPage = () => {
   }
 
   return (
-    <div className="from-background to-muted flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background to-muted p-4">
       <div className="w-full max-w-md space-y-8">
         {/* Header */}
         <div className="text-center">
           <div className="bg-primary/10 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-            <Shield className="text-primary h-8 w-8" />
+            <Shield className="h-8 w-8 text-primary" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight">Admin Girişi</h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             Yönetim paneline erişmek için giriş yapınız
           </p>
         </div>
@@ -121,7 +121,7 @@ const AdminLoginPage = () => {
                   E-posta Adresi veya Kullanıcı Adı
                 </Label>
                 <div className="relative">
-                  <Mail className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="usernameOrEmail"
                     placeholder="admin@example.com veya admin"
@@ -132,7 +132,7 @@ const AdminLoginPage = () => {
                   />
                 </div>
                 {errors.usernameOrEmail && (
-                  <p className="text-destructive text-sm">
+                  <p className="text-sm text-destructive">
                     {errors.usernameOrEmail.message}
                   </p>
                 )}
@@ -142,13 +142,13 @@ const AdminLoginPage = () => {
               <div className="space-y-2">
                 <Label htmlFor="password">Şifre</Label>
                 <div className="relative">
-                  <Lock className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Şifrenizi giriniz"
                     {...register('password')}
-                    className="pr-10 pl-10"
+                    className="pl-10 pr-10"
                     disabled={isSubmitting}
                     autoComplete="current-password"
                   />
@@ -156,19 +156,19 @@ const AdminLoginPage = () => {
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isSubmitting}
                   >
                     {showPassword ? (
-                      <EyeOff className="text-muted-foreground h-4 w-4" />
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
                     ) : (
-                      <Eye className="text-muted-foreground h-4 w-4" />
+                      <Eye className="h-4 w-4 text-muted-foreground" />
                     )}
                   </Button>
                 </div>
                 {errors.password && (
-                  <p className="text-destructive text-sm">
+                  <p className="text-sm text-destructive">
                     {errors.password.message}
                   </p>
                 )}
@@ -178,7 +178,7 @@ const AdminLoginPage = () => {
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
-                    <div className="border-background mr-2 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
                     Giriş Yapılıyor...
                   </>
                 ) : (
@@ -190,21 +190,21 @@ const AdminLoginPage = () => {
         </Card>
 
         {/* Footer */}
-        <div className="text-muted-foreground text-center text-sm">
+        <div className="text-center text-sm text-muted-foreground">
           <p>© 2024 Yönetim Paneli. Tüm hakları saklıdır.</p>
         </div>
 
         {/* Demo Credentials */}
         <div className="bg-muted/50 rounded-lg p-4 text-sm">
           <p className="mb-2 text-center font-medium">Demo Bilgileri</p>
-          <div className="text-muted-foreground space-y-1">
+          <div className="space-y-1 text-muted-foreground">
             <p>
               <strong>Zod Validasyonu:</strong> Form otomatik olarak e-posta
               formatını ve şifre uzunluğunu kontrol eder.
             </p>
             <p>
               Kullanıcı oluşturmak için{' '}
-              <code className="bg-muted rounded px-1">POST /api/users</code>{' '}
+              <code className="rounded bg-muted px-1">POST /api/users</code>{' '}
               endpoint'ini kullanın.
             </p>
           </div>

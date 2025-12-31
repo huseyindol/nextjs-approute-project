@@ -203,7 +203,7 @@ export default function Experience() {
           <h2 className="text-gradient mb-6 text-4xl font-bold md:text-5xl">
             Profesyonel Deneyim
           </h2>
-          <p className="text-muted-foreground mb-8 text-xl">
+          <p className="mb-8 text-xl text-muted-foreground">
             Çeşitli sektörlerde edindiğim deneyimler ve başarılar
           </p>
 
@@ -250,10 +250,10 @@ export default function Experience() {
             >
               <div className="mb-6 flex flex-col md:flex-row md:items-start md:justify-between">
                 <div className="flex-1">
-                  <h3 className="text-primary mb-2 text-2xl font-bold">
+                  <h3 className="mb-2 text-2xl font-bold text-primary">
                     {exp.position}
                   </h3>
-                  <div className="text-muted-foreground mb-4 flex flex-wrap items-center gap-4">
+                  <div className="mb-4 flex flex-wrap items-center gap-4 text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <Building className="h-4 w-4" />
                       <span className="font-semibold">{exp.company}</span>
@@ -273,7 +273,7 @@ export default function Experience() {
                 </div>
               </div>
 
-              <p className="text-muted-foreground mb-6 leading-relaxed">
+              <p className="mb-6 leading-relaxed text-muted-foreground">
                 {exp.description}
               </p>
 
@@ -299,9 +299,9 @@ export default function Experience() {
                     {exp.achievements.map((achievement, idx) => (
                       <li
                         key={idx}
-                        className="text-muted-foreground flex items-start text-sm"
+                        className="flex items-start text-sm text-muted-foreground"
                       >
-                        <span className="text-primary mr-2">•</span>
+                        <span className="mr-2 text-primary">•</span>
                         {achievement}
                       </li>
                     ))}

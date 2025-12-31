@@ -8,17 +8,17 @@ import Link from 'next/link'
  */
 export default function NotFound() {
   return (
-    <div className="bg-background flex min-h-screen items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-6 text-center">
         <div className="flex justify-center">
           <div className="bg-primary/10 rounded-full p-6">
-            <Search className="text-primary h-16 w-16" />
+            <Search className="h-16 w-16 text-primary" />
           </div>
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-foreground text-6xl font-bold">404</h1>
-          <h2 className="text-foreground text-2xl font-semibold">
+          <h1 className="text-6xl font-bold text-foreground">404</h1>
+          <h2 className="text-2xl font-semibold text-foreground">
             Sayfa Bulunamadı
           </h2>
           <p className="text-muted-foreground">
@@ -42,7 +42,7 @@ export default function NotFound() {
         </div>
 
         <div className="pt-8">
-          <p className="text-muted-foreground text-sm">
+          <p className="text-sm text-muted-foreground">
             Yardıma mı ihtiyacınız var?{' '}
             <Link
               href="/api/contact"

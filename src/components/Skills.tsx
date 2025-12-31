@@ -12,17 +12,17 @@ export default function Skills() {
           <h2 className="text-gradient mb-6 text-4xl font-bold md:text-5xl">
             Teknolojiler & Yetenekler
           </h2>
-          <p className="text-muted-foreground text-xl">
+          <p className="text-xl text-muted-foreground">
             10+ yıllık deneyimimde uzmanlaştığım teknolojiler ve seviyeler
           </p>
         </div>
 
         <div className="relative overflow-hidden">
-          <div className="flex flex-wrap justify-center space-y-4 space-x-4">
+          <div className="flex flex-wrap justify-center space-x-4 space-y-4">
             {[...skills].map((skill, index) => (
               <Card
                 key={`${skill.name}-${index}`}
-                className={`bg-card flex-shrink-0 border-0 p-6 py-3 transition-all duration-300 hover:shadow-lg ${skills.length === index + 1 ? 'mb-4' : ''}`}
+                className={`flex-shrink-0 border-0 bg-card p-6 py-3 transition-all duration-300 hover:shadow-lg ${skills.length === index + 1 ? 'mb-4' : ''}`}
               >
                 <Link
                   href={skill.url}
@@ -48,7 +48,7 @@ export default function Skills() {
                   </div>
 
                   <h3 className="text-sm font-semibold">{skill.name}</h3>
-                  <p className="text-muted-foreground mb-4 hidden">
+                  <p className="mb-4 hidden text-muted-foreground">
                     {skill.level} seviye
                   </p>
                 </Link>

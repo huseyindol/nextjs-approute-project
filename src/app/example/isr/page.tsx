@@ -101,7 +101,7 @@ export default async function ISRProductsPage() {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 {product.discountPercentage > 0 && (
-                  <div className="absolute top-2 right-2 rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white">
+                  <div className="absolute right-2 top-2 rounded-full bg-red-500 px-2 py-1 text-xs font-bold text-white">
                     -{Math.round(product.discountPercentage)}%
                   </div>
                 )}
@@ -109,7 +109,7 @@ export default async function ISRProductsPage() {
 
               <div className="p-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-xs tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                  <span className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     {product.brand}
                   </span>
                   <div className="flex items-center text-yellow-500">

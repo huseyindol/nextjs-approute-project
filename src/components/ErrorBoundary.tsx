@@ -66,23 +66,23 @@ export class ErrorBoundary extends Component<Props, State> {
 
       // Default fallback UI
       return (
-        <div className="bg-background flex min-h-screen items-center justify-center p-4">
-          <div className="border-destructive/50 bg-card w-full max-w-md rounded-lg border p-6 shadow-lg">
+        <div className="flex min-h-screen items-center justify-center bg-background p-4">
+          <div className="border-destructive/50 w-full max-w-md rounded-lg border bg-card p-6 shadow-lg">
             <div className="mb-4 flex items-center gap-3">
-              <AlertCircle className="text-destructive h-6 w-6" />
-              <h2 className="text-foreground text-xl font-bold">
+              <AlertCircle className="h-6 w-6 text-destructive" />
+              <h2 className="text-xl font-bold text-foreground">
                 Bir Hata Oluştu
               </h2>
             </div>
 
-            <p className="text-muted-foreground mb-4">
+            <p className="mb-4 text-muted-foreground">
               Üzgünüz, bir şeyler yanlış gitti. Lütfen sayfayı yenilemeyi
               deneyin.
             </p>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="bg-muted mb-4 rounded p-3">
-                <summary className="text-destructive cursor-pointer font-mono text-sm font-semibold">
+              <details className="mb-4 rounded bg-muted p-3">
+                <summary className="cursor-pointer font-mono text-sm font-semibold text-destructive">
                   Hata Detayları (Sadece Geliştirme)
                 </summary>
                 <pre className="mt-2 overflow-auto text-xs">

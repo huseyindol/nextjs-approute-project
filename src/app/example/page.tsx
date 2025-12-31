@@ -232,7 +232,7 @@ function ExampleHomePage() {
           </h2>
           <div className="grid gap-6 md:grid-cols-2">
             <div className="flex items-start">
-              <div className="mt-1 mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+              <div className="mr-3 mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
                 <span className="text-green-600 dark:text-green-400">⚡</span>
               </div>
               <div>
@@ -246,7 +246,7 @@ function ExampleHomePage() {
             </div>
 
             <div className="flex items-start">
-              <div className="mt-1 mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+              <div className="mr-3 mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
                 <span className="text-blue-600 dark:text-blue-400">🔍</span>
               </div>
               <div>
@@ -260,7 +260,7 @@ function ExampleHomePage() {
             </div>
 
             <div className="flex items-start">
-              <div className="mt-1 mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
+              <div className="mr-3 mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
                 <span className="text-purple-600 dark:text-purple-400">💰</span>
               </div>
               <div>
@@ -274,7 +274,7 @@ function ExampleHomePage() {
             </div>
 
             <div className="flex items-start">
-              <div className="mt-1 mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+              <div className="mr-3 mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
                 <span className="text-red-600 dark:text-red-400">🛡️</span>
               </div>
               <div>
