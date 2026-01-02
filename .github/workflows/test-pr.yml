@@ -19,6 +19,9 @@ jobs:
   quick-test:
     name: Quick Test Suite
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # PR'a yorum yazabilmek için gerekli izin
+      contents: read # Kodları okumak için gerekli izin
 
     steps:
       - name: Checkout code
