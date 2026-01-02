@@ -6,20 +6,14 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - 'src/**'
+      - '!src/**/*.md'
       - 'tests/**'
       - 'package.json'
       - 'bun.lock'
       - '*.config.*'
+      - '!*.config.md'
       - 'tsconfig.json'
       - '.github/workflows/**'
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.vscode/**'
-      - '.cursor/**'
-      - 'LICENSE'
-      - '.gitignore'
-      - '.prettierignore'
 
 jobs:
   quick-test:
