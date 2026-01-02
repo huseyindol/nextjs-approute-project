@@ -1,12 +1,8 @@
 'use client'
 
-import { Icons } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
-import { createComponentService } from '@/app/(admin)/admin/_services/components.services'
-import {
-  CreateComponentInput,
-  CreateComponentSchema,
-} from '@/schemas/component'
+import { createPostService } from '@/app/(admin)/admin/_services/posts.services'
+import { CreatePostInput, CreatePostSchema } from '@/schemas/post.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
@@ -14,44 +10,60 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-export default function NewComponentPage() {
+export default function NewPostPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
-  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [showSeo, setShowSeo] = useState(false)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateComponentInput>({
-    resolver: zodResolver(CreateComponentSchema),
+    watch,
+    setValue,
+  } = useForm<CreatePostInput>({
+    resolver: zodResolver(CreatePostSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      type: 'BANNER',
+      title: '',
       content: '',
-      orderIndex: 0,
+      slug: '',
       status: true,
-      pageIds: [],
-      bannerIds: [],
-      widgetIds: [],
+      orderIndex: 0,
     },
   })
 
+  // Auto-generate slug from title
+  const title = watch('title')
+  const generateSlug = () => {
+    const slug = title
+      .toLowerCase()
+      .replace(/ğ/g, 'g')
+      .replace(/ü/g, 'u')
+      .replace(/ş/g, 's')
+      .replace(/ı/g, 'i')
+      .replace(/ö/g, 'o')
+      .replace(/ç/g, 'c')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim()
+    setValue('slug', slug)
+  }
+
   // Create mutation
   const createMutation = useMutation({
-    mutationFn: (data: CreateComponentInput) => createComponentService(data),
+    mutationFn: (data: CreatePostInput) => createPostService(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['components'] })
-      router.push('/admin/components')
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
+      router.push('/admin/posts')
     },
     onError: error => {
       console.error('Create error:', error)
     },
   })
 
-  const onSubmit = (data: CreateComponentInput) => {
+  const onSubmit = (data: CreatePostInput) => {
     createMutation.mutate(data)
   }
 
@@ -72,18 +84,18 @@ export default function NewComponentPage() {
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
         <Link
-          href="/admin/components"
+          href="/admin/posts"
           className={`transition-colors hover:text-violet-400 ${
             isDarkMode ? 'text-slate-400' : 'text-gray-500'
           }`}
         >
-          Componentler
+          Postlar
         </Link>
         <span className={isDarkMode ? 'text-slate-600' : 'text-gray-400'}>
           /
         </span>
         <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>
-          Yeni Component
+          Yeni Post
         </span>
       </div>
 
@@ -94,10 +106,10 @@ export default function NewComponentPage() {
             isDarkMode ? 'text-white' : 'text-gray-900'
           }`}
         >
-          Yeni Component Oluştur
+          Yeni Post Oluştur
         </h1>
         <p className={isDarkMode ? 'text-slate-400' : 'text-gray-500'}>
-          Sayfa için yeni bir component oluşturun
+          Yeni bir post oluşturun
         </p>
       </div>
 
@@ -112,7 +124,7 @@ export default function NewComponentPage() {
         >
           Hata:{' '}
           {createMutation.error?.message ||
-            'Component oluşturulurken bir hata oluştu'}
+            'Post oluşturulurken bir hata oluştu'}
         </div>
       )}
 
@@ -130,53 +142,70 @@ export default function NewComponentPage() {
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}
           >
-            Component Bilgileri
+            Post Bilgileri
           </h2>
 
           <div className="space-y-4">
-            {/* Name */}
+            {/* Title */}
             <div>
-              <label htmlFor="name" className={labelClass}>
-                İsim *
+              <label htmlFor="title" className={labelClass}>
+                Başlık *
               </label>
               <input
-                id="name"
+                id="title"
                 type="text"
-                {...register('name')}
+                {...register('title')}
                 className={inputClass}
-                placeholder="Component ismi"
+                placeholder="Post başlığı"
+                onBlur={generateSlug}
               />
-              {errors.name && (
-                <p className={errorClass}>{errors.name.message}</p>
+              {errors.title && (
+                <p className={errorClass}>{errors.title.message}</p>
               )}
             </div>
 
-            {/* Description */}
+            {/* Slug */}
             <div>
-              <label htmlFor="description" className={labelClass}>
-                Açıklama
+              <label htmlFor="slug" className={labelClass}>
+                Slug *
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="slug"
+                  type="text"
+                  {...register('slug')}
+                  className={inputClass}
+                  placeholder="post-slug"
+                />
+                <button
+                  type="button"
+                  onClick={generateSlug}
+                  className={`rounded-xl px-4 py-2 text-sm ${
+                    isDarkMode
+                      ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  Oluştur
+                </button>
+              </div>
+              {errors.slug && (
+                <p className={errorClass}>{errors.slug.message}</p>
+              )}
+            </div>
+
+            {/* Content */}
+            <div>
+              <label htmlFor="content" className={labelClass}>
+                İçerik
               </label>
               <textarea
-                id="description"
-                {...register('description')}
-                rows={3}
+                id="content"
+                {...register('content')}
+                rows={6}
                 className={inputClass}
-                placeholder="Component açıklaması"
+                placeholder="Post içeriği..."
               />
-            </div>
-
-            {/* Type */}
-            <div>
-              <label htmlFor="type" className={labelClass}>
-                Tip *
-              </label>
-              <select id="type" {...register('type')} className={inputClass}>
-                <option value="BANNER">Banner</option>
-                <option value="WIDGET">Widget</option>
-              </select>
-              {errors.type && (
-                <p className={errorClass}>{errors.type.message}</p>
-              )}
             </div>
 
             {/* Order Index */}
@@ -213,7 +242,7 @@ export default function NewComponentPage() {
           </div>
         </div>
 
-        {/* Advanced Settings */}
+        {/* SEO Settings */}
         <div
           className={`rounded-2xl p-6 ${
             isDarkMode
@@ -223,7 +252,7 @@ export default function NewComponentPage() {
         >
           <button
             type="button"
-            onClick={() => setShowAdvanced(!showAdvanced)}
+            onClick={() => setShowSeo(!showSeo)}
             className="flex w-full items-center justify-between"
           >
             <h2
@@ -231,29 +260,88 @@ export default function NewComponentPage() {
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}
             >
-              Gelişmiş Ayarlar
+              SEO Ayarları
             </h2>
             <span
-              className={`transition-transform ${showAdvanced ? 'rotate-180' : ''}`}
+              className={`transition-transform ${showSeo ? 'rotate-90' : ''}`}
             >
-              <Icons.ChevronRight />
+              →
             </span>
           </button>
 
-          {showAdvanced && (
+          {showSeo && (
             <div className="mt-4 space-y-4">
-              {/* Content */}
               <div>
-                <label htmlFor="content" className={labelClass}>
-                  İçerik
+                <label htmlFor="seoInfo.title" className={labelClass}>
+                  SEO Başlığı
+                </label>
+                <input
+                  id="seoInfo.title"
+                  type="text"
+                  {...register('seoInfo.title')}
+                  className={inputClass}
+                  placeholder="SEO başlığı"
+                />
+              </div>
+              <div>
+                <label htmlFor="seoInfo.description" className={labelClass}>
+                  SEO Açıklaması
                 </label>
                 <textarea
-                  id="content"
-                  {...register('content')}
-                  rows={4}
+                  id="seoInfo.description"
+                  {...register('seoInfo.description')}
+                  rows={2}
                   className={inputClass}
-                  placeholder="HTML veya JSON içerik"
+                  placeholder="SEO açıklaması"
                 />
+              </div>
+              <div>
+                <label htmlFor="seoInfo.keywords" className={labelClass}>
+                  SEO Anahtar Kelimeleri
+                </label>
+                <input
+                  id="seoInfo.keywords"
+                  type="text"
+                  {...register('seoInfo.keywords')}
+                  className={inputClass}
+                  placeholder="SEO anahtar kelimeleri"
+                />
+              </div>
+              <div>
+                <label htmlFor="seoInfo.canonicalUrl" className={labelClass}>
+                  Canonical URL
+                </label>
+                <input
+                  id="seoInfo.canonicalUrl"
+                  type="text"
+                  {...register('seoInfo.canonicalUrl')}
+                  className={inputClass}
+                  placeholder="Canonical URL"
+                />
+              </div>
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2">
+                  <input
+                    id="seoInfo.noIndex"
+                    type="checkbox"
+                    {...register('seoInfo.noIndex')}
+                    className="h-4 w-4 rounded"
+                  />
+                  <label htmlFor="seoInfo.noIndex" className="text-sm">
+                    noIndex
+                  </label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    id="seoInfo.noFollow"
+                    type="checkbox"
+                    {...register('seoInfo.noFollow')}
+                    className="h-4 w-4 rounded"
+                  />
+                  <label htmlFor="seoInfo.noFollow" className="text-sm">
+                    noFollow
+                  </label>
+                </div>
               </div>
             </div>
           )}
@@ -262,7 +350,7 @@ export default function NewComponentPage() {
         {/* Actions */}
         <div className="flex gap-3">
           <Link
-            href="/admin/components"
+            href="/admin/posts"
             className={`flex-1 rounded-xl px-4 py-3 text-center text-sm font-medium transition-colors ${
               isDarkMode
                 ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
@@ -282,7 +370,7 @@ export default function NewComponentPage() {
                 Kaydediliyor...
               </span>
             ) : (
-              'Component Oluştur'
+              'Post Oluştur'
             )}
           </button>
         </div>

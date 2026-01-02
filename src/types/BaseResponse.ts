@@ -94,3 +94,7 @@ export type PageResponseType = BaseResponse<Page>
 export type PageListResponseType = BaseResponse<Page[]>
 export type ComponentResponseType = BaseResponse<Component>
 export type ComponentListResponseType = BaseResponse<Component[]>
+export type PostResponseType = BaseResponse<Post>
+export type PostListResponseType = BaseResponse<Post[]>
+export type WidgetResponseType = BaseResponse<Widget>
+export type WidgetListResponseType = BaseResponse<Widget[]>

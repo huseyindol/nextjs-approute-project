@@ -9,35 +9,35 @@ import {
 } from '@/app/(admin)/admin/_components'
 import { useAdminTheme, useDebounce } from '@/app/(admin)/admin/_hooks'
 import {
-  deleteComponentService,
-  getComponentService,
-} from '@/app/(admin)/admin/_services/components.services'
-import { Component, ComponentTypeEnum } from '@/types/BaseResponse'
+  deletePostService,
+  getPostService,
+} from '@/app/(admin)/admin/_services/posts.services'
+import { Post } from '@/types/BaseResponse'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export default function ComponentsListPage() {
+export default function PostsListPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
   const [searchQuery, setSearchQuery] = useState('')
-  const [deleteTarget, setDeleteTarget] = useState<Component | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Post | null>(null)
 
-  // Fetch components - 5 dakika cache
+  // Fetch posts - 5 dakika cache
   const { data, error, isError, isLoading } = useQuery({
-    queryKey: ['components'],
-    queryFn: () => getComponentService(),
-    staleTime: 5 * 60 * 1000, // 5 dakika boyunca veri "fresh" kabul edilir
-    gcTime: 10 * 60 * 1000, // 10 dakika boyunca cache'de tutulur
+    queryKey: ['posts'],
+    queryFn: () => getPostService(),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   })
 
   // Delete mutation
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteComponentService(id),
+    mutationFn: (id: string) => deletePostService(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['components'] })
+      queryClient.invalidateQueries({ queryKey: ['posts'] })
       setDeleteTarget(null)
     },
     onError: error => {
@@ -48,72 +48,72 @@ export default function ComponentsListPage() {
   // Debounced search
   const debouncedSearch = useDebounce(searchQuery, 300)
 
-  // Filter components based on search
-  const filteredComponents =
+  // Filter posts based on search
+  const filteredPosts =
     data?.data?.filter(
-      component =>
-        component.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        component.description
-          ?.toLowerCase()
-          .includes(debouncedSearch.toLowerCase()),
+      post =>
+        post.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        post.slug.toLowerCase().includes(debouncedSearch.toLowerCase()),
     ) || []
 
-  const columns: Column<Component>[] = [
+  const columns: Column<Post>[] = [
     {
-      key: 'name',
-      header: 'İsim',
-      render: component => (
+      key: 'title',
+      header: 'Başlık',
+      render: post => (
         <div>
           <p
             className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
           >
-            {component.name}
+            {post.title}
           </p>
           <p
             className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
           >
-            {component.description || '-'}
+            /{post.slug}
           </p>
         </div>
       ),
     },
     {
-      key: 'type',
-      header: 'Tip',
-      render: component => (
-        <span
-          className={`rounded px-2 py-1 text-xs font-medium ${
-            component.type === ComponentTypeEnum.BANNER
-              ? 'bg-blue-500/20 text-blue-400'
-              : 'bg-purple-500/20 text-purple-400'
-          }`}
-        >
-          {component.type}
-        </span>
-      ),
-    },
-    {
       key: 'orderIndex',
       header: 'Sıra',
-      render: component => (
+      render: post => (
         <span className={isDarkMode ? 'text-slate-400' : 'text-gray-500'}>
-          {component.orderIndex}
+          {post.orderIndex}
         </span>
       ),
     },
     {
-      key: 'pageIds',
-      header: 'Sayfalar',
-      render: component => (
-        <span className={isDarkMode ? 'text-slate-400' : 'text-gray-500'}>
-          {component.pageIds?.length || 0} sayfa
-        </span>
+      key: 'seoInfo',
+      header: 'SEO',
+      render: post => (
+        <div className="flex items-center gap-2">
+          {post.seoInfo?.noIndex ? (
+            <span className="rounded bg-amber-500/20 px-2 py-0.5 text-xs text-amber-400">
+              noindex
+            </span>
+          ) : (
+            <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-xs text-emerald-400">
+              index
+            </span>
+          )}
+          {post.seoInfo?.noFollow ? (
+            <span className="rounded bg-amber-500/20 px-2 py-0.5 text-xs text-amber-400">
+              nofollow
+            </span>
+          ) : (
+            <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-xs text-emerald-400">
+              follow
+            </span>
+          )}
+        </div>
       ),
     },
     {
       key: 'status',
       header: 'Durum',
-      render: component => <StatusBadge status={component.status} />,
+      render: post => <StatusBadge status={post.status} />,
     },
   ]
 
@@ -133,19 +133,19 @@ export default function ComponentsListPage() {
                 isDarkMode ? 'text-white' : 'text-gray-900'
               }`}
             >
-              Componentler
+              Postlar
             </h1>
             <p className={isDarkMode ? 'text-slate-400' : 'text-gray-500'}>
-              Sayfa componentlerini yönetin
+              Tüm postları yönetin
             </p>
           </div>
 
           <Link
-            href="/admin/components/new"
+            href="/admin/posts/new"
             className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40"
           >
             <span className="text-lg">+</span>
-            Yeni Component
+            Yeni Post
           </Link>
         </div>
 
@@ -154,7 +154,7 @@ export default function ComponentsListPage() {
           <SearchInput
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder="Component ara..."
+            placeholder="Post ara..."
           />
         </div>
 
@@ -167,19 +167,18 @@ export default function ComponentsListPage() {
                 : 'bg-rose-100 text-rose-700'
             }`}
           >
-            Hata: {error?.message || 'Componentler yüklenirken bir hata oluştu'}
+            Hata: {error?.message || 'Postlar yüklenirken bir hata oluştu'}
           </div>
         ) : (
           <DataTable
-            data={filteredComponents as Component[]}
+            data={filteredPosts as Post[]}
             columns={columns}
             isLoading={isLoading}
-            keyExtractor={component => component.id}
-            emptyMessage="Component bulunamadı"
+            keyExtractor={post => post.id}
+            emptyMessage="Post bulunamadı"
             actions={{
-              onEdit: component =>
-                router.push(`/admin/components/${component.id}/edit`),
-              onDelete: component => setDeleteTarget(component),
+              onEdit: post => router.push(`/admin/posts/${post.id}/edit`),
+              onDelete: post => setDeleteTarget(post),
             }}
           />
         )}
@@ -190,8 +189,8 @@ export default function ComponentsListPage() {
         isOpen={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
-        title="Component'i Sil"
-        message={`"${deleteTarget?.name}" component'ini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`}
+        title="Postu Sil"
+        message={`"${deleteTarget?.title}" postunu silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`}
         confirmText="Sil"
         cancelText="İptal"
         variant="danger"

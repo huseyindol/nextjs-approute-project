@@ -1,31 +1,25 @@
 'use client'
 
-import { Icons } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
-import { createComponentService } from '@/app/(admin)/admin/_services/components.services'
-import {
-  CreateComponentInput,
-  CreateComponentSchema,
-} from '@/schemas/component'
+import { createWidgetService } from '@/app/(admin)/admin/_services/widgets.services'
+import { CreateWidgetInput, CreateWidgetSchema } from '@/schemas/widget.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
-export default function NewComponentPage() {
+export default function NewWidgetPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
-  const [showAdvanced, setShowAdvanced] = useState(false)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateComponentInput>({
-    resolver: zodResolver(CreateComponentSchema),
+  } = useForm<CreateWidgetInput>({
+    resolver: zodResolver(CreateWidgetSchema),
     defaultValues: {
       name: '',
       description: '',
@@ -33,25 +27,24 @@ export default function NewComponentPage() {
       content: '',
       orderIndex: 0,
       status: true,
-      pageIds: [],
       bannerIds: [],
-      widgetIds: [],
+      postIds: [],
     },
   })
 
   // Create mutation
   const createMutation = useMutation({
-    mutationFn: (data: CreateComponentInput) => createComponentService(data),
+    mutationFn: (data: CreateWidgetInput) => createWidgetService(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['components'] })
-      router.push('/admin/components')
+      queryClient.invalidateQueries({ queryKey: ['widgets'] })
+      router.push('/admin/widgets')
     },
     onError: error => {
       console.error('Create error:', error)
     },
   })
 
-  const onSubmit = (data: CreateComponentInput) => {
+  const onSubmit = (data: CreateWidgetInput) => {
     createMutation.mutate(data)
   }
 
@@ -72,18 +65,18 @@ export default function NewComponentPage() {
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
         <Link
-          href="/admin/components"
+          href="/admin/widgets"
           className={`transition-colors hover:text-violet-400 ${
             isDarkMode ? 'text-slate-400' : 'text-gray-500'
           }`}
         >
-          Componentler
+          Widgetlar
         </Link>
         <span className={isDarkMode ? 'text-slate-600' : 'text-gray-400'}>
           /
         </span>
         <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>
-          Yeni Component
+          Yeni Widget
         </span>
       </div>
 
@@ -94,10 +87,10 @@ export default function NewComponentPage() {
             isDarkMode ? 'text-white' : 'text-gray-900'
           }`}
         >
-          Yeni Component Oluştur
+          Yeni Widget Oluştur
         </h1>
         <p className={isDarkMode ? 'text-slate-400' : 'text-gray-500'}>
-          Sayfa için yeni bir component oluşturun
+          Yeni bir widget oluşturun
         </p>
       </div>
 
@@ -112,7 +105,7 @@ export default function NewComponentPage() {
         >
           Hata:{' '}
           {createMutation.error?.message ||
-            'Component oluşturulurken bir hata oluştu'}
+            'Widget oluşturulurken bir hata oluştu'}
         </div>
       )}
 
@@ -130,7 +123,7 @@ export default function NewComponentPage() {
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}
           >
-            Component Bilgileri
+            Widget Bilgileri
           </h2>
 
           <div className="space-y-4">
@@ -144,7 +137,7 @@ export default function NewComponentPage() {
                 type="text"
                 {...register('name')}
                 className={inputClass}
-                placeholder="Component ismi"
+                placeholder="Widget ismi"
               />
               {errors.name && (
                 <p className={errorClass}>{errors.name.message}</p>
@@ -161,7 +154,7 @@ export default function NewComponentPage() {
                 {...register('description')}
                 rows={3}
                 className={inputClass}
-                placeholder="Component açıklaması"
+                placeholder="Widget açıklaması"
               />
             </div>
 
@@ -172,7 +165,7 @@ export default function NewComponentPage() {
               </label>
               <select id="type" {...register('type')} className={inputClass}>
                 <option value="BANNER">Banner</option>
-                <option value="WIDGET">Widget</option>
+                <option value="POST">Post</option>
               </select>
               {errors.type && (
                 <p className={errorClass}>{errors.type.message}</p>
@@ -190,6 +183,20 @@ export default function NewComponentPage() {
                 {...register('orderIndex', { valueAsNumber: true })}
                 className={inputClass}
                 placeholder="0"
+              />
+            </div>
+
+            {/* Content */}
+            <div>
+              <label htmlFor="content" className={labelClass}>
+                İçerik
+              </label>
+              <textarea
+                id="content"
+                {...register('content')}
+                rows={4}
+                className={inputClass}
+                placeholder="HTML veya JSON içerik"
               />
             </div>
 
@@ -213,56 +220,10 @@ export default function NewComponentPage() {
           </div>
         </div>
 
-        {/* Advanced Settings */}
-        <div
-          className={`rounded-2xl p-6 ${
-            isDarkMode
-              ? 'border border-slate-800/50 bg-slate-900/60'
-              : 'border border-gray-200 bg-white'
-          } backdrop-blur-sm`}
-        >
-          <button
-            type="button"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="flex w-full items-center justify-between"
-          >
-            <h2
-              className={`text-lg font-semibold ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}
-            >
-              Gelişmiş Ayarlar
-            </h2>
-            <span
-              className={`transition-transform ${showAdvanced ? 'rotate-180' : ''}`}
-            >
-              <Icons.ChevronRight />
-            </span>
-          </button>
-
-          {showAdvanced && (
-            <div className="mt-4 space-y-4">
-              {/* Content */}
-              <div>
-                <label htmlFor="content" className={labelClass}>
-                  İçerik
-                </label>
-                <textarea
-                  id="content"
-                  {...register('content')}
-                  rows={4}
-                  className={inputClass}
-                  placeholder="HTML veya JSON içerik"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
         {/* Actions */}
         <div className="flex gap-3">
           <Link
-            href="/admin/components"
+            href="/admin/widgets"
             className={`flex-1 rounded-xl px-4 py-3 text-center text-sm font-medium transition-colors ${
               isDarkMode
                 ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
@@ -282,7 +243,7 @@ export default function NewComponentPage() {
                 Kaydediliyor...
               </span>
             ) : (
-              'Component Oluştur'
+              'Widget Oluştur'
             )}
           </button>
         </div>

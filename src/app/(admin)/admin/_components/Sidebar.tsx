@@ -21,6 +21,8 @@ const menuItems: MenuItem[] = [
   { icon: Icons.Home, label: 'Gösterge Paneli', href: '/admin/dashboard' },
   { icon: Icons.BarChart, label: 'Sayfalar', href: '/admin/pages' },
   { icon: Icons.Package, label: 'Componentler', href: '/admin/components' },
+  { icon: Icons.File, label: 'Postlar', href: '/admin/posts' },
+  { icon: Icons.Grid, label: 'Widgetlar', href: '/admin/widgets' },
   { icon: Icons.Settings, label: 'Ayarlar', href: '/admin/settings' },
 ]
 

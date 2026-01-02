@@ -1,31 +1,44 @@
 'use client'
 
-import { Icons } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
-import { createComponentService } from '@/app/(admin)/admin/_services/components.services'
 import {
-  CreateComponentInput,
-  CreateComponentSchema,
-} from '@/schemas/component'
+  getWidgetByIdService,
+  updateWidgetService,
+} from '@/app/(admin)/admin/_services/widgets.services'
+import { UpdateWidgetInput, UpdateWidgetSchema } from '@/schemas/widget.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-export default function NewComponentPage() {
+export default function EditWidgetPage() {
   const router = useRouter()
+  const params = useParams()
+  const widgetId = params.id as string
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
-  const [showAdvanced, setShowAdvanced] = useState(false)
+
+  // Fetch widget data
+  const {
+    data: widgetData,
+    isLoading: isWidgetLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['widget', widgetId],
+    queryFn: () => getWidgetByIdService(widgetId),
+    enabled: !!widgetId,
+  })
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm<CreateComponentInput>({
-    resolver: zodResolver(CreateComponentSchema),
+  } = useForm<UpdateWidgetInput>({
+    resolver: zodResolver(UpdateWidgetSchema),
     defaultValues: {
       name: '',
       description: '',
@@ -33,26 +46,44 @@ export default function NewComponentPage() {
       content: '',
       orderIndex: 0,
       status: true,
-      pageIds: [],
       bannerIds: [],
-      widgetIds: [],
+      postIds: [],
     },
   })
 
-  // Create mutation
-  const createMutation = useMutation({
-    mutationFn: (data: CreateComponentInput) => createComponentService(data),
+  // Populate form when data is loaded
+  useEffect(() => {
+    if (widgetData?.data) {
+      const widget = widgetData.data
+      reset({
+        name: widget.name,
+        description: widget.description || '',
+        type: (widget.type as string).toUpperCase() as 'BANNER' | 'POST',
+        content: widget.content || '',
+        orderIndex: widget.orderIndex,
+        status: widget.status,
+        bannerIds: [],
+        postIds: [],
+      })
+    }
+  }, [widgetData, reset])
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: (data: UpdateWidgetInput) =>
+      updateWidgetService(widgetId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['components'] })
-      router.push('/admin/components')
+      queryClient.invalidateQueries({ queryKey: ['widgets'] })
+      queryClient.invalidateQueries({ queryKey: ['widget', widgetId] })
+      router.push('/admin/widgets')
     },
     onError: error => {
-      console.error('Create error:', error)
+      console.error('Update error:', error)
     },
   })
 
-  const onSubmit = (data: CreateComponentInput) => {
-    createMutation.mutate(data)
+  const onSubmit = (data: UpdateWidgetInput) => {
+    updateMutation.mutate(data)
   }
 
   const inputClass = `w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors ${
@@ -67,23 +98,62 @@ export default function NewComponentPage() {
 
   const errorClass = 'mt-1 text-xs text-rose-400'
 
+  // Loading state
+  if (isWidgetLoading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+          <span className={isDarkMode ? 'text-slate-400' : 'text-gray-500'}>
+            Widget yükleniyor...
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="mx-auto max-w-3xl space-y-6 p-6">
+        <div
+          className={`rounded-xl p-4 ${
+            isDarkMode
+              ? 'bg-rose-500/20 text-rose-300'
+              : 'bg-rose-100 text-rose-700'
+          }`}
+        >
+          Hata: {error?.message || 'Widget yüklenirken bir hata oluştu'}
+        </div>
+        <Link
+          href="/admin/widgets"
+          className={`inline-flex items-center gap-2 text-sm ${
+            isDarkMode ? 'text-violet-400' : 'text-violet-600'
+          }`}
+        >
+          ← Widgetlara Dön
+        </Link>
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
         <Link
-          href="/admin/components"
+          href="/admin/widgets"
           className={`transition-colors hover:text-violet-400 ${
             isDarkMode ? 'text-slate-400' : 'text-gray-500'
           }`}
         >
-          Componentler
+          Widgetlar
         </Link>
         <span className={isDarkMode ? 'text-slate-600' : 'text-gray-400'}>
           /
         </span>
         <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>
-          Yeni Component
+          Düzenle: {widgetData?.data?.name}
         </span>
       </div>
 
@@ -94,15 +164,15 @@ export default function NewComponentPage() {
             isDarkMode ? 'text-white' : 'text-gray-900'
           }`}
         >
-          Yeni Component Oluştur
+          Widget Düzenle
         </h1>
         <p className={isDarkMode ? 'text-slate-400' : 'text-gray-500'}>
-          Sayfa için yeni bir component oluşturun
+          Widget bilgilerini güncelleyin
         </p>
       </div>
 
       {/* Error Message */}
-      {createMutation.isError && (
+      {updateMutation.isError && (
         <div
           className={`rounded-xl p-4 ${
             isDarkMode
@@ -111,8 +181,8 @@ export default function NewComponentPage() {
           }`}
         >
           Hata:{' '}
-          {createMutation.error?.message ||
-            'Component oluşturulurken bir hata oluştu'}
+          {updateMutation.error?.message ||
+            'Widget güncellenirken bir hata oluştu'}
         </div>
       )}
 
@@ -130,7 +200,7 @@ export default function NewComponentPage() {
               isDarkMode ? 'text-white' : 'text-gray-900'
             }`}
           >
-            Component Bilgileri
+            Widget Bilgileri
           </h2>
 
           <div className="space-y-4">
@@ -144,7 +214,7 @@ export default function NewComponentPage() {
                 type="text"
                 {...register('name')}
                 className={inputClass}
-                placeholder="Component ismi"
+                placeholder="Widget ismi"
               />
               {errors.name && (
                 <p className={errorClass}>{errors.name.message}</p>
@@ -161,7 +231,7 @@ export default function NewComponentPage() {
                 {...register('description')}
                 rows={3}
                 className={inputClass}
-                placeholder="Component açıklaması"
+                placeholder="Widget açıklaması"
               />
             </div>
 
@@ -172,7 +242,7 @@ export default function NewComponentPage() {
               </label>
               <select id="type" {...register('type')} className={inputClass}>
                 <option value="BANNER">Banner</option>
-                <option value="WIDGET">Widget</option>
+                <option value="POST">Post</option>
               </select>
               {errors.type && (
                 <p className={errorClass}>{errors.type.message}</p>
@@ -190,6 +260,20 @@ export default function NewComponentPage() {
                 {...register('orderIndex', { valueAsNumber: true })}
                 className={inputClass}
                 placeholder="0"
+              />
+            </div>
+
+            {/* Content */}
+            <div>
+              <label htmlFor="content" className={labelClass}>
+                İçerik
+              </label>
+              <textarea
+                id="content"
+                {...register('content')}
+                rows={4}
+                className={inputClass}
+                placeholder="HTML veya JSON içerik"
               />
             </div>
 
@@ -213,56 +297,10 @@ export default function NewComponentPage() {
           </div>
         </div>
 
-        {/* Advanced Settings */}
-        <div
-          className={`rounded-2xl p-6 ${
-            isDarkMode
-              ? 'border border-slate-800/50 bg-slate-900/60'
-              : 'border border-gray-200 bg-white'
-          } backdrop-blur-sm`}
-        >
-          <button
-            type="button"
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="flex w-full items-center justify-between"
-          >
-            <h2
-              className={`text-lg font-semibold ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}
-            >
-              Gelişmiş Ayarlar
-            </h2>
-            <span
-              className={`transition-transform ${showAdvanced ? 'rotate-180' : ''}`}
-            >
-              <Icons.ChevronRight />
-            </span>
-          </button>
-
-          {showAdvanced && (
-            <div className="mt-4 space-y-4">
-              {/* Content */}
-              <div>
-                <label htmlFor="content" className={labelClass}>
-                  İçerik
-                </label>
-                <textarea
-                  id="content"
-                  {...register('content')}
-                  rows={4}
-                  className={inputClass}
-                  placeholder="HTML veya JSON içerik"
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
         {/* Actions */}
         <div className="flex gap-3">
           <Link
-            href="/admin/components"
+            href="/admin/widgets"
             className={`flex-1 rounded-xl px-4 py-3 text-center text-sm font-medium transition-colors ${
               isDarkMode
                 ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
@@ -273,16 +311,16 @@ export default function NewComponentPage() {
           </Link>
           <button
             type="submit"
-            disabled={createMutation.isPending}
+            disabled={updateMutation.isPending}
             className="flex-1 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
           >
-            {createMutation.isPending ? (
+            {updateMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                 Kaydediliyor...
               </span>
             ) : (
-              'Component Oluştur'
+              'Değişiklikleri Kaydet'
             )}
           </button>
         </div>
