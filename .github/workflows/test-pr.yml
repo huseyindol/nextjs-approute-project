@@ -40,12 +40,10 @@ jobs:
         if: always()
         with:
           script: |
-            const fs = require('fs');
-            const { context } = require('@actions/github');
-
+            // context ve github değişkenleri github-script tarafından otomatik sağlanır
             let comment = '## 🧪 Test Results\n\n';
 
-            if (process.env.TEST_RESULT === 'success') {
+            if ('${{ job.status }}' === 'success') {
               comment += '✅ All tests passed!\n';
             } else {
               comment += '❌ Some tests failed. Please check the details above.\n';
@@ -55,14 +53,12 @@ jobs:
             comment += `**Commit**: ${context.sha.substring(0, 7)}\n`;
             comment += `**Branch**: ${context.ref}\n`;
 
-            github.rest.issues.createComment({
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: comment
             });
-        env:
-          TEST_RESULT: ${{ job.status }}
 
   coverage-check:
     name: Coverage Check
