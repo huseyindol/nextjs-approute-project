@@ -1,7 +1,7 @@
 'use client'
 
 import { useTheme } from 'next-themes'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 /**
  * Admin panel için tema hook'u
@@ -11,17 +11,17 @@ import { useEffect, useRef, useState } from 'react'
 export function useAdminTheme() {
   const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
-  const mountedRef = useRef(false)
 
-  // Hydration mismatch önlemek için - useLayoutEffect pattern
+  // Hydration mismatch önlemek için - component mount olduktan sonra true olur
+  // Bu pattern next-themes kütüphanesinin önerdiği standart yaklaşımdır
+  // https://github.com/pacocoursey/next-themes#avoid-hydration-mismatch
   useEffect(() => {
-    if (!mountedRef.current) {
-      mountedRef.current = true
-      setMounted(true)
-    }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true)
   }, [])
 
-  const isDarkMode = mounted ? resolvedTheme === 'dark' : true // SSR'da dark varsayalım
+  // SSR'da theme undefined olabilir, mounted olana kadar dark varsayalım
+  const isDarkMode = mounted ? resolvedTheme === 'dark' : true
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')

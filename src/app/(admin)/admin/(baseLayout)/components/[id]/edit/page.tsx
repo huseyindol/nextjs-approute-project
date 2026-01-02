@@ -64,7 +64,7 @@ export default function EditComponentPage() {
       reset({
         name: component.name,
         description: component.description || '',
-        type: component.type as 'BANNER' | 'WIDGET',
+        type: (component.type as string).toUpperCase() as 'BANNER' | 'WIDGET',
         content: component.content || '',
         orderIndex: component.orderIndex,
         status: component.status,
