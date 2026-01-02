@@ -10,11 +10,12 @@ export const refreshTokenProxy = async (
   if (!refreshToken) {
     // remove cookies
     removeCookies(response)
+    return false
   } else {
     const refreshResponse = await refreshService(refreshToken.value)
     if (!refreshResponse.result) {
       removeCookies(response)
-      return response
+      return false
     }
     // cookies update
     response.cookies.set(CookieEnum.ACCESS_TOKEN, refreshResponse.data.token, {
@@ -49,6 +50,7 @@ export const refreshTokenProxy = async (
       sameSite: 'strict',
       maxAge: 60 * 60 * 24 * 7,
     })
+    return true
   }
 }
 

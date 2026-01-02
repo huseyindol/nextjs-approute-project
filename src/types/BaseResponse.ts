@@ -91,3 +91,6 @@ export interface Page {
   components: Component[]
 }
 export type PageResponseType = BaseResponse<Page>
+export type PageListResponseType = BaseResponse<Page[]>
+export type ComponentResponseType = BaseResponse<Component>
+export type ComponentListResponseType = BaseResponse<Component[]>

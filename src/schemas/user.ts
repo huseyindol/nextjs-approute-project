@@ -101,6 +101,7 @@ export const LoginResponse = z.object({
 })
 
 // Export types for use in components
+export type LoginInput = z.input<typeof LoginSchema>
 export type UsersQueryParamsType = z.infer<typeof UsersQueryParams>
 export type UserParamsType = z.infer<typeof UserParams>
 export type CreateUserBodyType = z.infer<typeof CreateUserBody>

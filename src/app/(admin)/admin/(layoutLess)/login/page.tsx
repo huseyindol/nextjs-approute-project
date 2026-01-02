@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { updateGlobalCookie, useCookie } from '@/context/CookieContext'
-import { LoginSchema } from '@/schemas/user'
+import { LoginInput, LoginSchema } from '@/schemas/user'
 import { LoginResponseType } from '@/types/AuthResponse'
 import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { fetcher } from '@/utils/services/fetcher'
@@ -21,10 +21,6 @@ import { AlertCircle, Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-
-// Zod validation schema
-type LoginFormData = z.infer<typeof LoginSchema>
 
 const AdminLoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
@@ -38,7 +34,7 @@ const AdminLoginPage = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     clearErrors,
-  } = useForm<LoginFormData>({
+  } = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
       usernameOrEmail: '',
@@ -46,22 +42,19 @@ const AdminLoginPage = () => {
     },
   })
 
-  const onSubmit = async (formData: LoginFormData) => {
+  const onSubmit = async (formData: LoginInput) => {
     setGeneralError('')
     clearErrors()
 
     try {
-      const response = await fetcher<LoginResponseType>(
-        'http://localhost:8080/api/v1/auth/login',
-        {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
+      const response = await fetcher<LoginResponseType>('/api/v1/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      )
+        body: JSON.stringify(formData),
+      })
       console.log('onSubmit - response', response)
       if (response.error) {
         setGeneralError(response.error || 'Giriş yapılırken bir hata oluştu.')

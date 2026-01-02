@@ -101,15 +101,38 @@ export async function proxy(request: NextRequest) {
   // yeni token ve refresh token'i cookies'a yaz
 
   console.log('PROXY', request.nextUrl.pathname)
-  const expiredDate = request.cookies.get(CookieEnum.EXPIRED_DATE)
-  console.log('expiredDate-START', expiredDate)
-  if (expiredDate) {
-    const expiredDateCheck = new Date(Number(expiredDate.value))
+
+  // Admin rotalarını koru
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
+  const isAdminLoginRoute = request.nextUrl.pathname === '/admin/login'
+
+  if (isAdminRoute && !isAdminLoginRoute) {
+    const accessToken = request.cookies.get(CookieEnum.ACCESS_TOKEN)
+    const expiredDate = request.cookies.get(CookieEnum.EXPIRED_DATE)
+    console.log(
+      'PROXY',
+      accessToken,
+      expiredDate?.value,
+      !accessToken && !expiredDate,
+    )
+    // accessToken veya expiredDate yoksa login'e yönlendir
+    if (!accessToken && !expiredDate) {
+      console.log('PROXY - Admin route protected, redirecting to login')
+      return NextResponse.redirect(new URL('/admin/login', request.url))
+    }
+
+    // Token süresi dolmuşsa
+    const expiredDateCheck = new Date(Number(expiredDate?.value))
     console.log('expiredDate-CHECK', expiredDateCheck, 'new Date()', new Date())
     if (expiredDateCheck < new Date()) {
-      console.log('PROXY - refresh token proxy started')
-      await refreshTokenProxy(request, response)
-      console.log('PROXY - refresh token proxy finished')
+      console.log('PROXY - Token expired, attempting refresh')
+      const refreshResult = await refreshTokenProxy(request, response)
+      console.log('refreshResult', refreshResult)
+      // Refresh başarısız olduysa login'e yönlendir
+      if (!refreshResult) {
+        console.log('PROXY - Refresh failed, redirecting to login')
+        return NextResponse.redirect(new URL('/admin/login', request.url))
+      }
     }
   }
 

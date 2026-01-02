@@ -51,7 +51,7 @@ export const fetcher = async <T>(
   }
   console.log('url', url)
   console.log('options', options)
-  let response = await fetch(url, options)
+  let response = await fetch(`${process.env.NEXT_PUBLIC_API}${url}`, options)
   console.log('response.ok', response.ok)
   if (!response.ok) {
     console.error(`HTTP error! status: ${response.status}`)
