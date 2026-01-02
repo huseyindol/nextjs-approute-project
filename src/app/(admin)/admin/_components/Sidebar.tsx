@@ -23,6 +23,7 @@ const menuItems: MenuItem[] = [
   { icon: Icons.Package, label: 'Componentler', href: '/admin/components' },
   { icon: Icons.File, label: 'Postlar', href: '/admin/posts' },
   { icon: Icons.Grid, label: 'Widgetlar', href: '/admin/widgets' },
+  { icon: Icons.Eye, label: 'Bannerlar', href: '/admin/banners' },
   { icon: Icons.Settings, label: 'Ayarlar', href: '/admin/settings' },
 ]
 

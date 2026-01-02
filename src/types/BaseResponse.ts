@@ -98,3 +98,5 @@ export type PostResponseType = BaseResponse<Post>
 export type PostListResponseType = BaseResponse<Post[]>
 export type WidgetResponseType = BaseResponse<Widget>
 export type WidgetListResponseType = BaseResponse<Widget[]>
+export type BannerResponseType = BaseResponse<Banner>
+export type BannerListResponseType = BaseResponse<Banner[]>
