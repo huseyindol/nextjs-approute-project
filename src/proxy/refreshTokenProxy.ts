@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { refreshService } from '../services/auth/refreshService'
 import { CookieEnum } from '../utils/constant/cookieConstant'
+import { removeCookies } from './removeCookies'
 
 export const refreshTokenProxy = async (
   request: NextRequest,
@@ -9,12 +10,12 @@ export const refreshTokenProxy = async (
   const refreshToken = request.cookies.get(CookieEnum.REFRESH_TOKEN)
   if (!refreshToken) {
     // remove cookies
-    removeCookies(response)
+    await removeCookies(response)
     return false
   } else {
     const refreshResponse = await refreshService(refreshToken.value)
     if (!refreshResponse.result) {
-      removeCookies(response)
+      await removeCookies(response)
       return false
     }
     // cookies update
@@ -52,11 +53,4 @@ export const refreshTokenProxy = async (
     })
     return true
   }
-}
-
-const removeCookies = (response: NextResponse) => {
-  response.cookies.delete(CookieEnum.ACCESS_TOKEN)
-  response.cookies.delete(CookieEnum.REFRESH_TOKEN)
-  response.cookies.delete(CookieEnum.EXPIRED_DATE)
-  response.cookies.delete(CookieEnum.USER_CODE)
 }

@@ -3,6 +3,7 @@
 import {
   Column,
   ConfirmDialog,
+  CopyButton,
   DataTable,
   SearchInput,
   StatusBadge,
@@ -65,7 +66,7 @@ export default function BannersListPage() {
         <div className="relative h-12 w-20 overflow-hidden rounded-lg">
           {banner.image ? (
             <Image
-              src={banner.image}
+              src={`${process.env.NEXT_PUBLIC_API}/${banner.image}`}
               alt={banner.altText || banner.title}
               fill
               className="object-cover"
@@ -105,23 +106,26 @@ export default function BannersListPage() {
       key: 'link',
       header: 'Link',
       render: banner => (
-        <div className="max-w-[200px] truncate">
-          <span
-            className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-          >
-            {banner.link || '-'}
-          </span>
-          {banner.target && (
+        <div className="flex max-w-[200px] items-center gap-2">
+          <div className="truncate">
             <span
-              className={`ml-2 rounded px-1.5 py-0.5 text-xs ${
-                isDarkMode
-                  ? 'bg-slate-700 text-slate-400'
-                  : 'bg-gray-100 text-gray-500'
-              }`}
+              className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
             >
-              {banner.target}
+              {banner.link || '-'}
             </span>
-          )}
+            {banner.target && (
+              <span
+                className={`ml-2 rounded px-1.5 py-0.5 text-xs ${
+                  isDarkMode
+                    ? 'bg-slate-700 text-slate-400'
+                    : 'bg-gray-100 text-gray-500'
+                }`}
+              >
+                {banner.target}
+              </span>
+            )}
+          </div>
+          {banner.link && <CopyButton text={banner.link} />}
         </div>
       ),
     },

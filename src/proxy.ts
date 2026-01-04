@@ -3,6 +3,7 @@ import { generateCSP, getClientIp } from '@/lib/security'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { refreshTokenProxy } from './proxy/refreshTokenProxy'
+import { removeCookies } from './proxy/removeCookies'
 import { CookieEnum } from './utils/constant/cookieConstant'
 
 // Initialize rate limiters for different routes
@@ -131,7 +132,12 @@ export async function proxy(request: NextRequest) {
       // Refresh başarısız olduysa login'e yönlendir
       if (!refreshResult) {
         console.log('PROXY - Refresh failed, redirecting to login')
-        return NextResponse.redirect(new URL('/admin/login', request.url))
+        const redirectResponse = NextResponse.redirect(
+          new URL('/admin/login', request.url),
+        )
+        // İstediğiniz cookie'yi burada set edebilirsiniz
+        await removeCookies(redirectResponse)
+        return redirectResponse
       }
     }
   }
