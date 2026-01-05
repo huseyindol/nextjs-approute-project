@@ -1,6 +1,7 @@
 // Admin Dashboard Components
 export { ActivityFeed } from './ActivityFeed'
 export { ConfirmDialog } from './ConfirmDialog'
+export { CopyButton } from './CopyButton'
 export { DataTable } from './DataTable'
 export type { Column } from './DataTable'
 export { Header } from './Header'

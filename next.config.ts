@@ -21,6 +21,7 @@ const nextConfig = {
   htmlLimitedBots: /.*/,
 
   images: {
+    unoptimized: process.env.NODE_ENV === 'development',
     remotePatterns: [
       {
         protocol: 'https' as const,
@@ -38,6 +39,12 @@ const nextConfig = {
         protocol: 'https' as const,
         hostname: 'cdn.dummyjson.com',
         port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http' as const,
+        hostname: 'localhost',
+        port: '8080',
         pathname: '/**',
       },
     ],

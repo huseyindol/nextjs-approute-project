@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
+import { logout } from '../../../../actions/auth/logout'
 import { useAdminTheme } from '../_hooks'
 import { Icons } from './Icons'
 
@@ -36,6 +37,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       return pathname === href
     }
     return pathname.startsWith(href)
+  }
+
+  const onLogout = () => {
+    logout()
   }
 
   return (
@@ -153,6 +158,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </p>
               </div>
               <button
+                onClick={onLogout}
                 className={`rounded-lg p-2 transition-colors ${
                   isDarkMode
                     ? 'text-slate-400 hover:bg-slate-700'
