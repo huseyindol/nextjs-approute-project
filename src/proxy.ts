@@ -101,8 +101,6 @@ export async function proxy(request: NextRequest) {
   // expired olduysa refresh token ile yeni token ve refresh token olustur
   // yeni token ve refresh token'i cookies'a yaz
 
-  console.log('PROXY', request.nextUrl.pathname)
-
   // Admin rotalarını koru
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
   const isAdminLoginRoute = request.nextUrl.pathname === '/admin/login'
@@ -110,28 +108,23 @@ export async function proxy(request: NextRequest) {
   if (isAdminRoute && !isAdminLoginRoute) {
     const accessToken = request.cookies.get(CookieEnum.ACCESS_TOKEN)
     const expiredDate = request.cookies.get(CookieEnum.EXPIRED_DATE)
-    console.log(
-      'PROXY',
-      accessToken,
-      expiredDate?.value,
-      !accessToken && !expiredDate,
-    )
+
     // accessToken veya expiredDate yoksa login'e yönlendir
     if (!accessToken && !expiredDate) {
-      console.log('PROXY - Admin route protected, redirecting to login')
+      // console.log('PROXY - Admin route protected, redirecting to login')
       return NextResponse.redirect(new URL('/admin/login', request.url))
     }
 
     // Token süresi dolmuşsa
     const expiredDateCheck = new Date(Number(expiredDate?.value))
-    console.log('expiredDate-CHECK', expiredDateCheck, 'new Date()', new Date())
+    // console.log('expiredDate-CHECK', expiredDateCheck, 'new Date()', new Date())
     if (expiredDateCheck < new Date()) {
-      console.log('PROXY - Token expired, attempting refresh')
+      // console.log('PROXY - Token expired, attempting refresh')
       const refreshResult = await refreshTokenProxy(request, response)
-      console.log('refreshResult', refreshResult)
+      // console.log('refreshResult', refreshResult)
       // Refresh başarısız olduysa login'e yönlendir
       if (!refreshResult) {
-        console.log('PROXY - Refresh failed, redirecting to login')
+        // console.log('PROXY - Refresh failed, redirecting to login')
         const redirectResponse = NextResponse.redirect(
           new URL('/admin/login', request.url),
         )
