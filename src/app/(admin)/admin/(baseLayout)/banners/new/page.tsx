@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function NewBannerPage() {
   const router = useRouter()
@@ -73,10 +74,12 @@ export default function NewBannerPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] })
+      toast.success('Banner başarıyla oluşturuldu')
       router.push('/admin/banners')
     },
     onError: error => {
       console.error('Create error:', error)
+      toast.error('Banner oluşturulurken bir hata oluştu')
     },
   })
 

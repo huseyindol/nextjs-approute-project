@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function NewPagePage() {
   const router = useRouter()
@@ -68,11 +69,12 @@ export default function NewPagePage() {
     onSuccess: () => {
       // Invalidate pages list cache
       queryClient.invalidateQueries({ queryKey: ['pages'] })
+      toast.success('Sayfa başarıyla oluşturuldu')
       router.push('/admin/pages')
     },
     onError: error => {
       console.error('Create error:', error)
-      // TODO: Show error toast
+      toast.error('Sayfa oluşturulurken bir hata oluştu')
     },
   })
 

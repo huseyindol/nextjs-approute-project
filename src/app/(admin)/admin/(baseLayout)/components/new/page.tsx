@@ -13,6 +13,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function NewComponentPage() {
   const router = useRouter()
@@ -44,10 +45,12 @@ export default function NewComponentPage() {
     mutationFn: (data: CreateComponentInput) => createComponentService(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['components'] })
+      toast.success('Component başarıyla oluşturuldu')
       router.push('/admin/components')
     },
     onError: error => {
       console.error('Create error:', error)
+      toast.error('Component oluşturulurken bir hata oluştu')
     },
   })
 

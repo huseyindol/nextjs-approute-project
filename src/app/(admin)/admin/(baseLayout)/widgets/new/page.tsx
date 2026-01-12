@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function NewWidgetPage() {
   const router = useRouter()
@@ -37,10 +38,12 @@ export default function NewWidgetPage() {
     mutationFn: (data: CreateWidgetInput) => createWidgetService(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['widgets'] })
+      toast.success('Widget başarıyla oluşturuldu')
       router.push('/admin/widgets')
     },
     onError: error => {
       console.error('Create error:', error)
+      toast.error('Widget oluşturulurken bir hata oluştu')
     },
   })
 

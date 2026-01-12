@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function NewPostPage() {
   const router = useRouter()
@@ -56,10 +57,12 @@ export default function NewPostPage() {
     mutationFn: (data: CreatePostInput) => createPostService(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] })
+      toast.success('Post başarıyla oluşturuldu')
       router.push('/admin/posts')
     },
     onError: error => {
       console.error('Create error:', error)
+      toast.error('Post oluşturulurken bir hata oluştu')
     },
   })
 
