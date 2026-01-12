@@ -41,7 +41,7 @@ export default function EditComponentPage() {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<UpdateComponentInput>({
     resolver: zodResolver(UpdateComponentSchema),
     defaultValues: {
@@ -91,6 +91,10 @@ export default function EditComponentPage() {
   })
 
   const onSubmit = (data: UpdateComponentInput) => {
+    if (!isDirty) {
+      toast.info('Herhangi bir değişiklik yapılmadı')
+      return
+    }
     updateMutation.mutate(data)
   }
 

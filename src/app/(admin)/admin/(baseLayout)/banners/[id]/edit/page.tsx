@@ -42,7 +42,7 @@ export default function EditBannerPage() {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<UpdateBannerInput>({
     resolver: zodResolver(UpdateBannerSchema),
     defaultValues: {
@@ -115,6 +115,11 @@ export default function EditBannerPage() {
   })
 
   const onSubmit = (data: UpdateBannerInput) => {
+    // Check if form is dirty or if a new image is selected
+    if (!isDirty && !selectedImage) {
+      toast.info('Herhangi bir değişiklik yapılmadı')
+      return
+    }
     updateMutation.mutate(data)
   }
 

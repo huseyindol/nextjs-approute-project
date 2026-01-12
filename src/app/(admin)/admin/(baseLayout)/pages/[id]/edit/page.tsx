@@ -42,7 +42,7 @@ export default function EditPagePage() {
     setValue,
     reset,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<UpdatePageInput>({
     resolver: zodResolver(UpdatePageSchema),
     defaultValues: {
@@ -158,6 +158,10 @@ export default function EditPagePage() {
   }
 
   const onSubmit = (data: UpdatePageInput) => {
+    if (!isDirty) {
+      toast.info('Herhangi bir değişiklik yapılmadı')
+      return
+    }
     updateMutation.mutate(data)
   }
 

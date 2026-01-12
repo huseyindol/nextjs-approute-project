@@ -36,7 +36,7 @@ export default function EditWidgetPage() {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<UpdateWidgetInput>({
     resolver: zodResolver(UpdateWidgetSchema),
     defaultValues: {
@@ -84,6 +84,10 @@ export default function EditWidgetPage() {
   })
 
   const onSubmit = (data: UpdateWidgetInput) => {
+    if (!isDirty) {
+      toast.info('Herhangi bir değişiklik yapılmadı')
+      return
+    }
     updateMutation.mutate(data)
   }
 

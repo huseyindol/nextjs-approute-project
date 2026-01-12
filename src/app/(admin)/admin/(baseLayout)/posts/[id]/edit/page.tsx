@@ -37,7 +37,7 @@ export default function EditPostPage() {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<UpdatePostInput>({
     resolver: zodResolver(UpdatePostSchema),
     defaultValues: {
@@ -88,6 +88,10 @@ export default function EditPostPage() {
   })
 
   const onSubmit = (data: UpdatePostInput) => {
+    if (!isDirty) {
+      toast.info('Herhangi bir değişiklik yapılmadı')
+      return
+    }
     updateMutation.mutate(data)
   }
 
