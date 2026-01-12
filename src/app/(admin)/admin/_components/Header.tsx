@@ -59,6 +59,7 @@ export function Header({ onToggleSidebar }: HeaderProps) {
           >
             <Icons.Search />
             <input
+              id="search"
               type="text"
               placeholder="Ara..."
               className={`w-48 bg-transparent text-sm outline-none ${

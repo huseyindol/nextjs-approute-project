@@ -55,17 +55,21 @@ export function DualListbox({
   return (
     <div className="space-y-2">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300">
+        <label
+          htmlFor="dual-listbox"
+          className="block text-sm font-medium text-gray-700 dark:text-slate-300"
+        >
           {label}
         </label>
       )}
-      <div className="grid grid-cols-[1fr,auto,1fr] gap-4">
+      <div className="grid grid-cols-[1fr_auto_1fr] gap-4">
         {/* Left List (Available) */}
         <div className="flex flex-col gap-2">
           <div className="text-xs font-medium text-gray-500 dark:text-slate-400">
             Mevcut ({filteredLeft.length})
           </div>
           <input
+            id="dual-listbox"
             type="text"
             value={leftSearch}
             onChange={e => setLeftSearch(e.target.value)}
@@ -120,6 +124,7 @@ export function DualListbox({
             Seçili ({filteredRight.length})
           </div>
           <input
+            id="right-listbox"
             type="text"
             value={rightSearch}
             onChange={e => setRightSearch(e.target.value)}
