@@ -13,6 +13,7 @@ export const getBannerService = async () => {
       '/api/v1/banners/list',
       {
         method: 'GET',
+        keepalive: true,
       },
     )
     console.log('Get banners:', response)
@@ -33,6 +34,7 @@ export const getBannerByIdService = async (id: string) => {
       `/api/v1/banners/${id}`,
       {
         method: 'GET',
+        keepalive: true,
       },
     )
     console.log('Get banner by ID:', response)
@@ -65,6 +67,7 @@ export const createBannerService = async (
     const response: BannerResponseType = await fetcher('/api/v1/banners', {
       method: 'POST',
       body: formData,
+      keepalive: true,
       // Content-Type otomatik olarak multipart/form-data olarak ayarlanır
     })
     console.log('Creating banner:', response)
@@ -102,6 +105,7 @@ export const updateBannerService = async (
       {
         method: 'PUT',
         body: formData,
+        keepalive: true,
       },
     )
     console.log('Updating banner:', response)
@@ -122,6 +126,7 @@ export const deleteBannerService = async (id: string) => {
       `/api/v1/banners/${id}`,
       {
         method: 'DELETE',
+        keepalive: true,
       },
     )
     console.log('Deleting banner:', response)

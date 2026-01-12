@@ -14,6 +14,7 @@ export const getComponentService = async () => {
       '/api/v1/components/list',
       {
         method: 'GET',
+        keepalive: true,
       },
     )
     console.log('Get components:', response)
@@ -34,6 +35,7 @@ export const getComponentByIdService = async (id: string) => {
       `/api/v1/components/${id}`,
       {
         method: 'GET',
+        keepalive: true,
       },
     )
     console.log('Get component by ID:', response)
@@ -54,6 +56,7 @@ export const createComponentService = async (data: CreateComponentInput) => {
       '/api/v1/components',
       {
         method: 'POST',
+        keepalive: true,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -81,6 +84,7 @@ export const updateComponentService = async (
       `/api/v1/components/${id}`,
       {
         method: 'PUT',
+        keepalive: true,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -105,6 +109,7 @@ export const deleteComponentService = async (id: string) => {
       `/api/v1/components/${id}`,
       {
         method: 'DELETE',
+        keepalive: true,
       },
     )
     console.log('Deleting component:', response)
@@ -124,6 +129,7 @@ export const getComponentsSummaryService = async () => {
       '/api/v1/components/list/summary',
       {
         method: 'GET',
+        keepalive: true,
       },
     )
     console.log('Get components summary:', response)
