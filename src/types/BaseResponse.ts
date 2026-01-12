@@ -100,3 +100,12 @@ export type WidgetResponseType = BaseResponse<Widget>
 export type WidgetListResponseType = BaseResponse<Widget[]>
 export type BannerResponseType = BaseResponse<Banner>
 export type BannerListResponseType = BaseResponse<Banner[]>
+
+export interface ComponentSummary {
+  id: number // Note: API returns number for summary
+  name: string
+  status: boolean
+  type: ComponentTypeEnum
+  orderIndex: number
+}
+export type ComponentSummaryListResponseType = BaseResponse<ComponentSummary[]>

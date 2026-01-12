@@ -3,6 +3,7 @@ import {
   BaseResponse,
   ComponentListResponseType,
   ComponentResponseType,
+  ComponentSummaryListResponseType,
 } from '@/types/BaseResponse'
 import { fetcher } from '@/utils/services/fetcher'
 
@@ -113,6 +114,27 @@ export const deleteComponentService = async (id: string) => {
     return response
   } catch (error) {
     console.error('Error deleting component:', error)
+    throw error
+  }
+}
+// GET - Component özet listesi (Sayfa atamaları için)
+export const getComponentsSummaryService = async () => {
+  try {
+    const response: ComponentSummaryListResponseType = await fetcher(
+      '/api/v1/components/list/summary',
+      {
+        method: 'GET',
+      },
+    )
+    console.log('Get components summary:', response)
+    if (!response.result) {
+      throw new Error('Error get components summary', {
+        cause: response.message,
+      })
+    }
+    return response
+  } catch (error) {
+    console.error('Error get components summary:', error)
     throw error
   }
 }

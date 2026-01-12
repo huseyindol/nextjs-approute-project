@@ -38,6 +38,7 @@ export const CreatePageSchema = z.object({
     ),
   status: z.boolean().default(true),
   seoInfo: SeoInfoSchema.optional(),
+  componentIds: z.array(z.number()).optional(), // Component ID'leri number olarak geliyor
 })
 
 // Update Page Body - PUT /api/v1/pages/{id}

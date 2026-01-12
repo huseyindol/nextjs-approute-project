@@ -1,11 +1,13 @@
 'use client'
 
-import { Icons } from '@/app/(admin)/admin/_components'
+import { DualListbox, Icons } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { getComponentsSummaryService } from '@/app/(admin)/admin/_services/components.services'
 import { createPageService } from '@/app/(admin)/admin/_services/pages.services'
 import { CreatePageInput, CreatePageSchema } from '@/schemas/page'
+import { ComponentSummary } from '@/types/BaseResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -37,8 +39,28 @@ export default function NewPagePage() {
         noIndex: false,
         noFollow: false,
       },
+      componentIds: [],
     },
   })
+
+  // Fetch Components Summary
+  const { data: componentsData } = useQuery({
+    queryKey: ['components-summary'],
+    queryFn: getComponentsSummaryService,
+  })
+
+  // Component Selection State
+  const [selectedComponents, setSelectedComponents] = useState<
+    ComponentSummary[]
+  >([])
+
+  const handleComponentChange = (selected: ComponentSummary[]) => {
+    setSelectedComponents(selected)
+    setValue(
+      'componentIds',
+      selected.map(c => c.id),
+    )
+  }
 
   // Create mutation
   const createMutation = useMutation({
@@ -361,6 +383,29 @@ export default function NewPagePage() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Components Assignment */}
+        <div
+          className={`rounded-2xl p-6 ${
+            isDarkMode
+              ? 'border border-slate-800/50 bg-slate-900/60'
+              : 'border border-gray-200 bg-white'
+          } backdrop-blur-sm`}
+        >
+          <h2
+            className={`mb-4 text-lg font-semibold ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            Bileşen (Component) Atama
+          </h2>
+          <DualListbox
+            available={componentsData?.data || []}
+            selected={selectedComponents}
+            onChange={handleComponentChange}
+            label="Sayfaya atanacak bileşenleri seçin"
+          />
         </div>
 
         {/* Actions */}

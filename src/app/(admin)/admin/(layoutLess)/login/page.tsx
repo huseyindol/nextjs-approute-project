@@ -55,12 +55,10 @@ const AdminLoginPage = () => {
         },
         body: JSON.stringify(formData),
       })
-      console.log('onSubmit - response', response)
       if (response.error) {
         setGeneralError(response.error || 'Giriş yapılırken bir hata oluştu.')
         return
       }
-      console.log('onSubmit - cookies', updateGlobalCookie)
       updateGlobalCookie(CookieEnum.ACCESS_TOKEN, response.data.token)
       updateGlobalCookie(CookieEnum.REFRESH_TOKEN, response.data.refreshToken)
       updateGlobalCookie(CookieEnum.EXPIRED_DATE, response.data.expiredDate)

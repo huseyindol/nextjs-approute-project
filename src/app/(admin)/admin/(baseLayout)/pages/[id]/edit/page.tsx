@@ -1,17 +1,19 @@
 'use client'
 
-import { Icons } from '@/app/(admin)/admin/_components'
+import { DualListbox, Icons } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { getComponentsSummaryService } from '@/app/(admin)/admin/_services/components.services'
 import {
   getPageBySlugService,
   updatePageService,
 } from '@/app/(admin)/admin/_services/pages.services'
 import { UpdatePageInput, UpdatePageSchema } from '@/schemas/page'
+import { ComponentSummary, ComponentTypeEnum } from '@/types/BaseResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 export default function EditPagePage() {
@@ -39,6 +41,7 @@ export default function EditPagePage() {
     handleSubmit,
     setValue,
     reset,
+    watch,
     formState: { errors },
   } = useForm<UpdatePageInput>({
     resolver: zodResolver(UpdatePageSchema),
@@ -53,10 +56,54 @@ export default function EditPagePage() {
         keywords: '',
         canonicalUrl: '',
         noIndex: false,
-        noFollow: false,
       },
+      componentIds: [],
     },
   })
+
+  // Watch component IDs for derived state
+  const selectedComponentIds = watch('componentIds')
+
+  // Fetch Components Summary
+  const { data: componentsData } = useQuery({
+    queryKey: ['components-summary'],
+    queryFn: getComponentsSummaryService,
+  })
+
+  // Derive selected components from form IDs and data sources
+  const selectedComponents = useMemo(() => {
+    if (!selectedComponentIds || selectedComponentIds.length === 0) return []
+
+    // Map IDs to component objects.
+    // Prioritize objects from pageData (initial load) as they are definitely correct for the page
+    // Then fallback to componentsData (available list)
+    return selectedComponentIds.map(id => {
+      const fromPage = pageData?.data?.components?.find(
+        c => Number(c.id) === id,
+      )
+      if (fromPage) return fromPage as unknown as ComponentSummary
+
+      const fromAvailable = componentsData?.data?.find(c => c.id === id)
+      if (fromAvailable) return fromAvailable
+
+      // Fallback placeholder if object not found (should not happen normally)
+      return {
+        id,
+        name: 'Unknown Component',
+        status: false,
+        type: ComponentTypeEnum.WIDGET,
+        orderIndex: 0,
+      } as ComponentSummary
+    })
+  }, [selectedComponentIds, pageData, componentsData])
+
+  const handleComponentChange = (selected: ComponentSummary[]) => {
+    setValue(
+      'componentIds',
+      selected.map(c => c.id),
+      { shouldDirty: true },
+    )
+  }
 
   // Populate form when data is loaded
   useEffect(() => {
@@ -77,6 +124,7 @@ export default function EditPagePage() {
               noFollow: page.seoInfo.noFollow || false,
             }
           : undefined,
+        componentIds: page.components?.map(c => Number(c.id)) || [],
       })
     }
   }, [pageData, reset])
@@ -442,6 +490,29 @@ export default function EditPagePage() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Components Assignment */}
+        <div
+          className={`rounded-2xl p-6 ${
+            isDarkMode
+              ? 'border border-slate-800/50 bg-slate-900/60'
+              : 'border border-gray-200 bg-white'
+          } backdrop-blur-sm`}
+        >
+          <h2
+            className={`mb-4 text-lg font-semibold ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            Bileşen (Component) Atama
+          </h2>
+          <DualListbox
+            available={componentsData?.data || []}
+            selected={selectedComponents}
+            onChange={handleComponentChange}
+            label="Sayfaya atanacak bileşenleri seçin"
+          />
         </div>
 
         {/* Actions */}
