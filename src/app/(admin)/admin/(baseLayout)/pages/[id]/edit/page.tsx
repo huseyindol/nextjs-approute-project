@@ -12,12 +12,12 @@ import { ComponentSummary, ComponentTypeEnum } from '@/types/BaseResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function EditPagePage() {
-  const router = useRouter()
   const params = useParams()
   const pageId = params.id as string
   const queryClient = useQueryClient()
@@ -137,10 +137,11 @@ export default function EditPagePage() {
       // Invalidate pages list and single page cache
       queryClient.invalidateQueries({ queryKey: ['pages'] })
       queryClient.invalidateQueries({ queryKey: ['page', pageId] })
-      router.push('/admin/pages')
+      toast.success('Sayfa başarıyla güncellendi')
     },
     onError: error => {
       console.error('Update error:', error)
+      toast.error('Güncelleme sırasında bir hata oluştu')
     },
   })
 

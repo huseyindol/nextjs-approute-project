@@ -9,12 +9,12 @@ import { UpdateWidgetInput, UpdateWidgetSchema } from '@/schemas/widget.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function EditWidgetPage() {
-  const router = useRouter()
   const params = useParams()
   const widgetId = params.id as string
   const queryClient = useQueryClient()
@@ -75,10 +75,11 @@ export default function EditWidgetPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['widgets'] })
       queryClient.invalidateQueries({ queryKey: ['widget', widgetId] })
-      router.push('/admin/widgets')
+      toast.success('Widget başarıyla güncellendi')
     },
     onError: error => {
       console.error('Update error:', error)
+      toast.error('Güncelleme sırasında bir hata oluştu')
     },
   })
 

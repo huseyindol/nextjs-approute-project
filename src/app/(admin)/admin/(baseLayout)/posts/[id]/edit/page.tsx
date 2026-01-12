@@ -9,12 +9,12 @@ import { UpdatePostInput, UpdatePostSchema } from '@/schemas/post.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function EditPostPage() {
-  const router = useRouter()
   const params = useParams()
   const postId = params.id as string
   const queryClient = useQueryClient()
@@ -79,10 +79,11 @@ export default function EditPostPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] })
       queryClient.invalidateQueries({ queryKey: ['post', postId] })
-      router.push('/admin/posts')
+      toast.success('Post başarıyla güncellendi')
     },
     onError: error => {
       console.error('Update error:', error)
+      toast.error('Güncelleme sırasında bir hata oluştu')
     },
   })
 

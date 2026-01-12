@@ -11,12 +11,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function EditBannerPage() {
-  const router = useRouter()
   const params = useParams()
   const bannerId = params.id as string
   const queryClient = useQueryClient()
@@ -106,10 +106,11 @@ export default function EditBannerPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] })
       queryClient.invalidateQueries({ queryKey: ['banner', bannerId] })
-      router.push('/admin/banners')
+      toast.success('Banner başarıyla güncellendi')
     },
     onError: error => {
       console.error('Update error:', error)
+      toast.error('Güncelleme sırasında bir hata oluştu')
     },
   })
 

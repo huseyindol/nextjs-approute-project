@@ -13,12 +13,12 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export default function EditComponentPage() {
-  const router = useRouter()
   const params = useParams()
   const componentId = params.id as string
   const queryClient = useQueryClient()
@@ -82,10 +82,11 @@ export default function EditComponentPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['components'] })
       queryClient.invalidateQueries({ queryKey: ['component', componentId] })
-      router.push('/admin/components')
+      toast.success('Component başarıyla güncellendi')
     },
     onError: error => {
       console.error('Update error:', error)
+      toast.error('Güncelleme sırasında bir hata oluştu')
     },
   })
 

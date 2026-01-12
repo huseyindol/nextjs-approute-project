@@ -2,6 +2,7 @@
 import { Header, Sidebar } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
 import { useState } from 'react'
+import { Toaster } from 'sonner'
 
 export default function BaseAdminLayout({
   children,
@@ -39,6 +40,11 @@ export default function BaseAdminLayout({
           {children}
         </main>
       </div>
+      <Toaster
+        richColors
+        position="top-right"
+        theme={isDarkMode ? 'dark' : 'light'}
+      />
     </div>
   )
 }
