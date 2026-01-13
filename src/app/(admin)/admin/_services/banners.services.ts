@@ -2,6 +2,7 @@ import { CreateBannerInput, UpdateBannerInput } from '@/schemas/banner.schema'
 import {
   BannerListResponseType,
   BannerResponseType,
+  BannerSummaryListResponseType,
   BaseResponse,
 } from '@/types/BaseResponse'
 import { fetcher } from '@/utils/services/fetcher'
@@ -136,6 +137,29 @@ export const deleteBannerService = async (id: string) => {
     return response
   } catch (error) {
     console.error('Error deleting banner:', error)
+    throw error
+  }
+}
+
+// GET - Banner özet listesi (Component atamaları için)
+export const getBannersSummaryService = async () => {
+  try {
+    const response: BannerSummaryListResponseType = await fetcher(
+      '/api/v1/banners/list/summary',
+      {
+        method: 'GET',
+        keepalive: true,
+      },
+    )
+    console.log('Get banners summary:', response)
+    if (!response.result) {
+      throw new Error('Error get banners summary', {
+        cause: response.message,
+      })
+    }
+    return response
+  } catch (error) {
+    console.error('Error get banners summary:', error)
     throw error
   }
 }

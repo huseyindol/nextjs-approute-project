@@ -1,20 +1,31 @@
-import { ComponentSummary } from '@/types/BaseResponse'
 import { useMemo, useState } from 'react'
 import { Icons } from './Icons'
 
-interface DualListboxProps {
-  available: ComponentSummary[]
-  selected: ComponentSummary[]
-  onChange: (selected: ComponentSummary[]) => void
-  label?: string
+export interface DualListboxItem {
+  id: number
 }
 
-export function DualListbox({
+export interface DualListboxProps<T extends DualListboxItem> {
+  available: T[]
+  selected: T[]
+  onChange: (selected: T[]) => void
+  label?: string
+  getItemLabel: (item: T) => string
+  getItemSubLabel?: (item: T) => string
+  emptyLeftText?: string
+  emptyRightText?: string
+}
+
+export function DualListbox<T extends DualListboxItem>({
   available,
   selected,
   onChange,
   label,
-}: DualListboxProps) {
+  getItemLabel,
+  getItemSubLabel,
+  emptyLeftText = 'Veri bulunamadı',
+  emptyRightText = 'Seçim yapılmadı',
+}: DualListboxProps<T>) {
   const [leftSearch, setLeftSearch] = useState('')
   const [rightSearch, setRightSearch] = useState('')
 
@@ -24,19 +35,19 @@ export function DualListbox({
   }, [available, selected])
 
   const filteredLeft = leftList.filter(item =>
-    item.name.toLowerCase().includes(leftSearch.toLowerCase()),
+    getItemLabel(item).toLowerCase().includes(leftSearch.toLowerCase()),
   )
 
   const filteredRight = selected.filter(item =>
-    item.name.toLowerCase().includes(rightSearch.toLowerCase()),
+    getItemLabel(item).toLowerCase().includes(rightSearch.toLowerCase()),
   )
 
-  const moveRight = (item: ComponentSummary) => {
+  const moveRight = (item: T) => {
     const newSelected = [...selected, item]
     onChange(newSelected)
   }
 
-  const moveLeft = (item: ComponentSummary) => {
+  const moveLeft = (item: T) => {
     const newSelected = selected.filter(i => i.id !== item.id)
     onChange(newSelected)
   }
@@ -84,13 +95,17 @@ export function DualListbox({
                 onClick={() => moveRight(item)}
                 className="flex items-center justify-between rounded-lg px-3 py-2 text-left text-sm hover:bg-gray-100 dark:text-slate-300 dark:hover:bg-slate-700"
               >
-                <span>{item.name}</span>
-                <span className="text-xs text-gray-400">{item.type}</span>
+                <span>{getItemLabel(item)}</span>
+                {getItemSubLabel && (
+                  <span className="text-xs text-gray-400">
+                    {getItemSubLabel(item)}
+                  </span>
+                )}
               </button>
             ))}
             {filteredLeft.length === 0 && (
               <div className="flex h-full items-center justify-center text-xs text-gray-400">
-                Veri bulunamadı
+                {emptyLeftText}
               </div>
             )}
           </div>
@@ -139,13 +154,17 @@ export function DualListbox({
                 onClick={() => moveLeft(item)}
                 className="flex items-center justify-between rounded-lg px-3 py-2 text-left text-sm text-gray-900 hover:bg-rose-50 dark:text-slate-300 dark:hover:bg-rose-900/20 dark:hover:text-rose-300"
               >
-                <span>{item.name}</span>
-                <span className="text-xs text-gray-400">{item.type}</span>
+                <span>{getItemLabel(item)}</span>
+                {getItemSubLabel && (
+                  <span className="text-xs text-gray-400">
+                    {getItemSubLabel(item)}
+                  </span>
+                )}
               </button>
             ))}
             {filteredRight.length === 0 && (
               <div className="flex h-full items-center justify-center text-xs text-gray-400">
-                Seçim yapılmadı
+                {emptyRightText}
               </div>
             )}
           </div>

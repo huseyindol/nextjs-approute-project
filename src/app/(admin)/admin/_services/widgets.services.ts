@@ -3,6 +3,7 @@ import {
   BaseResponse,
   WidgetListResponseType,
   WidgetResponseType,
+  WidgetSummaryListResponseType,
 } from '@/types/BaseResponse'
 import { fetcher } from '@/utils/services/fetcher'
 
@@ -115,6 +116,29 @@ export const deleteWidgetService = async (id: string) => {
     return response
   } catch (error) {
     console.error('Error deleting widget:', error)
+    throw error
+  }
+}
+
+// GET - Widget özet listesi (Component atamaları için)
+export const getWidgetsSummaryService = async () => {
+  try {
+    const response: WidgetSummaryListResponseType = await fetcher(
+      '/api/v1/widgets/list/summary',
+      {
+        method: 'GET',
+        keepalive: true,
+      },
+    )
+    console.log('Get widgets summary:', response)
+    if (!response.result) {
+      throw new Error('Error get widgets summary', {
+        cause: response.message,
+      })
+    }
+    return response
+  } catch (error) {
+    console.error('Error get widgets summary:', error)
     throw error
   }
 }

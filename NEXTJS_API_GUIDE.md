@@ -81,6 +81,70 @@ Sayfa getir (slug ile).
 
 - `slug`: Sayfa slug'ı
 
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "id": 1,
+    "title": "string",
+    "description": "string",
+    "slug": "string",
+    "status": true,
+    "seoInfo": { ... },
+    "components": [ ... ]
+  }
+}
+```
+
+---
+
+### GET /api/v1/pages/list
+
+Tüm sayfaları listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "string",
+      "description": "string",
+      "slug": "string",
+      "status": true,
+      "seoInfo": { ... },
+      "components": [ ... ]
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/pages/list/summary
+
+Sayfa özetlerini listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "string",
+      "slug": "string",
+      "status": true
+    }
+  ]
+}
+```
+
 ---
 
 ### POST /api/v1/pages
@@ -95,6 +159,7 @@ Sayfa oluştur.
   "description": "string",
   "slug": "string",
   "status": true,
+  "componentIds": [1, 2], // opsiyonel
   "seoInfo": {
     "title": "string",
     "description": "string",
@@ -139,6 +204,54 @@ Post getir.
 **Path Parameters:**
 
 - `id`: Post ID
+
+---
+
+### GET /api/v1/posts/list
+
+Tüm postları listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "string",
+      "content": "string",
+      "slug": "string",
+      "status": true,
+      "orderIndex": 1,
+      "seoInfo": { ... }
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/posts/list/summary
+
+Post özetlerini listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "string",
+      "slug": "string",
+      "status": true,
+      "orderIndex": 1
+    }
+  ]
+}
+```
 
 ---
 
@@ -311,6 +424,55 @@ Banner getir.
 
 ---
 
+### GET /api/v1/banners/list
+
+Tüm bannerları listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "string",
+      "altText": "string",
+      "link": "string",
+      "target": "_blank",
+      "type": "string",
+      "orderIndex": 1,
+      "status": true,
+      "imageUrl": "string"
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/banners/list/summary
+
+Banner özetlerini listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "string",
+      "status": true,
+      "orderIndex": 1
+    }
+  ]
+}
+```
+
+---
+
 ### POST /api/v1/banners
 
 Banner oluştur.
@@ -366,6 +528,57 @@ Component getir.
 
 ---
 
+### GET /api/v1/components/list
+
+Tüm componentleri listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "string",
+      "description": "string",
+      "type": "BANNER | WIDGET",
+      "content": "string",
+      "orderIndex": 1,
+      "status": true,
+      "pages": [ ... ],
+      "banners": [ ... ],
+      "widgets": [ ... ]
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/components/list/summary
+
+Component özetlerini listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "string",
+      "type": "BANNER | WIDGET",
+      "status": true,
+      "orderIndex": 1
+    }
+  ]
+}
+```
+
+---
+
 ### POST /api/v1/components
 
 Component oluştur.
@@ -380,9 +593,9 @@ Component oluştur.
   "content": "string",
   "orderIndex": 1,
   "status": true,
-  "pageIds": [1, 2],
-  "bannerIds": [1],
-  "widgetIds": [1]
+  "pageIds": [1, 2], // opsiyonel
+  "bannerIds": [1], // opsiyonel
+  "widgetIds": [1] // opsiyonel
 }
 ```
 
@@ -422,6 +635,56 @@ Widget getir.
 
 ---
 
+### GET /api/v1/widgets/list
+
+Tüm widgetları listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "string",
+      "description": "string",
+      "type": "BANNER | POST",
+      "content": "string",
+      "orderIndex": 1,
+      "status": true,
+      "banners": [ ... ],
+      "posts": [ ... ]
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/widgets/list/summary
+
+Widget özetlerini listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "string",
+      "type": "BANNER | POST",
+      "status": true,
+      "orderIndex": 1
+    }
+  ]
+}
+```
+
+---
+
 ### POST /api/v1/widgets
 
 Widget oluştur.
@@ -436,8 +699,8 @@ Widget oluştur.
   "content": "string",
   "orderIndex": 1,
   "status": true,
-  "bannerIds": [1, 2],
-  "postIds": [1, 2]
+  "bannerIds": [1, 2], // opsiyonel
+  "postIds": [1, 2] // opsiyonel
 }
 ```
 

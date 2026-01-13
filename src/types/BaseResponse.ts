@@ -109,3 +109,20 @@ export interface ComponentSummary {
   orderIndex: number
 }
 export type ComponentSummaryListResponseType = BaseResponse<ComponentSummary[]>
+
+export interface BannerSummary {
+  id: number
+  title: string
+  status: boolean
+  orderIndex: number
+}
+export type BannerSummaryListResponseType = BaseResponse<BannerSummary[]>
+
+export interface WidgetSummary {
+  id: number
+  name: string
+  type: WidgetTypeEnum
+  status: boolean
+  orderIndex: number
+}
+export type WidgetSummaryListResponseType = BaseResponse<WidgetSummary[]>

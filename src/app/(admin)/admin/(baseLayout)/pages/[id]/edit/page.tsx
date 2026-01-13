@@ -517,6 +517,8 @@ export default function EditPagePage() {
             selected={selectedComponents}
             onChange={handleComponentChange}
             label="Sayfaya atanacak bileşenleri seçin"
+            getItemLabel={item => item.name}
+            getItemSubLabel={item => item.type}
           />
         </div>
 

@@ -1,15 +1,18 @@
 'use client'
 
-import { Icons } from '@/app/(admin)/admin/_components'
+import { DualListbox, Icons } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { getBannersSummaryService } from '@/app/(admin)/admin/_services/banners.services'
 import {
   getComponentByIdService,
   updateComponentService,
 } from '@/app/(admin)/admin/_services/components.services'
+import { getWidgetsSummaryService } from '@/app/(admin)/admin/_services/widgets.services'
 import {
   UpdateComponentInput,
   UpdateComponentSchema,
 } from '@/schemas/component'
+import { BannerSummary, WidgetSummary } from '@/types/BaseResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
@@ -24,6 +27,10 @@ export default function EditComponentPage() {
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
   const [showAdvanced, setShowAdvanced] = useState(false)
+  const [selectedBanners, setSelectedBanners] = useState<BannerSummary[]>([])
+  const [selectedWidgets, setSelectedWidgets] = useState<WidgetSummary[]>([])
+  const [initialBannerIds, setInitialBannerIds] = useState<number[]>([])
+  const [initialWidgetIds, setInitialWidgetIds] = useState<number[]>([])
 
   // Fetch component data
   const {
@@ -37,10 +44,23 @@ export default function EditComponentPage() {
     enabled: !!componentId,
   })
 
+  // Fetch banners summary
+  const { data: bannersData } = useQuery({
+    queryKey: ['banners-summary'],
+    queryFn: getBannersSummaryService,
+  })
+
+  // Fetch widgets summary
+  const { data: widgetsData } = useQuery({
+    queryKey: ['widgets-summary'],
+    queryFn: getWidgetsSummaryService,
+  })
+
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isDirty },
   } = useForm<UpdateComponentInput>({
     resolver: zodResolver(UpdateComponentSchema),
@@ -57,6 +77,9 @@ export default function EditComponentPage() {
     },
   })
 
+  // Watch type field for conditional rendering
+  const selectedType = watch('type')
+
   // Populate form when data is loaded
   useEffect(() => {
     if (componentData?.data) {
@@ -72,8 +95,28 @@ export default function EditComponentPage() {
         bannerIds: [],
         widgetIds: [],
       })
+
+      // Set selected banners from component data
+      if (component.banners && bannersData?.data) {
+        const bannerIds = component.banners.map(b => Number(b.id))
+        setInitialBannerIds(bannerIds)
+        const selectedBannerItems = bannersData.data.filter(b =>
+          bannerIds.includes(b.id),
+        )
+        setSelectedBanners(selectedBannerItems)
+      }
+
+      // Set selected widgets from component data
+      if (component.widgets && widgetsData?.data) {
+        const widgetIds = component.widgets.map(w => Number(w.id))
+        setInitialWidgetIds(widgetIds)
+        const selectedWidgetItems = widgetsData.data.filter(w =>
+          widgetIds.includes(w.id),
+        )
+        setSelectedWidgets(selectedWidgetItems)
+      }
     }
-  }, [componentData, reset])
+  }, [componentData, bannersData, widgetsData, reset])
 
   // Update mutation
   const updateMutation = useMutation({
@@ -90,12 +133,33 @@ export default function EditComponentPage() {
     },
   })
 
+  // Check if banner or widget selections changed
+  const hasBannerChanges = () => {
+    const currentBannerIds = selectedBanners.map(b => b.id).sort()
+    const initialIds = [...initialBannerIds].sort()
+    return JSON.stringify(currentBannerIds) !== JSON.stringify(initialIds)
+  }
+
+  const hasWidgetChanges = () => {
+    const currentWidgetIds = selectedWidgets.map(w => w.id).sort()
+    const initialIds = [...initialWidgetIds].sort()
+    return JSON.stringify(currentWidgetIds) !== JSON.stringify(initialIds)
+  }
+
   const onSubmit = (data: UpdateComponentInput) => {
-    if (!isDirty) {
+    const hasAssignmentChanges = hasBannerChanges() || hasWidgetChanges()
+
+    if (!isDirty && !hasAssignmentChanges) {
       toast.info('Herhangi bir değişiklik yapılmadı')
       return
     }
-    updateMutation.mutate(data)
+
+    const submitData: UpdateComponentInput = {
+      ...data,
+      bannerIds: selectedBanners.map(b => b.id),
+      widgetIds: selectedWidgets.map(w => w.id),
+    }
+    updateMutation.mutate(submitData)
   }
 
   const inputClass = `w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors ${
@@ -295,6 +359,62 @@ export default function EditComponentPage() {
           </div>
         </div>
 
+        {/* Banner Assignment - sadece BANNER tipi seçildiğinde göster */}
+        {selectedType === 'BANNER' && (
+          <div
+            className={`rounded-2xl p-6 ${
+              isDarkMode
+                ? 'border border-slate-800/50 bg-slate-900/60'
+                : 'border border-gray-200 bg-white'
+            } backdrop-blur-sm`}
+          >
+            <h2
+              className={`mb-4 text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              Banner Ataması
+            </h2>
+            <DualListbox<BannerSummary>
+              available={bannersData?.data || []}
+              selected={selectedBanners}
+              onChange={setSelectedBanners}
+              getItemLabel={item => item.title}
+              getItemSubLabel={item => (item.status ? 'Aktif' : 'Pasif')}
+              emptyLeftText="Banner bulunamadı"
+              emptyRightText="Banner seçilmedi"
+            />
+          </div>
+        )}
+
+        {/* Widget Assignment - sadece WIDGET tipi seçildiğinde göster */}
+        {selectedType === 'WIDGET' && (
+          <div
+            className={`rounded-2xl p-6 ${
+              isDarkMode
+                ? 'border border-slate-800/50 bg-slate-900/60'
+                : 'border border-gray-200 bg-white'
+            } backdrop-blur-sm`}
+          >
+            <h2
+              className={`mb-4 text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              Widget Ataması
+            </h2>
+            <DualListbox<WidgetSummary>
+              available={widgetsData?.data || []}
+              selected={selectedWidgets}
+              onChange={setSelectedWidgets}
+              getItemLabel={item => item.name}
+              getItemSubLabel={item => item.type}
+              emptyLeftText="Widget bulunamadı"
+              emptyRightText="Widget seçilmedi"
+            />
+          </div>
+        )}
+
         {/* Advanced Settings */}
         <div
           className={`rounded-2xl p-6 ${
@@ -356,7 +476,7 @@ export default function EditComponentPage() {
           <button
             type="submit"
             disabled={updateMutation.isPending}
-            className="flex-1 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
+            className="bg-linear-to-r flex-1 rounded-xl from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
           >
             {updateMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
