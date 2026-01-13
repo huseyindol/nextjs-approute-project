@@ -52,11 +52,13 @@ export default function PagesListPage() {
 
   // Filter pages based on search
   const filteredPages =
-    data?.data?.filter(
-      page =>
-        page.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        page.slug.toLowerCase().includes(debouncedSearch.toLowerCase()),
-    ) || []
+    data?.data
+      ?.filter(
+        page =>
+          page.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          page.slug.toLowerCase().includes(debouncedSearch.toLowerCase()),
+      )
+      .sort((a, b) => a.title.localeCompare(b.title, 'tr')) || []
 
   const columns: Column<Page>[] = [
     {

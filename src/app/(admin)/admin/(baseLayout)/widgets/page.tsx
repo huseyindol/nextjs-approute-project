@@ -50,13 +50,15 @@ export default function WidgetsListPage() {
 
   // Filter widgets based on search
   const filteredWidgets =
-    data?.data?.filter(
-      widget =>
-        widget.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        widget.description
-          ?.toLowerCase()
-          .includes(debouncedSearch.toLowerCase()),
-    ) || []
+    data?.data
+      ?.filter(
+        widget =>
+          widget.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          widget.description
+            ?.toLowerCase()
+            .includes(debouncedSearch.toLowerCase()),
+      )
+      .sort((a, b) => a.name.localeCompare(b.name, 'tr')) || []
 
   const columns: Column<Widget>[] = [
     {

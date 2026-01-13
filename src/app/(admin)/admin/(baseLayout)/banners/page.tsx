@@ -52,11 +52,13 @@ export default function BannersListPage() {
 
   // Filter banners based on search
   const filteredBanners =
-    data?.data?.filter(
-      banner =>
-        banner.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        banner.altText?.toLowerCase().includes(debouncedSearch.toLowerCase()),
-    ) || []
+    data?.data
+      ?.filter(
+        banner =>
+          banner.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          banner.altText?.toLowerCase().includes(debouncedSearch.toLowerCase()),
+      )
+      .sort((a, b) => a.title.localeCompare(b.title, 'tr')) || []
 
   const columns: Column<Banner>[] = [
     {

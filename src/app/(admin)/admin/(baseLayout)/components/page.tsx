@@ -50,13 +50,17 @@ export default function ComponentsListPage() {
 
   // Filter components based on search
   const filteredComponents =
-    data?.data?.filter(
-      component =>
-        component.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        component.description
-          ?.toLowerCase()
-          .includes(debouncedSearch.toLowerCase()),
-    ) || []
+    data?.data
+      ?.filter(
+        component =>
+          component.name
+            .toLowerCase()
+            .includes(debouncedSearch.toLowerCase()) ||
+          component.description
+            ?.toLowerCase()
+            .includes(debouncedSearch.toLowerCase()),
+      )
+      .sort((a, b) => a.name.localeCompare(b.name, 'tr')) || []
 
   const columns: Column<Component>[] = [
     {

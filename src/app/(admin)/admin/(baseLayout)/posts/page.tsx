@@ -50,11 +50,13 @@ export default function PostsListPage() {
 
   // Filter posts based on search
   const filteredPosts =
-    data?.data?.filter(
-      post =>
-        post.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-        post.slug.toLowerCase().includes(debouncedSearch.toLowerCase()),
-    ) || []
+    data?.data
+      ?.filter(
+        post =>
+          post.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+          post.slug.toLowerCase().includes(debouncedSearch.toLowerCase()),
+      )
+      .sort((a, b) => a.title.localeCompare(b.title, 'tr')) || []
 
   const columns: Column<Post>[] = [
     {
