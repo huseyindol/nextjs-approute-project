@@ -93,7 +93,9 @@ export const updateComponentService = async (
     )
     console.log('Updating component:', response)
     if (!response.result) {
-      throw new Error('Error updating component', { cause: response.message })
+      throw new Error(response.message || 'Error updating component', {
+        cause: response.errorCode,
+      })
     }
     return response
   } catch (error) {
@@ -114,7 +116,9 @@ export const deleteComponentService = async (id: string) => {
     )
     console.log('Deleting component:', response)
     if (!response.result) {
-      throw new Error('Error deleting component', { cause: response.message })
+      throw new Error(response.message || 'Error deleting component', {
+        cause: response.errorCode,
+      })
     }
     return response
   } catch (error) {

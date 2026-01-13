@@ -72,14 +72,15 @@ export default function NewComponentPage() {
     onError: error => {
       console.error('Create error:', error)
       toast.error('Component oluşturulurken bir hata oluştu')
+      toast.error(error.message)
     },
   })
 
   const onSubmit = (data: CreateComponentInput) => {
     const submitData: CreateComponentInput = {
       ...data,
-      bannerIds: selectedBanners.map(b => b.id),
-      widgetIds: selectedWidgets.map(w => w.id),
+      bannerIds: data.type === 'BANNER' ? selectedBanners.map(b => b.id) : [],
+      widgetIds: data.type === 'WIDGET' ? selectedWidgets.map(w => w.id) : [],
     }
     createMutation.mutate(submitData)
   }

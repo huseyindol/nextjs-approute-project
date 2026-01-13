@@ -130,6 +130,7 @@ export default function EditComponentPage() {
     onError: error => {
       console.error('Update error:', error)
       toast.error('Güncelleme sırasında bir hata oluştu')
+      toast.error(error.message)
     },
   })
 
@@ -156,8 +157,8 @@ export default function EditComponentPage() {
 
     const submitData: UpdateComponentInput = {
       ...data,
-      bannerIds: selectedBanners.map(b => b.id),
-      widgetIds: selectedWidgets.map(w => w.id),
+      bannerIds: data.type === 'BANNER' ? selectedBanners.map(b => b.id) : [],
+      widgetIds: data.type === 'WIDGET' ? selectedWidgets.map(w => w.id) : [],
     }
     updateMutation.mutate(submitData)
   }

@@ -67,14 +67,15 @@ export default function NewWidgetPage() {
     onError: error => {
       console.error('Create error:', error)
       toast.error('Widget oluşturulurken bir hata oluştu')
+      toast.error(error.message)
     },
   })
 
   const onSubmit = (data: CreateWidgetInput) => {
     const submitData: CreateWidgetInput = {
       ...data,
-      bannerIds: selectedBanners.map(b => b.id),
-      postIds: selectedPosts.map(p => p.id),
+      bannerIds: data.type === 'BANNER' ? selectedBanners.map(b => b.id) : [],
+      postIds: data.type === 'POST' ? selectedPosts.map(p => p.id) : [],
     }
     createMutation.mutate(submitData)
   }

@@ -124,6 +124,7 @@ export default function EditWidgetPage() {
     onError: error => {
       console.error('Update error:', error)
       toast.error('Güncelleme sırasında bir hata oluştu')
+      toast.error(error.message)
     },
   })
 
@@ -150,8 +151,8 @@ export default function EditWidgetPage() {
 
     const submitData: UpdateWidgetInput = {
       ...data,
-      bannerIds: selectedBanners.map(b => b.id),
-      postIds: selectedPosts.map(p => p.id),
+      bannerIds: data.type === 'BANNER' ? selectedBanners.map(b => b.id) : [],
+      postIds: data.type === 'POST' ? selectedPosts.map(p => p.id) : [],
     }
     updateMutation.mutate(submitData)
   }
