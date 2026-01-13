@@ -126,3 +126,12 @@ export interface WidgetSummary {
   orderIndex: number
 }
 export type WidgetSummaryListResponseType = BaseResponse<WidgetSummary[]>
+
+export interface PostSummary {
+  id: number
+  title: string
+  slug: string
+  status: boolean
+  orderIndex: number
+}
+export type PostSummaryListResponseType = BaseResponse<PostSummary[]>

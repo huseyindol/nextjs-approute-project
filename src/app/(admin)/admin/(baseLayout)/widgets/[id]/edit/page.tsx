@@ -1,16 +1,20 @@
 'use client'
 
+import { DualListbox } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { getBannersSummaryService } from '@/app/(admin)/admin/_services/banners.services'
+import { getPostsSummaryService } from '@/app/(admin)/admin/_services/posts.services'
 import {
   getWidgetByIdService,
   updateWidgetService,
 } from '@/app/(admin)/admin/_services/widgets.services'
 import { UpdateWidgetInput, UpdateWidgetSchema } from '@/schemas/widget.schema'
+import { BannerSummary, PostSummary } from '@/types/BaseResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -19,6 +23,10 @@ export default function EditWidgetPage() {
   const widgetId = params.id as string
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
+  const [selectedBanners, setSelectedBanners] = useState<BannerSummary[]>([])
+  const [selectedPosts, setSelectedPosts] = useState<PostSummary[]>([])
+  const [initialBannerIds, setInitialBannerIds] = useState<number[]>([])
+  const [initialPostIds, setInitialPostIds] = useState<number[]>([])
 
   // Fetch widget data
   const {
@@ -32,10 +40,23 @@ export default function EditWidgetPage() {
     enabled: !!widgetId,
   })
 
+  // Fetch banners summary
+  const { data: bannersData } = useQuery({
+    queryKey: ['banners-summary'],
+    queryFn: getBannersSummaryService,
+  })
+
+  // Fetch posts summary
+  const { data: postsData } = useQuery({
+    queryKey: ['posts-summary'],
+    queryFn: getPostsSummaryService,
+  })
+
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isDirty },
   } = useForm<UpdateWidgetInput>({
     resolver: zodResolver(UpdateWidgetSchema),
@@ -51,6 +72,9 @@ export default function EditWidgetPage() {
     },
   })
 
+  // Watch type field for conditional rendering
+  const selectedType = watch('type')
+
   // Populate form when data is loaded
   useEffect(() => {
     if (widgetData?.data) {
@@ -65,8 +89,28 @@ export default function EditWidgetPage() {
         bannerIds: [],
         postIds: [],
       })
+
+      // Set selected banners from widget data
+      if (widget.banners && bannersData?.data) {
+        const bannerIds = widget.banners.map(b => Number(b.id))
+        setInitialBannerIds(bannerIds)
+        const selectedBannerItems = bannersData.data.filter(b =>
+          bannerIds.includes(b.id),
+        )
+        setSelectedBanners(selectedBannerItems)
+      }
+
+      // Set selected posts from widget data
+      if (widget.posts && postsData?.data) {
+        const postIds = widget.posts.map(p => Number(p.id))
+        setInitialPostIds(postIds)
+        const selectedPostItems = postsData.data.filter(p =>
+          postIds.includes(p.id),
+        )
+        setSelectedPosts(selectedPostItems)
+      }
     }
-  }, [widgetData, reset])
+  }, [widgetData, bannersData, postsData, reset])
 
   // Update mutation
   const updateMutation = useMutation({
@@ -83,12 +127,33 @@ export default function EditWidgetPage() {
     },
   })
 
+  // Check if banner or post selections changed
+  const hasBannerChanges = () => {
+    const currentBannerIds = selectedBanners.map(b => b.id).sort()
+    const initialIds = [...initialBannerIds].sort()
+    return JSON.stringify(currentBannerIds) !== JSON.stringify(initialIds)
+  }
+
+  const hasPostChanges = () => {
+    const currentPostIds = selectedPosts.map(p => p.id).sort()
+    const initialIds = [...initialPostIds].sort()
+    return JSON.stringify(currentPostIds) !== JSON.stringify(initialIds)
+  }
+
   const onSubmit = (data: UpdateWidgetInput) => {
-    if (!isDirty) {
+    const hasAssignmentChanges = hasBannerChanges() || hasPostChanges()
+
+    if (!isDirty && !hasAssignmentChanges) {
       toast.info('Herhangi bir değişiklik yapılmadı')
       return
     }
-    updateMutation.mutate(data)
+
+    const submitData: UpdateWidgetInput = {
+      ...data,
+      bannerIds: selectedBanners.map(b => b.id),
+      postIds: selectedPosts.map(p => p.id),
+    }
+    updateMutation.mutate(submitData)
   }
 
   const inputClass = `w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors ${
@@ -268,20 +333,6 @@ export default function EditWidgetPage() {
               />
             </div>
 
-            {/* Content */}
-            <div>
-              <label htmlFor="content" className={labelClass}>
-                İçerik
-              </label>
-              <textarea
-                id="content"
-                {...register('content')}
-                rows={4}
-                className={inputClass}
-                placeholder="HTML veya JSON içerik"
-              />
-            </div>
-
             {/* Status */}
             <div className="flex items-center gap-3">
               <input
@@ -302,6 +353,62 @@ export default function EditWidgetPage() {
           </div>
         </div>
 
+        {/* Banner Assignment - sadece BANNER tipi seçildiğinde göster */}
+        {selectedType === 'BANNER' && (
+          <div
+            className={`rounded-2xl p-6 ${
+              isDarkMode
+                ? 'border border-slate-800/50 bg-slate-900/60'
+                : 'border border-gray-200 bg-white'
+            } backdrop-blur-sm`}
+          >
+            <h2
+              className={`mb-4 text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              Banner Ataması
+            </h2>
+            <DualListbox<BannerSummary>
+              available={bannersData?.data || []}
+              selected={selectedBanners}
+              onChange={setSelectedBanners}
+              getItemLabel={item => item.title}
+              getItemSubLabel={item => (item.status ? 'Aktif' : 'Pasif')}
+              emptyLeftText="Banner bulunamadı"
+              emptyRightText="Banner seçilmedi"
+            />
+          </div>
+        )}
+
+        {/* Post Assignment - sadece POST tipi seçildiğinde göster */}
+        {selectedType === 'POST' && (
+          <div
+            className={`rounded-2xl p-6 ${
+              isDarkMode
+                ? 'border border-slate-800/50 bg-slate-900/60'
+                : 'border border-gray-200 bg-white'
+            } backdrop-blur-sm`}
+          >
+            <h2
+              className={`mb-4 text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              Post Ataması
+            </h2>
+            <DualListbox<PostSummary>
+              available={postsData?.data || []}
+              selected={selectedPosts}
+              onChange={setSelectedPosts}
+              getItemLabel={item => item.title}
+              getItemSubLabel={item => `/${item.slug}`}
+              emptyLeftText="Post bulunamadı"
+              emptyRightText="Post seçilmedi"
+            />
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex gap-3">
           <Link
@@ -317,7 +424,7 @@ export default function EditWidgetPage() {
           <button
             type="submit"
             disabled={updateMutation.isPending}
-            className="flex-1 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
+            className="bg-linear-to-r flex-1 rounded-xl from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
           >
             {updateMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">

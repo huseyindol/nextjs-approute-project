@@ -1,12 +1,17 @@
 'use client'
 
+import { DualListbox } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { getBannersSummaryService } from '@/app/(admin)/admin/_services/banners.services'
+import { getPostsSummaryService } from '@/app/(admin)/admin/_services/posts.services'
 import { createWidgetService } from '@/app/(admin)/admin/_services/widgets.services'
 import { CreateWidgetInput, CreateWidgetSchema } from '@/schemas/widget.schema'
+import { BannerSummary, PostSummary } from '@/types/BaseResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -14,10 +19,13 @@ export default function NewWidgetPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
+  const [selectedBanners, setSelectedBanners] = useState<BannerSummary[]>([])
+  const [selectedPosts, setSelectedPosts] = useState<PostSummary[]>([])
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<CreateWidgetInput>({
     resolver: zodResolver(CreateWidgetSchema),
@@ -31,6 +39,21 @@ export default function NewWidgetPage() {
       bannerIds: [],
       postIds: [],
     },
+  })
+
+  // Watch type field for conditional rendering
+  const selectedType = watch('type')
+
+  // Fetch banners summary
+  const { data: bannersData } = useQuery({
+    queryKey: ['banners-summary'],
+    queryFn: getBannersSummaryService,
+  })
+
+  // Fetch posts summary
+  const { data: postsData } = useQuery({
+    queryKey: ['posts-summary'],
+    queryFn: getPostsSummaryService,
   })
 
   // Create mutation
@@ -48,7 +71,12 @@ export default function NewWidgetPage() {
   })
 
   const onSubmit = (data: CreateWidgetInput) => {
-    createMutation.mutate(data)
+    const submitData: CreateWidgetInput = {
+      ...data,
+      bannerIds: selectedBanners.map(b => b.id),
+      postIds: selectedPosts.map(p => p.id),
+    }
+    createMutation.mutate(submitData)
   }
 
   const inputClass = `w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors ${
@@ -189,20 +217,6 @@ export default function NewWidgetPage() {
               />
             </div>
 
-            {/* Content */}
-            <div>
-              <label htmlFor="content" className={labelClass}>
-                İçerik
-              </label>
-              <textarea
-                id="content"
-                {...register('content')}
-                rows={4}
-                className={inputClass}
-                placeholder="HTML veya JSON içerik"
-              />
-            </div>
-
             {/* Status */}
             <div className="flex items-center gap-3">
               <input
@@ -223,6 +237,62 @@ export default function NewWidgetPage() {
           </div>
         </div>
 
+        {/* Banner Assignment - sadece BANNER tipi seçildiğinde göster */}
+        {selectedType === 'BANNER' && (
+          <div
+            className={`rounded-2xl p-6 ${
+              isDarkMode
+                ? 'border border-slate-800/50 bg-slate-900/60'
+                : 'border border-gray-200 bg-white'
+            } backdrop-blur-sm`}
+          >
+            <h2
+              className={`mb-4 text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              Banner Ataması
+            </h2>
+            <DualListbox<BannerSummary>
+              available={bannersData?.data || []}
+              selected={selectedBanners}
+              onChange={setSelectedBanners}
+              getItemLabel={item => item.title}
+              getItemSubLabel={item => (item.status ? 'Aktif' : 'Pasif')}
+              emptyLeftText="Banner bulunamadı"
+              emptyRightText="Banner seçilmedi"
+            />
+          </div>
+        )}
+
+        {/* Post Assignment - sadece POST tipi seçildiğinde göster */}
+        {selectedType === 'POST' && (
+          <div
+            className={`rounded-2xl p-6 ${
+              isDarkMode
+                ? 'border border-slate-800/50 bg-slate-900/60'
+                : 'border border-gray-200 bg-white'
+            } backdrop-blur-sm`}
+          >
+            <h2
+              className={`mb-4 text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              Post Ataması
+            </h2>
+            <DualListbox<PostSummary>
+              available={postsData?.data || []}
+              selected={selectedPosts}
+              onChange={setSelectedPosts}
+              getItemLabel={item => item.title}
+              getItemSubLabel={item => `/${item.slug}`}
+              emptyLeftText="Post bulunamadı"
+              emptyRightText="Post seçilmedi"
+            />
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex gap-3">
           <Link
@@ -238,7 +308,7 @@ export default function NewWidgetPage() {
           <button
             type="submit"
             disabled={createMutation.isPending}
-            className="flex-1 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
+            className="bg-linear-to-r flex-1 rounded-xl from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
           >
             {createMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">

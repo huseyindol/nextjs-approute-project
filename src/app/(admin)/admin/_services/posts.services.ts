@@ -3,6 +3,7 @@ import {
   BaseResponse,
   PostListResponseType,
   PostResponseType,
+  PostSummaryListResponseType,
 } from '@/types/BaseResponse'
 import { fetcher } from '@/utils/services/fetcher'
 
@@ -100,6 +101,29 @@ export const deletePostService = async (id: string) => {
     return response
   } catch (error) {
     console.error('Error deleting post:', error)
+    throw error
+  }
+}
+
+// GET - Post özet listesi (Widget atamaları için)
+export const getPostsSummaryService = async () => {
+  try {
+    const response: PostSummaryListResponseType = await fetcher(
+      '/api/v1/posts/list/summary',
+      {
+        method: 'GET',
+        keepalive: true,
+      },
+    )
+    console.log('Get posts summary:', response)
+    if (!response.result) {
+      throw new Error('Error get posts summary', {
+        cause: response.message,
+      })
+    }
+    return response
+  } catch (error) {
+    console.error('Error get posts summary:', error)
     throw error
   }
 }
