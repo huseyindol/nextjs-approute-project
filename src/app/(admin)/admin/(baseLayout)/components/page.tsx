@@ -106,12 +106,26 @@ export default function ComponentsListPage() {
       ),
     },
     {
-      key: 'pageIds',
-      header: 'Sayfalar',
+      key: 'connections',
+      header: 'Bağlantılar',
       render: component => (
-        <span className={isDarkMode ? 'text-slate-400' : 'text-gray-500'}>
-          {component.pageIds?.length || 0} sayfa
-        </span>
+        <div className="flex gap-2">
+          <span
+            className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            {component.banners?.length || 0} banner
+          </span>
+          <span
+            className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            {component.widgets?.length || 0} widget
+          </span>
+          <span
+            className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            {component.pageIds?.length || 0} sayfa
+          </span>
+        </div>
       ),
     },
     {
