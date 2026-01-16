@@ -2,6 +2,7 @@
 
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
 import { createPostService } from '@/app/(admin)/admin/_services/posts.services'
+import { generateSlug } from '@/app/(admin)/admin/_utils/stringUtils'
 import { CreatePostInput, CreatePostSchema } from '@/schemas/post.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -36,20 +37,8 @@ export default function NewPostPage() {
 
   // Auto-generate slug from title
   const title = watch('title')
-  const generateSlug = () => {
-    const slug = title
-      .toLowerCase()
-      .replace(/ğ/g, 'g')
-      .replace(/ü/g, 'u')
-      .replace(/ş/g, 's')
-      .replace(/ı/g, 'i')
-      .replace(/ö/g, 'o')
-      .replace(/ç/g, 'c')
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim()
-    setValue('slug', slug)
+  const handleGenerateSlug = () => {
+    setValue('slug', generateSlug(title))
   }
 
   // Create mutation
@@ -160,7 +149,7 @@ export default function NewPostPage() {
                 {...register('title')}
                 className={inputClass}
                 placeholder="Post başlığı"
-                onBlur={generateSlug}
+                onBlur={() => handleGenerateSlug()}
               />
               {errors.title && (
                 <p className={errorClass}>{errors.title.message}</p>
@@ -182,7 +171,7 @@ export default function NewPostPage() {
                 />
                 <button
                   type="button"
-                  onClick={generateSlug}
+                  onClick={() => handleGenerateSlug()}
                   className={`rounded-xl px-4 py-2 text-sm ${
                     isDarkMode
                       ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
@@ -370,7 +359,7 @@ export default function NewPostPage() {
             {createMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Kaydediliyor...
+                <span>Kaydediliyor...</span>
               </span>
             ) : (
               'Post Oluştur'

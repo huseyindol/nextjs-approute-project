@@ -4,6 +4,7 @@ import { DualListbox, Icons } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
 import { getComponentsSummaryService } from '@/app/(admin)/admin/_services/components.services'
 import { createPageService } from '@/app/(admin)/admin/_services/pages.services'
+import { generateSlug } from '@/app/(admin)/admin/_utils/stringUtils'
 import { CreatePageInput, CreatePageSchema } from '@/schemas/page'
 import { ComponentSummary } from '@/types/BaseResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -81,13 +82,7 @@ export default function NewPagePage() {
   // Auto-generate slug from title
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value
-    const slug = newTitle
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim()
-    setValue('slug', slug)
+    setValue('slug', generateSlug(newTitle))
   }
 
   const onSubmit = (data: CreatePageInput) => {
@@ -432,7 +427,7 @@ export default function NewPagePage() {
             {createMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Kaydediliyor...
+                <span>Kaydediliyor...</span>
               </span>
             ) : (
               'Sayfa Oluştur'

@@ -8,7 +8,7 @@ import { useEffect } from 'react'
  * Error Component for App Router
  * Automatically wraps route segments and catches errors
  */
-export default function Error({
+export default function ErrorPage({
   error,
   reset,
 }: {

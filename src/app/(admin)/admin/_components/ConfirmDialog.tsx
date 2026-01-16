@@ -52,9 +52,11 @@ export function ConfirmDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+      <button
+        type="button"
+        className="absolute inset-0 h-full w-full cursor-default border-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
+        aria-label="Diyaloğu kapat"
       />
 
       {/* Dialog */}
@@ -115,7 +117,7 @@ export function ConfirmDialog({
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                İşleniyor...
+                <span>İşleniyor...</span>
               </span>
             ) : (
               confirmText

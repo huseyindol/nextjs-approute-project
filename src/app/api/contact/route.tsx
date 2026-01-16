@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     if (!emailRegex.test(email)) {
       return NextResponse.json(
         { error: 'Geçerli bir e-posta adresi giriniz.' },

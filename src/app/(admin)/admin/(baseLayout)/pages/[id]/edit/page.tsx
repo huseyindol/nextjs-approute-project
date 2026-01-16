@@ -7,6 +7,7 @@ import {
   getPageBySlugService,
   updatePageService,
 } from '@/app/(admin)/admin/_services/pages.services'
+import { generateSlug } from '@/app/(admin)/admin/_utils/stringUtils'
 import { UpdatePageInput, UpdatePageSchema } from '@/schemas/page'
 import { ComponentSummary, ComponentTypeEnum } from '@/types/BaseResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -148,13 +149,7 @@ export default function EditPagePage() {
   // Auto-generate slug from title
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value
-    const slug = newTitle
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim()
-    setValue('slug', slug)
+    setValue('slug', generateSlug(newTitle))
   }
 
   const onSubmit = (data: UpdatePageInput) => {
@@ -542,7 +537,7 @@ export default function EditPagePage() {
             {updateMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Kaydediliyor...
+                <span>Kaydediliyor...</span>
               </span>
             ) : (
               'Değişiklikleri Kaydet'

@@ -26,7 +26,8 @@
     "perf:build": "ANALYZE=true next build && node scripts/performance-audit.mjs",
     "load-test": "k6 run scripts/load-test.k6.js",
     "load-test:local": "BASE_URL=http://localhost:3000 k6 run scripts/load-test.k6.js",
-    "load-test:quick": "k6 run --vus 10 --duration 30s scripts/load-test.k6.js"
+    "load-test:quick": "k6 run --vus 10 --duration 30s scripts/load-test.k6.js",
+    "sonar": "npx sonar-scanner"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md}": [

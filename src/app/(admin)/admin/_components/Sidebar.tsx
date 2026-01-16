@@ -47,9 +47,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     <>
       {/* Sidebar Overlay */}
       {isOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+        <button
+          type="button"
+          className="fixed inset-0 z-40 h-full w-full cursor-default border-0 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={onClose}
+          aria-label="Menüyü kapat"
         />
       )}
 

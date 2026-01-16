@@ -175,7 +175,7 @@ export default function BannersListPage() {
             className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40"
           >
             <span className="text-lg">+</span>
-            Yeni Banner
+            <span>Yeni Banner</span>
           </Link>
         </div>
 

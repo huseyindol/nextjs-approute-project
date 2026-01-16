@@ -8,6 +8,7 @@ import {
   updateComponentService,
 } from '@/app/(admin)/admin/_services/components.services'
 import { getWidgetsSummaryService } from '@/app/(admin)/admin/_services/widgets.services'
+import { hasIdArrayChanges } from '@/app/(admin)/admin/_utils/arrayUtils'
 import {
   UpdateComponentInput,
   UpdateComponentSchema,
@@ -134,18 +135,12 @@ export default function EditComponentPage() {
     },
   })
 
-  // Check if banner or widget selections changed
-  const hasBannerChanges = () => {
-    const currentBannerIds = selectedBanners.map(b => b.id).sort()
-    const initialIds = [...initialBannerIds].sort()
-    return JSON.stringify(currentBannerIds) !== JSON.stringify(initialIds)
-  }
+  // Check if banner or widget selections changed using utility
+  const hasBannerChanges = () =>
+    hasIdArrayChanges(selectedBanners, initialBannerIds)
 
-  const hasWidgetChanges = () => {
-    const currentWidgetIds = selectedWidgets.map(w => w.id).sort()
-    const initialIds = [...initialWidgetIds].sort()
-    return JSON.stringify(currentWidgetIds) !== JSON.stringify(initialIds)
-  }
+  const hasWidgetChanges = () =>
+    hasIdArrayChanges(selectedWidgets, initialWidgetIds)
 
   const onSubmit = (data: UpdateComponentInput) => {
     const hasAssignmentChanges = hasBannerChanges() || hasWidgetChanges()
@@ -482,7 +477,7 @@ export default function EditComponentPage() {
             {updateMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Kaydediliyor...
+                <span>Kaydediliyor...</span>
               </span>
             ) : (
               'Değişiklikleri Kaydet'

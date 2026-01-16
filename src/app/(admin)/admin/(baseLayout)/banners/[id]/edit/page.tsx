@@ -274,6 +274,12 @@ export default function EditBannerPage() {
             ) : (
               <div
                 onClick={() => fileInputRef.current?.click()}
+                onKeyDown={e =>
+                  e.key === 'Enter' && fileInputRef.current?.click()
+                }
+                role="button"
+                tabIndex={0}
+                aria-label="Görsel yüklemek için tıklayın"
                 className={`flex h-48 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors ${
                   isDarkMode
                     ? 'border-slate-700 hover:border-violet-500'
@@ -454,7 +460,7 @@ export default function EditBannerPage() {
             {updateMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Kaydediliyor...
+                <span>Kaydediliyor...</span>
               </span>
             ) : (
               'Değişiklikleri Kaydet'

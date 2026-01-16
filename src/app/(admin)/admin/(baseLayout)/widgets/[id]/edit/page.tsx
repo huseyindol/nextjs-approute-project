@@ -8,6 +8,7 @@ import {
   getWidgetByIdService,
   updateWidgetService,
 } from '@/app/(admin)/admin/_services/widgets.services'
+import { hasIdArrayChanges } from '@/app/(admin)/admin/_utils/arrayUtils'
 import { UpdateWidgetInput, UpdateWidgetSchema } from '@/schemas/widget.schema'
 import { BannerSummary, PostSummary } from '@/types/BaseResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -128,18 +129,11 @@ export default function EditWidgetPage() {
     },
   })
 
-  // Check if banner or post selections changed
-  const hasBannerChanges = () => {
-    const currentBannerIds = selectedBanners.map(b => b.id).sort()
-    const initialIds = [...initialBannerIds].sort()
-    return JSON.stringify(currentBannerIds) !== JSON.stringify(initialIds)
-  }
+  // Check if banner or post selections changed using utility
+  const hasBannerChanges = () =>
+    hasIdArrayChanges(selectedBanners, initialBannerIds)
 
-  const hasPostChanges = () => {
-    const currentPostIds = selectedPosts.map(p => p.id).sort()
-    const initialIds = [...initialPostIds].sort()
-    return JSON.stringify(currentPostIds) !== JSON.stringify(initialIds)
-  }
+  const hasPostChanges = () => hasIdArrayChanges(selectedPosts, initialPostIds)
 
   const onSubmit = (data: UpdateWidgetInput) => {
     const hasAssignmentChanges = hasBannerChanges() || hasPostChanges()
@@ -430,7 +424,7 @@ export default function EditWidgetPage() {
             {updateMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Kaydediliyor...
+                <span>Kaydediliyor...</span>
               </span>
             ) : (
               'Değişiklikleri Kaydet'
