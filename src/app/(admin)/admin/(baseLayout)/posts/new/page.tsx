@@ -1,6 +1,7 @@
 'use client'
 
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { useTemplates } from '@/app/(admin)/admin/_hooks/useTemplates'
 import { createPostService } from '@/app/(admin)/admin/_services/posts.services'
 import { generateSlug } from '@/app/(admin)/admin/_utils/stringUtils'
 import { CreatePostInput, CreatePostSchema } from '@/schemas/post.schema'
@@ -17,6 +18,7 @@ export default function NewPostPage() {
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
   const [showSeo, setShowSeo] = useState(false)
+  const { templates: postTemplates } = useTemplates('posts')
 
   const {
     register,
@@ -32,6 +34,7 @@ export default function NewPostPage() {
       slug: '',
       status: true,
       orderIndex: 0,
+      template: '',
     },
   })
 
@@ -212,6 +215,27 @@ export default function NewPostPage() {
                 className={inputClass}
                 placeholder="0"
               />
+            </div>
+
+            {/* Template */}
+            <div>
+              <label htmlFor="template" className={labelClass}>
+                Template
+              </label>
+              <select
+                id="template"
+                {...register('template')}
+                className={inputClass}
+              >
+                <option value="">Template Seçin</option>
+                {postTemplates
+                  .filter(t => t.value !== '')
+                  .map(t => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             {/* Status */}

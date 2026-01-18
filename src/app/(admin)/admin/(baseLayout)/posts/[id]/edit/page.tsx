@@ -1,6 +1,7 @@
 'use client'
 
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { useTemplates } from '@/app/(admin)/admin/_hooks/useTemplates'
 import {
   getPostByIdService,
   updatePostService,
@@ -20,6 +21,7 @@ export default function EditPostPage() {
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
   const [showSeo, setShowSeo] = useState(false)
+  const { templates: postTemplates } = useTemplates('posts')
 
   // Fetch post data
   const {
@@ -46,6 +48,7 @@ export default function EditPostPage() {
       slug: '',
       status: true,
       orderIndex: 0,
+      template: '',
     },
   })
 
@@ -59,6 +62,7 @@ export default function EditPostPage() {
         slug: post.slug,
         status: post.status,
         orderIndex: post.orderIndex,
+        template: post.template || '',
         seoInfo: post.seoInfo
           ? {
               title: post.seoInfo.title,
@@ -273,6 +277,27 @@ export default function EditPostPage() {
                 className={inputClass}
                 placeholder="0"
               />
+            </div>
+
+            {/* Template */}
+            <div>
+              <label htmlFor="template" className={labelClass}>
+                Template
+              </label>
+              <select
+                id="template"
+                {...register('template')}
+                className={inputClass}
+              >
+                <option value="">Template Seçin</option>
+                {postTemplates
+                  .filter(t => t.value !== '')
+                  .map(t => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             {/* Status */}

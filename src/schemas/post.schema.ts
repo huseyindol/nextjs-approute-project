@@ -33,6 +33,7 @@ export const CreatePostSchema = z.object({
     ),
   status: z.boolean().default(true),
   orderIndex: z.number().int().min(0).default(0),
+  template: z.string().max(50, 'Template 50 karakteri geçemez').optional(),
   seoInfo: SeoInfoSchema.optional(),
 })
 

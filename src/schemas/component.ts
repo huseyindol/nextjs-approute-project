@@ -14,6 +14,7 @@ export const CreateComponentSchema = z.object({
   content: z.string().optional(),
   orderIndex: z.number().int().min(0).default(0),
   status: z.boolean().default(true),
+  template: z.string().max(50, 'Template 50 karakteri geçemez').optional(),
   pageIds: z.array(z.number()).optional(),
   bannerIds: z.array(z.number()).optional(),
   widgetIds: z.array(z.number()).optional(),

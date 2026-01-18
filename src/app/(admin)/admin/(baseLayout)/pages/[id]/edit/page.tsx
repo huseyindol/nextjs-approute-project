@@ -2,6 +2,7 @@
 
 import { DualListbox, Icons } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { useTemplates } from '@/app/(admin)/admin/_hooks/useTemplates'
 import { getComponentsSummaryService } from '@/app/(admin)/admin/_services/components.services'
 import {
   getPageBySlugService,
@@ -24,6 +25,7 @@ export default function EditPagePage() {
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
   const [showSeoSettings, setShowSeoSettings] = useState(false)
+  const { templates: pageTemplates } = useTemplates('pages')
 
   // Fetch page data
   const {
@@ -51,6 +53,7 @@ export default function EditPagePage() {
       description: '',
       slug: '',
       status: true,
+      template: '',
       seoInfo: {
         title: '',
         description: '',
@@ -110,11 +113,14 @@ export default function EditPagePage() {
   useEffect(() => {
     if (pageData?.data) {
       const page = pageData.data
+      console.log('page', page)
+      console.log('pageTemplates', pageTemplates)
       reset({
         title: page.title,
         description: page.description || '',
         slug: page.slug,
         status: page.status,
+        template: page.template || '',
         seoInfo: page.seoInfo
           ? {
               title: page.seoInfo.title || '',
@@ -336,6 +342,27 @@ export default function EditPagePage() {
                 className={inputClass}
                 placeholder="Sayfa açıklaması"
               />
+            </div>
+
+            {/* Template */}
+            <div>
+              <label htmlFor="template" className={labelClass}>
+                Template
+              </label>
+              <select
+                id="template"
+                {...register('template')}
+                className={inputClass}
+              >
+                <option value="">Template Seçin</option>
+                {pageTemplates
+                  .filter(t => t.value !== '')
+                  .map(t => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             {/* Status */}

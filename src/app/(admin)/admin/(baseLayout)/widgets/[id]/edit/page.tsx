@@ -2,6 +2,7 @@
 
 import { DualListbox } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { useTemplates } from '@/app/(admin)/admin/_hooks/useTemplates'
 import { getBannersSummaryService } from '@/app/(admin)/admin/_services/banners.services'
 import { getPostsSummaryService } from '@/app/(admin)/admin/_services/posts.services'
 import {
@@ -28,6 +29,7 @@ export default function EditWidgetPage() {
   const [selectedPosts, setSelectedPosts] = useState<PostSummary[]>([])
   const [initialBannerIds, setInitialBannerIds] = useState<number[]>([])
   const [initialPostIds, setInitialPostIds] = useState<number[]>([])
+  const { templates: widgetTemplates } = useTemplates('widgets')
 
   // Fetch widget data
   const {
@@ -68,6 +70,7 @@ export default function EditWidgetPage() {
       content: '',
       orderIndex: 0,
       status: true,
+      template: '',
       bannerIds: [],
       postIds: [],
     },
@@ -87,6 +90,7 @@ export default function EditWidgetPage() {
         content: widget.content || '',
         orderIndex: widget.orderIndex,
         status: widget.status,
+        template: widget.template || '',
         bannerIds: [],
         postIds: [],
       })
@@ -298,6 +302,27 @@ export default function EditWidgetPage() {
                 className={inputClass}
                 placeholder="Widget açıklaması"
               />
+            </div>
+
+            {/* Template */}
+            <div>
+              <label htmlFor="template" className={labelClass}>
+                Template
+              </label>
+              <select
+                id="template"
+                {...register('template')}
+                className={inputClass}
+              >
+                <option value="">Template Seçin</option>
+                {widgetTemplates
+                  .filter(t => t.value !== '')
+                  .map(t => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             {/* Type */}

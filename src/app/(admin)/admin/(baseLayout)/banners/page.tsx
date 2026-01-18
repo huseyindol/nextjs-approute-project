@@ -13,6 +13,7 @@ import {
   deleteBannerService,
   getBannerService,
 } from '@/app/(admin)/admin/_services/banners.services'
+import { getImageUrl } from '@/app/(admin)/admin/_utils/urlUtils'
 import { Banner } from '@/types/BaseResponse'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
@@ -66,9 +67,9 @@ export default function BannersListPage() {
       header: 'Görsel',
       render: banner => (
         <div className="relative h-12 w-20 overflow-hidden rounded-lg">
-          {banner.image ? (
+          {Object.keys(banner.images).length > 0 ? (
             <Image
-              src={`${process.env.NEXT_PUBLIC_API}/${banner.image}`}
+              src={getImageUrl(banner.images.desktop)}
               alt={banner.altText || banner.title}
               fill
               className="object-cover"
@@ -109,7 +110,7 @@ export default function BannersListPage() {
       header: 'Link',
       render: banner => (
         <div className="flex max-w-[200px] items-center gap-2">
-          <div className="truncate">
+          <div className="flex">
             <span
               className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
             >

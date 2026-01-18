@@ -2,6 +2,7 @@
 
 import { DualListbox } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { useTemplates } from '@/app/(admin)/admin/_hooks/useTemplates'
 import { getBannersSummaryService } from '@/app/(admin)/admin/_services/banners.services'
 import { getPostsSummaryService } from '@/app/(admin)/admin/_services/posts.services'
 import { createWidgetService } from '@/app/(admin)/admin/_services/widgets.services'
@@ -21,6 +22,7 @@ export default function NewWidgetPage() {
   const { isDarkMode } = useAdminTheme()
   const [selectedBanners, setSelectedBanners] = useState<BannerSummary[]>([])
   const [selectedPosts, setSelectedPosts] = useState<PostSummary[]>([])
+  const { templates: widgetTemplates } = useTemplates('widgets')
 
   const {
     register,
@@ -36,6 +38,7 @@ export default function NewWidgetPage() {
       content: '',
       orderIndex: 0,
       status: true,
+      template: '',
       bannerIds: [],
       postIds: [],
     },
@@ -188,6 +191,27 @@ export default function NewWidgetPage() {
                 className={inputClass}
                 placeholder="Widget açıklaması"
               />
+            </div>
+
+            {/* Template */}
+            <div>
+              <label htmlFor="template" className={labelClass}>
+                Template
+              </label>
+              <select
+                id="template"
+                {...register('template')}
+                className={inputClass}
+              >
+                <option value="">Template Seçin</option>
+                {widgetTemplates
+                  .filter(t => t.value !== '')
+                  .map(t => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             {/* Type */}

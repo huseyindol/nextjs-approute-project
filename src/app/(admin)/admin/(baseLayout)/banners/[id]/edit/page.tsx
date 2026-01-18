@@ -6,6 +6,7 @@ import {
   getBannerByIdService,
   updateBannerService,
 } from '@/app/(admin)/admin/_services/banners.services'
+import { getImageUrl } from '@/app/(admin)/admin/_utils/urlUtils'
 import { UpdateBannerInput, UpdateBannerSchema } from '@/schemas/banner.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -70,9 +71,9 @@ export default function EditBannerPage() {
         status: banner.status,
       })
       // Set existing image as preview
-      if (banner.image) {
+      if (banner.images?.desktop) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setImagePreview(banner.image)
+        setImagePreview(getImageUrl(banner.images.desktop))
       }
     }
   }, [bannerData, reset])
@@ -272,15 +273,11 @@ export default function EditBannerPage() {
                 </p>
               </div>
             ) : (
-              <div
+              <button
+                type="button"
                 onClick={() => fileInputRef.current?.click()}
-                onKeyDown={e =>
-                  e.key === 'Enter' && fileInputRef.current?.click()
-                }
-                role="button"
-                tabIndex={0}
                 aria-label="Görsel yüklemek için tıklayın"
-                className={`flex h-48 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors ${
+                className={`flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors ${
                   isDarkMode
                     ? 'border-slate-700 hover:border-violet-500'
                     : 'border-gray-300 hover:border-violet-500'
@@ -292,7 +289,7 @@ export default function EditBannerPage() {
                 >
                   Görsel yüklemek için tıklayın
                 </p>
-              </div>
+              </button>
             )}
 
             <input

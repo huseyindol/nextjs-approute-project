@@ -34,11 +34,16 @@ export enum WidgetTypeEnum {
   POST = 'post',
 }
 
+export interface BannerImages {
+  desktop: string
+  tablet: string
+  mobile: string
+}
 export interface Banner {
   id: string
   title: string
   altText: string
-  image: string
+  images: BannerImages
   link: string
   target: string
   type: string
@@ -53,6 +58,7 @@ export interface Post {
   slug: string
   status: boolean
   orderIndex: number
+  template?: string
   seoInfo: SeoInfo
 }
 
@@ -64,6 +70,7 @@ export interface Widget {
   content: string
   orderIndex: number
   status: boolean
+  template?: string
   banners: Banner[]
   posts: Post[]
 }
@@ -76,6 +83,7 @@ export interface Component {
   content: string
   orderIndex: number
   status: boolean
+  template?: string
   pageIds: number[]
   banners: Banner[]
   widgets: Widget[]
@@ -87,6 +95,7 @@ export interface Page {
   description: string
   slug: string
   status: boolean
+  template?: string
   seoInfo: SeoInfo
   components: Component[]
 }

@@ -2,6 +2,7 @@
 
 import { DualListbox, Icons } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { useTemplates } from '@/app/(admin)/admin/_hooks/useTemplates'
 import { getBannersSummaryService } from '@/app/(admin)/admin/_services/banners.services'
 import {
   getComponentByIdService,
@@ -30,6 +31,7 @@ export default function EditComponentPage() {
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [selectedBanners, setSelectedBanners] = useState<BannerSummary[]>([])
   const [selectedWidgets, setSelectedWidgets] = useState<WidgetSummary[]>([])
+  const { templates: componentTemplates } = useTemplates('components')
   const [initialBannerIds, setInitialBannerIds] = useState<number[]>([])
   const [initialWidgetIds, setInitialWidgetIds] = useState<number[]>([])
 
@@ -72,6 +74,7 @@ export default function EditComponentPage() {
       content: '',
       orderIndex: 0,
       status: true,
+      template: '',
       pageIds: [],
       bannerIds: [],
       widgetIds: [],
@@ -92,6 +95,7 @@ export default function EditComponentPage() {
         content: component.content || '',
         orderIndex: component.orderIndex,
         status: component.status,
+        template: component.template || '',
         pageIds: component.pageIds || [],
         bannerIds: [],
         widgetIds: [],
@@ -305,6 +309,27 @@ export default function EditComponentPage() {
                 className={inputClass}
                 placeholder="Component açıklaması"
               />
+            </div>
+
+            {/* Template */}
+            <div>
+              <label htmlFor="template" className={labelClass}>
+                Template
+              </label>
+              <select
+                id="template"
+                {...register('template')}
+                className={inputClass}
+              >
+                <option value="">Template Seçin</option>
+                {componentTemplates
+                  .filter(t => t.value !== '')
+                  .map(t => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             {/* Type */}

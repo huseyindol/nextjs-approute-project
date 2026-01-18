@@ -37,6 +37,7 @@ export const CreatePageSchema = z.object({
       'Slug sadece küçük harf, rakam ve tire içerebilir',
     ),
   status: z.boolean().default(true),
+  template: z.string().max(50, 'Template 50 karakteri geçemez').optional(),
   seoInfo: SeoInfoSchema.optional(),
   componentIds: z.array(z.number()).optional(), // Component ID'leri number olarak geliyor
 })

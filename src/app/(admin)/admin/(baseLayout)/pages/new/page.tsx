@@ -2,6 +2,7 @@
 
 import { DualListbox, Icons } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
+import { useTemplates } from '@/app/(admin)/admin/_hooks/useTemplates'
 import { getComponentsSummaryService } from '@/app/(admin)/admin/_services/components.services'
 import { createPageService } from '@/app/(admin)/admin/_services/pages.services'
 import { generateSlug } from '@/app/(admin)/admin/_utils/stringUtils'
@@ -20,6 +21,7 @@ export default function NewPagePage() {
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
   const [showSeoSettings, setShowSeoSettings] = useState(false)
+  const { templates: pageTemplates } = useTemplates('pages')
 
   const {
     register,
@@ -33,6 +35,7 @@ export default function NewPagePage() {
       description: '',
       slug: '',
       status: true,
+      template: '',
       seoInfo: {
         title: '',
         description: '',
@@ -226,6 +229,27 @@ export default function NewPagePage() {
                 className={inputClass}
                 placeholder="Sayfa açıklaması"
               />
+            </div>
+
+            {/* Template */}
+            <div>
+              <label htmlFor="template" className={labelClass}>
+                Template
+              </label>
+              <select
+                id="template"
+                {...register('template')}
+                className={inputClass}
+              >
+                <option value="">Template Seçin</option>
+                {pageTemplates
+                  .filter(t => t.value !== '')
+                  .map(t => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+              </select>
             </div>
 
             {/* Status */}
