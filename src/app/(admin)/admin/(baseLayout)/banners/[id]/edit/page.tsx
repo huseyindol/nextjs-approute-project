@@ -1,8 +1,13 @@
 'use client'
 
-import { Icons } from '@/app/(admin)/admin/_components'
+import {
+  ImageUploadBox,
+  type ResponsiveImages,
+  type ResponsiveImageType,
+} from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
 import {
+  BannerImageFiles,
   getBannerByIdService,
   updateBannerService,
 } from '@/app/(admin)/admin/_services/banners.services'
@@ -10,21 +15,90 @@ import { getImageUrl } from '@/app/(admin)/admin/_utils/urlUtils'
 import { UpdateBannerInput, UpdateBannerSchema } from '@/schemas/banner.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import Image from 'next/image'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+
+type ImageInputMode = 'upload' | 'url'
+
+// Type for newly selected files
+interface NewFilesState {
+  desktop: { file: File; preview: string } | null
+  tablet: { file: File; preview: string } | null
+  mobile: { file: File; preview: string } | null
+}
+
+// Type for edited URLs (null means not edited, use original)
+interface EditedUrlsState {
+  desktop: string | null
+  tablet: string | null
+  mobile: string | null
+}
+
+// Helper function to get image state for a device type
+function getImageState(
+  type: 'desktop' | 'tablet' | 'mobile',
+  newFiles: NewFilesState,
+  bannerImages?: { desktop?: string; tablet?: string; mobile?: string },
+) {
+  if (newFiles[type]) {
+    return {
+      file: newFiles[type]!.file,
+      preview: newFiles[type]!.preview,
+      isExisting: false,
+    }
+  }
+  if (bannerImages?.[type]) {
+    return {
+      file: null,
+      preview: getImageUrl(bannerImages[type]!),
+      isExisting: true,
+    }
+  }
+  return { file: null, preview: null, isExisting: false }
+}
+
+// Helper function to get display URL for a device type
+function getDisplayUrl(
+  type: 'desktop' | 'tablet' | 'mobile',
+  editedUrls: EditedUrlsState,
+  bannerImages?: { desktop?: string; tablet?: string; mobile?: string },
+): string {
+  // If user edited this URL, use edited value
+  const editedUrl = editedUrls[type]
+  if (editedUrl !== null) {
+    return editedUrl
+  }
+  // Otherwise use original from bannerData
+  return bannerImages?.[type] ?? ''
+}
 
 export default function EditBannerPage() {
   const params = useParams()
   const bannerId = params.id as string
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+
+  // Image input mode: upload files or enter URLs
+  const [imageInputMode, setImageInputMode] = useState<ImageInputMode>('upload')
+
+  // Only store newly selected files - existing images are derived from bannerData
+  const [newFiles, setNewFiles] = useState<NewFilesState>({
+    desktop: null,
+    tablet: null,
+    mobile: null,
+  })
+
+  // Only store user-edited URLs - original URLs come from bannerData
+  // null means "not edited, use original"
+  const [editedUrls, setEditedUrls] = useState<EditedUrlsState>({
+    desktop: null,
+    tablet: null,
+    mobile: null,
+  })
+
   const [imageError, setImageError] = useState<string | null>(null)
 
   // Fetch banner data
@@ -54,10 +128,31 @@ export default function EditBannerPage() {
       type: '',
       orderIndex: 0,
       status: true,
+      subFolder: '',
     },
   })
 
-  // Populate form when data is loaded
+  // Derive display images from bannerData and newFiles
+  const displayImages: ResponsiveImages = useMemo(() => {
+    const bannerImages = bannerData?.data?.images
+    return {
+      desktop: getImageState('desktop', newFiles, bannerImages),
+      tablet: getImageState('tablet', newFiles, bannerImages),
+      mobile: getImageState('mobile', newFiles, bannerImages),
+    }
+  }, [bannerData, newFiles])
+
+  // Derive display URLs from bannerData and editedUrls
+  const displayUrls = useMemo(() => {
+    const bannerImages = bannerData?.data?.images
+    return {
+      desktop: getDisplayUrl('desktop', editedUrls, bannerImages),
+      tablet: getDisplayUrl('tablet', editedUrls, bannerImages),
+      mobile: getDisplayUrl('mobile', editedUrls, bannerImages),
+    }
+  }, [bannerData, editedUrls])
+
+  // Populate form when data is loaded (no setState for images/urls needed!)
   useEffect(() => {
     if (bannerData?.data) {
       const banner = bannerData.data
@@ -69,57 +164,92 @@ export default function EditBannerPage() {
         type: banner.type || '',
         orderIndex: banner.orderIndex,
         status: banner.status,
+        subFolder: banner.subFolder || '',
       })
-      // Set existing image as preview
-      if (banner.images?.desktop) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setImagePreview(getImageUrl(banner.images.desktop))
-      }
     }
   }, [bannerData, reset])
 
-  // Handle image selection
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        setImageError('Lütfen geçerli bir görsel dosyası seçin')
-        return
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        setImageError("Dosya boyutu 5MB'dan küçük olmalıdır")
-        return
-      }
-      setSelectedImage(file)
-      setImageError(null)
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string)
-      }
-      reader.readAsDataURL(file)
-    }
+  // Handle image change for specific device type
+  const handleImageChange = (
+    type: ResponsiveImageType,
+    file: File,
+    preview: string,
+  ) => {
+    setImageError(null)
+    setNewFiles(prev => ({
+      ...prev,
+      [type]: { file, preview },
+    }))
+  }
+
+  // Handle image clear for specific device type
+  const handleImageClear = (type: ResponsiveImageType) => {
+    setNewFiles(prev => ({
+      ...prev,
+      [type]: null,
+    }))
+  }
+
+  // Handle URL input change
+  const handleUrlChange = (type: ResponsiveImageType, url: string) => {
+    setEditedUrls(prev => ({
+      ...prev,
+      [type]: url,
+    }))
   }
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: (data: UpdateBannerInput) =>
-      updateBannerService(bannerId, data, selectedImage),
+    mutationFn: (data: UpdateBannerInput) => {
+      if (imageInputMode === 'upload') {
+        const imageFiles: BannerImageFiles = {
+          desktop: newFiles.desktop?.file ?? null,
+          tablet: newFiles.tablet?.file ?? null,
+          mobile: newFiles.mobile?.file ?? null,
+        }
+        return updateBannerService(bannerId, data, imageFiles)
+      } else {
+        // URL mode - send URLs in data.images
+        const dataWithImages: UpdateBannerInput = {
+          ...data,
+          images: {
+            desktop: displayUrls.desktop || undefined,
+            tablet: displayUrls.tablet || undefined,
+            mobile: displayUrls.mobile || undefined,
+          },
+        }
+        return updateBannerService(bannerId, dataWithImages, {})
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] })
       queryClient.invalidateQueries({ queryKey: ['banner', bannerId] })
       toast.success('Banner başarıyla güncellendi')
     },
-    onError: error => {
-      console.error('Update error:', error)
+    onError: err => {
+      console.error('Update error:', err)
       toast.error('Güncelleme sırasında bir hata oluştu')
     },
   })
 
   const onSubmit = (data: UpdateBannerInput) => {
-    // Check if form is dirty or if a new image is selected
-    if (!isDirty && !selectedImage) {
-      toast.info('Herhangi bir değişiklik yapılmadı')
-      return
+    if (imageInputMode === 'upload') {
+      const hasNewImages =
+        newFiles.desktop?.file || newFiles.tablet?.file || newFiles.mobile?.file
+      if (!isDirty && !hasNewImages) {
+        toast.info('Herhangi bir değişiklik yapılmadı')
+        return
+      }
+    } else {
+      // URL mode - check if URLs changed
+      const urlsChanged =
+        editedUrls.desktop !== null ||
+        editedUrls.tablet !== null ||
+        editedUrls.mobile !== null
+      if (!isDirty && !urlsChanged) {
+        toast.info('Herhangi bir değişiklik yapılmadı')
+        return
+      }
     }
     updateMutation.mutate(data)
   }
@@ -226,7 +356,7 @@ export default function EditBannerPage() {
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Image Upload */}
+        {/* Responsive Image Upload */}
         <div
           className={`rounded-2xl p-6 ${
             isDarkMode
@@ -234,86 +364,126 @@ export default function EditBannerPage() {
               : 'border border-gray-200 bg-white'
           } backdrop-blur-sm`}
         >
-          <h2
-            className={`mb-4 text-lg font-semibold ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Banner Görseli
-          </h2>
+          <div className="mb-4 flex items-center justify-between">
+            <h2
+              className={`text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              Banner Görselleri
+            </h2>
 
-          <div className="space-y-4">
-            {imagePreview ? (
-              <div className="relative">
-                <div className="relative h-48 w-full overflow-hidden rounded-xl">
-                  <Image
-                    src={imagePreview}
-                    alt="Preview"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedImage(null)
-                    setImagePreview(null)
-                    if (fileInputRef.current) {
-                      fileInputRef.current.value = ''
-                    }
-                  }}
-                  className="absolute right-2 top-2 rounded-full bg-rose-500 p-1.5 text-white hover:bg-rose-600"
-                >
-                  <Icons.X />
-                </button>
-                <p
-                  className={`mt-2 text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-                >
-                  {selectedImage ? 'Yeni görsel seçildi' : 'Mevcut görsel'}
-                </p>
-              </div>
-            ) : (
+            {/* Mode Switch */}
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => fileInputRef.current?.click()}
-                aria-label="Görsel yüklemek için tıklayın"
-                className={`flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors ${
-                  isDarkMode
-                    ? 'border-slate-700 hover:border-violet-500'
-                    : 'border-gray-300 hover:border-violet-500'
+                onClick={() => setImageInputMode('upload')}
+                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                  imageInputMode === 'upload'
+                    ? 'bg-violet-500 text-white'
+                    : isDarkMode
+                      ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                <span className="text-4xl">📸</span>
-                <p
-                  className={`mt-2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                >
-                  Görsel yüklemek için tıklayın
-                </p>
+                📤 Görsel Yükle
               </button>
-            )}
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="hidden"
-            />
-
-            {imageError && <p className={errorClass}>{imageError}</p>}
-
-            {imagePreview && (
               <button
                 type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className={`text-sm ${
-                  isDarkMode ? 'text-violet-400' : 'text-violet-600'
+                onClick={() => setImageInputMode('url')}
+                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                  imageInputMode === 'url'
+                    ? 'bg-violet-500 text-white'
+                    : isDarkMode
+                      ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                Görseli Değiştir
+                🔗 URL Gir
               </button>
-            )}
+            </div>
           </div>
+
+          <p
+            className={`mb-4 text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            {imageInputMode === 'upload'
+              ? 'Farklı cihazlar için responsive görseller yükleyin.'
+              : 'Görsellerin URL adreslerini girin.'}
+          </p>
+
+          {imageInputMode === 'upload' ? (
+            <div className="flex gap-4">
+              <ImageUploadBox
+                label="Desktop"
+                imageState={displayImages.desktop}
+                onImageChange={(file, preview) =>
+                  handleImageChange('desktop', file, preview)
+                }
+                onImageClear={() => handleImageClear('desktop')}
+              />
+              <ImageUploadBox
+                label="Tablet"
+                imageState={displayImages.tablet}
+                onImageChange={(file, preview) =>
+                  handleImageChange('tablet', file, preview)
+                }
+                onImageClear={() => handleImageClear('tablet')}
+              />
+              <ImageUploadBox
+                label="Mobile"
+                imageState={displayImages.mobile}
+                onImageChange={(file, preview) =>
+                  handleImageChange('mobile', file, preview)
+                }
+                onImageClear={() => handleImageClear('mobile')}
+              />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="desktopUrl" className={labelClass}>
+                  Desktop URL
+                </label>
+                <input
+                  id="desktopUrl"
+                  type="text"
+                  value={displayUrls.desktop}
+                  onChange={e => handleUrlChange('desktop', e.target.value)}
+                  className={inputClass}
+                  placeholder="https://example.com/desktop-banner.jpg"
+                />
+              </div>
+              <div>
+                <label htmlFor="tabletUrl" className={labelClass}>
+                  Tablet URL
+                </label>
+                <input
+                  id="tabletUrl"
+                  type="text"
+                  value={displayUrls.tablet}
+                  onChange={e => handleUrlChange('tablet', e.target.value)}
+                  className={inputClass}
+                  placeholder="https://example.com/tablet-banner.jpg"
+                />
+              </div>
+              <div>
+                <label htmlFor="mobileUrl" className={labelClass}>
+                  Mobile URL
+                </label>
+                <input
+                  id="mobileUrl"
+                  type="text"
+                  value={displayUrls.mobile}
+                  onChange={e => handleUrlChange('mobile', e.target.value)}
+                  className={inputClass}
+                  placeholder="https://example.com/mobile-banner.jpg"
+                />
+              </div>
+            </div>
+          )}
+
+          {imageError && <p className={`mt-3 ${errorClass}`}>{imageError}</p>}
         </div>
 
         {/* Banner Info */}
@@ -359,6 +529,20 @@ export default function EditBannerPage() {
                 {...register('altText')}
                 className={inputClass}
                 placeholder="Görsel alt metni"
+              />
+            </div>
+
+            {/* SubFolder */}
+            <div>
+              <label htmlFor="subFolder" className={labelClass}>
+                Alt Klasör
+              </label>
+              <input
+                id="subFolder"
+                type="text"
+                {...register('subFolder')}
+                className={inputClass}
+                placeholder="örn: promo, hero, sidebar"
               />
             </div>
 

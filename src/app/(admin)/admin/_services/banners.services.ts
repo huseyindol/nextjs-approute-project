@@ -49,21 +49,46 @@ export const getBannerByIdService = async (id: string) => {
   }
 }
 
+// Responsive image files interface
+export interface BannerImageFiles {
+  desktop?: File | null
+  tablet?: File | null
+  mobile?: File | null
+}
+
 // POST - Yeni banner oluştur (multipart/form-data)
+// API expects: data (JSON string) + desktop, tablet, mobile (files)
 export const createBannerService = async (
   data: CreateBannerInput,
-  imageFile: File,
+  imageFiles: BannerImageFiles,
 ) => {
   try {
     const formData = new FormData()
-    formData.append('title', data.title)
-    formData.append('altText', data.altText || '')
-    formData.append('link', data.link || '')
-    formData.append('target', data.target || '_blank')
-    formData.append('type', data.type || '')
-    formData.append('orderIndex', String(data.orderIndex || 0))
-    formData.append('status', String(data.status ?? true))
-    formData.append('image', imageFile)
+
+    // Data field as JSON string (DtoBannerIU format)
+    const jsonData = {
+      title: data.title,
+      altText: data.altText || '',
+      link: data.link || '',
+      target: data.target || '_blank',
+      type: data.type || '',
+      orderIndex: data.orderIndex || 0,
+      status: data.status ?? true,
+      subFolder: data.subFolder || '',
+      images: data.images || {},
+    }
+    formData.append('data', JSON.stringify(jsonData))
+
+    // Responsive image files
+    if (imageFiles.desktop) {
+      formData.append('desktop', imageFiles.desktop)
+    }
+    if (imageFiles.tablet) {
+      formData.append('tablet', imageFiles.tablet)
+    }
+    if (imageFiles.mobile) {
+      formData.append('mobile', imageFiles.mobile)
+    }
 
     const response: BannerResponseType = await fetcher('/api/v1/banners', {
       method: 'POST',
@@ -83,22 +108,38 @@ export const createBannerService = async (
 }
 
 // PUT - Banner güncelle (multipart/form-data)
+// API expects: data (JSON string) + desktop, tablet, mobile (files)
 export const updateBannerService = async (
   id: string,
   data: UpdateBannerInput,
-  imageFile?: File | null,
+  imageFiles?: BannerImageFiles,
 ) => {
   try {
     const formData = new FormData()
-    formData.append('title', data.title)
-    formData.append('altText', data.altText || '')
-    formData.append('link', data.link || '')
-    formData.append('target', data.target || '_blank')
-    formData.append('type', data.type || '')
-    formData.append('orderIndex', String(data.orderIndex || 0))
-    formData.append('status', String(data.status ?? true))
-    if (imageFile) {
-      formData.append('image', imageFile)
+
+    // Data field as JSON string (DtoBannerIU format)
+    const jsonData = {
+      title: data.title,
+      altText: data.altText || '',
+      link: data.link || '',
+      target: data.target || '_blank',
+      type: data.type || '',
+      orderIndex: data.orderIndex || 0,
+      status: data.status ?? true,
+      subFolder: data.subFolder || '',
+      images: data.images || {},
+    }
+    formData.append('data', JSON.stringify(jsonData))
+
+    // Responsive image files
+    if (imageFiles?.desktop) {
+      formData.append('desktop', imageFiles.desktop)
+    }
+    if (imageFiles?.tablet) {
+      formData.append('tablet', imageFiles.tablet)
+    }
+    if (imageFiles?.mobile) {
+      formData.append('mobile', imageFiles.mobile)
     }
 
     const response: BannerResponseType = await fetcher(
@@ -160,6 +201,55 @@ export const getBannersSummaryService = async () => {
     return response
   } catch (error) {
     console.error('Error get banners summary:', error)
+    throw error
+  }
+}
+
+// GET - Sub-folder listesini getir
+export const getSubFoldersService = async () => {
+  try {
+    const response: BaseResponse<string[]> = await fetcher(
+      '/api/v1/banners/sub-folders',
+      {
+        method: 'GET',
+        keepalive: true,
+      },
+    )
+    console.log('Get sub-folders:', response)
+    if (!response.result) {
+      throw new Error('Error get sub-folders', { cause: response.message })
+    }
+    return response
+  } catch (error) {
+    console.error('Error get sub-folders:', error)
+    throw error
+  }
+}
+
+// GET - Sub-folder'a göre bannerları getir
+export const getBannersBySubFolderService = async (subFolder: string) => {
+  try {
+    // subFolder 'all' ise veya boş ise tüm listeyi getir
+    if (!subFolder || subFolder === 'all') {
+      return getBannerService()
+    }
+
+    const response: BannerListResponseType = await fetcher(
+      `/api/v1/banners/list/${subFolder}`,
+      {
+        method: 'GET',
+        keepalive: true,
+      },
+    )
+    console.log(`Get banners for ${subFolder}:`, response)
+    if (!response.result) {
+      throw new Error(`Error get banners for ${subFolder}`, {
+        cause: response.message,
+      })
+    }
+    return response
+  } catch (error) {
+    console.error(`Error get banners for ${subFolder}:`, error)
     throw error
   }
 }

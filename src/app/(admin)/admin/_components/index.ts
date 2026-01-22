@@ -7,6 +7,16 @@ export type { Column } from './DataTable'
 export { DualListbox } from './DualListbox'
 export { Header } from './Header'
 export { Icons } from './Icons'
+export {
+  ImageUploadBox,
+  initialImageState,
+  initialResponsiveImages,
+} from './ImageUploadBox'
+export type {
+  ImageState,
+  ResponsiveImageType,
+  ResponsiveImages,
+} from './ImageUploadBox'
 export { RecentOrders } from './RecentOrders'
 export { RevenueChart } from './RevenueChart'
 export { SearchInput } from './SearchInput'

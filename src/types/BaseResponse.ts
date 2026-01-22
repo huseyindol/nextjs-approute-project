@@ -49,6 +49,7 @@ export interface Banner {
   type: string
   orderIndex: number
   status: boolean
+  subFolder: string
 }
 
 export interface Post {

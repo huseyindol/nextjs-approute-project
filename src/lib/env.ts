@@ -17,6 +17,9 @@ const envSchema = z.object({
     .optional()
     .default('http://localhost:3000'),
 
+  // API Configuration
+  NEXT_PUBLIC_API: z.string().optional(),
+
   // Email Service (Resend)
   NEXT_PUBLIC_RESEND_API_KEY: z.string().optional(),
   NEXT_PUBLIC_RESEND_FROM_EMAIL: z

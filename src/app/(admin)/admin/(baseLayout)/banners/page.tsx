@@ -11,7 +11,8 @@ import {
 import { useAdminTheme, useDebounce } from '@/app/(admin)/admin/_hooks'
 import {
   deleteBannerService,
-  getBannerService,
+  getBannersBySubFolderService,
+  getSubFoldersService,
 } from '@/app/(admin)/admin/_services/banners.services'
 import { getImageUrl } from '@/app/(admin)/admin/_utils/urlUtils'
 import { Banner } from '@/types/BaseResponse'
@@ -28,10 +29,21 @@ export default function BannersListPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [deleteTarget, setDeleteTarget] = useState<Banner | null>(null)
 
-  // Fetch banners - 5 dakika cache
+  // Selected sub-folder state (default: 'all')
+  const [selectedSubFolder, setSelectedSubFolder] = useState<string>('all')
+
+  // Fetch sub-folders
+  const { data: subFoldersData } = useQuery({
+    queryKey: ['banner-sub-folders'],
+    queryFn: () => getSubFoldersService(),
+    staleTime: 5 * 60 * 1000, // 5 dakika
+  })
+
+  // Fetch banners based on selected sub-folder - 5 dakika cache
+  // queryKey includes selectedSubFolder to refetch when it changes
   const { data, error, isError, isLoading } = useQuery({
-    queryKey: ['banners'],
-    queryFn: () => getBannerService(),
+    queryKey: ['banners', selectedSubFolder],
+    queryFn: () => getBannersBySubFolderService(selectedSubFolder),
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   })
@@ -40,7 +52,9 @@ export default function BannersListPage() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteBannerService(id),
     onSuccess: () => {
+      // Invalidate current view queries
       queryClient.invalidateQueries({ queryKey: ['banners'] })
+      queryClient.invalidateQueries({ queryKey: ['banner-sub-folders'] }) // Klasör listesi değişmiş olabilir (örneğin son item silindiyse)
       setDeleteTarget(null)
     },
     onError: error => {
@@ -60,6 +74,9 @@ export default function BannersListPage() {
           banner.altText?.toLowerCase().includes(debouncedSearch.toLowerCase()),
       )
       .sort((a, b) => a.title.localeCompare(b.title, 'tr')) || []
+
+  // Ensure 'Tümü' is always first option
+  const subFoldersList = subFoldersData?.data || []
 
   const columns: Column<Banner>[] = [
     {
@@ -103,6 +120,22 @@ export default function BannersListPage() {
             {banner.altText || '-'}
           </p>
         </div>
+      ),
+    },
+    // SubFolder kolonunu eklemek iyi olabilir, görsel olarak nerede olduğunu görmek için
+    {
+      key: 'subFolder',
+      header: 'Klasör',
+      render: banner => (
+        <span
+          className={`rounded-md px-2 py-1 text-xs font-medium ${
+            isDarkMode
+              ? 'bg-slate-800 text-slate-300'
+              : 'bg-gray-100 text-gray-600'
+          }`}
+        >
+          {banner.subFolder || '-'}
+        </span>
       ),
     },
     {
@@ -189,6 +222,40 @@ export default function BannersListPage() {
           />
         </div>
 
+        {/* Sub-Folder Filter (Breadcrumb-like) */}
+        {subFoldersList.length > 0 && (
+          <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-2">
+            <button
+              onClick={() => setSelectedSubFolder('all')}
+              className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                selectedSubFolder === 'all'
+                  ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25 ring-2 ring-violet-500/20'
+                  : isDarkMode
+                    ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                    : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              }`}
+            >
+              Tümü
+            </button>
+
+            {subFoldersList.map(folder => (
+              <button
+                key={folder}
+                onClick={() => setSelectedSubFolder(folder)}
+                className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                  selectedSubFolder === folder
+                    ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25 ring-2 ring-violet-500/20'
+                    : isDarkMode
+                      ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                      : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                {folder}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Data Table */}
         {isError ? (
           <div
@@ -206,7 +273,11 @@ export default function BannersListPage() {
             columns={columns}
             isLoading={isLoading}
             keyExtractor={banner => banner.id}
-            emptyMessage="Banner bulunamadı"
+            emptyMessage={
+              selectedSubFolder !== 'all'
+                ? `"${selectedSubFolder}" klasöründe banner bulunamadı`
+                : 'Henüz hiç banner eklenmemiş'
+            }
             actions={{
               onEdit: banner => router.push(`/admin/banners/${banner.id}/edit`),
               onDelete: banner => setDeleteTarget(banner),

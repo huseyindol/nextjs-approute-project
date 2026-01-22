@@ -422,6 +422,30 @@ Banner getir.
 
 - `id`: Banner ID
 
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "id": 1,
+    "title": "string",
+    "altText": "string",
+    "images": {
+      "desktop": "string",
+      "tablet": "string",
+      "mobile": "string"
+    },
+    "link": "string",
+    "target": "_blank",
+    "type": "string",
+    "orderIndex": 1,
+    "status": true,
+    "subFolder": "string"
+  }
+}
+```
+
 ---
 
 ### GET /api/v1/banners/list
@@ -438,16 +462,33 @@ Tüm bannerları listele.
       "id": 1,
       "title": "string",
       "altText": "string",
+      "images": {
+        "desktop": "string",
+        "tablet": "string",
+        "mobile": "string"
+      },
       "link": "string",
       "target": "_blank",
       "type": "string",
       "orderIndex": 1,
       "status": true,
-      "imageUrl": "string"
+      "subFolder": "string"
     }
   ]
 }
 ```
+
+---
+
+### GET /api/v1/banners/list/{subFolder}
+
+Belirli bir subFolder'daki bannerları listele.
+
+**Path Parameters:**
+
+- `subFolder`: Alt klasör adı
+
+**Response:** (list ile aynı format)
 
 ---
 
@@ -473,6 +514,33 @@ Banner özetlerini listele.
 
 ---
 
+### GET /api/v1/banners/list/summary/{subFolder}
+
+Belirli bir subFolder'daki banner özetlerini listele.
+
+**Path Parameters:**
+
+- `subFolder`: Alt klasör adı
+
+**Response:** (summary ile aynı format)
+
+---
+
+### GET /api/v1/banners/sub-folders
+
+Tüm mevcut subFolder listesini döndürür.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": ["promo", "hero", "sidebar"]
+}
+```
+
+---
+
 ### POST /api/v1/banners
 
 Banner oluştur.
@@ -481,14 +549,33 @@ Banner oluştur.
 
 **Form Fields:**
 
-- `title`: string
-- `altText`: string
-- `link`: string
-- `target`: string (\_blank, \_self)
-- `type`: string
-- `orderIndex`: integer
-- `status`: boolean
-- `image`: file (zorunlu)
+- `data`: JSON string (DtoBannerIU formatında, zorunlu)
+- `desktop`: file (opsiyonel, desktop görsel)
+- `tablet`: file (opsiyonel, tablet görsel)
+- `mobile`: file (opsiyonel, mobil görsel)
+
+**data JSON formatı:**
+
+```json
+{
+  "title": "string",
+  "altText": "string",
+  "link": "string",
+  "target": "_blank | _self",
+  "type": "string",
+  "orderIndex": 1,
+  "status": true,
+  "subFolder": "string",
+  "images": {
+    "desktop": "https://...",
+    "tablet": "https://...",
+    "mobile": "https://..."
+  }
+}
+```
+
+> **Not:** Dosya yüklemek istiyorsanız `desktop`, `tablet`, `mobile` form field'larını kullanın.
+> Doğrudan URL göndermek istiyorsanız `data` JSON içindeki `images` objesini kullanın.
 
 ---
 
@@ -502,7 +589,7 @@ Banner güncelle.
 
 **Content-Type:** `multipart/form-data`
 
-**Form Fields:** (POST ile aynı, image opsiyonel)
+**Form Fields:** (POST ile aynı)
 
 ---
 
