@@ -253,3 +253,23 @@ export const getBannersBySubFolderService = async (subFolder: string) => {
     throw error
   }
 }
+
+// GET - Sub-folder'a göre banner özet listesi (Component atamaları için)
+// getBannersBySubFolderService kullanarak listeyi alır
+export const getBannersSummaryBySubFolderService = async (
+  subFolder: string,
+): Promise<BannerSummaryListResponseType> => {
+  try {
+    // subFolder 'all' ise veya boş ise tüm özet listeyi getir
+    if (!subFolder || subFolder === 'all') {
+      return getBannersSummaryService()
+    }
+
+    // Sub-folder'a göre banner listesini al ve döndür
+    const response = await getBannersBySubFolderService(subFolder)
+    return response as unknown as BannerSummaryListResponseType
+  } catch (error) {
+    console.error(`Error get banners summary for ${subFolder}:`, error)
+    throw error
+  }
+}

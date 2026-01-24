@@ -3,7 +3,10 @@
 import { DualListbox, Icons } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
 import { useTemplates } from '@/app/(admin)/admin/_hooks/useTemplates'
-import { getBannersSummaryService } from '@/app/(admin)/admin/_services/banners.services'
+import {
+  getBannersSummaryBySubFolderService,
+  getSubFoldersService,
+} from '@/app/(admin)/admin/_services/banners.services'
 import { createComponentService } from '@/app/(admin)/admin/_services/components.services'
 import { getWidgetsSummaryService } from '@/app/(admin)/admin/_services/widgets.services'
 import {
@@ -15,7 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -27,6 +30,9 @@ export default function NewComponentPage() {
   const [selectedBanners, setSelectedBanners] = useState<BannerSummary[]>([])
   const [selectedWidgets, setSelectedWidgets] = useState<WidgetSummary[]>([])
   const { templates: componentTemplates } = useTemplates('components')
+
+  // Selected sub-folder for banner filtering
+  const [selectedSubFolder, setSelectedSubFolder] = useState<string>('all')
 
   const {
     register,
@@ -52,10 +58,18 @@ export default function NewComponentPage() {
   // Watch type field for conditional rendering
   const selectedType = watch('type')
 
-  // Fetch banners summary
-  const { data: bannersData } = useQuery({
-    queryKey: ['banners-summary'],
-    queryFn: getBannersSummaryService,
+  // Fetch sub-folders for banner filtering
+  const { data: subFoldersData } = useQuery({
+    queryKey: ['banner-sub-folders'],
+    queryFn: getSubFoldersService,
+    staleTime: 5 * 60 * 1000,
+  })
+
+  // Fetch banners summary based on selected sub-folder
+  const { data: bannersData, isLoading: isBannersLoading } = useQuery({
+    queryKey: ['banners-summary', selectedSubFolder],
+    queryFn: () => getBannersSummaryBySubFolderService(selectedSubFolder),
+    staleTime: 5 * 60 * 1000,
   })
 
   // Fetch widgets summary
@@ -63,6 +77,16 @@ export default function NewComponentPage() {
     queryKey: ['widgets-summary'],
     queryFn: getWidgetsSummaryService,
   })
+
+  // Available banners (exclude already selected ones)
+  const availableBanners = useMemo(() => {
+    const allBanners = bannersData?.data ?? []
+    const selectedIds = new Set(selectedBanners.map(b => b.id))
+    return allBanners.filter(banner => !selectedIds.has(banner.id))
+  }, [bannersData, selectedBanners])
+
+  // Sub-folder list
+  const subFoldersList = subFoldersData?.data ?? []
 
   // Create mutation
   const createMutation = useMutation({
@@ -283,15 +307,76 @@ export default function NewComponentPage() {
             >
               Banner Ataması
             </h2>
-            <DualListbox<BannerSummary>
-              available={bannersData?.data || []}
-              selected={selectedBanners}
-              onChange={setSelectedBanners}
-              getItemLabel={item => item.title}
-              getItemSubLabel={item => (item.status ? 'Aktif' : 'Pasif')}
-              emptyLeftText="Banner bulunamadı"
-              emptyRightText="Banner seçilmedi"
-            />
+
+            {/* Sub-Folder Filter */}
+            {subFoldersList.length > 0 && (
+              <div className="mb-4">
+                <p
+                  className={`mb-2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  Alt klasöre göre filtrele:
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSubFolder('all')}
+                    className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
+                      selectedSubFolder === 'all'
+                        ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
+                        : isDarkMode
+                          ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                          : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                  >
+                    Tümü
+                  </button>
+                  {subFoldersList.map(folder => (
+                    <button
+                      key={folder}
+                      type="button"
+                      onClick={() => setSelectedSubFolder(folder)}
+                      className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
+                        selectedSubFolder === folder
+                          ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
+                          : isDarkMode
+                            ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+                            : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      }`}
+                    >
+                      {folder}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Loading indicator */}
+            {isBannersLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+                <span
+                  className={`ml-2 text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  Bannerlar yükleniyor...
+                </span>
+              </div>
+            ) : (
+              <DualListbox<BannerSummary>
+                available={availableBanners}
+                selected={selectedBanners}
+                onChange={setSelectedBanners}
+                getItemLabel={item => item.title}
+                getItemSubLabel={item =>
+                  `${item.subFolder || 'Genel'} • ${item.status ? 'Aktif' : 'Pasif'}`
+                }
+                emptyLeftText={
+                  selectedSubFolder !== 'all'
+                    ? `"${selectedSubFolder}" klasöründe banner bulunamadı`
+                    : 'Banner bulunamadı'
+                }
+                emptyRightText="Banner seçilmedi"
+              />
+            )}
           </div>
         )}
 
@@ -384,7 +469,7 @@ export default function NewComponentPage() {
           <button
             type="submit"
             disabled={createMutation.isPending}
-            className="bg-linear-to-r flex-1 rounded-xl from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
+            className="flex-1 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
           >
             {createMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">

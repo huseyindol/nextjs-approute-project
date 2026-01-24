@@ -125,6 +125,7 @@ export interface BannerSummary {
   title: string
   status: boolean
   orderIndex: number
+  subFolder: string
 }
 export type BannerSummaryListResponseType = BaseResponse<BannerSummary[]>
 
