@@ -31,7 +31,6 @@ export const getPageBySlugService = async (slug: string) => {
       method: 'GET',
       keepalive: true,
     })
-    console.log('Get page by slug:', response)
     if (!response.result) {
       throw new Error('Error get page', { cause: response.message })
     }

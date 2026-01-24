@@ -102,7 +102,7 @@ export default function Footer() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-5 w-5 text-primary" />
-                  <span>Maltepe, İstanbul, Türkiye</span>
+                  <span>Sancaktepe, İstanbul, Türkiye</span>
                 </div>
               </div>
 

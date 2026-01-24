@@ -1,7 +1,7 @@
 import { Component } from '@/types/BaseResponse'
 import dynamic from 'next/dynamic'
 
-export default function AComponent(props: Component) {
+export default function CComponent(props: Component) {
   const { name, description, widgets } = props
   const DynamicWidgets = widgets?.map(widget => {
     return {
