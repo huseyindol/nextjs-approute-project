@@ -147,6 +147,81 @@ Sayfa özetlerini listele.
 
 ---
 
+### GET /api/v1/pages/list/paged
+
+Sayfalı sayfa listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "title": "string",
+        "description": "string",
+        "slug": "string",
+        "status": true,
+        "seoInfo": { ... },
+        "components": [ ... ]
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### GET /api/v1/pages/list/summary/paged
+
+Sayfalı sayfa özet listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "title": "string",
+        "slug": "string",
+        "status": true
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
 ### POST /api/v1/pages
 
 Sayfa oluştur.
@@ -250,6 +325,82 @@ Post özetlerini listele.
       "orderIndex": 1
     }
   ]
+}
+```
+
+---
+
+### GET /api/v1/posts/list/paged
+
+Sayfalı post listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "title": "string",
+        "content": "string",
+        "slug": "string",
+        "status": true,
+        "orderIndex": 1,
+        "seoInfo": { ... }
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### GET /api/v1/posts/list/summary/paged
+
+Sayfalı post özet listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "title": "string",
+        "slug": "string",
+        "status": true,
+        "orderIndex": 1
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
 }
 ```
 
@@ -541,6 +692,84 @@ Tüm mevcut subFolder listesini döndürür.
 
 ---
 
+### GET /api/v1/banners/list/paged
+
+Sayfalı banner listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "title": "string",
+        "altText": "string",
+        "images": { ... },
+        "link": "string",
+        "target": "_blank",
+        "type": "string",
+        "orderIndex": 1,
+        "status": true,
+        "subFolder": "string"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### GET /api/v1/banners/list/summary/paged
+
+Sayfalı banner özet listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "title": "string",
+        "status": true,
+        "orderIndex": 1
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
 ### POST /api/v1/banners
 
 Banner oluştur.
@@ -666,6 +895,85 @@ Component özetlerini listele.
 
 ---
 
+### GET /api/v1/components/list/paged
+
+Sayfalı component listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "name": "string",
+        "description": "string",
+        "type": "BANNER | WIDGET",
+        "content": "string",
+        "orderIndex": 1,
+        "status": true,
+        "pages": [ ... ],
+        "banners": [ ... ],
+        "widgets": [ ... ]
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### GET /api/v1/components/list/summary/paged
+
+Sayfalı component özet listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "name": "string",
+        "type": "BANNER | WIDGET",
+        "status": true,
+        "orderIndex": 1
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
 ### POST /api/v1/components
 
 Component oluştur.
@@ -772,6 +1080,84 @@ Widget özetlerini listele.
 
 ---
 
+### GET /api/v1/widgets/list/paged
+
+Sayfalı widget listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "name": "string",
+        "description": "string",
+        "type": "BANNER | POST",
+        "content": "string",
+        "orderIndex": 1,
+        "status": true,
+        "banners": [ ... ],
+        "posts": [ ... ]
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### GET /api/v1/widgets/list/summary/paged
+
+Sayfalı widget özet listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "name": "string",
+        "type": "BANNER | POST",
+        "status": true,
+        "orderIndex": 1
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
 ### POST /api/v1/widgets
 
 Widget oluştur.
@@ -825,15 +1211,281 @@ Asset getir (ID ile).
 
 - `id`: Asset ID
 
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "id": 1,
+    "path": "/uploads/images/dosya.jpg",
+    "type": "image/jpeg",
+    "name": "dosya.jpg",
+    "extension": "jpg",
+    "subFolder": "images"
+  }
+}
+```
+
 ---
 
 ### GET /api/v1/assets/{name}
 
-Asset getir (isim ile).
+İsme göre asset ara (partial match, case-insensitive).
 
 **Path Parameters:**
 
-- `name`: Asset dosya adı
+- `name`: Aranacak dosya adı (kısmi eşleşme destekler)
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "path": "/uploads/images/dosya.jpg",
+      "type": "image/jpeg",
+      "name": "dosya.jpg",
+      "extension": "jpg",
+      "subFolder": "images"
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/assets/{name}/paged
+
+İsme göre sayfalı asset ara (partial match, case-insensitive).
+
+**Path Parameters:**
+
+- `name`: Aranacak dosya adı (kısmi eşleşme destekler)
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "path": "/uploads/images/dosya.jpg",
+        "type": "image/jpeg",
+        "name": "dosya.jpg",
+        "extension": "jpg",
+        "subFolder": "images"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### GET /api/v1/assets/{subFolder}/{name}/paged
+
+SubFolder ve isme göre sayfalı asset ara (partial match, case-insensitive).
+
+**Path Parameters:**
+
+- `subFolder`: Alt klasör adı
+- `name`: Aranacak dosya adı (kısmi eşleşme destekler)
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "path": "/uploads/images/dosya.jpg",
+        "type": "image/jpeg",
+        "name": "dosya.jpg",
+        "extension": "jpg",
+        "subFolder": "images"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### GET /api/v1/assets/list
+
+Tüm assetleri listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "path": "/uploads/images/dosya.jpg",
+      "type": "image/jpeg",
+      "name": "dosya.jpg",
+      "extension": "jpg",
+      "subFolder": "images"
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/assets/list/paged
+
+Sayfalı asset listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "path": "/uploads/images/dosya.jpg",
+        "type": "image/jpeg",
+        "name": "dosya.jpg",
+        "extension": "jpg",
+        "subFolder": "images"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### GET /api/v1/assets/list/{subFolder}
+
+Belirli bir subFolder'daki assetleri listele.
+
+**Path Parameters:**
+
+- `subFolder`: Alt klasör adı
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "path": "/uploads/images/dosya.jpg",
+      "type": "image/jpeg",
+      "name": "dosya.jpg",
+      "extension": "jpg",
+      "subFolder": "images"
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/assets/list/{subFolder}/paged
+
+Belirli bir subFolder'daki assetleri sayfalı olarak listele.
+
+**Path Parameters:**
+
+- `subFolder`: Alt klasör adı
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "path": "/uploads/images/dosya.jpg",
+        "type": "image/jpeg",
+        "name": "dosya.jpg",
+        "extension": "jpg",
+        "subFolder": "images"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### GET /api/v1/assets/sub-folders
+
+Tüm mevcut subFolder listesini döndürür.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": ["images", "documents", "videos"]
+}
+```
 
 ---
 
@@ -847,6 +1499,72 @@ Asset yükle.
 
 - `subFolder`: string (opsiyonel, alt klasör)
 - `file`: file (zorunlu)
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "id": 1,
+    "path": "/uploads/images/dosya.jpg",
+    "type": "image/jpeg",
+    "name": "dosya.jpg",
+    "extension": "jpg",
+    "subFolder": "images"
+  }
+}
+```
+
+---
+
+### POST /api/v1/assets/multi
+
+Birden fazla asset yükle.
+
+**Content-Type:** `multipart/form-data`
+
+**Form Fields:**
+
+- `subFolder`: string (opsiyonel, alt klasör)
+- `files`: file[] (zorunlu, birden fazla dosya)
+
+**Örnek curl komutu:**
+
+```bash
+curl -X POST "http://localhost:8080/api/v1/assets/multi" \
+  -H "Content-Type: multipart/form-data" \
+  -F "subFolder=images" \
+  -F "files=@dosya1.jpg" \
+  -F "files=@dosya2.png" \
+  -F "files=@dosya3.pdf"
+```
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "path": "/uploads/images/dosya1.jpg",
+      "type": "image/jpeg",
+      "name": "dosya1.jpg",
+      "extension": "jpg",
+      "subFolder": "images"
+    },
+    {
+      "id": 2,
+      "path": "/uploads/images/dosya2.png",
+      "type": "image/png",
+      "name": "dosya2.png",
+      "extension": "png",
+      "subFolder": "images"
+    }
+  ]
+}
+```
 
 ---
 
