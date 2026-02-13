@@ -1594,6 +1594,395 @@ Asset sil.
 
 ---
 
+## Forms
+
+### POST /api/v1/forms
+
+Form tanımı oluştur.
+
+**Body:**
+
+```json
+{
+  "title": "string",
+  "version": 1,
+  "active": true,
+  "schema": {
+    "config": {
+      "layout": "vertical",
+      "submitLabel": "Gönder"
+    },
+    "fields": [
+      {
+        "id": "name",
+        "type": "text",
+        "label": "Ad Soyad",
+        "required": true,
+        "validation": {
+          "min": 2,
+          "max": 100,
+          "pattern": null
+        },
+        "condition": null
+      },
+      {
+        "id": "email",
+        "type": "text",
+        "label": "E-posta",
+        "required": true,
+        "validation": {
+          "min": null,
+          "max": null,
+          "pattern": "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$"
+        },
+        "condition": null
+      },
+      {
+        "id": "age",
+        "type": "number",
+        "label": "Yaş",
+        "required": false,
+        "validation": {
+          "min": 18,
+          "max": 120,
+          "pattern": null
+        },
+        "condition": null
+      },
+      {
+        "id": "company",
+        "type": "text",
+        "label": "Şirket",
+        "required": false,
+        "validation": null,
+        "condition": {
+          "field": "age",
+          "operator": "GT",
+          "value": 18
+        }
+      }
+    ]
+  }
+}
+```
+
+> **Schema Yapısı:**
+>
+> - `config`: Form genel ayarları (layout, styling vb.) — serbest key-value
+> - `fields`: Alan tanımlarının listesi
+>   - `id`: Benzersiz alan tanımlayıcı
+>   - `type`: Alan tipi (`text`, `number`, `select` vb.)
+>   - `label`: Görüntüleme etiketi
+>   - `required`: Zorunlu alan mı
+>   - `validation`: Validasyon kuralları (`min`, `max`, `pattern`)
+>   - `condition`: Koşullu görünürlük kuralı (`field`, `operator`, `value`)
+>     - `operator` değerleri: `EQUALS`, `NOT_EQUALS`, `GT`, `LT`
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "id": 1,
+    "title": "string",
+    "version": 1,
+    "schema": { ... },
+    "active": true,
+    "createdAt": "2026-02-14T00:00:00.000+00:00",
+    "updatedAt": "2026-02-14T00:00:00.000+00:00"
+  }
+}
+```
+
+---
+
+### PUT /api/v1/forms/{id}
+
+Form tanımı güncelle.
+
+**Path Parameters:**
+
+- `id`: Form Definition ID
+
+**Body:** (POST ile aynı)
+
+---
+
+### GET /api/v1/forms/{id}
+
+Form tanımı getir (ID ile).
+
+**Path Parameters:**
+
+- `id`: Form Definition ID
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "id": 1,
+    "title": "string",
+    "version": 1,
+    "schema": {
+      "config": { ... },
+      "fields": [ ... ]
+    },
+    "active": true,
+    "createdAt": "2026-02-14T00:00:00.000+00:00",
+    "updatedAt": "2026-02-14T00:00:00.000+00:00"
+  }
+}
+```
+
+---
+
+### GET /api/v1/forms/list
+
+Tüm form tanımlarını listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "string",
+      "version": 1,
+      "schema": { ... },
+      "active": true,
+      "createdAt": "2026-02-14T00:00:00.000+00:00",
+      "updatedAt": "2026-02-14T00:00:00.000+00:00"
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/forms/list/active
+
+Sadece aktif form tanımlarını listele.
+
+**Response:** (list ile aynı format, sadece `active: true` olanlar)
+
+---
+
+### GET /api/v1/forms/list/paged
+
+Sayfalı form tanımı listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "id,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "title": "string",
+        "version": 1,
+        "schema": { ... },
+        "active": true,
+        "createdAt": "2026-02-14T00:00:00.000+00:00",
+        "updatedAt": "2026-02-14T00:00:00.000+00:00"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### DELETE /api/v1/forms/{id}
+
+Form tanımı sil.
+
+**Path Parameters:**
+
+- `id`: Form Definition ID
+
+---
+
+### POST /api/v1/forms/{formId}/submit
+
+Forma yanıt gönder (submission).
+
+**Path Parameters:**
+
+- `formId`: Form Definition ID
+
+**Body:**
+
+```json
+{
+  "payload": {
+    "name": "Ahmet Yılmaz",
+    "email": "ahmet@example.com",
+    "age": 25,
+    "company": "Acme Corp"
+  }
+}
+```
+
+> **Not:** `payload` içindeki key'ler form schema'daki field `id`'leri ile eşleşmelidir.
+> Sunucu tarafında validasyon ve sanitizasyon uygulanır.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "id": 1,
+    "formDefinitionId": 1,
+    "formTitle": "string",
+    "payload": {
+      "name": "Ahmet Yılmaz",
+      "email": "ahmet@example.com",
+      "age": 25,
+      "company": "Acme Corp"
+    },
+    "submittedAt": "2026-02-14T00:00:00",
+    "createdAt": "2026-02-14T00:00:00.000+00:00"
+  }
+}
+```
+
+---
+
+### GET /api/v1/forms/{formId}/submissions
+
+Belirli bir forma ait tüm yanıtları listele.
+
+**Path Parameters:**
+
+- `formId`: Form Definition ID
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": 1,
+      "formDefinitionId": 1,
+      "formTitle": "string",
+      "payload": { ... },
+      "submittedAt": "2026-02-14T00:00:00",
+      "createdAt": "2026-02-14T00:00:00.000+00:00"
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/forms/{formId}/submissions/paged
+
+Belirli bir forma ait yanıtları sayfalı listele.
+
+**Path Parameters:**
+
+- `formId`: Form Definition ID
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "submittedAt,desc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "formDefinitionId": 1,
+        "formTitle": "string",
+        "payload": { ... },
+        "submittedAt": "2026-02-14T00:00:00",
+        "createdAt": "2026-02-14T00:00:00.000+00:00"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### GET /api/v1/forms/submissions/{submissionId}
+
+Tekil form yanıtı getir (submission ID ile).
+
+**Path Parameters:**
+
+- `submissionId`: Submission ID
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "id": 1,
+    "formDefinitionId": 1,
+    "formTitle": "string",
+    "payload": { ... },
+    "submittedAt": "2026-02-14T00:00:00",
+    "createdAt": "2026-02-14T00:00:00.000+00:00"
+  }
+}
+```
+
+---
+
+### GET /api/v1/forms/{formId}/submissions/count
+
+Belirli bir forma ait toplam yanıt sayısını getir.
+
+**Path Parameters:**
+
+- `formId`: Form Definition ID
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": 42
+}
+```
+
+---
+
 ## Response Format
 
 Tüm API'ler şu formatta döner:

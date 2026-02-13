@@ -146,3 +146,14 @@ export interface PostSummary {
   orderIndex: number
 }
 export type PostSummaryListResponseType = BaseResponse<PostSummary[]>
+
+// Form Types
+import type { FormSchema, FormSchemaSummary, FormSubmission } from './form'
+
+export type FormSchemaResponseType = BaseResponse<FormSchema>
+export type FormSchemaListResponseType = BaseResponse<FormSchema[]>
+export type FormSchemaSummaryListResponseType = BaseResponse<
+  FormSchemaSummary[]
+>
+export type FormSubmissionResponseType = BaseResponse<FormSubmission>
+export type FormSubmissionListResponseType = BaseResponse<FormSubmission[]>
