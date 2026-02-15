@@ -10,7 +10,7 @@ interface FormLayoutProps {
 
 export function FormLayout({ title, children, className }: FormLayoutProps) {
   return (
-    <div className="to-muted/30 min-h-screen bg-gradient-to-br from-background via-background py-8 md:py-16">
+    <div className="to-muted/30 bg-linear-to-br min-h-screen from-background via-background py-8 md:py-16">
       <div
         className={cn('mx-auto w-full px-4', 'md:max-w-2xl md:px-0', className)}
       >

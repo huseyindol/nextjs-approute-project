@@ -1,19 +1,20 @@
 'use client'
 
 import { Icons } from '@/app/(admin)/admin/_components'
+import { StepManager } from '@/app/(admin)/admin/_components/forms'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
 import {
   getFormByIdService,
   updateFormService,
 } from '@/app/(admin)/admin/_services/forms.services'
 import { UpdateFormInput, UpdateFormSchema } from '@/schemas/form.schema'
-import type { Field, FieldType } from '@/types/form'
+import type { Field, FieldOption, FieldType, Step } from '@/types/form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { use, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
 
 const FIELD_TYPES: { value: FieldType; label: string }[] = [
@@ -27,7 +28,32 @@ const FIELD_TYPES: { value: FieldType; label: string }[] = [
   { value: 'date', label: 'Tarih' },
   { value: 'phone', label: 'Telefon' },
   { value: 'url', label: 'URL' },
+  { value: 'multi_checkbox', label: 'Çoklu Seçim (Checkbox Group)' },
 ]
+
+/** Field types that require options */
+const OPTION_FIELD_TYPES = new Set<FieldType>([
+  'select',
+  'radio',
+  'multi_checkbox',
+])
+
+/**
+ * Normalizes a field object to match the API schema.
+ */
+function normalizeFieldForApi(field: Field): Field {
+  const needsOptions = OPTION_FIELD_TYPES.has(field.type)
+  return {
+    id: field.id,
+    type: field.type,
+    label: field.label,
+    required: field.required,
+    options: needsOptions ? (field.options ?? null) : null,
+    validation: field.validation ?? null,
+    condition: field.condition ?? null,
+    stepId: field.stepId || undefined,
+  }
+}
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -40,10 +66,10 @@ export default function EditFormPage({ params }: PageProps) {
   const { isDarkMode } = useAdminTheme()
 
   const [fields, setFields] = useState<Field[]>([])
+  const [steps, setSteps] = useState<Step[]>([])
   const [showFieldModal, setShowFieldModal] = useState(false)
   const [editingField, setEditingField] = useState<Field | null>(null)
 
-  // Fetch form data
   const { data: formData, isLoading } = useQuery({
     queryKey: ['form', id],
     queryFn: () => getFormByIdService(id),
@@ -54,12 +80,14 @@ export default function EditFormPage({ params }: PageProps) {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<UpdateFormInput>({
     resolver: zodResolver(UpdateFormSchema),
   })
 
-  // Initialize form with fetched data
+  const layout = useWatch({ control, name: 'schema.config.layout' })
+
   useEffect(() => {
     if (formData?.data) {
       const form = formData.data
@@ -69,14 +97,21 @@ export default function EditFormPage({ params }: PageProps) {
         active: form.active,
         schema: {
           config: form.schema.config,
-          fields: form.schema.fields,
+          fields: [],
         },
       })
-      setFields(form.schema.fields || [])
+      // Only set fields if not already set or completely necessary to sync
+      // Avoiding direct setFields here if possible, or assume it's one-time init
+      if (fields.length === 0 && (form.schema.fields || []).length > 0) {
+        setFields((form.schema.fields || []).map(normalizeFieldForApi))
+      }
+      if (steps.length === 0 && (form.schema.steps || []).length > 0) {
+        setSteps(form.schema.steps || [])
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData, reset])
 
-  // Update mutation
   const updateMutation = useMutation({
     mutationFn: (data: UpdateFormInput) => updateFormService(id, data),
     onSuccess: () => {
@@ -93,23 +128,27 @@ export default function EditFormPage({ params }: PageProps) {
 
   const addField = () => {
     const newField: Field = {
-      id: `field_${Date.now()}`,
+      id: '',
       type: 'text',
       label: '',
       required: false,
+      options: null,
+      validation: null,
+      condition: null,
     }
     setEditingField(newField)
     setShowFieldModal(true)
   }
 
   const saveField = (field: Field) => {
-    const existingIndex = fields.findIndex(f => f.id === field.id)
+    const normalized = normalizeFieldForApi(field)
+    const existingIndex = fields.findIndex(f => f.id === editingField?.id)
     if (existingIndex >= 0) {
       const updated = [...fields]
-      updated[existingIndex] = field
+      updated[existingIndex] = normalized
       setFields(updated)
     } else {
-      setFields([...fields, field])
+      setFields([...fields, normalized])
     }
     setShowFieldModal(false)
     setEditingField(null)
@@ -119,18 +158,42 @@ export default function EditFormPage({ params }: PageProps) {
     setFields(fields.filter(f => f.id !== fieldId))
   }
 
+  const onFormError = (formErrors: Record<string, unknown>) => {
+    console.error('Form validation errors:', formErrors)
+    toast.error('Form doğrulama hatası. Lütfen alanları kontrol edin.')
+  }
+
   const onSubmit = (data: UpdateFormInput) => {
     if (fields.length === 0) {
       toast.error('En az bir alan eklemelisiniz')
       return
     }
+
+    if (layout === 'wizard') {
+      const unassigned = fields.filter(f => !f.stepId)
+      if (unassigned.length > 0) {
+        toast.error(
+          `Sihirbaz modunda tüm alanlar bir adıma atanmalı. Atanmamış alanlar: ${unassigned.map(f => f.label).join(', ')}`,
+        )
+        return
+      }
+      if (steps.length === 0) {
+        toast.error('Sihirbaz modunda en az bir adım eklemelisiniz')
+        return
+      }
+    }
+
+    const normalizedFields = fields.map(normalizeFieldForApi)
     const formData: UpdateFormInput = {
       ...data,
       schema: {
         ...data.schema,
-        fields,
+        fields: normalizedFields,
+        steps: layout === 'wizard' ? steps : undefined,
       },
     }
+
+    console.log('Form data to send:', JSON.stringify(formData, null, 2))
     updateMutation.mutate(formData)
   }
 
@@ -178,7 +241,6 @@ export default function EditFormPage({ params }: PageProps) {
         </span>
       </div>
 
-      {/* Page Header */}
       <div>
         <h1
           className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
@@ -190,7 +252,10 @@ export default function EditFormPage({ params }: PageProps) {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit, onFormError)}
+        className="space-y-6"
+      >
         {/* Basic Info */}
         <div className={cardClass}>
           <h2
@@ -230,6 +295,7 @@ export default function EditFormPage({ params }: PageProps) {
                 >
                   <option value="vertical">Dikey (Tek Sayfa)</option>
                   <option value="single">Tek Sayfa</option>
+                  <option value="wizard">Sihirbaz (Çok Adımlı)</option>
                 </select>
               </div>
 
@@ -261,6 +327,17 @@ export default function EditFormPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {/* Steps Management (Wizard Only) */}
+        {layout === 'wizard' && (
+          <div className={`${cardClass} relative z-10`}>
+            <StepManager
+              steps={steps}
+              onChange={setSteps}
+              isDarkMode={isDarkMode}
+            />
+          </div>
+        )}
 
         {/* Fields Section */}
         <div className={cardClass}>
@@ -294,54 +371,80 @@ export default function EditFormPage({ params }: PageProps) {
             </div>
           ) : (
             <div className="space-y-2">
-              {fields.map(field => (
-                <div
-                  key={field.id}
-                  className={`flex items-center justify-between rounded-lg p-3 ${
-                    isDarkMode ? 'bg-slate-800/50' : 'bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`rounded px-2 py-0.5 text-xs ${
-                        isDarkMode
-                          ? 'bg-violet-500/20 text-violet-400'
-                          : 'bg-violet-100 text-violet-600'
-                      }`}
-                    >
-                      {FIELD_TYPES.find(t => t.value === field.type)?.label ||
-                        field.type}
-                    </span>
-                    <span
-                      className={isDarkMode ? 'text-white' : 'text-gray-900'}
-                    >
-                      {field.label || 'Başlıksız Alan'}
-                    </span>
-                    {field.required && (
-                      <span className="text-xs text-rose-400">*</span>
-                    )}
+              {fields.map(field => {
+                const assignedStep = steps.find(s => s.id === field.stepId)
+                return (
+                  <div
+                    key={field.id}
+                    className={`flex items-center justify-between rounded-lg p-3 ${
+                      isDarkMode ? 'bg-slate-800/50' : 'bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`rounded px-2 py-0.5 text-xs ${
+                          isDarkMode
+                            ? 'bg-violet-500/20 text-violet-400'
+                            : 'bg-violet-100 text-violet-600'
+                        }`}
+                      >
+                        {FIELD_TYPES.find(t => t.value === field.type)?.label ||
+                          field.type}
+                      </span>
+                      {assignedStep && (
+                        <span
+                          className={`rounded px-2 py-0.5 text-xs ${
+                            isDarkMode
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : 'bg-blue-100 text-blue-600'
+                          }`}
+                        >
+                          {assignedStep.title}
+                        </span>
+                      )}
+                      <span
+                        className={`font-mono text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                      >
+                        {field.id}
+                      </span>
+                      <span
+                        className={isDarkMode ? 'text-white' : 'text-gray-900'}
+                      >
+                        {field.label || 'Başlıksız Alan'}
+                      </span>
+                      {field.required && (
+                        <span className="text-xs text-rose-400">*</span>
+                      )}
+                      {field.options && field.options.length > 0 && (
+                        <span
+                          className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+                        >
+                          ({field.options.length} seçenek)
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingField(field)
+                          setShowFieldModal(true)
+                        }}
+                        className={`rounded p-1 transition-colors ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-gray-200'}`}
+                      >
+                        <Icons.Edit />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeField(field.id)}
+                        className="text-rose-400 hover:text-rose-300"
+                      >
+                        <Icons.Trash />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingField(field)
-                        setShowFieldModal(true)
-                      }}
-                      className={`rounded p-1 transition-colors ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-gray-200'}`}
-                    >
-                      <Icons.Edit />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeField(field.id)}
-                      className="text-rose-400 hover:text-rose-300"
-                    >
-                      <Icons.Trash />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
@@ -379,6 +482,10 @@ export default function EditFormPage({ params }: PageProps) {
       {showFieldModal && editingField && (
         <FieldEditModal
           field={editingField}
+          steps={layout === 'wizard' ? steps : undefined}
+          existingFieldIds={fields
+            .filter(f => f.id !== editingField.id)
+            .map(f => f.id)}
           otherFields={fields.filter(f => f.id !== editingField.id)}
           onSave={saveField}
           onClose={() => {
@@ -392,9 +499,13 @@ export default function EditFormPage({ params }: PageProps) {
   )
 }
 
+// ====================================================
 // Field Edit Modal Component
+// ====================================================
 interface FieldEditModalProps {
   field: Field
+  steps?: Step[]
+  existingFieldIds: string[]
   otherFields: Field[]
   onSave: (field: Field) => void
   onClose: () => void
@@ -403,15 +514,102 @@ interface FieldEditModalProps {
 
 function FieldEditModal({
   field,
+  steps,
+  existingFieldIds,
   otherFields,
   onSave,
   onClose,
   isDarkMode,
 }: FieldEditModalProps) {
-  const [editedField, setEditedField] = useState<Field>(field)
+  const [editedField, setEditedField] = useState<Field>({
+    ...field,
+    options: field.options ?? null,
+    validation: field.validation ?? null,
+    condition: field.condition ?? null,
+    stepId: field.stepId,
+  })
+  const [idError, setIdError] = useState<string | null>(null)
+
+  const needsOptions = OPTION_FIELD_TYPES.has(editedField.type)
 
   const handleSave = () => {
-    onSave(editedField)
+    if (!editedField.id.trim()) {
+      setIdError('Alan ID zorunludur')
+      return
+    }
+    if (!/^[a-zA-Z_]\w*$/.test(editedField.id)) {
+      setIdError('ID sadece harf, rakam ve alt çizgi içerebilir')
+      return
+    }
+    if (existingFieldIds.includes(editedField.id)) {
+      setIdError('Bu ID zaten kullanılıyor')
+      return
+    }
+    if (!editedField.label.trim()) {
+      return
+    }
+
+    // Validate options for select/radio
+    if (needsOptions) {
+      const validOptions = (editedField.options || []).filter(
+        o => o.label.trim() && o.value.trim(),
+      )
+      if (validOptions.length === 0) {
+        toast.error(
+          'Seçim kutusu ve radyo buton için en az bir seçenek gereklidir',
+        )
+        return
+      }
+    }
+
+    let validation = editedField.validation
+    if (
+      validation &&
+      validation.min == null &&
+      validation.max == null &&
+      !validation.pattern
+    ) {
+      validation = null
+    }
+
+    let condition = editedField.condition
+    if (condition && !condition.field) {
+      condition = null
+    }
+
+    let options: FieldOption[] | null = null
+    if (needsOptions && editedField.options) {
+      options = editedField.options.filter(
+        o => o.label.trim() && o.value.trim(),
+      )
+      if (options.length === 0) options = null
+    }
+
+    onSave({
+      ...editedField,
+      options,
+      validation,
+      condition,
+    })
+  }
+
+  const addOption = () => {
+    const currentOptions = editedField.options || []
+    setEditedField({
+      ...editedField,
+      options: [...currentOptions, { label: '', value: '' }],
+    })
+  }
+
+  const updateOption = (index: number, key: 'label' | 'value', val: string) => {
+    const updated = [...(editedField.options || [])]
+    updated[index] = { ...updated[index], [key]: val }
+    setEditedField({ ...editedField, options: updated })
+  }
+
+  const removeOption = (index: number) => {
+    const updated = (editedField.options || []).filter((_, i) => i !== index)
+    setEditedField({ ...editedField, options: updated })
   }
 
   const inputClass = `w-full rounded-xl px-4 py-3 text-sm outline-none transition-colors ${
@@ -420,12 +618,18 @@ function FieldEditModal({
       : 'border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-violet-500'
   }`
 
-  const labelClass = `block text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`
+  const labelClass = `block text-sm font-medium mb-2 ${
+    isDarkMode ? 'text-slate-300' : 'text-gray-700'
+  }`
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div
-        className={`w-full max-w-lg rounded-2xl p-6 ${isDarkMode ? 'border border-slate-700 bg-slate-900' : 'border border-gray-200 bg-white'}`}
+        className={`w-full max-w-lg rounded-2xl p-6 ${
+          isDarkMode
+            ? 'border border-slate-700 bg-slate-900'
+            : 'border border-gray-200 bg-white'
+        }`}
       >
         <h3
           className={`mb-4 text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
@@ -433,17 +637,71 @@ function FieldEditModal({
           Alan Düzenle
         </h3>
 
-        <div className="max-h-96 space-y-4 overflow-y-auto">
+        <div className="max-h-[28rem] space-y-4 overflow-y-auto pr-1">
+          {/* Field ID */}
+          <div>
+            <label htmlFor="field-id-input" className={labelClass}>
+              Alan ID *
+            </label>
+            <input
+              id="field-id-input"
+              type="text"
+              value={editedField.id}
+              onChange={e => {
+                setEditedField({ ...editedField, id: e.target.value })
+                setIdError(null)
+              }}
+              className={`${inputClass} font-mono`}
+              placeholder="ornek: name, email, rating"
+            />
+            {idError && <p className="mt-1 text-xs text-rose-400">{idError}</p>}
+            <p
+              className={`mt-1 text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+            >
+              Form gönderiminde payload key olarak kullanılır
+            </p>
+          </div>
+
+          {/* Step Selection (Wizard Only) */}
+          {steps && steps.length > 0 && (
+            <div>
+              <label className={labelClass}>Adım</label>
+              <select
+                value={editedField.stepId || ''}
+                onChange={e =>
+                  setEditedField({ ...editedField, stepId: e.target.value })
+                }
+                className={inputClass}
+              >
+                <option value="">-- Adım Seçin --</option>
+                {steps.map(step => (
+                  <option key={step.id} value={step.id}>
+                    {step.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Field Type */}
           <div>
             <label className={labelClass}>Alan Tipi *</label>
             <select
               value={editedField.type}
-              onChange={e =>
+              onChange={e => {
+                const newType = e.target.value as FieldType
+                const wasOptionType = OPTION_FIELD_TYPES.has(editedField.type)
+                const isOptionType = OPTION_FIELD_TYPES.has(newType)
                 setEditedField({
                   ...editedField,
-                  type: e.target.value as FieldType,
+                  type: newType,
+                  options: isOptionType
+                    ? editedField.options || []
+                    : wasOptionType
+                      ? null
+                      : editedField.options,
                 })
-              }
+              }}
               className={inputClass}
             >
               {FIELD_TYPES.map(type => (
@@ -454,21 +712,27 @@ function FieldEditModal({
             </select>
           </div>
 
+          {/* Label */}
           <div>
-            <label className={labelClass}>Etiket *</label>
+            <label htmlFor="field-label-input" className={labelClass}>
+              Etiket *
+            </label>
             <input
+              id="field-label-input"
               type="text"
               value={editedField.label}
               onChange={e =>
                 setEditedField({ ...editedField, label: e.target.value })
               }
               className={inputClass}
-              placeholder="Alan etiketi"
+              placeholder="Beğeni Derecesi"
             />
           </div>
 
+          {/* Required */}
           <div className="flex items-center gap-3">
             <input
+              id="field-required-checkbox"
               type="checkbox"
               checked={editedField.required}
               onChange={e =>
@@ -477,98 +741,181 @@ function FieldEditModal({
               className="h-5 w-5 rounded border-slate-600 bg-slate-800 text-violet-500"
             />
             <label
+              htmlFor="field-required-checkbox"
               className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
             >
               Zorunlu Alan
             </label>
           </div>
 
-          {/* Validation */}
-          <div>
-            <label className={labelClass}>Validasyon</label>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label
-                  className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          {/* Options — for select & radio */}
+          {needsOptions && (
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <label className={labelClass}>Seçenekler *</label>
+                <button
+                  type="button"
+                  onClick={addOption}
+                  className="text-xs text-violet-400 hover:text-violet-300"
                 >
-                  Min
-                </label>
-                <input
-                  type="number"
-                  value={editedField.validation?.min ?? ''}
-                  onChange={e => {
-                    const val = e.target.value ? Number(e.target.value) : null
-                    setEditedField({
-                      ...editedField,
-                      validation: {
-                        ...editedField.validation,
-                        min: val,
-                      },
-                    })
-                  }}
-                  className={inputClass}
-                  placeholder="Min"
-                />
+                  + Seçenek Ekle
+                </button>
               </div>
-              <div>
-                <label
-                  className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-                >
-                  Max
-                </label>
-                <input
-                  type="number"
-                  value={editedField.validation?.max ?? ''}
-                  onChange={e => {
-                    const val = e.target.value ? Number(e.target.value) : null
-                    setEditedField({
-                      ...editedField,
-                      validation: {
-                        ...editedField.validation,
-                        max: val,
-                      },
-                    })
-                  }}
-                  className={inputClass}
-                  placeholder="Max"
-                />
-              </div>
-            </div>
-            <div className="mt-2">
-              <label
-                className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-              >
-                Pattern (RegEx)
-              </label>
-              <input
-                type="text"
-                value={editedField.validation?.pattern ?? ''}
-                onChange={e => {
-                  const val = e.target.value || null
-                  setEditedField({
-                    ...editedField,
-                    validation: {
-                      ...editedField.validation,
-                      pattern: val,
-                    },
-                  })
-                }}
-                className={inputClass}
-                placeholder="^[a-zA-Z]+$"
-              />
-            </div>
-          </div>
 
-          {/* Condition section */}
+              {(!editedField.options || editedField.options.length === 0) && (
+                <div
+                  className={`rounded-lg border border-dashed p-4 text-center ${
+                    isDarkMode
+                      ? 'border-slate-700 text-slate-500'
+                      : 'border-gray-300 text-gray-400'
+                  }`}
+                >
+                  <p className="text-xs">Henüz seçenek eklenmedi</p>
+                  <button
+                    type="button"
+                    onClick={addOption}
+                    className="mt-1 text-xs text-violet-400 hover:text-violet-300"
+                  >
+                    İlk seçeneği ekle
+                  </button>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                {(editedField.options || []).map((option, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={option.label}
+                      onChange={e =>
+                        updateOption(index, 'label', e.target.value)
+                      }
+                      className={`${inputClass} flex-1`}
+                      placeholder="Etiket (Gösterim)"
+                    />
+                    <input
+                      type="text"
+                      value={option.value}
+                      onChange={e =>
+                        updateOption(index, 'value', e.target.value)
+                      }
+                      className={`${inputClass} flex-1 font-mono`}
+                      placeholder="Değer (Kayıt)"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeOption(index)}
+                      className="shrink-0 text-rose-400 hover:text-rose-300"
+                    >
+                      <Icons.Trash />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <p
+                className={`mt-1 text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+              >
+                Etiket: kullanıcıya gösterilir. Değer: API&apos;ye gönderilir.
+              </p>
+            </div>
+          )}
+
+          {/* Validation */}
+          {!['checkbox', 'select', 'radio'].includes(editedField.type) && (
+            <div>
+              <p className={labelClass}>Validasyon</p>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label
+                    htmlFor="validation-min-input"
+                    className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                  >
+                    Min
+                  </label>
+                  <input
+                    id="validation-min-input"
+                    type="number"
+                    value={editedField.validation?.min ?? ''}
+                    onChange={e => {
+                      const val = e.target.value ? Number(e.target.value) : null
+                      setEditedField({
+                        ...editedField,
+                        validation: {
+                          ...editedField.validation,
+                          min: val,
+                        },
+                      })
+                    }}
+                    className={inputClass}
+                    placeholder="Min"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="validation-max-input"
+                    className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                  >
+                    Max
+                  </label>
+                  <input
+                    id="validation-max-input"
+                    type="number"
+                    value={editedField.validation?.max ?? ''}
+                    onChange={e => {
+                      const val = e.target.value ? Number(e.target.value) : null
+                      setEditedField({
+                        ...editedField,
+                        validation: {
+                          ...editedField.validation,
+                          max: val,
+                        },
+                      })
+                    }}
+                    className={inputClass}
+                    placeholder="Max"
+                  />
+                </div>
+              </div>
+              <div className="mt-2">
+                <label
+                  htmlFor="validation-pattern-input"
+                  className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                >
+                  Pattern (RegEx)
+                </label>
+                <input
+                  id="validation-pattern-input"
+                  type="text"
+                  value={editedField.validation?.pattern ?? ''}
+                  onChange={e => {
+                    const val = e.target.value || null
+                    setEditedField({
+                      ...editedField,
+                      validation: {
+                        ...editedField.validation,
+                        pattern: val,
+                      },
+                    })
+                  }}
+                  className={inputClass}
+                  placeholder="^[a-zA-Z]+$"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Condition */}
           <div>
-            <label className={labelClass}>Koşullu Görünürlük</label>
+            <p className={labelClass}>Koşullu Görünürlük</p>
             <div className="space-y-2">
               <select
+                id="condition-field-select"
                 value={editedField.condition?.field || ''}
                 onChange={e => {
                   const fieldId = e.target.value
                   if (!fieldId) {
-                    setEditedField({ ...editedField, condition: undefined })
+                    setEditedField({ ...editedField, condition: null })
                   } else {
                     setEditedField({
                       ...editedField,
@@ -593,6 +940,7 @@ function FieldEditModal({
               {editedField.condition && (
                 <>
                   <select
+                    id="condition-operator-select"
                     value={editedField.condition.operator}
                     onChange={e =>
                       setEditedField({
@@ -612,6 +960,7 @@ function FieldEditModal({
                     <option value="LT">Küçük</option>
                   </select>
                   <input
+                    id="condition-value-input"
                     type="text"
                     value={String(editedField.condition.value)}
                     onChange={e =>
@@ -636,7 +985,11 @@ function FieldEditModal({
           <button
             type="button"
             onClick={onClose}
-            className={`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${isDarkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+            className={`flex-1 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
+              isDarkMode
+                ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
           >
             İptal
           </button>

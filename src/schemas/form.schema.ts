@@ -37,12 +37,18 @@ export const FieldTypeSchema = z.enum([
   'number',
   'select',
   'checkbox',
+  'multi_checkbox',
   'radio',
   'textarea',
   'date',
   'phone',
   'url',
 ])
+
+export const FieldOptionSchema = z.object({
+  label: z.string().min(1, 'Seçenek etiketi zorunludur'),
+  value: z.string().min(1, 'Seçenek değeri zorunludur'),
+})
 
 // ============================================
 // Field Schema
@@ -53,15 +59,17 @@ export const FieldSchema = z.object({
   type: FieldTypeSchema,
   label: z.string().min(1, 'Alan etiketi zorunludur'),
   required: z.boolean().default(false),
+  options: z.array(FieldOptionSchema).nullable().optional(),
   validation: ValidationRuleSchema.nullable().optional(),
   condition: ConditionRuleSchema.nullable().optional(),
+  stepId: z.string().nullable().optional(),
 })
 
 // ============================================
 // Form Config Schema
 // ============================================
 
-export const FormLayoutSchema = z.enum(['single', 'vertical'])
+export const FormLayoutSchema = z.enum(['single', 'vertical', 'wizard'])
 
 export const FormConfigSchema = z.object({
   layout: FormLayoutSchema.default('vertical'),
@@ -72,9 +80,16 @@ export const FormConfigSchema = z.object({
 // Schema Definition (nested inside form)
 // ============================================
 
+export const StepSchema = z.object({
+  id: z.string().min(1, 'Adım ID zorunludur'),
+  title: z.string().min(1, 'Adım başlığı zorunludur'),
+  description: z.string().optional(),
+})
+
 export const SchemaDefinitionSchema = z.object({
+  fields: z.array(FieldSchema),
+  steps: z.array(StepSchema).optional(),
   config: FormConfigSchema,
-  fields: z.array(FieldSchema).default([]),
 })
 
 // ============================================

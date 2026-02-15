@@ -102,44 +102,97 @@ export function FieldRenderer({ field, form, className }: FieldRendererProps) {
         return (
           <select id={field.id} {...register(field.id)} className={inputClass}>
             <option value="">Seçiniz...</option>
+            {(field.options || []).map(opt => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
           </select>
         )
 
       case 'radio':
         return (
           <div className="space-y-2">
-            <span
-              className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-            >
-              Seçenek tanımlı değil
-            </span>
+            {(field.options || []).length > 0 ? (
+              field.options!.map(opt => (
+                <label
+                  key={opt.value}
+                  className={`flex cursor-pointer items-center gap-3 ${
+                    isDarkMode ? 'text-slate-300' : 'text-gray-700'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    value={opt.value}
+                    {...register(field.id)}
+                    className="h-4 w-4 border-slate-600 bg-slate-800 text-violet-500 focus:ring-violet-500"
+                  />
+                  <span className="text-sm">{opt.label}</span>
+                </label>
+              ))
+            ) : (
+              <span
+                className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+              >
+                Seçenek tanımlı değil
+              </span>
+            )}
+          </div>
+        )
+
+      case 'multi_checkbox':
+        return (
+          <div className={className}>
+            {(field.options || []).length > 0 ? (
+              <div className="space-y-2">
+                {field.options!.map(opt => (
+                  <label
+                    key={opt.value}
+                    className={`flex items-center gap-3 ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}`}
+                  >
+                    <input
+                      type="checkbox"
+                      disabled
+                      className="h-4 w-4 rounded border-slate-600 bg-slate-800 text-violet-500"
+                    />
+                    <span className="text-sm">{opt.label}</span>
+                  </label>
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-red-500">Seçenek ekleyiniz</div>
+            )}
+            {errorMessage && <p className={errorClass}>{errorMessage}</p>}
           </div>
         )
 
       case 'checkbox':
         return (
-          <Controller
-            control={control}
-            name={field.id}
-            render={({ field: controllerField }) => (
-              <label
-                className={`flex cursor-pointer items-center gap-3 ${
-                  isDarkMode ? 'text-slate-300' : 'text-gray-700'
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={!!controllerField.value}
-                  onChange={controllerField.onChange}
-                  onBlur={controllerField.onBlur}
-                  name={controllerField.name}
-                  ref={controllerField.ref}
-                  className="h-5 w-5 rounded border-slate-600 bg-slate-800 text-violet-500 focus:ring-violet-500"
-                />
-                <span className="text-sm">{field.label}</span>
-              </label>
-            )}
-          />
+          <div className={className}>
+            <Controller
+              control={control}
+              name={field.id}
+              render={({ field: controllerField }) => (
+                <label
+                  className={`flex cursor-pointer items-center gap-3 ${
+                    isDarkMode ? 'text-slate-300' : 'text-gray-700'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={!!controllerField.value}
+                    onChange={controllerField.onChange}
+                    onBlur={controllerField.onBlur}
+                    name={controllerField.name}
+                    ref={controllerField.ref}
+                    className="h-5 w-5 rounded border-slate-600 bg-slate-800 text-violet-500 focus:ring-violet-500"
+                  />
+                  <span className="text-sm">{field.label}</span>
+                </label>
+              )}
+            />
+            {errorMessage && <p className={errorClass}>{errorMessage}</p>}
+          </div>
         )
 
       default:
@@ -154,14 +207,9 @@ export function FieldRenderer({ field, form, className }: FieldRendererProps) {
     }
   }
 
-  // Checkbox has inline label
+  // Checkbox (single) has inline label, handled inside case above now
   if (field.type === 'checkbox') {
-    return (
-      <div className={className}>
-        {renderField()}
-        {errorMessage && <p className={errorClass}>{errorMessage}</p>}
-      </div>
-    )
+    return renderField()
   }
 
   return (

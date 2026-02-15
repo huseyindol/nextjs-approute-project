@@ -5,7 +5,7 @@
 // Enums & Basic Types
 // ============================================
 
-export type FormLayout = 'single' | 'vertical'
+export type FormLayout = 'single' | 'vertical' | 'wizard'
 
 export type FieldType =
   | 'text'
@@ -13,6 +13,7 @@ export type FieldType =
   | 'number'
   | 'select'
   | 'checkbox'
+  | 'multi_checkbox'
   | 'radio'
   | 'textarea'
   | 'date'
@@ -37,6 +38,11 @@ export interface ValidationRule {
   pattern?: string | null
 }
 
+export interface FieldOption {
+  label: string
+  value: string
+}
+
 // ============================================
 // Field Definition
 // ============================================
@@ -46,8 +52,10 @@ export interface Field {
   type: FieldType
   label: string
   required: boolean
+  options?: FieldOption[] | null
   validation?: ValidationRule | null
   condition?: ConditionRule | null
+  stepId?: string
 }
 
 // ============================================
@@ -63,9 +71,16 @@ export interface FormConfig {
 // Schema Definition (nested inside FormSchema)
 // ============================================
 
+export interface Step {
+  id: string
+  title: string
+  description?: string
+}
+
 export interface FormSchemaDefinition {
   config: FormConfig
   fields: Field[]
+  steps?: Step[]
 }
 
 // ============================================

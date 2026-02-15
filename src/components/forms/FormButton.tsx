@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import * as React from 'react'
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost'
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'outline'
 
 export interface FormButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
@@ -16,6 +16,8 @@ const variantStyles: Record<ButtonVariant, string> = {
   secondary:
     'border-2 border-primary text-primary bg-transparent hover:bg-primary/5 active:scale-[0.98]',
   ghost: 'text-primary hover:bg-primary/5 active:scale-[0.98]',
+  outline:
+    'border border-input bg-background hover:bg-accent hover:text-accent-foreground active:scale-[0.98]',
 }
 
 const FormButton = React.forwardRef<HTMLButtonElement, FormButtonProps>(

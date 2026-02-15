@@ -35,6 +35,11 @@ export function FormFieldRenderer({ field }: FormFieldRendererProps) {
 
   const error = errors[field.id]?.message as string | undefined
 
+  // Debug log for checking if options are coming from backend
+  if (field.type === 'select' || field.type === 'radio') {
+    console.log(`Field ${field.id} (${field.type}) options:`, field.options)
+  }
+
   switch (field.type) {
     case 'text':
     case 'email':
@@ -86,7 +91,10 @@ export function FormFieldRenderer({ field }: FormFieldRendererProps) {
       return (
         <FormSelect
           label={field.label}
-          options={[]}
+          options={(field.options || []).map(o => ({
+            label: o.label,
+            value: o.value,
+          }))}
           placeholder="Seçiniz..."
           error={error}
           required={field.required}
@@ -99,11 +107,31 @@ export function FormFieldRenderer({ field }: FormFieldRendererProps) {
         <RadioGroup
           label={field.label}
           name={field.id}
-          options={[]}
+          options={(field.options || []).map(o => ({
+            label: o.label,
+            value: o.value,
+          }))}
           value={getValues(field.id)}
           onChange={val => setValue(field.id, val, { shouldValidate: true })}
           error={error}
           required={field.required}
+        />
+      )
+
+    case 'multi_checkbox':
+      return (
+        <CheckboxGroup
+          label={field.label}
+          checked={getValues(field.id)}
+          onChange={val => {
+            setValue(field.id, val, { shouldValidate: true })
+          }}
+          name={field.id}
+          error={error}
+          options={(field.options || []).map(o => ({
+            label: o.label,
+            value: o.value,
+          }))}
         />
       )
 
@@ -113,11 +141,11 @@ export function FormFieldRenderer({ field }: FormFieldRendererProps) {
           label={field.label}
           checked={getValues(field.id)}
           onChange={val => {
-            console.log(val)
             setValue(field.id, val, { shouldValidate: true })
           }}
           name={field.id}
           error={error}
+          // No options passed = Single boolean mode
         />
       )
 
