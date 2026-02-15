@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 // Component Types enum matching backend
-export const ComponentTypeEnum = z.enum(['BANNER', 'WIDGET'])
+export const ComponentTypeEnum = z.enum(['BANNER', 'WIDGET', 'FORM'])
 
 // Create Component Schema - POST /api/v1/components
 export const CreateComponentSchema = z.object({
@@ -18,6 +18,7 @@ export const CreateComponentSchema = z.object({
   pageIds: z.array(z.number()).optional(),
   bannerIds: z.array(z.number()).optional(),
   widgetIds: z.array(z.number()).optional(),
+  formIds: z.array(z.number()).optional(),
 })
 
 // Update Component Schema - PUT /api/v1/components/{id}

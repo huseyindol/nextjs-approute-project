@@ -89,7 +89,9 @@ export default function ComponentsListPage() {
           className={`rounded px-2 py-1 text-xs font-medium ${
             component.type === ComponentTypeEnum.BANNER
               ? 'bg-blue-500/20 text-blue-400'
-              : 'bg-purple-500/20 text-purple-400'
+              : component.type === ComponentTypeEnum.FORM
+                ? 'bg-emerald-500/20 text-emerald-400'
+                : 'bg-purple-500/20 text-purple-400'
           }`}
         >
           {component.type}
@@ -119,6 +121,11 @@ export default function ComponentsListPage() {
             className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
           >
             {component.widgets?.length || 0} widget
+          </span>
+          <span
+            className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+          >
+            {component.forms?.length || 0} form
           </span>
           <span
             className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}

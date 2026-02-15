@@ -858,13 +858,14 @@ Tüm componentleri listele.
       "id": 1,
       "name": "string",
       "description": "string",
-      "type": "BANNER | WIDGET",
+      "type": "BANNER | WIDGET | FORM",
       "content": "string",
       "orderIndex": 1,
       "status": true,
       "pages": [ ... ],
       "banners": [ ... ],
-      "widgets": [ ... ]
+      "widgets": [ ... ],
+      "forms": [ ... ]
     }
   ]
 }
@@ -885,7 +886,7 @@ Component özetlerini listele.
     {
       "id": 1,
       "name": "string",
-      "type": "BANNER | WIDGET",
+      "type": "BANNER | WIDGET | FORM",
       "status": true,
       "orderIndex": 1
     }
@@ -916,13 +917,14 @@ Sayfalı component listesi.
         "id": 1,
         "name": "string",
         "description": "string",
-        "type": "BANNER | WIDGET",
+        "type": "BANNER | WIDGET | FORM",
         "content": "string",
         "orderIndex": 1,
         "status": true,
         "pages": [ ... ],
         "banners": [ ... ],
-        "widgets": [ ... ]
+        "widgets": [ ... ],
+        "forms": [ ... ]
       }
     ],
     "page": 0,
@@ -957,7 +959,7 @@ Sayfalı component özet listesi.
       {
         "id": 1,
         "name": "string",
-        "type": "BANNER | WIDGET",
+        "type": "BANNER | WIDGET | FORM",
         "status": true,
         "orderIndex": 1
       }
@@ -984,15 +986,20 @@ Component oluştur.
 {
   "name": "string",
   "description": "string",
-  "type": "BANNER | WIDGET",
+  "type": "BANNER | WIDGET | FORM",
   "content": "string",
   "orderIndex": 1,
   "status": true,
   "pageIds": [1, 2], // opsiyonel
-  "bannerIds": [1], // opsiyonel
-  "widgetIds": [1] // opsiyonel
+  "bannerIds": [1], // opsiyonel, sadece type=BANNER
+  "widgetIds": [1], // opsiyonel, sadece type=WIDGET
+  "formIds": [1] // opsiyonel, sadece type=FORM
 }
 ```
+
+> **Not:** `type` değerine göre sadece ilgili ID listesi gönderilebilir.
+> BANNER → `bannerIds`, WIDGET → `widgetIds`, FORM → `formIds`.
+> Yanlış tip kombinasyonu validation hatası döndürür.
 
 ---
 

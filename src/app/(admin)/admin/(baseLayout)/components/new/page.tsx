@@ -8,12 +8,14 @@ import {
   getSubFoldersService,
 } from '@/app/(admin)/admin/_services/banners.services'
 import { createComponentService } from '@/app/(admin)/admin/_services/components.services'
+import { getFormsSummaryService } from '@/app/(admin)/admin/_services/forms.services'
 import { getWidgetsSummaryService } from '@/app/(admin)/admin/_services/widgets.services'
 import {
   CreateComponentInput,
   CreateComponentSchema,
 } from '@/schemas/component'
 import { BannerSummary, WidgetSummary } from '@/types/BaseResponse'
+import { FormSchema } from '@/types/form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
@@ -29,6 +31,7 @@ export default function NewComponentPage() {
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [selectedBanners, setSelectedBanners] = useState<BannerSummary[]>([])
   const [selectedWidgets, setSelectedWidgets] = useState<WidgetSummary[]>([])
+  const [selectedForms, setSelectedForms] = useState<FormSchema[]>([])
   const { templates: componentTemplates } = useTemplates('components')
 
   // Selected sub-folder for banner filtering
@@ -52,6 +55,7 @@ export default function NewComponentPage() {
       pageIds: [],
       bannerIds: [],
       widgetIds: [],
+      formIds: [],
     },
   })
 
@@ -76,6 +80,12 @@ export default function NewComponentPage() {
   const { data: widgetsData } = useQuery({
     queryKey: ['widgets-summary'],
     queryFn: getWidgetsSummaryService,
+  })
+
+  // Fetch forms for assignment
+  const { data: formsData } = useQuery({
+    queryKey: ['forms-summary'],
+    queryFn: getFormsSummaryService,
   })
 
   // Available banners (exclude already selected ones)
@@ -108,6 +118,7 @@ export default function NewComponentPage() {
       ...data,
       bannerIds: data.type === 'BANNER' ? selectedBanners.map(b => b.id) : [],
       widgetIds: data.type === 'WIDGET' ? selectedWidgets.map(w => w.id) : [],
+      formIds: data.type === 'FORM' ? selectedForms.map(f => f.id) : [],
     }
     createMutation.mutate(submitData)
   }
@@ -251,6 +262,7 @@ export default function NewComponentPage() {
               <select id="type" {...register('type')} className={inputClass}>
                 <option value="BANNER">Banner</option>
                 <option value="WIDGET">Widget</option>
+                <option value="FORM">Form</option>
               </select>
               {errors.type && (
                 <p className={errorClass}>{errors.type.message}</p>
@@ -404,6 +416,38 @@ export default function NewComponentPage() {
               getItemSubLabel={item => item.type}
               emptyLeftText="Widget bulunamadı"
               emptyRightText="Widget seçilmedi"
+            />
+          </div>
+        )}
+
+        {/* Form Assignment - sadece FORM tipi seçildiğinde göster */}
+        {selectedType === 'FORM' && (
+          <div
+            className={`rounded-2xl p-6 ${
+              isDarkMode
+                ? 'border border-slate-800/50 bg-slate-900/60'
+                : 'border border-gray-200 bg-white'
+            } backdrop-blur-sm`}
+          >
+            <h2
+              className={`mb-4 text-lg font-semibold ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}
+            >
+              Form Ataması
+            </h2>
+            <DualListbox<FormSchema>
+              available={(formsData?.data || []).filter(
+                f => !selectedForms.some(sf => sf.id === f.id),
+              )}
+              selected={selectedForms}
+              onChange={setSelectedForms}
+              getItemLabel={item => item.title}
+              getItemSubLabel={item =>
+                `v${item.version} • ${item.active ? 'Aktif' : 'Pasif'}`
+              }
+              emptyLeftText="Form bulunamadı"
+              emptyRightText="Form seçilmedi"
             />
           </div>
         )}

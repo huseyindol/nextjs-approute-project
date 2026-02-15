@@ -27,6 +27,7 @@ export interface SeoInfo {
 export enum ComponentTypeEnum {
   BANNER = 'banner',
   WIDGET = 'widget',
+  FORM = 'form',
 }
 
 export enum WidgetTypeEnum {
@@ -88,6 +89,7 @@ export interface Component {
   pageIds: number[]
   banners: Banner[]
   widgets: Widget[]
+  forms: FormSchema[]
 }
 
 export interface Page {

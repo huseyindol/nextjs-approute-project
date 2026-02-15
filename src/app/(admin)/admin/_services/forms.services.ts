@@ -33,6 +33,26 @@ export const getFormsService = async () => {
   }
 }
 
+// GET - Form özet listesi (Component atamaları için)
+export const getFormsSummaryService = async () => {
+  try {
+    const response: FormSchemaListResponseType = await fetcher(
+      '/api/v1/forms/list',
+      {
+        method: 'GET',
+        keepalive: true,
+      },
+    )
+    if (!response.result) {
+      throw new Error('Error get forms summary', { cause: response.message })
+    }
+    return response
+  } catch (error) {
+    console.error('Error get forms summary:', error)
+    throw error
+  }
+}
+
 // GET - Aktif formları listele
 export const getActiveFormsService = async () => {
   try {
