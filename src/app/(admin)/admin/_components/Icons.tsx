@@ -496,4 +496,21 @@ export const Icons = {
       <line x1="14" x2="14" y1="11" y2="17" />
     </svg>
   ),
+  Layers: () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
+      <path d="m22 12-8.58 3.91a2 2 0 0 1-1.66 0L2.6 11.91" />
+      <path d="m22 17-8.58 3.91a2 2 0 0 1-1.66 0L2.6 16.91" />
+    </svg>
+  ),
 }

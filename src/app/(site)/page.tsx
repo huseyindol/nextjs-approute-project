@@ -1,22 +1,9 @@
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import Experience from '@/components/experience'
+import Hero from '@/components/Hero'
+import Skills from '@/components/Skills'
 import dynamicImport from 'next/dynamic'
-// import ExperienceWithErrorDemo from '@/components/ExperienceWithErrorDemo'
-// import Hero from '@/components/Hero'
-// import Skills from '@/components/Skills'
-// import Experience from '@/components/experience'
 
-const Hero = dynamicImport(() => import('@/components/Hero'), {
-  loading: () => <div>Loading...</div>,
-  ssr: true,
-})
-const Skills = dynamicImport(() => import('@/components/Skills'), {
-  loading: () => <div>Loading...</div>,
-  ssr: true,
-})
-const Experience = dynamicImport(() => import('@/components/experience'), {
-  loading: () => <div>Loading...</div>,
-  ssr: true,
-})
 const ExperienceWithErrorDemo = dynamicImport(
   () => import('@/components/ExperienceWithErrorDemo'),
   {
@@ -25,12 +12,18 @@ const ExperienceWithErrorDemo = dynamicImport(
   },
 )
 
-// ✨ Cache Strategy: ISR (Incremental Static Regeneration)
+// ✨ Cache Strategy: ISR with dynamic searchParams support
 export const revalidate = 3600 // 1 saat (3600 saniye) sonra yeniden oluştur
-export const dynamic = 'force-static' // Statik olarak oluştur
-export const dynamicParams = true // Dynamic segments için
 
-export default async function Home() {
+// Page props interface
+interface HomeProps {
+  searchParams?: Promise<{ industry?: string }>
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  // searchParams'ı await et (Next.js 15+ async searchParams)
+  const resolvedSearchParams = await searchParams
+
   return (
     <main className="min-h-screen">
       <ErrorBoundary>
@@ -40,7 +33,7 @@ export default async function Home() {
         <Skills />
       </ErrorBoundary>
       <ErrorBoundary>
-        <Experience />
+        <Experience searchParams={resolvedSearchParams} />
       </ErrorBoundary>
 
       {/* 🧪 ErrorBoundary Demo Section - Sadece Development */}

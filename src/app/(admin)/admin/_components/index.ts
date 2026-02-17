@@ -23,6 +23,7 @@ export { SearchInput } from './SearchInput'
 export { Sidebar } from './Sidebar'
 export { StatsCard, StatsGrid } from './StatsCard'
 export { StatusBadge } from './StatusBadge'
+export { TagsInput } from './TagsInput'
 export { TopProducts } from './TopProducts'
 
 // Types

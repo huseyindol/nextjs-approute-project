@@ -25,6 +25,7 @@ const menuItems: MenuItem[] = [
   { icon: Icons.Grid, label: 'Widgetlar', href: '/admin/widgets' },
   { icon: Icons.File, label: 'Postlar', href: '/admin/posts' },
   { icon: Icons.Eye, label: 'Bannerlar', href: '/admin/banners' },
+  { icon: Icons.Layers, label: 'İçerikler', href: '/admin/contents' },
   { icon: Icons.Image, label: 'Assetler', href: '/admin/assets' },
   { icon: Icons.ClipboardList, label: 'Formlar', href: '/admin/forms' },
   { icon: Icons.Settings, label: 'Ayarlar', href: '/admin/settings' },

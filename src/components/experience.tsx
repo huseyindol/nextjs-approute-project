@@ -1,14 +1,14 @@
-'use client'
-
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { INDUSTRIES } from '@/schemas/constants'
+import { ExperienceType } from '@/schemas/dynamic/experienceSchema'
+import { getSectionDataBySectionKey } from '@/utils/services/contents'
 import { Building, Calendar, MapPin } from 'lucide-react'
-import { useState } from 'react'
+import Link from 'next/link'
 
-const experiences = [
+// Mock data - API boşsa veya hata varsa kullanılır
+const mockExperiences: ExperienceType[] = [
   {
-    id: 1,
     company: 'Hangikredi',
     position: 'Senior Frontend Developer & Team Lead',
     period: 'Ekim 2023 - Günümüz',
@@ -42,7 +42,6 @@ const experiences = [
     ],
   },
   {
-    id: 2,
     company: 'Venhancer',
     position: 'Sr. Frontend Developer',
     period: 'Mayıs 2023 - Ekim 2023',
@@ -58,7 +57,6 @@ const experiences = [
     ],
   },
   {
-    id: 3,
     company: 'Azerion Turkey',
     position: 'Full Stack Developer',
     period: 'Mart 2022 - Mayıs 2023',
@@ -89,7 +87,6 @@ const experiences = [
     ],
   },
   {
-    id: 4,
     company: 'Defacto',
     position: 'Sr. Frontend Developer',
     period: 'Kasım 2020 - Mart 2022',
@@ -116,7 +113,6 @@ const experiences = [
     ],
   },
   {
-    id: 5,
     company: 'Nuevo Softwarehouse',
     position: 'Frontend Developer',
     period: 'Nisan 2019 - Ekim 2020',
@@ -140,7 +136,6 @@ const experiences = [
     ],
   },
   {
-    id: 6,
     company: 'Freelancer',
     position: 'Full Stack Developer',
     period: 'Temmuz 2017 - Nisan 2019',
@@ -165,7 +160,6 @@ const experiences = [
     ],
   },
   {
-    id: 7,
     company: 'Projesoft',
     position: 'Frontend Developer',
     period: 'Aralık 2011 - Temmuz 2017',
@@ -180,71 +174,76 @@ const experiences = [
   },
 ]
 
-const industries = ['Tümü', 'Fintech', 'E-commerce', 'Agency', 'Media']
+// Fallback section bilgisi
+const DEFAULT_SECTION_INFO = {
+  title: 'Profesyonel Deneyim',
+  description: 'Çeşitli sektörlerde edindiğim deneyimler ve başarılar',
+}
 
-export default function Experience() {
-  const [selectedIndustry, setSelectedIndustry] = useState('Tümü')
-  const [shouldThrowError, setShouldThrowError] = useState(false)
+// Props interface - searchParams için
+interface ExperienceProps {
+  searchParams?: { industry?: string }
+}
 
-  // 🔴 TEST: Error throw etme
-  if (shouldThrowError) {
-    throw new Error('🚨 Test Error: Experience component hatası!')
-  }
+export default async function Experience({ searchParams }: ExperienceProps) {
+  // URL'den industry parametresini al
+  const selectedIndustry = searchParams?.industry || 'all'
 
+  // API'den section verilerini çek (title, description + items)
+  const { sectionInfo, items } =
+    await getSectionDataBySectionKey<ExperienceType>(
+      'portfolio_experience',
+      DEFAULT_SECTION_INFO,
+    )
+
+  // Fallback to mock data if API returns empty
+  const allExperiences = items.length > 0 ? items : mockExperiences
+
+  // Section bilgileri (API'den veya fallback)
+  const title = sectionInfo.title || DEFAULT_SECTION_INFO.title
+  const description =
+    sectionInfo.description || DEFAULT_SECTION_INFO.description
+
+  // Filter experiences by industry - INDUSTRIES constant kullanılıyor
   const filteredExperiences =
-    selectedIndustry === 'Tümü'
-      ? experiences
-      : experiences.filter(exp => exp.industry === selectedIndustry)
+    selectedIndustry === 'all'
+      ? allExperiences
+      : allExperiences.filter(exp => exp.industry === selectedIndustry)
 
   return (
     <section id="experience" className="py-20">
       <div className="container mx-auto px-6">
         <div className="mx-auto mb-16 max-w-4xl text-center">
           <h2 className="text-gradient mb-6 text-4xl font-bold md:text-5xl">
-            Profesyonel Deneyim
+            {title}
           </h2>
-          <p className="mb-8 text-xl text-muted-foreground">
-            Çeşitli sektörlerde edindiğim deneyimler ve başarılar
-          </p>
+          <p className="mb-8 text-xl text-muted-foreground">{description}</p>
 
-          {/* Industry Filter */}
+          {/* Industry Filter - Link ile URL değiştirme (SSR) */}
           <div className="flex flex-wrap justify-center gap-3">
-            {industries.map(industry => (
-              <Button
-                key={industry}
-                variant={selectedIndustry === industry ? 'default' : 'outline'}
-                onClick={() => setSelectedIndustry(industry)}
-                className="transition-all"
+            {INDUSTRIES.map(industry => (
+              <Link
+                key={industry.value}
+                href={
+                  industry.value === 'all' ? '?' : `?industry=${industry.value}`
+                }
+                scroll={false}
+                className={`inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                  selectedIndustry === industry.value
+                    ? 'hover:bg-primary/90 bg-primary text-primary-foreground'
+                    : 'border border-input bg-background hover:bg-accent hover:text-accent-foreground'
+                }`}
               >
-                {industry}
-              </Button>
+                {industry.label}
+              </Link>
             ))}
           </div>
-
-          {/* 🧪 ERROR TEST BUTTON - Geliştirme ortamında göster */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className="mt-6 rounded-lg border-2 border-dashed border-red-500 bg-red-50 p-4 dark:bg-red-950">
-              <p className="mb-3 text-sm font-semibold text-red-600 dark:text-red-400">
-                🧪 ErrorBoundary Test Alanı (Sadece Development)
-              </p>
-              <Button
-                variant="destructive"
-                onClick={() => setShouldThrowError(true)}
-                className="w-full sm:w-auto"
-              >
-                🚨 Test Error Fırlat
-              </Button>
-              <p className="mt-2 text-xs text-red-600 dark:text-red-400">
-                Bu butona tıklayınca ErrorBoundary devreye girecek!
-              </p>
-            </div>
-          )}
         </div>
 
         <div className="mx-auto max-w-4xl space-y-8">
           {filteredExperiences.map((exp, index) => (
             <Card
-              key={exp.id}
+              key={`${exp.company}-${index}`}
               className="hover:shadow-elegant animate-fade-in-up p-8 transition-all duration-300"
               style={{ animationDelay: `${index * 0.1}s` }}
             >

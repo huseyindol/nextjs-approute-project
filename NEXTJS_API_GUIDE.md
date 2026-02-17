@@ -1990,6 +1990,244 @@ Belirli bir forma ait toplam yanıt sayısını getir.
 
 ---
 
+## CMS Contents
+
+Esnek, sektörden bağımsız içerik yapıları için JSONB tabanlı Headless CMS endpointleri.
+`metadata` alanı `Map<String, Object>` yapısında olup, her içerik tipi için farklı veri yapıları saklayabilir.
+
+> **Not:** `id` alanı UUID formatındadır (örn: `"550e8400-e29b-41d4-a716-446655440000"`).
+
+### GET /api/v1/contents/section/{sectionKey}
+
+Belirli bir section'a ait aktif içerikleri getir (sortOrder'a göre sıralı).
+
+**Path Parameters:**
+
+- `sectionKey`: Section anahtarı (örn: "homepage_hero", "resume_experience", "services_grid")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "sectionKey": "services_grid",
+      "contentType": "treatment_card",
+      "title": "Dental Implants",
+      "description": "Professional dental implant services",
+      "isActive": true,
+      "sortOrder": 1,
+      "metadata": {
+        "icon": "Syringe",
+        "desc": "Permanent solution for missing teeth"
+      },
+      "createdAt": "2026-02-17T00:00:00.000+00:00",
+      "updatedAt": "2026-02-17T00:00:00.000+00:00"
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/contents/{id}
+
+Tekil içerik getir (UUID ile).
+
+**Path Parameters:**
+
+- `id`: İçerik UUID'si
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "sectionKey": "resume_experience",
+    "contentType": "experience_item",
+    "title": "Senior Developer",
+    "description": "Full-stack development role",
+    "isActive": true,
+    "sortOrder": 1,
+    "metadata": {
+      "company": "Acme Corp",
+      "period": "2022-2025",
+      "technologies": ["Java", "Spring Boot", "PostgreSQL"],
+      "achievements": ["Led team of 5", "Improved performance by 40%"]
+    },
+    "createdAt": "2026-02-17T00:00:00.000+00:00",
+    "updatedAt": "2026-02-17T00:00:00.000+00:00"
+  }
+}
+```
+
+---
+
+### GET /api/v1/contents/list
+
+Tüm içerikleri listele.
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "sectionKey": "string",
+      "contentType": "string",
+      "title": "string",
+      "description": "string",
+      "isActive": true,
+      "sortOrder": 1,
+      "metadata": { ... },
+      "createdAt": "2026-02-17T00:00:00.000+00:00",
+      "updatedAt": "2026-02-17T00:00:00.000+00:00"
+    }
+  ]
+}
+```
+
+---
+
+### GET /api/v1/contents/list/paged
+
+Sayfalı içerik listesi.
+
+**Query Parameters:**
+
+- `page`: Sayfa numarası (default: 0)
+- `size`: Sayfa başına kayıt sayısı (default: 10)
+- `sort`: Sıralama alanı ve yönü (default: "sortOrder,asc")
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "content": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "sectionKey": "string",
+        "contentType": "string",
+        "title": "string",
+        "description": "string",
+        "isActive": true,
+        "sortOrder": 1,
+        "metadata": { ... },
+        "createdAt": "2026-02-17T00:00:00.000+00:00",
+        "updatedAt": "2026-02-17T00:00:00.000+00:00"
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 100,
+    "totalPages": 10,
+    "first": true,
+    "last": false
+  }
+}
+```
+
+---
+
+### POST /api/v1/contents
+
+İçerik oluştur.
+
+**Body:**
+
+```json
+{
+  "sectionKey": "string", // zorunlu
+  "contentType": "string", // zorunlu
+  "title": "string", // zorunlu
+  "description": "string", // opsiyonel
+  "isActive": true, // zorunlu
+  "sortOrder": 1, // zorunlu
+  "metadata": {
+    // opsiyonel, serbest key-value
+    "icon": "Syringe",
+    "desc": "Permanent solution for missing teeth"
+  }
+}
+```
+
+> **metadata Örnekleri:**
+>
+> Diş Hekimi Hizmet Kartı:
+>
+> ```json
+> { "icon": "Syringe", "desc": "Permanent solution for missing teeth" }
+> ```
+>
+> Yazılımcı Deneyim Kartı:
+>
+> ```json
+> {
+>   "company": "Acme Corp",
+>   "period": "2022-2025",
+>   "technologies": ["Java", "Spring Boot"],
+>   "achievements": ["Led team of 5"]
+> }
+> ```
+>
+> Testimonial:
+>
+> ```json
+> { "name": "Ahmet Y.", "rating": 5, "comment": "Harika hizmet!" }
+> ```
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "sectionKey": "string",
+    "contentType": "string",
+    "title": "string",
+    "description": "string",
+    "isActive": true,
+    "sortOrder": 1,
+    "metadata": { ... },
+    "createdAt": "2026-02-17T00:00:00.000+00:00",
+    "updatedAt": "2026-02-17T00:00:00.000+00:00"
+  }
+}
+```
+
+---
+
+### PUT /api/v1/contents/{id}
+
+İçerik güncelle.
+
+**Path Parameters:**
+
+- `id`: İçerik UUID'si
+
+**Body:** (POST ile aynı)
+
+---
+
+### DELETE /api/v1/contents/{id}
+
+İçerik sil.
+
+**Path Parameters:**
+
+- `id`: İçerik UUID'si
+
+---
+
 ## Response Format
 
 Tüm API'ler şu formatta döner:
