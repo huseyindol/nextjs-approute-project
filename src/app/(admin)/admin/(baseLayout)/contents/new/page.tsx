@@ -1,6 +1,6 @@
 'use client'
 
-import { TagsInput } from '@/app/(admin)/admin/_components'
+import { BasicInfoSelector, TagsInput } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
 import { createContentService } from '@/app/(admin)/admin/_services/contents.services'
 import {
@@ -32,6 +32,12 @@ export default function NewContentPage() {
   const [selectedContentType, setSelectedContentType] =
     useState<ContentType>('skills')
 
+  // Basic Info Mode
+  const [basicInfoMode, setBasicInfoMode] = useState<'create' | 'select'>(
+    'create',
+  )
+  const [selectedBasicInfoId, setSelectedBasicInfoId] = useState<string>('')
+
   // Get content type options
   const contentTypes = getContentTypes()
 
@@ -51,11 +57,11 @@ export default function NewContentPage() {
 
   // Base form schema for content wrapper fields
   const baseSchema = z.object({
-    title: z.string().min(1, 'Başlık zorunludur'),
+    title: z.string().optional(),
     description: z.string().optional(),
-    sectionKey: z.string().min(1, 'Section Key zorunludur'),
-    isActive: z.boolean(),
-    sortOrder: z.coerce.number().int().min(0),
+    sectionKey: z.string().optional(),
+    isActive: z.boolean().default(true),
+    sortOrder: z.coerce.number().int().min(0).default(0),
   })
 
   // Form setup
@@ -76,6 +82,11 @@ export default function NewContentPage() {
     },
   })
 
+  // Metadata values (dynamic fields)
+  const [metadataValues, setMetadataValues] = useState<Record<string, unknown>>(
+    {},
+  )
+
   // Reset form when content type changes
   useEffect(() => {
     reset({
@@ -85,13 +96,9 @@ export default function NewContentPage() {
       isActive: true,
       sortOrder: 0,
     })
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMetadataValues({})
   }, [selectedContentType, selectedSchema, reset])
-
-  // Metadata values (dynamic fields)
-  const [metadataValues, setMetadataValues] = useState<Record<string, unknown>>(
-    {},
-  )
 
   // Create mutation
   const createMutation = useMutation({
@@ -116,10 +123,37 @@ export default function NewContentPage() {
       return
     }
 
+    if (basicInfoMode === 'select' && !selectedBasicInfoId) {
+      toast.error('Lütfen mevcut bir temel bilgi seçin')
+      return
+    }
+
+    if (basicInfoMode === 'create') {
+      if (!data.title?.trim()) {
+        toast.error('Başlık alanı zorunludur')
+        return
+      }
+      if (!data.sectionKey?.trim()) {
+        toast.error('Section Key alanı zorunludur')
+        return
+      }
+    }
+
     const contentData: ContentInput = {
-      ...data,
       contentType: selectedContentType,
       metadata: metadataValidation.data,
+    }
+
+    if (basicInfoMode === 'select') {
+      contentData.basicInfoId = selectedBasicInfoId
+    } else {
+      contentData.basicInfo = {
+        title: data.title || '',
+        description: data.description,
+        sectionKey: data.sectionKey || '',
+        isActive: data.isActive,
+        sortOrder: data.sortOrder,
+      }
     }
 
     createMutation.mutate(contentData)
@@ -318,16 +352,12 @@ export default function NewContentPage() {
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Base Fields */}
-        <div className={cardClass}>
-          <h2
-            className={`mb-4 text-lg font-semibold ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Temel Bilgiler
-          </h2>
-
+        <BasicInfoSelector
+          mode={basicInfoMode}
+          onModeChange={setBasicInfoMode}
+          selectedBasicInfoId={selectedBasicInfoId}
+          onSelectBasicInfo={setSelectedBasicInfoId}
+        >
           <div className="space-y-4">
             {/* Title */}
             <div>
@@ -416,7 +446,7 @@ export default function NewContentPage() {
               </label>
             </div>
           </div>
-        </div>
+        </BasicInfoSelector>
 
         {/* Dynamic Fields */}
         <div className={cardClass}>
@@ -467,7 +497,7 @@ export default function NewContentPage() {
           <button
             type="submit"
             disabled={createMutation.isPending}
-            className="flex-1 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
+            className="bg-linear-to-r flex-1 rounded-xl from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
           >
             {createMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">

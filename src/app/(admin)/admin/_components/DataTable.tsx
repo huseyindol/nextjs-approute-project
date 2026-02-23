@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, useMemo } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import { useAdminTheme } from '../_hooks'
 import { Icons } from './Icons'
 import { StatusBadge } from './StatusBadge'
@@ -20,6 +20,7 @@ interface DataTableProps<T> {
   emptyMessage?: string
   onRowClick?: (item: T) => void
   keyExtractor: (item: T) => string
+  groupBy?: (item: T) => string
   // Actions
   actions?: {
     onEdit?: (item: T) => void
@@ -35,13 +36,24 @@ export function DataTable<T>({
   emptyMessage = 'Kayıt bulunamadı',
   onRowClick,
   keyExtractor,
+  groupBy,
   actions,
 }: DataTableProps<T>) {
   const { isDarkMode } = useAdminTheme()
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
+    {},
+  )
+
+  const toggleGroup = (groupKey: string) => {
+    setExpandedGroups(prev => ({
+      ...prev,
+      [groupKey]: !prev[groupKey],
+    }))
+  }
 
   // Memoize rendering for performance
   const tableRows = useMemo(() => {
-    return data.map((item, rowIndex) => (
+    const renderRow = (item: T, rowIndex: number) => (
       <tr
         key={keyExtractor(item)}
         onClick={() => onRowClick?.(item)}
@@ -118,8 +130,80 @@ export function DataTable<T>({
           </td>
         )}
       </tr>
-    ))
-  }, [data, columns, isDarkMode, onRowClick, keyExtractor, actions])
+    )
+
+    if (groupBy) {
+      const groups = data.reduce(
+        (acc, item) => {
+          const key = groupBy(item) || 'Diğer'
+          if (!acc[key]) acc[key] = []
+          acc[key].push(item)
+          return acc
+        },
+        {} as Record<string, T[]>,
+      )
+
+      return Object.entries(groups).flatMap(([groupKey, groupItems]) => {
+        const isExpanded = expandedGroups[groupKey] ?? true // Default to expanded
+
+        const groupHeader = (
+          <tr
+            key={`group-${groupKey}`}
+            onClick={() => toggleGroup(groupKey)}
+            className={`cursor-pointer transition-colors ${
+              isDarkMode
+                ? 'border-y border-slate-700/50 bg-slate-800/40 hover:bg-slate-700/40'
+                : 'border-y border-gray-200 bg-gray-100/80 hover:bg-gray-200/80'
+            }`}
+          >
+            <td
+              colSpan={columns.length + (actions ? 1 : 0)}
+              className={`px-6 py-3 text-sm font-semibold tracking-wider ${
+                isDarkMode ? 'text-slate-200' : 'text-gray-700'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className={`transition-transform duration-200 ${
+                    !isExpanded ? '-rotate-90' : ''
+                  }`}
+                >
+                  <Icons.ChevronDown className="h-4 w-4" />
+                </span>
+                {groupKey}
+                <span
+                  className={`ml-2 rounded-full px-2 py-0.5 text-xs font-normal ${
+                    isDarkMode
+                      ? 'bg-slate-700 text-slate-400'
+                      : 'shadow-xs bg-white text-gray-500'
+                  }`}
+                >
+                  {groupItems.length} kayıt
+                </span>
+              </div>
+            </td>
+          </tr>
+        )
+
+        const rows = isExpanded
+          ? groupItems.map((item, index) => renderRow(item, index))
+          : []
+
+        return [groupHeader, ...rows]
+      })
+    }
+
+    return data.map((item, rowIndex) => renderRow(item, rowIndex))
+  }, [
+    data,
+    columns,
+    isDarkMode,
+    onRowClick,
+    keyExtractor,
+    actions,
+    groupBy,
+    expandedGroups,
+  ])
 
   if (isLoading) {
     return (

@@ -1,6 +1,6 @@
 import { siteInfoType } from '@/types/siteInfoTypes'
-import { skillsType } from '@/types/skillsTypes'
 import { Metadata } from 'next'
+import { SkillType } from '../schemas/dynamic'
 
 export const siteInfo: siteInfoType = {
   sayHi: '👋 Merhabalar, ben Hüseyin',
@@ -31,7 +31,7 @@ export const siteInfo: siteInfoType = {
   ],
 }
 
-export const skills: skillsType[] = [
+export const skills: SkillType[] = [
   {
     name: 'HTML5',
     level: 'Expert',
@@ -39,6 +39,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg',
     url: 'https://www.w3.org/html/',
+    sortOrder: 0,
   },
   {
     name: 'CSS3',
@@ -47,6 +48,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg',
     url: 'https://www.w3schools.com/css/',
+    sortOrder: 0,
   },
   {
     name: 'Bootstrap',
@@ -55,6 +57,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-original.svg',
     url: 'https://getbootstrap.com',
+    sortOrder: 0,
   },
   {
     name: 'Sass',
@@ -63,6 +66,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/sass/sass-original.svg',
     url: 'https://sass-lang.com',
+    sortOrder: 0,
   },
   {
     name: 'JavaScript',
@@ -71,6 +75,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg',
     url: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
+    sortOrder: 0,
   },
   {
     name: 'React',
@@ -79,6 +84,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original-wordmark.svg',
     url: 'https://reactjs.org/',
+    sortOrder: 0,
   },
   {
     name: 'VS Code',
@@ -87,6 +93,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/vscode/vscode-original.svg',
     url: 'https://code.visualstudio.com/',
+    sortOrder: 0,
   },
   {
     name: 'Figma',
@@ -95,6 +102,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/figma/figma-original.svg',
     url: 'https://www.figma.com/',
+    sortOrder: 0,
   },
   {
     name: 'Redux',
@@ -103,6 +111,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/redux/redux-original.svg',
     url: 'https://redux.js.org',
+    sortOrder: 0,
   },
   {
     name: 'Next.js',
@@ -111,6 +120,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/nextjs/nextjs-original.svg',
     url: 'https://nextjs.org/',
+    sortOrder: 0,
   },
   {
     name: 'Trello',
@@ -119,6 +129,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/trello/trello-original.svg',
     url: 'https://trello.com/en',
+    sortOrder: 0,
   },
   {
     name: 'Git',
@@ -127,6 +138,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/git/git-original.svg',
     url: 'https://git-scm.com/',
+    sortOrder: 0,
   },
   {
     name: 'Node.js',
@@ -135,6 +147,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg',
     url: 'https://nodejs.org',
+    sortOrder: 0,
   },
   {
     name: 'Docker',
@@ -143,6 +156,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg',
     url: 'https://www.docker.com/',
+    sortOrder: 0,
   },
   {
     name: 'Express',
@@ -151,6 +165,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/express/express-original-wordmark.svg',
     url: 'https://expressjs.com',
+    sortOrder: 0,
   },
   {
     name: 'Prisma',
@@ -159,6 +174,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/prisma/prisma-original.svg',
     url: 'https://www.prisma.io/',
+    sortOrder: 0,
   },
   {
     name: 'MongoDB',
@@ -167,6 +183,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/mongodb/mongodb-original-wordmark.svg',
     url: 'https://www.mongodb.com/',
+    sortOrder: 0,
   },
   {
     name: 'Nginx',
@@ -175,6 +192,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/nginx/nginx-original.svg',
     url: 'https://www.nginx.com',
+    sortOrder: 0,
   },
   {
     name: 'Postman',
@@ -183,6 +201,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/postman/postman-original.svg',
     url: 'https://postman.com',
+    sortOrder: 0,
   },
   {
     name: 'PostgreSQL',
@@ -191,6 +210,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg',
     url: 'https://www.postgresql.org',
+    sortOrder: 0,
   },
   {
     name: 'Java',
@@ -199,6 +219,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/java/java-original.svg',
     url: 'https://www.oracle.com/java/',
+    sortOrder: 0,
   },
   {
     name: 'Spring',
@@ -207,6 +228,7 @@ export const skills: skillsType[] = [
     imageUrl:
       'https://raw.githubusercontent.com/devicons/devicon/master/icons/spring/spring-original.svg',
     url: 'https://spring.io/',
+    sortOrder: 0,
   },
   {
     name: 'MCP',
@@ -214,6 +236,7 @@ export const skills: skillsType[] = [
     years: '3+',
     imageUrl: 'https://avatars.githubusercontent.com/u/182288589?s=200&v=4',
     url: 'https://www.mcp.com/',
+    sortOrder: 0,
   },
 ]
 

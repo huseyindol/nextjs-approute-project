@@ -40,8 +40,10 @@ export async function getContentsBySectionKey<T = Record<string, unknown>>(
 
     // metadata alanından type'a göre dönüştür
     return data.data
-      .filter(item => item.isActive)
-      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .filter(item => item.basicInfo?.isActive)
+      .sort(
+        (a, b) => (a.basicInfo?.sortOrder ?? 0) - (b.basicInfo?.sortOrder ?? 0),
+      )
       .map(item => item.metadata as T)
   } catch (error) {
     console.error(`Error fetching contents for section ${sectionKey}:`, error)
@@ -83,8 +85,10 @@ export async function getContentItemsBySectionKey<T = Record<string, unknown>>(
     }
 
     return data.data
-      .filter(item => item.isActive)
-      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .filter(item => item.basicInfo?.isActive)
+      .sort(
+        (a, b) => (a.basicInfo?.sortOrder ?? 0) - (b.basicInfo?.sortOrder ?? 0),
+      )
   } catch (error) {
     console.error(`Error fetching contents for section ${sectionKey}:`, error)
     return []
@@ -133,15 +137,18 @@ export async function getSectionDataBySectionKey<T = Record<string, unknown>>(
 
     // Aktif ve sıralı item'ları al
     const sortedItems = data.data
-      .filter(item => item.isActive)
-      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .filter(item => item.basicInfo?.isActive)
+      .sort(
+        (a, b) => (a.basicInfo?.sortOrder ?? 0) - (b.basicInfo?.sortOrder ?? 0),
+      )
 
     // İlk item'dan section bilgisini al
     const firstItem = sortedItems[0]
     const sectionInfo: SectionInfo = firstItem
       ? {
-          title: firstItem.title || defaultInfo.title,
-          description: firstItem.description || defaultInfo.description,
+          title: firstItem.basicInfo?.title || defaultInfo.title,
+          description:
+            firstItem.basicInfo?.description || defaultInfo.description,
         }
       : defaultInfo
 

@@ -1,12 +1,20 @@
+// Basic Info Model
+export interface BasicInfo {
+  id: string
+  sectionKey: string
+  title: string
+  description?: string
+  isActive: boolean
+  sortOrder: number
+  createdAt?: string
+  updatedAt?: string
+}
+
 // CMS Content Item - API response model
 export interface ContentItem<T = Record<string, unknown>> {
   id: string // UUID
-  sectionKey: string
+  basicInfo: BasicInfo
   contentType: string
-  title: string
-  description?: string // opsiyonel
-  isActive: boolean
-  sortOrder: number
   metadata: T
   createdAt: string
   updatedAt: string
@@ -14,12 +22,9 @@ export interface ContentItem<T = Record<string, unknown>> {
 
 // CMS Content Create/Update Input
 export interface ContentInput {
-  sectionKey: string
+  basicInfoId?: string
+  basicInfo?: Omit<BasicInfo, 'id' | 'createdAt' | 'updatedAt'>
   contentType: string
-  title: string
-  description?: string // opsiyonel
-  isActive: boolean
-  sortOrder: number
   metadata: Record<string, unknown>
 }
 

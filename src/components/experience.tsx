@@ -33,6 +33,7 @@ const mockExperiences: ExperienceType[] = [
       'CI/CD',
       'Gulp',
     ],
+    sortOrder: 0,
     achievements: [
       '40% performans artışı sağlayan optimizasyonlar',
       'NPM paketi kurulumu',
@@ -50,6 +51,7 @@ const mockExperiences: ExperienceType[] = [
     description:
       "Fibabanka'nın Yaklaşan Ödemeler uygulaması, Müşteri kampanya yönetim ekranı ve şikayet yönetim ekranı geliştirmelerinde yer aldım.",
     technologies: ['React', 'Redux', 'TypeScript', 'SCSS', 'Context API'],
+    sortOrder: 0,
     achievements: [
       'Müşteri kampanya yönetim ekranı geliştirme',
       'Şikayet yönetim ekranı geliştirme',
@@ -80,6 +82,7 @@ const mockExperiences: ExperienceType[] = [
       'Jenkins',
       'CI/CD',
     ],
+    sortOrder: 0,
     achievements: [
       'Medya gruplarına ait oyun portalları geliştirme',
       'SEO optimizasyonları',
@@ -106,6 +109,7 @@ const mockExperiences: ExperienceType[] = [
       'Angular V6',
       'Webpack',
     ],
+    sortOrder: 0,
     achievements: [
       'Frontend mimarisinde mobile ve desktop uygulamasını responsive olarak yönetilmesi',
       'SEO, Analytics ve Datalayer entegrasyonları',
@@ -130,6 +134,7 @@ const mockExperiences: ExperienceType[] = [
       'Webpack',
       'Gulp',
     ],
+    sortOrder: 0,
     achievements: [
       'Junior developer mentorluğu',
       'Performans optimizasyonları (Code splitting, Lazy loading, Image optimization, Bundling optimization...)',
@@ -153,6 +158,7 @@ const mockExperiences: ExperienceType[] = [
       'Codeigniter',
       'mysql',
     ],
+    sortOrder: 0,
     achievements: [
       'Bir çok firmanın sistemlerinde frontend ve backend geliştirmelerinde yer aldım.',
       'Rest API ve entegrasyonları gibi geliştirmeleri.',
@@ -168,6 +174,7 @@ const mockExperiences: ExperienceType[] = [
     description:
       "Projesoft'un frontend geliştirme ekibine katıldım. Bir çok firmanın E-Ticaret sistemlerinin frontend geliştirmelerinde yer aldım. bunlardan bazıları: kitapisler.com, kuyumcu.com.tr, feyioglu.com.tr, network.com.tr, divarese.com, beymen.com gibi.",
     technologies: ['JavaScript', 'jQuery', 'Bootstrap', 'SCSS', 'PHP', 'Twig'],
+    sortOrder: 0,
     achievements: [
       'Bir çok firmanın E-Ticaret sistemlerinin frontend geliştirmelerinde yer aldım.',
     ],

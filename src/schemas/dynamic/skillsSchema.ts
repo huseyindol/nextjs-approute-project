@@ -7,6 +7,7 @@ export const SkillSchema = z.object({
   years: z.string().describe('Deneyim Süresi'),
   imageUrl: z.string().url().describe('Görsel URL'),
   url: z.string().url().describe('Referans Link'),
+  sortOrder: z.coerce.number().int().min(0).default(0).describe('Sıralama'),
 })
 
 // Type export
@@ -42,6 +43,11 @@ export const skillsFieldConfig = {
     label: 'Referans Link',
     placeholder: 'https://...',
     inputType: 'url' as const,
+  },
+  sortOrder: {
+    label: 'Sıralama',
+    placeholder: '0',
+    inputType: 'number' as const,
   },
 }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { TagsInput } from '@/app/(admin)/admin/_components'
+import { BasicInfoSelector, TagsInput } from '@/app/(admin)/admin/_components'
 import { useAdminTheme } from '@/app/(admin)/admin/_hooks'
 import {
   getContentByIdService,
@@ -28,6 +28,12 @@ export default function EditContentPage() {
   const contentId = params.id as string
   const queryClient = useQueryClient()
   const { isDarkMode } = useAdminTheme()
+
+  // Basic Info Mode
+  const [basicInfoMode, setBasicInfoMode] = useState<'create' | 'select'>(
+    'select',
+  )
+  const [selectedBasicInfoId, setSelectedBasicInfoId] = useState<string>('')
 
   // Fetch content by ID
   const { data: contentData, isLoading: isLoadingContent } = useQuery({
@@ -57,11 +63,11 @@ export default function EditContentPage() {
 
   // Base form schema
   const baseSchema = z.object({
-    title: z.string().min(1, 'Başlık zorunludur'),
+    title: z.string().optional(),
     description: z.string().optional(),
-    sectionKey: z.string().min(1, 'Section Key zorunludur'),
-    isActive: z.boolean(),
-    sortOrder: z.coerce.number().int().min(0),
+    sectionKey: z.string().optional(),
+    isActive: z.boolean().default(true),
+    sortOrder: z.coerce.number().int().min(0).default(0),
   })
 
   // Form setup
@@ -91,13 +97,19 @@ export default function EditContentPage() {
   useEffect(() => {
     if (content) {
       reset({
-        title: content.title,
-        description: content.description || '',
-        sectionKey: content.sectionKey,
-        isActive: content.isActive,
-        sortOrder: content.sortOrder,
+        title: content.basicInfo?.title || '',
+        description: content.basicInfo?.description || '',
+        sectionKey: content.basicInfo?.sectionKey || '',
+        isActive: content.basicInfo?.isActive ?? true,
+        sortOrder: content.basicInfo?.sortOrder ?? 0,
       })
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMetadataValues(content.metadata || {})
+      if (content.basicInfo?.id) {
+        setSelectedBasicInfoId(content.basicInfo.id)
+
+        setBasicInfoMode('select')
+      }
     }
   }, [content, reset])
 
@@ -125,10 +137,37 @@ export default function EditContentPage() {
       return
     }
 
+    if (basicInfoMode === 'select' && !selectedBasicInfoId) {
+      toast.error('Lütfen mevcut bir temel bilgi seçin')
+      return
+    }
+
+    if (basicInfoMode === 'create') {
+      if (!data.title?.trim()) {
+        toast.error('Başlık alanı zorunludur')
+        return
+      }
+      if (!data.sectionKey?.trim()) {
+        toast.error('Section Key alanı zorunludur')
+        return
+      }
+    }
+
     const contentData: ContentInput = {
-      ...data,
       contentType: contentType,
       metadata: metadataValidation.data,
+    }
+
+    if (basicInfoMode === 'select') {
+      contentData.basicInfoId = selectedBasicInfoId
+    } else {
+      contentData.basicInfo = {
+        title: data.title || '',
+        description: data.description,
+        sectionKey: data.sectionKey || '',
+        isActive: data.isActive,
+        sortOrder: data.sortOrder,
+      }
     }
 
     updateMutation.mutate(contentData)
@@ -341,16 +380,12 @@ export default function EditContentPage() {
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        {/* Base Fields */}
-        <div className={cardClass}>
-          <h2
-            className={`mb-4 text-lg font-semibold ${
-              isDarkMode ? 'text-white' : 'text-gray-900'
-            }`}
-          >
-            Temel Bilgiler
-          </h2>
-
+        <BasicInfoSelector
+          mode={basicInfoMode}
+          onModeChange={setBasicInfoMode}
+          selectedBasicInfoId={selectedBasicInfoId}
+          onSelectBasicInfo={setSelectedBasicInfoId}
+        >
           <div className="space-y-4">
             {/* Title */}
             <div>
@@ -439,7 +474,7 @@ export default function EditContentPage() {
               </label>
             </div>
           </div>
-        </div>
+        </BasicInfoSelector>
 
         {/* Dynamic Fields */}
         <div className={cardClass}>
@@ -490,7 +525,7 @@ export default function EditContentPage() {
           <button
             type="submit"
             disabled={updateMutation.isPending}
-            className="flex-1 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
+            className="bg-linear-to-r flex-1 rounded-xl from-violet-500 to-purple-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40 disabled:opacity-50"
           >
             {updateMutation.isPending ? (
               <span className="flex items-center justify-center gap-2">

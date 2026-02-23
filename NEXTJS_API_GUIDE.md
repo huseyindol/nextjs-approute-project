@@ -2013,12 +2013,17 @@ Belirli bir section'a ait aktif içerikleri getir (sortOrder'a göre sıralı).
   "data": [
     {
       "id": "550e8400-e29b-41d4-a716-446655440000",
-      "sectionKey": "services_grid",
+      "basicInfo": {
+        "id": "660e8400-f39b-41d4-a716-446655441111",
+        "sectionKey": "services_grid",
+        "title": "Dental Implants",
+        "description": "Professional dental implant services",
+        "isActive": true,
+        "sortOrder": 1,
+        "createdAt": "2026-02-17T00:00:00.000+00:00",
+        "updatedAt": "2026-02-17T00:00:00.000+00:00"
+      },
       "contentType": "treatment_card",
-      "title": "Dental Implants",
-      "description": "Professional dental implant services",
-      "isActive": true,
-      "sortOrder": 1,
       "metadata": {
         "icon": "Syringe",
         "desc": "Permanent solution for missing teeth"
@@ -2047,12 +2052,17 @@ Tekil içerik getir (UUID ile).
   "result": true,
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
-    "sectionKey": "resume_experience",
+    "basicInfo": {
+      "id": "660e8400-f39b-41d4-a716-446655441111",
+      "sectionKey": "resume_experience",
+      "title": "Senior Developer",
+      "description": "Full-stack development role",
+      "isActive": true,
+      "sortOrder": 1,
+      "createdAt": "2026-02-17T00:00:00.000+00:00",
+      "updatedAt": "2026-02-17T00:00:00.000+00:00"
+    },
     "contentType": "experience_item",
-    "title": "Senior Developer",
-    "description": "Full-stack development role",
-    "isActive": true,
-    "sortOrder": 1,
     "metadata": {
       "company": "Acme Corp",
       "period": "2022-2025",
@@ -2079,12 +2089,17 @@ Tüm içerikleri listele.
   "data": [
     {
       "id": "550e8400-e29b-41d4-a716-446655440000",
-      "sectionKey": "string",
+      "basicInfo": {
+        "id": "660e8400-f39b-41d4-a716-446655441111",
+        "sectionKey": "string",
+        "title": "string",
+        "description": "string",
+        "isActive": true,
+        "sortOrder": 1,
+        "createdAt": "2026-02-17T00:00:00.000+00:00",
+        "updatedAt": "2026-02-17T00:00:00.000+00:00"
+      },
       "contentType": "string",
-      "title": "string",
-      "description": "string",
-      "isActive": true,
-      "sortOrder": 1,
       "metadata": { ... },
       "createdAt": "2026-02-17T00:00:00.000+00:00",
       "updatedAt": "2026-02-17T00:00:00.000+00:00"
@@ -2114,12 +2129,17 @@ Sayfalı içerik listesi.
     "content": [
       {
         "id": "550e8400-e29b-41d4-a716-446655440000",
-        "sectionKey": "string",
+        "basicInfo": {
+          "id": "660e8400-f39b-41d4-a716-446655441111",
+          "sectionKey": "string",
+          "title": "string",
+          "description": "string",
+          "isActive": true,
+          "sortOrder": 1,
+          "createdAt": "2026-02-17T00:00:00.000+00:00",
+          "updatedAt": "2026-02-17T00:00:00.000+00:00"
+        },
         "contentType": "string",
-        "title": "string",
-        "description": "string",
-        "isActive": true,
-        "sortOrder": 1,
         "metadata": { ... },
         "createdAt": "2026-02-17T00:00:00.000+00:00",
         "updatedAt": "2026-02-17T00:00:00.000+00:00"
@@ -2145,12 +2165,16 @@ Sayfalı içerik listesi.
 
 ```json
 {
-  "sectionKey": "string", // zorunlu
+  "basicInfoId": "660e8400-f39b-41d4-a716-446655441111", // opsiyonel, mevcut gruba eklemek için (biri zorunlu)
+  "basicInfo": {
+    // opsiyonel, yeni grup yaratmak için (biri zorunlu)
+    "sectionKey": "string",
+    "title": "string",
+    "description": "string",
+    "isActive": true,
+    "sortOrder": 1
+  },
   "contentType": "string", // zorunlu
-  "title": "string", // zorunlu
-  "description": "string", // opsiyonel
-  "isActive": true, // zorunlu
-  "sortOrder": 1, // zorunlu
   "metadata": {
     // opsiyonel, serbest key-value
     "icon": "Syringe",
@@ -2191,12 +2215,8 @@ Sayfalı içerik listesi.
   "result": true,
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
-    "sectionKey": "string",
+    "basicInfo": { ... },
     "contentType": "string",
-    "title": "string",
-    "description": "string",
-    "isActive": true,
-    "sortOrder": 1,
     "metadata": { ... },
     "createdAt": "2026-02-17T00:00:00.000+00:00",
     "updatedAt": "2026-02-17T00:00:00.000+00:00"

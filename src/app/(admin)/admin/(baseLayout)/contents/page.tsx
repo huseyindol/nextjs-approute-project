@@ -57,16 +57,28 @@ export default function ContentsListPage() {
     data?.data
       ?.filter(content => {
         const searchLower = debouncedSearch.toLowerCase()
-        const matchesSearch =
-          content.title.toLowerCase().includes(searchLower) ||
-          content.sectionKey.toLowerCase().includes(searchLower) ||
-          (content.description?.toLowerCase().includes(searchLower) ?? false)
+        const titleMatch =
+          content.basicInfo?.title?.toLowerCase().includes(searchLower) ?? false
+        const sectionMatch =
+          content.basicInfo?.sectionKey?.toLowerCase().includes(searchLower) ??
+          false
+        const descMatch =
+          content.basicInfo?.description?.toLowerCase().includes(searchLower) ??
+          false
+
+        const matchesSearch = titleMatch || sectionMatch || descMatch
         const matchesType =
           selectedContentType === 'all' ||
           content.contentType === selectedContentType
         return matchesSearch && matchesType
       })
-      .sort((a, b) => a.sortOrder - b.sortOrder) || []
+      .sort((a, b) => {
+        const metaA = a.metadata as Record<string, unknown>
+        const metaB = b.metadata as Record<string, unknown>
+        const orderA = Number(metaA?.sortOrder ?? a.basicInfo?.sortOrder ?? 0)
+        const orderB = Number(metaB?.sortOrder ?? b.basicInfo?.sortOrder ?? 0)
+        return orderA - orderB
+      }) || []
 
   // Get content type label
   const getContentTypeLabel = (contentType: string): string => {
@@ -78,28 +90,47 @@ export default function ContentsListPage() {
     {
       key: 'title',
       header: 'Başlık',
-      render: content => (
-        <div className="max-w-xs">
-          <p
-            className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
-          >
-            {content.title}
-          </p>
-          {content.description && (
+      render: content => {
+        let displayTitle = content.basicInfo?.title || 'İsimsiz'
+        let displayDescription =
+          content.basicInfo?.description || 'Açıklama Yok'
+        const meta = content.metadata as Record<string, unknown>
+
+        if (content.contentType === 'skills' && meta?.name) {
+          displayTitle = String(meta.name)
+        } else if (content.contentType === 'experience' && meta?.company) {
+          displayTitle = String(meta.company)
+        }
+
+        if (content.contentType === 'skills' && meta?.url) {
+          displayDescription = String(meta.url)
+        } else if (content.contentType === 'experience' && meta?.position) {
+          displayDescription = String(`${meta.position} - ${meta.period}`)
+        }
+
+        return (
+          <div className="max-w-xs">
             <p
-              className={`truncate text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
-              title={content.description}
+              className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}
             >
-              {content.description}
+              {displayTitle}
             </p>
-          )}
-          <p
-            className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
-          >
-            {content.sectionKey}
-          </p>
-        </div>
-      ),
+            {displayDescription !== 'Açıklama Yok' && (
+              <p
+                className={`truncate text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-500'}`}
+                title={displayDescription}
+              >
+                {displayDescription}
+              </p>
+            )}
+            <p
+              className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-gray-400'}`}
+            >
+              {content.basicInfo?.sectionKey}
+            </p>
+          </div>
+        )
+      },
     },
     {
       key: 'contentType',
@@ -119,16 +150,22 @@ export default function ContentsListPage() {
     {
       key: 'sortOrder',
       header: 'Sıra',
-      render: content => (
-        <span className={isDarkMode ? 'text-slate-400' : 'text-gray-500'}>
-          {content.sortOrder}
-        </span>
-      ),
+      render: content => {
+        const meta = content.metadata as Record<string, unknown>
+        const order = meta?.sortOrder ?? content.basicInfo?.sortOrder ?? 0
+        return (
+          <span className={isDarkMode ? 'text-slate-400' : 'text-gray-500'}>
+            {String(order)}
+          </span>
+        )
+      },
     },
     {
       key: 'isActive',
       header: 'Durum',
-      render: content => <StatusBadge status={content.isActive} />,
+      render: content => (
+        <StatusBadge status={content.basicInfo?.isActive ?? false} />
+      ),
     },
     {
       key: 'updatedAt',
@@ -176,7 +213,7 @@ export default function ContentsListPage() {
 
           <Link
             href="/admin/contents/new"
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40"
+            className="bg-linear-to-r inline-flex items-center gap-2 rounded-xl from-violet-500 to-purple-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-violet-500/30 transition-all hover:shadow-xl hover:shadow-violet-500/40"
           >
             <span className="text-lg">+</span>
             <span>Yeni İçerik</span>
@@ -241,6 +278,7 @@ export default function ContentsListPage() {
             columns={columns}
             isLoading={isLoading}
             keyExtractor={content => content.id}
+            groupBy={content => content.basicInfo?.title || 'İsimsiz'}
             emptyMessage={
               selectedContentType !== 'all'
                 ? `"${getContentTypeLabel(selectedContentType)}" tipinde içerik bulunamadı`
@@ -261,7 +299,7 @@ export default function ContentsListPage() {
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
         title="İçeriği Sil"
-        message={`"${deleteTarget?.title}" içeriğini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`}
+        message={`"${deleteTarget?.basicInfo?.title || 'Seçilen'}" içeriğini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`}
         confirmText="Sil"
         cancelText="İptal"
         variant="danger"

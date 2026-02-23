@@ -1,5 +1,5 @@
-import { z } from 'zod'
 import { INDUSTRY_OPTIONS } from '@/schemas/constants'
+import { z } from 'zod'
 
 // Zod Schema - array alanlari icin z.array() kullanilir
 export const ExperienceSchema = z.object({
@@ -11,6 +11,7 @@ export const ExperienceSchema = z.object({
   description: z.string().describe('Açıklama'),
   technologies: z.array(z.string()).describe('Teknolojiler'),
   achievements: z.array(z.string()).describe('Başarılar'),
+  sortOrder: z.coerce.number().int().min(0).default(0).describe('Sıralama'),
 })
 
 // Type export
@@ -60,6 +61,11 @@ export const experienceFieldConfig = {
     placeholder: 'Başarılarınızı virgül ile ayırın...',
     inputType: 'tags' as const,
     helpText: 'Başarıları virgül ile ayırın',
+  },
+  sortOrder: {
+    label: 'Sıralama',
+    placeholder: '0',
+    inputType: 'number' as const,
   },
 }
 

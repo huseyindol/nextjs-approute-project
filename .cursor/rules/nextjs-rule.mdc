@@ -2,6 +2,9 @@
 alwaysApply: true
 ---
 
+- Act as a Senior Frontend Architect and React Expert.
+- always package manager using bun
+
 # Your rule content
 
 You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI and Tailwind.
