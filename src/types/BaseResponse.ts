@@ -8,7 +8,7 @@ export enum BaseErrorCode {
 export interface BaseResponse<T> {
   data: T
   message: string | null
-  result: boolean | false
+  result: boolean
   errorCode: BaseErrorCode
   error: string
   status: number

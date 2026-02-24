@@ -2,7 +2,14 @@
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Github, Heart, Linkedin, Mail, MapPin, Phone } from 'lucide-react'
+import {
+  GithubIcon,
+  Heart,
+  LinkedinIcon,
+  Mail,
+  MapPin,
+  Phone,
+} from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -116,7 +123,7 @@ export default function Footer() {
                     title="Github"
                     aria-label="Github"
                   >
-                    <Github className="h-5 w-5" />
+                    <GithubIcon className="h-5 w-5" />
                   </Link>
                   <Link
                     href="https://www.linkedin.com/in/huseyindol/"
@@ -125,7 +132,7 @@ export default function Footer() {
                     title="Linkedin"
                     aria-label="Linkedin"
                   >
-                    <Linkedin className="h-5 w-5" />
+                    <LinkedinIcon className="h-5 w-5" />
                   </Link>
                   <Link
                     href="mailto:huseyindol@gmail.com"

@@ -23,7 +23,7 @@ export function generateSecureToken(length: number = 32): string {
     try {
       // Dynamic import for Node.js crypto
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { randomBytes } = require('crypto')
+      const { randomBytes } = require('node:crypto')
       const buffer = randomBytes(length)
 
       for (let i = 0; i < length; i++) {
@@ -169,7 +169,7 @@ export async function hashString(input: string): Promise<string> {
     // Fallback for older Node.js versions
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { createHash } = require('crypto')
+      const { createHash } = require('node:crypto')
       return createHash('sha256').update(input).digest('hex')
     } catch {
       // If crypto is not available, throw an error

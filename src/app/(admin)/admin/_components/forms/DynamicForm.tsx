@@ -22,7 +22,7 @@ export function DynamicForm({
   onSubmit,
   isSubmitting = false,
   className,
-}: DynamicFormProps) {
+}: Readonly<DynamicFormProps>) {
   const { isDarkMode } = useAdminTheme()
 
   const { form, visibleFields, handleSubmit } = useFormSchema({

@@ -51,3 +51,6 @@ next-env.d.ts
 .sonar
 .sonarqube
 .scannerwork
+
+# dependency-track / sbom
+bom.json

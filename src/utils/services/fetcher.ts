@@ -99,8 +99,7 @@ export const fetcher = async <T>(
 
 // CSR Refresh Token
 const csrRefreshToken = async (refreshToken: string) => {
-  let response = {} as RefreshTokenResponseType
-  response = await refreshService(refreshToken)
+  const response = await refreshService(refreshToken)
   const { data } = response
   // Update cookies using global function (no React hook needed!)
   if (data?.refreshToken) {

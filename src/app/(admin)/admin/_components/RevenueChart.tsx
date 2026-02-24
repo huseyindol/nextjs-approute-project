@@ -9,7 +9,7 @@ interface RevenueChartProps {
 
 export function RevenueChart({
   data = [65, 45, 78, 52, 88, 72, 95],
-}: RevenueChartProps) {
+}: Readonly<RevenueChartProps>) {
   const { isDarkMode } = useAdminTheme()
   const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz']
 

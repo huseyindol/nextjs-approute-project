@@ -11,10 +11,10 @@ import { useEffect } from 'react'
 export default function ErrorPage({
   error,
   reset,
-}: {
+}: Readonly<{
   error: Error & { digest?: string }
   reset: () => void
-}) {
+}>) {
   useEffect(() => {
     // Log error to console in development
     console.error('Error caught by error.tsx:', error)

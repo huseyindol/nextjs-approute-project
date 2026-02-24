@@ -1,9 +1,5 @@
-import { SkillSchema, skillsFieldConfig, type SkillType } from './skillsSchema'
-import {
-  ExperienceSchema,
-  experienceFieldConfig,
-  type ExperienceType,
-} from './experienceSchema'
+import { experienceFieldConfig, ExperienceSchema } from './experienceSchema'
+import { SkillSchema, skillsFieldConfig } from './skillsSchema'
 
 // Dynamic schema registry - tüm dynamic schemalari burada tutuyoruz
 export const dynamicSchemas = {
@@ -45,9 +41,9 @@ export function getContentTypes(): { value: ContentType; label: string }[] {
   }))
 }
 
-// Re-export types for convenience
-export type { SkillType, ExperienceType }
+export type { ExperienceType } from './experienceSchema'
+export type { SkillType } from './skillsSchema'
 
 // Re-export schemas
+export { experienceFieldConfig, ExperienceSchema } from './experienceSchema'
 export { SkillSchema, skillsFieldConfig } from './skillsSchema'
-export { ExperienceSchema, experienceFieldConfig } from './experienceSchema'

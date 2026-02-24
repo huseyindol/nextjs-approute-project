@@ -13,7 +13,7 @@ interface FormFieldRendererProps {
   field: Field
 }
 
-export function FormFieldRenderer({ field }: FormFieldRendererProps) {
+export function FormFieldRenderer({ field }: Readonly<FormFieldRendererProps>) {
   const {
     register,
     formState: { errors },

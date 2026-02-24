@@ -3,7 +3,7 @@ import { getImageUrl } from '@/utils/imageUrl'
 import Image from 'next/image'
 import Link from 'next/link'
 
-export default function BComponent(props: Component) {
+export default function BComponent(props: Readonly<Component>) {
   const { banners, name, description } = props
 
   if (!banners || banners.length === 0) {

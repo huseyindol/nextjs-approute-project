@@ -9,7 +9,10 @@ interface FormSubmitWrapperProps {
   schema: FormSchema
 }
 
-export function FormSubmitWrapper({ formId, schema }: FormSubmitWrapperProps) {
+export function FormSubmitWrapper({
+  formId,
+  schema,
+}: Readonly<FormSubmitWrapperProps>) {
   const handleSubmit = async (data: Record<string, unknown>) => {
     await submitFormService(String(formId), data)
   }

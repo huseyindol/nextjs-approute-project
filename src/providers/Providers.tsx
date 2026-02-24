@@ -2,17 +2,17 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import CookieContext, { initGlobalCookieStore } from '../context/CookieContext'
 import { ThemeProvider } from './ThemeProvider'
 
 export default function Providers({
   children,
   cookiesData,
-}: {
+}: Readonly<{
   children: React.ReactNode
   cookiesData: Record<string, string>
-}) {
+}>) {
   const [cookies, setCookies] = useState<Record<string, string>>(cookiesData)
   const [queryClient] = useState(() => new QueryClient())
 
@@ -29,8 +29,10 @@ export default function Providers({
     initGlobalCookieStore({ cookies, updateCookie })
   }, [cookies])
 
+  const contextValue = useMemo(() => ({ cookies, updateCookie }), [cookies])
+
   return (
-    <CookieContext.Provider value={{ cookies, updateCookie }}>
+    <CookieContext.Provider value={contextValue}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider
           attribute="class"

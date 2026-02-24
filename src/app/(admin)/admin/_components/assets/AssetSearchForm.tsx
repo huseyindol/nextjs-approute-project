@@ -28,7 +28,7 @@ export function AssetSearchForm({
   onSubFolderChange,
   onSearch,
   onClear,
-}: AssetSearchFormProps) {
+}: Readonly<AssetSearchFormProps>) {
   const { isDarkMode } = useAdminTheme()
 
   const selectClasses = `rounded-lg border px-3 py-2 outline-none focus:ring-2 ${

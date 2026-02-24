@@ -21,8 +21,8 @@ export interface RateLimitResult {
  * For production, consider using Redis or similar distributed cache
  */
 export class RateLimiter {
-  private requests: Map<string, number[]> = new Map()
-  private config: RateLimiterConfig
+  private readonly requests: Map<string, number[]> = new Map()
+  private readonly config: RateLimiterConfig
 
   constructor(config: RateLimiterConfig) {
     this.config = config

@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { siteInfo } from '@/data/mockData'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { Download, Github, Linkedin, Mail } from 'lucide-react'
+import { Download, GithubIcon, LinkedinIcon, Mail } from 'lucide-react'
 import Link from 'next/link'
 
 export default function Hero() {
@@ -86,9 +86,9 @@ export default function Hero() {
 const SocialIcon = (platform: string) => {
   switch (platform) {
     case 'github':
-      return <Github className="size-4" />
+      return <GithubIcon className="size-4" />
     case 'linkedin':
-      return <Linkedin className="size-4" />
+      return <LinkedinIcon className="size-4" />
     case 'email':
       return <Mail className="size-4" />
     default:
