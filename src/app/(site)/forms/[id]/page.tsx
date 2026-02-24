@@ -33,7 +33,7 @@ export default async function FormPage({ params }: Props) {
     notFound()
   }
 
-  if (!form || !form.active) {
+  if (!form?.active) {
     notFound()
   }
 

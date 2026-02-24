@@ -678,11 +678,11 @@ function FieldEditModal({
                   ...editedField,
                   type: newType,
                   // Initialize options array when switching to option type
-                  options: isOptionType
-                    ? editedField.options || []
-                    : wasOptionType
-                      ? null
-                      : editedField.options,
+                  options: (() => {
+                    if (isOptionType) return editedField.options || []
+                    if (wasOptionType) return null
+                    return editedField.options
+                  })(),
                 })
               }}
               className={inputClass}

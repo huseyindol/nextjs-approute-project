@@ -156,6 +156,13 @@ export default function NewBannerPage() {
 
   const errorClass = 'mt-1 text-xs text-rose-400'
 
+  function getModeButtonClass(isActive: boolean) {
+    if (isActive) return 'bg-violet-500 text-white'
+    return isDarkMode
+      ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+  }
+
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-6">
       {/* Breadcrumb */}
@@ -229,26 +236,14 @@ export default function NewBannerPage() {
               <button
                 type="button"
                 onClick={() => setImageInputMode('upload')}
-                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                  imageInputMode === 'upload'
-                    ? 'bg-violet-500 text-white'
-                    : isDarkMode
-                      ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${getModeButtonClass(imageInputMode === 'upload')}`}
               >
                 📤 Görsel Yükle
               </button>
               <button
                 type="button"
                 onClick={() => setImageInputMode('url')}
-                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                  imageInputMode === 'url'
-                    ? 'bg-violet-500 text-white'
-                    : isDarkMode
-                      ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${getModeButtonClass(imageInputMode === 'url')}`}
               >
                 🔗 URL Gir
               </button>

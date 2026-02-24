@@ -23,7 +23,7 @@ interface UseFormSchemaReturn {
   form: UseFormReturn<Record<string, unknown>>
   visibleFields: Field[]
   isFieldVisibleById: (fieldId: string) => boolean
-  handleSubmit: (e?: React.BaseSyntheticEvent) => void
+  handleSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>
 }
 
 /**

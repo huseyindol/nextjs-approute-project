@@ -20,7 +20,7 @@ const DashboardClientPage = () => {
       },
     )
     console.log('response', response)
-    const data = await response.data
+    const data = response.data
     console.log('data', data)
   }
 

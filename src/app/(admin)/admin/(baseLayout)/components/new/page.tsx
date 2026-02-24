@@ -135,6 +135,14 @@ export default function NewComponentPage() {
 
   const errorClass = 'mt-1 text-xs text-rose-400'
 
+  function getFilterButtonClass(isActive: boolean) {
+    if (isActive)
+      return 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
+    return isDarkMode
+      ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+      : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+  }
+
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-6">
       {/* Breadcrumb */}
@@ -332,13 +340,7 @@ export default function NewComponentPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedSubFolder('all')}
-                    className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
-                      selectedSubFolder === 'all'
-                        ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
-                        : isDarkMode
-                          ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
-                          : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    }`}
+                    className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${getFilterButtonClass(selectedSubFolder === 'all')}`}
                   >
                     Tümü
                   </button>
@@ -347,13 +349,7 @@ export default function NewComponentPage() {
                       key={folder}
                       type="button"
                       onClick={() => setSelectedSubFolder(folder)}
-                      className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${
-                        selectedSubFolder === folder
-                          ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
-                          : isDarkMode
-                            ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
-                            : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
+                      className={`rounded-full px-3 py-1 text-xs font-medium transition-all ${getFilterButtonClass(selectedSubFolder === folder)}`}
                     >
                       {folder}
                     </button>

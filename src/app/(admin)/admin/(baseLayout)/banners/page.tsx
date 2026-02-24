@@ -186,6 +186,14 @@ export default function BannersListPage() {
     deleteMutation.mutate(deleteTarget.id)
   }
 
+  function getFilterButtonClass(isActive: boolean) {
+    if (isActive)
+      return 'bg-violet-500 text-white shadow-lg shadow-violet-500/25 ring-2 ring-violet-500/20'
+    return isDarkMode
+      ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
+      : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+  }
+
   return (
     <>
       <div className="space-y-6 p-6">
@@ -227,13 +235,7 @@ export default function BannersListPage() {
           <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-2">
             <button
               onClick={() => setSelectedSubFolder('all')}
-              className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                selectedSubFolder === 'all'
-                  ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25 ring-2 ring-violet-500/20'
-                  : isDarkMode
-                    ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
-                    : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-              }`}
+              className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${getFilterButtonClass(selectedSubFolder === 'all')}`}
             >
               Tümü
             </button>
@@ -242,13 +244,7 @@ export default function BannersListPage() {
               <button
                 key={folder}
                 onClick={() => setSelectedSubFolder(folder)}
-                className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                  selectedSubFolder === folder
-                    ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25 ring-2 ring-violet-500/20'
-                    : isDarkMode
-                      ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'
-                      : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
+                className={`flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all ${getFilterButtonClass(selectedSubFolder === folder)}`}
               >
                 {folder}
               </button>

@@ -286,6 +286,14 @@ export default function NewContentPage() {
     }
   }
 
+  function getTypeButtonClass(isActive: boolean) {
+    if (isActive)
+      return 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
+    return isDarkMode
+      ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+  }
+
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-6">
       {/* Breadcrumb */}
@@ -336,13 +344,7 @@ export default function NewContentPage() {
               key={type.value}
               type="button"
               onClick={() => setSelectedContentType(type.value)}
-              className={`rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
-                selectedContentType === type.value
-                  ? 'bg-violet-500 text-white shadow-lg shadow-violet-500/25'
-                  : isDarkMode
-                    ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+              className={`rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${getTypeButtonClass(selectedContentType === type.value)}`}
             >
               {type.label}
             </button>

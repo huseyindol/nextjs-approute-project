@@ -104,23 +104,24 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <nav className="flex-1 space-y-2">
             {menuItems.map(item => {
               const active = isActive(item.href)
+              let linkClass: string
+              if (active) {
+                linkClass = `bg-gradient-to-r from-violet-500/20 to-purple-500/20 ${
+                  isDarkMode
+                    ? 'border border-violet-500/30 text-white'
+                    : 'border border-violet-500/30 text-gray-900'
+                }`
+              } else {
+                linkClass = isDarkMode
+                  ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }
+
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`group flex w-full items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
-                    active
-                      ? `bg-gradient-to-r from-violet-500/20 to-purple-500/20 ${
-                          isDarkMode
-                            ? 'border border-violet-500/30 text-white'
-                            : 'border border-violet-500/30 text-gray-900'
-                        }`
-                      : `${
-                          isDarkMode
-                            ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white'
-                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                        }`
-                  }`}
+                  className={`group flex w-full items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${linkClass}`}
                 >
                   <span className={active ? 'text-violet-400' : ''}>
                     <item.icon />

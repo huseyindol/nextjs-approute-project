@@ -84,19 +84,23 @@ export default function ComponentsListPage() {
     {
       key: 'type',
       header: 'Tip',
-      render: component => (
-        <span
-          className={`rounded px-2 py-1 text-xs font-medium ${
-            component.type === ComponentTypeEnum.BANNER
-              ? 'bg-blue-500/20 text-blue-400'
-              : component.type === ComponentTypeEnum.FORM
-                ? 'bg-emerald-500/20 text-emerald-400'
-                : 'bg-purple-500/20 text-purple-400'
-          }`}
-        >
-          {component.type}
-        </span>
-      ),
+      render: component => {
+        let badgeClass: string
+        if (component.type === ComponentTypeEnum.BANNER) {
+          badgeClass = 'bg-blue-500/20 text-blue-400'
+        } else if (component.type === ComponentTypeEnum.FORM) {
+          badgeClass = 'bg-emerald-500/20 text-emerald-400'
+        } else {
+          badgeClass = 'bg-purple-500/20 text-purple-400'
+        }
+        return (
+          <span
+            className={`rounded px-2 py-1 text-xs font-medium ${badgeClass}`}
+          >
+            {component.type}
+          </span>
+        )
+      },
     },
     {
       key: 'orderIndex',
