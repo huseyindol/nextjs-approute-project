@@ -11,7 +11,6 @@ export const getPageService = async () => {
   try {
     const response: PageListResponseType = await fetcher('/api/v1/pages/list', {
       method: 'GET',
-      keepalive: true,
     })
     console.log('Get pages:', response)
     if (!response.result) {
@@ -29,7 +28,6 @@ export const getPageBySlugService = async (slug: string) => {
   try {
     const response: PageResponseType = await fetcher(`/api/v1/pages/${slug}`, {
       method: 'GET',
-      keepalive: true,
     })
     if (!response.result) {
       throw new Error('Error get page', { cause: response.message })
@@ -46,7 +44,6 @@ export const createPageService = async (data: CreatePageInput) => {
   try {
     const response: PageResponseType = await fetcher('/api/v1/pages', {
       method: 'POST',
-      keepalive: true,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -68,7 +65,6 @@ export const updatePageService = async (id: string, data: UpdatePageInput) => {
   try {
     const response: PageResponseType = await fetcher(`/api/v1/pages/${id}`, {
       method: 'PUT',
-      keepalive: true,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -90,7 +86,6 @@ export const deletePageService = async (id: string) => {
   try {
     const response: BaseResponse<null> = await fetcher(`/api/v1/pages/${id}`, {
       method: 'DELETE',
-      keepalive: true,
     })
     console.log('Deleting page:', response)
     if (!response.result) {

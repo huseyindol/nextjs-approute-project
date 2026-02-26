@@ -12,7 +12,6 @@ const DashboardClientPage = () => {
     const response = await fetcher<Promise<PageResponseType>>(
       '/api/v1/pages/home',
       {
-        keepalive: true,
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',

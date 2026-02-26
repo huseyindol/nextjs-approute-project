@@ -19,7 +19,6 @@ export const getFormsService = async () => {
       '/api/v1/forms/list',
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get forms:', response)
@@ -40,7 +39,6 @@ export const getFormsSummaryService = async () => {
       '/api/v1/forms/list',
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     if (!response.result) {
@@ -60,7 +58,6 @@ export const getActiveFormsService = async () => {
       '/api/v1/forms/list/active',
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     if (!response.result) {
@@ -80,7 +77,6 @@ export const getFormByIdService = async (id: string) => {
       `/api/v1/forms/${id}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     if (!response.result) {
@@ -98,7 +94,6 @@ export const createFormService = async (data: CreateFormInput) => {
   try {
     const response: FormSchemaResponseType = await fetcher('/api/v1/forms', {
       method: 'POST',
-      keepalive: true,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -122,7 +117,6 @@ export const updateFormService = async (id: string, data: UpdateFormInput) => {
       `/api/v1/forms/${id}`,
       {
         method: 'PUT',
-        keepalive: true,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -145,7 +139,6 @@ export const deleteFormService = async (id: string) => {
   try {
     const response: BaseResponse<null> = await fetcher(`/api/v1/forms/${id}`, {
       method: 'DELETE',
-      keepalive: true,
     })
     console.log('Deleting form:', response)
     if (!response.result) {
@@ -172,7 +165,6 @@ export const submitFormService = async (
       `/api/v1/forms/${formId}/submit`,
       {
         method: 'POST',
-        keepalive: true,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -197,7 +189,6 @@ export const getFormSubmissionsService = async (formId: string) => {
       `/api/v1/forms/${formId}/submissions`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     if (!response.result) {
@@ -230,7 +221,6 @@ export const getFormSubmissionsPagedService = async (
       `/api/v1/forms/${formId}/submissions/paged?page=${page}&size=${size}&sort=${sort}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     if (!response.result) {
@@ -252,7 +242,6 @@ export const getFormSubmissionByIdService = async (submissionId: string) => {
       `/api/v1/forms/submissions/${submissionId}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     if (!response.result) {
@@ -272,7 +261,6 @@ export const getFormSubmissionCountService = async (formId: string) => {
       `/api/v1/forms/${formId}/submissions/count`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     if (!response.result) {

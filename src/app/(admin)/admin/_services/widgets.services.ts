@@ -14,7 +14,6 @@ export const getWidgetService = async () => {
       '/api/v1/widgets/list',
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get widgets:', response)
@@ -35,7 +34,6 @@ export const getWidgetByIdService = async (id: string) => {
       `/api/v1/widgets/${id}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get widget by ID:', response)
@@ -54,7 +52,6 @@ export const createWidgetService = async (data: CreateWidgetInput) => {
   try {
     const response: WidgetResponseType = await fetcher('/api/v1/widgets', {
       method: 'POST',
-      keepalive: true,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -81,7 +78,6 @@ export const updateWidgetService = async (
       `/api/v1/widgets/${id}`,
       {
         method: 'PUT',
-        keepalive: true,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -106,7 +102,6 @@ export const deleteWidgetService = async (id: string) => {
       `/api/v1/widgets/${id}`,
       {
         method: 'DELETE',
-        keepalive: true,
       },
     )
     console.log('Deleting widget:', response)
@@ -127,7 +122,6 @@ export const getWidgetsSummaryService = async () => {
       '/api/v1/widgets/list/summary',
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get widgets summary:', response)

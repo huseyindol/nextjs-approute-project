@@ -59,9 +59,10 @@ export const fetcher = async <T>(
   if (!response.ok) {
     console.error(`HTTP error! status: ${response.status}`)
     if (response.status === 401) {
-      // In CSR: try to refresh token if keepalive is true
+      // In CSR: try to refresh token if fetchOngoing is enabled
       if (typeof window !== 'undefined') {
-        if (options.keepalive) {
+        const fetchOngoing = process.env.NEXT_PUBLIC_FETCH_ONGOING === 'true'
+        if (fetchOngoing) {
           const cookies = getGlobalCookies()
           const refreshToken = cookies[CookieEnum.REFRESH_TOKEN]
           if (!refreshToken) {

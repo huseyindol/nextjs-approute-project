@@ -15,7 +15,6 @@ export const getContentsBySectionService = async <T = Record<string, unknown>>(
       `/api/v1/contents/section/${sectionKey}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log(`Get contents for section ${sectionKey}:`, response)
@@ -38,7 +37,6 @@ export const getContentByIdService = async <T = Record<string, unknown>>(
       `/api/v1/contents/${id}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get content by ID:', response)
@@ -59,7 +57,6 @@ export const getContentsListService = async <T = Record<string, unknown>>() => {
       '/api/v1/contents/list',
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get all contents:', response)
@@ -84,7 +81,6 @@ export const getContentsPagedService = async <T = Record<string, unknown>>(
       `/api/v1/contents/list/paged?page=${page}&size=${size}&sort=${sort}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get paged contents:', response)
@@ -107,7 +103,6 @@ export const createContentService = async (data: ContentInput) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-      keepalive: true,
     })
     console.log('Creating content:', response)
     if (!response.result) {
@@ -129,7 +124,6 @@ export const updateContentService = async (id: string, data: ContentInput) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-      keepalive: true,
     })
     console.log('Updating content:', response)
     if (!response.result) {
@@ -149,7 +143,6 @@ export const deleteContentService = async (id: string) => {
       `/api/v1/contents/${id}`,
       {
         method: 'DELETE',
-        keepalive: true,
       },
     )
     console.log('Deleting content:', response)

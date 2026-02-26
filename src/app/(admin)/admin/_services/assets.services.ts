@@ -35,7 +35,6 @@ export const getAssetsPagedService = async (
       `/api/v1/assets/list/paged?page=${page}&size=${size}&sort=${sort}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get assets paged:', response)
@@ -61,7 +60,6 @@ export const searchAssetsByNamePagedService = async (
       `/api/v1/assets/${encodeURIComponent(name)}/paged?page=${page}&size=${size}&sort=${sort}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Search assets by name paged:', response)
@@ -90,7 +88,6 @@ export const searchAssetsBySubFolderAndNameService = async (
       `/api/v1/assets/${encodeURIComponent(subFolder)}/${encodeURIComponent(name)}/paged?page=${page}&size=${size}&sort=${sort}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Search assets by subfolder and name paged:', response)
@@ -114,7 +111,6 @@ export const getSubFoldersService = async () => {
       '/api/v1/assets/sub-folders',
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get sub-folders:', response)
@@ -135,7 +131,6 @@ export const getAssetByIdService = async (id: string | number) => {
       `/api/v1/assets/id/${id}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get asset by ID:', response)
@@ -156,7 +151,6 @@ export const getAssetByNameService = async (name: string) => {
       `/api/v1/assets/${name}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get asset by name:', response)
@@ -182,7 +176,6 @@ export const uploadAssetService = async (file: File, subFolder?: string) => {
     const response: AssetResponseType = await fetcher('/api/v1/assets', {
       method: 'POST',
       body: formData,
-      keepalive: true,
     })
     console.log('Upload asset:', response)
     if (!response.result) {
@@ -214,7 +207,6 @@ export const uploadMultiAssetsService = async (
       {
         method: 'POST',
         body: formData,
-        keepalive: true,
       },
     )
     console.log('Upload multi assets:', response)
@@ -237,7 +229,6 @@ export const updateAssetService = async (id: string | number, file: File) => {
     const response: AssetResponseType = await fetcher(`/api/v1/assets/${id}`, {
       method: 'PUT',
       body: formData,
-      keepalive: true,
     })
     console.log('Update asset:', response)
     if (!response.result) {
@@ -255,7 +246,6 @@ export const deleteAssetService = async (id: string | number) => {
   try {
     const response: BaseResponse<null> = await fetcher(`/api/v1/assets/${id}`, {
       method: 'DELETE',
-      keepalive: true,
     })
     console.log('Delete asset:', response)
     if (!response.result) {

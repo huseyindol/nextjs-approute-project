@@ -14,7 +14,6 @@ export const getBannerService = async () => {
       '/api/v1/banners/list',
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get banners:', response)
@@ -35,7 +34,6 @@ export const getBannerByIdService = async (id: string) => {
       `/api/v1/banners/${id}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get banner by ID:', response)
@@ -93,7 +91,6 @@ export const createBannerService = async (
     const response: BannerResponseType = await fetcher('/api/v1/banners', {
       method: 'POST',
       body: formData,
-      keepalive: true,
       // Content-Type otomatik olarak multipart/form-data olarak ayarlanır
     })
     console.log('Creating banner:', response)
@@ -147,7 +144,6 @@ export const updateBannerService = async (
       {
         method: 'PUT',
         body: formData,
-        keepalive: true,
       },
     )
     console.log('Updating banner:', response)
@@ -168,7 +164,6 @@ export const deleteBannerService = async (id: string) => {
       `/api/v1/banners/${id}`,
       {
         method: 'DELETE',
-        keepalive: true,
       },
     )
     console.log('Deleting banner:', response)
@@ -189,7 +184,6 @@ export const getBannersSummaryService = async () => {
       '/api/v1/banners/list/summary',
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get banners summary:', response)
@@ -212,7 +206,6 @@ export const getSubFoldersService = async () => {
       '/api/v1/banners/sub-folders',
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log('Get sub-folders:', response)
@@ -238,7 +231,6 @@ export const getBannersBySubFolderService = async (subFolder: string) => {
       `/api/v1/banners/list/${subFolder}`,
       {
         method: 'GET',
-        keepalive: true,
       },
     )
     console.log(`Get banners for ${subFolder}:`, response)

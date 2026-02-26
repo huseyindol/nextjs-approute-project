@@ -5,8 +5,8 @@ import { describe, expect, it, vi } from 'vitest'
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
   Download: () => <div>Download Icon</div>,
-  Github: () => <div>Github Icon</div>,
-  Linkedin: () => <div>Linkedin Icon</div>,
+  GithubIcon: () => <div>Github Icon</div>,
+  LinkedinIcon: () => <div>Linkedin Icon</div>,
   Mail: () => <div>Mail Icon</div>,
 }))
 
