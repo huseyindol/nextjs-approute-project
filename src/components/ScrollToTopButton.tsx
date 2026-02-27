@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { FaArrowUp } from 'react-icons/fa'
+
+const SCROLL_THRESHOLD = 300
 
 const ScrollToTop = () => {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
     const toggleVisibility = () => {
-      if (window.scrollY > 300) {
+      if (window.scrollY > SCROLL_THRESHOLD) {
         setIsVisible(true)
       } else {
         setIsVisible(false)
@@ -40,4 +42,5 @@ const ScrollToTop = () => {
   )
 }
 
+ScrollToTop.displayName = 'ScrollToTop'
 export default ScrollToTop

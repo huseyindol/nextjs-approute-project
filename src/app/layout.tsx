@@ -1,4 +1,4 @@
-import ScrollToTop from '@/components/ScrollToTop'
+import ScrollToTop from '@/components/ScrollToTopButton'
 import { WebVitals } from '@/components/WebVitals'
 import Providers from '@/providers/Providers'
 import { GoogleTagManager } from '@next/third-parties/google'
