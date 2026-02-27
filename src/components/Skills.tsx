@@ -1,8 +1,6 @@
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { skills as mockSkills } from '@/data/mockData'
-import { SkillType } from '@/schemas/dynamic/skillsSchema'
-import { getSectionDataBySectionKey } from '@/utils/services/contents'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -14,18 +12,17 @@ const DEFAULT_SECTION_INFO = {
 
 export default async function Skills() {
   // API'den section verilerini çek (title, description + items)
-  const { sectionInfo, items } = await getSectionDataBySectionKey<SkillType>(
-    'portfolio_skills',
-    DEFAULT_SECTION_INFO,
-  )
+  // const { sectionInfo, items } = await getSectionDataBySectionKey<SkillType>(
+  //   'portfolio_skills',
+  //   DEFAULT_SECTION_INFO,
+  // )
 
   // Fallback to mock data if API returns empty
-  const skills = items.length > 0 ? items : mockSkills
+  const skills = mockSkills
 
   // Section bilgileri (API'den veya fallback)
-  const title = sectionInfo.title || DEFAULT_SECTION_INFO.title
-  const description =
-    sectionInfo.description || DEFAULT_SECTION_INFO.description
+  const title = DEFAULT_SECTION_INFO.title
+  const description = DEFAULT_SECTION_INFO.description
 
   return (
     <section id="skills" className="bg-muted/30 py-20">
