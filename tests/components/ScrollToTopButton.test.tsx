@@ -1,4 +1,4 @@
-import ScrollToTop from '@/components/ScrollToTop'
+import ScrollToTop from '@/components/ScrollToTopButton'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
