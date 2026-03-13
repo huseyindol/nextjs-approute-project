@@ -49,7 +49,7 @@ const geistMono = Geist_Mono({
 //   openGraph: {
 //     type: 'website',
 //     locale: 'tr_TR',
-//     url: 'https://next.huseyindol.site',
+//     url: 'https://next.huseyindol.com',
 //     siteName: 'Hüseyin DOL Portfolio',
 //     title: 'Hüseyin DOL | Senior Frontend Developer',
 //     description:

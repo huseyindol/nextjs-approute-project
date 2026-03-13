@@ -327,7 +327,7 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ## 📧 İletişim
 
-Hüseyin DOL - [info@next.huseyindol.site](mailto:info@next.huseyindol.site)
+Hüseyin DOL - [info@next.huseyindol.com](mailto:info@next.huseyindol.com)
 
 Project Link: [https://github.com/huseyindol/portfolio](https://github.com/huseyindol/portfolio)
 

@@ -49,7 +49,7 @@ export default function ContactEmailTemplate({
             <Hr style={hr} />
 
             <Text style={footer}>
-              Bu mesaj huseyindol.site contact formundan gönderilmiştir.
+              Bu mesaj huseyindol.com contact formundan gönderilmiştir.
             </Text>
           </Section>
         </Container>

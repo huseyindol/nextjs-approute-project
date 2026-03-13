@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     // Determine sender email
     let senderEmail =
-      process.env.NEXT_PUBLIC_RESEND_FROM_EMAIL || 'noreply@huseyindol.site'
+      process.env.NEXT_PUBLIC_RESEND_FROM_EMAIL || 'noreply@huseyindol.com'
 
     // Resend doesn't allow sending from public domains like gmail.com without verification
     // Fallback to testing domain if a public domain is detected or if we are in development

@@ -43,7 +43,7 @@ const nextConfig = {
       },
       {
         protocol: 'https' as const,
-        hostname: 'api.huseyindol.site',
+        hostname: 'api.huseyindol.com',
         port: '',
         pathname: '/**',
       },
