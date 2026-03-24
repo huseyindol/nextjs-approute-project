@@ -25,6 +25,7 @@ export default function ComponentsListPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [deleteTarget, setDeleteTarget] = useState<Component | null>(null)
 
+  console.log('ComponentsListPage')
   // Fetch components - 5 dakika cache
   const { data, error, isError, isLoading } = useQuery({
     queryKey: ['components'],
@@ -60,7 +61,7 @@ export default function ComponentsListPage() {
             ?.toLowerCase()
             .includes(debouncedSearch.toLowerCase()),
       )
-      .sort((a, b) => a.name.localeCompare(b.name, 'tr')) || []
+      .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)) || []
 
   const columns: Column<Component>[] = [
     {

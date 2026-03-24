@@ -58,7 +58,7 @@ export default function WidgetsListPage() {
             ?.toLowerCase()
             .includes(debouncedSearch.toLowerCase()),
       )
-      .sort((a, b) => a.name.localeCompare(b.name, 'tr')) || []
+      .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)) || []
 
   const columns: Column<Widget>[] = [
     {

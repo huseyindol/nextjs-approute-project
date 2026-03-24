@@ -6,6 +6,20 @@ Base URL: `http://localhost:8080`
 
 ## Authentication
 
+> **Kullanıcı Depolama Mimarisi:**
+>
+> - **Admin kullanıcılar** → `basedb`'de tutulur. `loginSource: "admin"` token ile `/auth/...` ve `/user/...` endpoint'leri her zaman basedb'ye gider.
+> - **Tenant kullanıcılar** → kendi `tenantX` DB'lerinde tutulur. `loginSource: "tenant"` token ile tüm endpoint'ler (auth dahil) tenantX'e gider.
+>
+> **JWT Claim'leri:** Her access token şu bilgileri içerir:
+>
+> - `loginSource`: `"admin"` veya `"tenant"` — hangi DB'de işlem yapılacağını belirler
+> - `tenantId`: Kullanıcının hangi DB'ye yönlendirileceği (ör. `"tenant1"`)
+>
+> Panel'de admin işlemleri için `loginSource: "admin"` olan token gerekir.
+
+---
+
 ### POST /api/v1/auth/register
 
 Yeni kullanıcı kaydı.
@@ -18,7 +32,8 @@ Yeni kullanıcı kaydı.
   "email": "string", // zorunlu, geçerli email
   "password": "string", // zorunlu, min 6 karakter
   "firstName": "string", // opsiyonel
-  "lastName": "string" // opsiyonel
+  "lastName": "string", // opsiyonel
+  "managedTenants": ["tenant1"] // opsiyonel, admin kullanıcılar için yönetilen tenant listesi
 }
 ```
 
@@ -26,31 +41,47 @@ Yeni kullanıcı kaydı.
 
 ### POST /api/v1/auth/login
 
-Kullanıcı girişi.
+Kullanıcı girişi. İki farklı akış desteklenir:
 
-**Body:**
+#### Tenant Login (panel/uygulama kullanıcıları)
 
 ```json
 {
   "usernameOrEmail": "string", // zorunlu
-  "password": "string" // zorunlu
+  "password": "string", // zorunlu
+  "tenantId": "tenant1", // zorunlu — hangi tenant DB'sine giriş yapılacak
+  "loginType": "tenant" // opsiyonel, default "tenant"
 }
 ```
 
-**Response:**
+Token'da `loginSource: "tenant"` ve `tenantId: "tenant1"` bulunur.
+
+#### Admin Login (tüm tenant'ları yöneten yönetici)
+
+```json
+{
+  "usernameOrEmail": "string", // zorunlu
+  "password": "string", // zorunlu
+  "loginType": "admin" // zorunlu — tenantId gönderme
+}
+```
+
+Token'da `loginSource: "admin"` bulunur. Kullanıcı `managedTenants` listesinde yetkili olmalıdır.
+
+**Response (her iki akış için):**
 
 ```json
 {
   "result": true,
   "data": {
-    "token": "string",
-    "refreshToken": "string",
+    "token": "string", // JWT access token (24 saat geçerli)
+    "refreshToken": "string", // JWT refresh token (7 gün geçerli)
     "type": "Bearer",
     "userId": 1,
     "username": "string",
     "email": "string",
-    "userCode": "string",
-    "expiredDate": 1735516528560
+    "userCode": "string", // firstName + lastName baş harfleri
+    "expiredDate": 1735516528560 // access token bitiş zamanı (ms)
   }
 }
 ```
@@ -59,7 +90,7 @@ Kullanıcı girişi.
 
 ### POST /api/v1/auth/refresh
 
-Token yenileme.
+Token yenileme. Refresh token rotasyonu uygulanır (eski token geçersiz olur).
 
 **Body:**
 
@@ -68,6 +99,94 @@ Token yenileme.
   "refreshToken": "string" // zorunlu
 }
 ```
+
+**Response:** Login response ile aynı yapı — yeni `token` ve `refreshToken` döner.
+
+---
+
+### GET /api/v1/auth/decode
+
+Mevcut token'ın claim'lerini çözer. Token geçerliliğini ve içeriğini kontrol etmek için kullanılır.
+
+**Header:** `Authorization: Bearer <token>`
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "username": "string",
+    "userId": 1,
+    "tenantId": "tenant1", // null olabilir (admin token'larında)
+    "tokenVersion": 3,
+    "expiration": 1735516528560 // ms
+  }
+}
+```
+
+---
+
+### GET /api/v1/auth/public-token/{tenantId}
+
+Login gerektirmeyen public içerik erişimi için tenant token üretir.
+Next.js app startup'ta bir kez çağrılır; alınan token tüm public isteklerde `Authorization: Bearer` olarak gönderilir.
+
+**Path Parameters:**
+
+- `tenantId`: Tenant adı (`basedb`, `tenant1`, `tenant2`, ...)
+
+**Response:**
+
+```json
+{
+  "result": true,
+  "data": {
+    "token": "string", // Authorization: Bearer <token> olarak kullan
+    "type": "Bearer",
+    "tenantId": "tenant1"
+  }
+}
+```
+
+**Next.js Kullanımı:**
+
+```ts
+// lib/tenantClient.ts — uygulama başlarken bir kez çağır
+const res = await fetch(`${API_BASE}/api/v1/auth/public-token/${TENANT_ID}`)
+const { data } = await res.json()
+const tenantToken = data.token
+
+// Tüm public fetch'lerde
+fetch(`${API_BASE}/api/v1/pages/list`, {
+  headers: { Authorization: `Bearer ${tenantToken}` },
+})
+```
+
+> Token kullanıcı bilgisi içermez; yalnızca `tenantId` ve `type: "tenant"` claim'leri bulunur.
+> Bilinmeyen tenant ID ile istek gönderilirse `400 Bad Request` döner.
+
+---
+
+### OAuth2 Login (Google / Facebook / GitHub)
+
+Sosyal giriş akışı redirect tabanlıdır.
+
+**Başlatma:** Kullanıcıyı şu URL'ye yönlendir:
+
+```
+GET /oauth2/authorize/{provider}?redirect_uri=<callback-url>
+```
+
+`provider`: `google`, `facebook`, `github`, `x`
+
+**Callback:** Başarılı girişten sonra `redirect_uri`'ye şu query param'larla dönülür:
+
+```
+<callback-url>?token=...&refreshToken=...&userId=...&username=...&email=...
+```
+
+Token'da `loginSource: "admin"` bulunur (OAuth2 kullanıcıları admin akışını kullanır).
 
 ---
 
@@ -2006,48 +2125,43 @@ Belirli bir section'a ait aktif içerikleri getir (sortOrder'a göre sıralı).
 - `sectionKey`: Section anahtarı (örn: "homepage_hero", "resume_experience", "services_grid")
 
 **Response:**
-
-```json
 {
-  "result": true,
-  "data": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "basicInfo": {
-        "id": "660e8400-f39b-41d4-a716-446655441111",
-        "sectionKey": "services_grid",
-        "title": "Dental Implants",
-        "description": "Professional dental implant services",
-        "isActive": true,
-        "sortOrder": 1,
-        "createdAt": "2026-02-17T00:00:00.000+00:00",
-        "updatedAt": "2026-02-17T00:00:00.000+00:00"
-      },
-      "contentType": "treatment_card",
-      "metadata": {
-        "icon": "Syringe",
-        "desc": "Permanent solution for missing teeth"
-      },
-      "createdAt": "2026-02-17T00:00:00.000+00:00",
-      "updatedAt": "2026-02-17T00:00:00.000+00:00"
-    }
-  ]
+"result": true,
+"data": [
+{
+"id": "550e8400-e29b-41d4-a716-446655440000",
+"basicInfo": {
+"id": "660e8400-f39b-41d4-a716-446655441111",
+"sectionKey": "services_grid",
+"title": "Dental Implants",
+"description": "Professional dental implant services",
+"isActive": true,
+"sortOrder": 1,
+"createdAt": "2026-02-17T00:00:00.000+00:00",
+"updatedAt": "2026-02-17T00:00:00.000+00:00"
+},
+"contentType": "treatment_card",
+"metadata": {
+"icon": "Syringe",
+"desc": "Permanent solution for missing teeth"
+},
+"createdAt": "2026-02-17T00:00:00.000+00:00",
+"updatedAt": "2026-02-17T00:00:00.000+00:00"
 }
+]
+}
+
 ```
 
 ---
 
 ### GET /api/v1/contents/{id}
-
 Tekil içerik getir (UUID ile).
 
 **Path Parameters:**
-
 - `id`: İçerik UUID'si
 
 **Response:**
-
-```json
 {
   "result": true,
   "data": {
@@ -2082,46 +2196,42 @@ Tekil içerik getir (UUID ile).
 Tüm içerikleri listele.
 
 **Response:**
-
-```json
 {
-  "result": true,
-  "data": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "basicInfo": {
-        "id": "660e8400-f39b-41d4-a716-446655441111",
-        "sectionKey": "string",
-        "title": "string",
-        "description": "string",
-        "isActive": true,
-        "sortOrder": 1,
-        "createdAt": "2026-02-17T00:00:00.000+00:00",
-        "updatedAt": "2026-02-17T00:00:00.000+00:00"
-      },
-      "contentType": "string",
-      "metadata": { ... },
-      "createdAt": "2026-02-17T00:00:00.000+00:00",
-      "updatedAt": "2026-02-17T00:00:00.000+00:00"
-    }
-  ]
+"result": true,
+"data": [
+{
+"id": "550e8400-e29b-41d4-a716-446655440000",
+"basicInfo": {
+"id": "660e8400-f39b-41d4-a716-446655441111",
+"sectionKey": "string",
+"title": "string",
+"description": "string",
+"isActive": true,
+"sortOrder": 1,
+"createdAt": "2026-02-17T00:00:00.000+00:00",
+"updatedAt": "2026-02-17T00:00:00.000+00:00"
+},
+"contentType": "string",
+"metadata": { ... },
+"createdAt": "2026-02-17T00:00:00.000+00:00",
+"updatedAt": "2026-02-17T00:00:00.000+00:00"
 }
-```
+]
+}
+
+````
 
 ---
 
 ### GET /api/v1/contents/list/paged
-
 Sayfalı içerik listesi.
 
 **Query Parameters:**
-
 - `page`: Sayfa numarası (default: 0)
 - `size`: Sayfa başına kayıt sayısı (default: 10)
 - `sort`: Sıralama alanı ve yönü (default: "sortOrder,asc")
 
 **Response:**
-
 ```json
 {
   "result": true,
@@ -2153,7 +2263,7 @@ Sayfalı içerik listesi.
     "last": false
   }
 }
-```
+````
 
 ---
 
@@ -2162,37 +2272,32 @@ Sayfalı içerik listesi.
 İçerik oluştur.
 
 **Body:**
-
-```json
 {
-  "basicInfoId": "660e8400-f39b-41d4-a716-446655441111", // opsiyonel, mevcut gruba eklemek için (biri zorunlu)
-  "basicInfo": {
-    // opsiyonel, yeni grup yaratmak için (biri zorunlu)
-    "sectionKey": "string",
-    "title": "string",
-    "description": "string",
-    "isActive": true,
-    "sortOrder": 1
-  },
-  "contentType": "string", // zorunlu
-  "metadata": {
-    // opsiyonel, serbest key-value
-    "icon": "Syringe",
-    "desc": "Permanent solution for missing teeth"
-  }
+"basicInfoId": "660e8400-f39b-41d4-a716-446655441111", // opsiyonel, mevcut gruba eklemek için (biri zorunlu)
+"basicInfo": { // opsiyonel, yeni grup yaratmak için (biri zorunlu)
+"sectionKey": "string",
+"title": "string",
+"description": "string",
+"isActive": true,
+"sortOrder": 1
+},
+"contentType": "string", // zorunlu
+"metadata": { // opsiyonel, serbest key-value
+"icon": "Syringe",
+"desc": "Permanent solution for missing teeth"
 }
-```
+}
+
+````
 
 > **metadata Örnekleri:**
 >
 > Diş Hekimi Hizmet Kartı:
->
 > ```json
 > { "icon": "Syringe", "desc": "Permanent solution for missing teeth" }
 > ```
 >
 > Yazılımcı Deneyim Kartı:
->
 > ```json
 > {
 >   "company": "Acme Corp",
@@ -2203,13 +2308,11 @@ Sayfalı içerik listesi.
 > ```
 >
 > Testimonial:
->
 > ```json
 > { "name": "Ahmet Y.", "rating": 5, "comment": "Harika hizmet!" }
 > ```
 
 **Response:**
-
 ```json
 {
   "result": true,
@@ -2222,7 +2325,7 @@ Sayfalı içerik listesi.
     "updatedAt": "2026-02-17T00:00:00.000+00:00"
   }
 }
-```
+````
 
 ---
 

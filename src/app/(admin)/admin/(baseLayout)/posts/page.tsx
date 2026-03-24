@@ -56,7 +56,7 @@ export default function PostsListPage() {
           post.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
           post.slug.toLowerCase().includes(debouncedSearch.toLowerCase()),
       )
-      .sort((a, b) => a.title.localeCompare(b.title, 'tr')) || []
+      .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)) || []
 
   const columns: Column<Post>[] = [
     {

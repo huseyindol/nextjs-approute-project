@@ -27,6 +27,7 @@ export const LoginSchema = z.object({
     .string()
     .min(1, { message: 'Şifre gereklidir.' })
     .min(6, { message: 'Şifre en az 6 karakter olmalıdır.' }),
+  tenantId: z.string().optional().describe('Tenant ID (ör. tenant1, basedb)'),
 })
 
 // Request body for creating user
@@ -95,9 +96,14 @@ export const DeleteSuccessResponse = z.object({
 
 // Login success response schema
 export const LoginResponse = z.object({
-  token: z.string().describe('Authentication token'),
-  user: UserResponse,
-  error: z.string().optional().describe('Error message'),
+  token: z.string().describe('JWT access token'),
+  refreshToken: z.string().describe('JWT refresh token'),
+  type: z.string().describe('Token type (Bearer)'),
+  userId: z.number().describe('User ID'),
+  username: z.string().describe('Username'),
+  email: z.string().email().describe('User email'),
+  userCode: z.string().describe('User code (firstName + lastName initials)'),
+  expiredDate: z.number().describe('Access token expiry timestamp (ms)'),
 })
 
 // Export types for use in components

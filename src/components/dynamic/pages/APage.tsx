@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 export default async function APage({
   pageInfo,
 }: Readonly<{ pageInfo: Page }>) {
-  console.log('APage-pageInfo', pageInfo)
+  // console.log('APage-pageInfo', pageInfo)
   const DynamicComponent = pageInfo.components.map(component => {
     return {
       ...component,

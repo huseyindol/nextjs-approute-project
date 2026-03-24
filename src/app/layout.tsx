@@ -95,7 +95,7 @@ export default async function RootLayout({
   cookieStore.getAll().forEach(cookie => {
     cookiesData[cookie.name] = cookie.value
   })
-  console.log('APP - LAYOUT')
+  // console.log('APP - LAYOUT')
   return (
     <html lang="tr" suppressHydrationWarning>
       <body

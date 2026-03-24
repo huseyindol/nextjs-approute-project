@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export default function BWidget(props: Widget) {
-  console.log('BWidget-props', props)
+  // console.log('BWidget-props', props)
   const { banners, name, description } = props
 
   if (!banners || banners.length === 0) {

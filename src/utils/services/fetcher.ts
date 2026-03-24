@@ -34,6 +34,7 @@ const prepareRequestCSROptions = (options: RequestInit) => {
     ...options.headers,
     ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
   }
+  console.log('prepareRequestCSROptions', options)
   return options
 }
 
@@ -41,6 +42,7 @@ export const fetcher = async <T>(
   url: string,
   options: RequestInit = {},
 ): Promise<T> => {
+  console.log('fetcher')
   if (typeof window === 'undefined') {
     options = await prepareRequestSSROptions(options)
   } else {
@@ -49,15 +51,9 @@ export const fetcher = async <T>(
   if (url.includes('/auth/refresh') || url.includes('/auth/login')) {
     delete (options.headers as Record<string, string>)?.Authorization
   }
-  console.log('url', url)
-  console.log('options', options)
-  const startTime = performance.now()
+  console.log('options', `${process.env.NEXT_PUBLIC_API}${url}`, options)
   let response = await fetch(`${process.env.NEXT_PUBLIC_API}${url}`, options)
-  const duration = performance.now() - startTime
-  console.log(`Fetch duration for ${url}: ${duration.toFixed(2)}ms`)
-  console.log('response.ok', response.ok)
   if (!response.ok) {
-    console.error(`HTTP error! status: ${response.status}`)
     if (response.status === 401) {
       // In CSR: try to refresh token if fetchOngoing is enabled
       if (typeof window !== 'undefined') {
@@ -72,7 +68,6 @@ export const fetcher = async <T>(
           }
           const csrRefreshTokenResponse: RefreshTokenResponseType =
             await csrRefreshToken(refreshToken)
-          console.log('csrRefreshTokenResponse', csrRefreshTokenResponse)
           if (!csrRefreshTokenResponse.result) {
             // Refresh failed, remove all auth cookies and throw error
             removeAllAuthCookies()
@@ -84,7 +79,11 @@ export const fetcher = async <T>(
               Authorization: `Bearer ${csrRefreshTokenResponse.data.token}`,
             }),
           }
-          response = await fetch(url, options)
+          // console.log('options', options)
+          response = await fetch(
+            `${process.env.NEXT_PUBLIC_API}${url}`,
+            options,
+          )
         }
       } else {
         redirect('/login')

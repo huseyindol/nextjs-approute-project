@@ -11,13 +11,22 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { saveTokens } from '@/actions/auth/saveTokens'
 import { updateGlobalCookie, useCookie } from '@/context/CookieContext'
 import { LoginInput, LoginSchema } from '@/schemas/user'
 import { LoginResponseType } from '@/types/AuthResponse'
 import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { fetcher } from '@/utils/services/fetcher'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AlertCircle, Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react'
+import {
+  AlertCircle,
+  Building2,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+  Shield,
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -39,6 +48,7 @@ const AdminLoginPage = () => {
     defaultValues: {
       usernameOrEmail: '',
       password: '',
+      tenantId: '',
     },
   })
 
@@ -53,18 +63,34 @@ const AdminLoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          usernameOrEmail: formData.usernameOrEmail,
+          password: formData.password,
+          ...(formData.tenantId
+            ? { tenantId: formData.tenantId, loginType: 'tenant' }
+            : { loginType: 'admin' }),
+        }),
       })
       if (response.error) {
         setGeneralError(response.error || 'Giriş yapılırken bir hata oluştu.')
         return
       }
+      await saveTokens({
+        token: response.data.token,
+        refreshToken: response.data.refreshToken,
+        expiredDate: response.data.expiredDate,
+        userCode: response.data.userCode,
+      })
       updateGlobalCookie(CookieEnum.ACCESS_TOKEN, response.data.token)
       updateGlobalCookie(CookieEnum.REFRESH_TOKEN, response.data.refreshToken)
-      updateGlobalCookie(CookieEnum.EXPIRED_DATE, response.data.expiredDate)
+      updateGlobalCookie(
+        CookieEnum.EXPIRED_DATE,
+        String(response.data.expiredDate),
+      )
+      updateGlobalCookie(CookieEnum.USER_CODE, response.data.userCode)
       updateCookie(CookieEnum.ACCESS_TOKEN, response.data.token)
       updateCookie(CookieEnum.REFRESH_TOKEN, response.data.refreshToken)
-      updateCookie(CookieEnum.EXPIRED_DATE, response.data.expiredDate)
+      updateCookie(CookieEnum.EXPIRED_DATE, String(response.data.expiredDate))
 
       // Redirect to admin dashboard
       router.push('/admin/dashboard')
@@ -127,6 +153,22 @@ const AdminLoginPage = () => {
                     {errors.usernameOrEmail.message}
                   </p>
                 )}
+              </div>
+
+              {/* Tenant Field */}
+              <div className="space-y-2">
+                <Label htmlFor="tenantId">Tenant ID (opsiyonel)</Label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="tenantId"
+                    placeholder="Tenant ID (ör. tenant1, basedb)"
+                    {...register('tenantId')}
+                    className="pl-10"
+                    disabled={isSubmitting}
+                    autoComplete="organization"
+                  />
+                </div>
               </div>
 
               {/* Password Field */}

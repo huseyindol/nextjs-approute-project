@@ -23,8 +23,12 @@ export default function Providers({
     }))
   }
 
-  // Initialize global cookie store for non-React files (like fetcher.ts)
-  // IMPORTANT: cookies dependency'si gerekli çünkü state değiştiğinde globalCookieStore'u güncellemeli
+  // Senkron init: child effect'ler çalışmadan önce globalCookieStore hazır olsun
+  // (React'te useEffect child→parent sırası ile çalışır; TanStack Query fetch'leri
+  // Providers'ın useEffect'inden önce tetiklenebilir)
+  initGlobalCookieStore({ cookies, updateCookie })
+
+  // cookies state değiştiğinde singleton'ı güncelle
   useEffect(() => {
     initGlobalCookieStore({ cookies, updateCookie })
   }, [cookies])

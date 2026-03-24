@@ -15,10 +15,10 @@ type PageTemplateProps = {
 export default async function Page(props: Props) {
   const params = await props.params
   const searchParams = await props.searchParams
-  console.log('Page', params, searchParams)
-  console.log(`/api/v1/pages/${params.pages}`)
+  // console.log('Page', params, searchParams)
+  // console.log(`/api/v1/pages/${params.pages}`)
   const response: PageResponseType = await getPageBySlugService(params.pages)
-  console.log('pagesResponse', response)
+  // console.log('pagesResponse', response)
   const DynamicComponent = response.data.template
     ? dynamic<PageTemplateProps>(
         () => import(`@/components/dynamic/pages/${response.data.template}`),

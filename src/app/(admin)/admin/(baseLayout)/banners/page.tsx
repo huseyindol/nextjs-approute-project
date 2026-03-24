@@ -73,7 +73,7 @@ export default function BannersListPage() {
           banner.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
           banner.altText?.toLowerCase().includes(debouncedSearch.toLowerCase()),
       )
-      .sort((a, b) => a.title.localeCompare(b.title, 'tr')) || []
+      .sort((a, b) => (a.orderIndex ?? 0) - (b.orderIndex ?? 0)) || []
 
   // Ensure 'Tümü' is always first option
   const subFoldersList = subFoldersData?.data || []

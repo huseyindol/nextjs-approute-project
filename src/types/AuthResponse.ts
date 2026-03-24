@@ -8,7 +8,7 @@ export interface LoginResponse {
   username: string
   email: string
   userCode: string
-  expiredDate: string
+  expiredDate: number
 }
 
 export type LoginResponseType = BaseResponse<LoginResponse>
@@ -21,7 +21,7 @@ export interface RefreshTokenResponse {
   username: string
   email: string
   userCode: string
-  expiredDate: string
+  expiredDate: number
 }
 
 export type RefreshTokenResponseType = BaseResponse<RefreshTokenResponse>
