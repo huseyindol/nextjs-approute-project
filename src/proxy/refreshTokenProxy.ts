@@ -37,7 +37,7 @@ export const refreshTokenProxy = async (
     )
     response.cookies.set(
       CookieEnum.EXPIRED_DATE,
-      refreshResponse.data.expiredDate,
+      String(refreshResponse.data.expiredDate),
       {
         httpOnly: false,
         secure: true,

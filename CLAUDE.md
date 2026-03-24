@@ -12,6 +12,7 @@ Huseyin DOL'un modern portföy ve CMS sitesi. Next.js 16 App Router, React 19, T
 - Data: TanStack Query 5
 - Test: Vitest 4 + Testing Library (jsdom)
 - Email: Resend
+- Package Manager: Bun (npm değil, `bun run`, `bun install`, `bunx` kullanılmalı)
 - Deployment: Vercel
 
 ## Dizin Yapısı
@@ -36,6 +37,8 @@ Huseyin DOL'un modern portföy ve CMS sitesi. Next.js 16 App Router, React 19, T
 - Tüm API rotaları rate limiting (`src/lib/rate-limiter.ts`) ve input sanitization içermeli
 - Validation: Zod ile, şemalar `src/schemas/` altında
 - Client component'ler için dosya başında `'use client'` direktifi
+- Pre-commit hook `tsc --noEmit` çalıştırır — type error varsa commit engellenir
+- Cookie'ye yazılan `number` değerler `String()` ile dönüştürülmeli (`cookies.set` sadece `string` kabul eder)
 
 ## Test Kuralları
 
@@ -47,7 +50,7 @@ Huseyin DOL'un modern portföy ve CMS sitesi. Next.js 16 App Router, React 19, T
 - Import path: `@/components/...` (path alias)
 - Mock pattern: `vi.mock(...)` dosya başında
 - Coverage threshold: %50 branch, %30 function, %10 line
-- Test çalıştırma: `npm run test:ci`
+- Test çalıştırma: `bun run test:ci`
 
 ## API Güvenliği
 
