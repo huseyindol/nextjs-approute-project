@@ -1,10 +1,10 @@
 'use client'
 
-import { isFieldVisible } from '@/app/(admin)/admin/_utils/condition-evaluator'
+import { isFieldVisible } from '@/lib/form/condition-evaluator'
 import {
   generateDefaultValues,
   generateZodSchema,
-} from '@/app/(admin)/admin/_utils/zod-generator'
+} from '@/lib/form/zod-generator'
 import type { FormSchema } from '@/types/form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -25,7 +25,6 @@ export function DynamicFormRenderer({
 }: DynamicFormRendererProps) {
   const { config, fields, steps: rawSteps } = formSchema.schema
 
-  // If layout is wizard but steps array is missing, derive steps from unique field stepIds
   const steps = useMemo(() => {
     if (rawSteps && rawSteps.length > 0) return rawSteps
 
@@ -48,14 +47,10 @@ export function DynamicFormRenderer({
   const [isSuccess, setIsSuccess] = useState(false)
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
 
-  // Determine if we are in wizard mode
   const isWizard = config.layout === 'wizard' && steps.length > 0
   const currentStep = isWizard ? steps[currentStepIndex] : null
 
-  // Default values
   const defaultValues = useMemo(() => generateDefaultValues(fields), [fields])
-
-  // Zod schema
   const zodSchema = useMemo(() => generateZodSchema(fields), [fields])
 
   const methods = useForm({
@@ -66,45 +61,35 @@ export function DynamicFormRenderer({
 
   const { handleSubmit, trigger } = methods
 
-  // Get current step's fields
   const visibleFields = useMemo(() => {
     if (!isWizard || !currentStep) return fields
-
     return fields.filter(field => field.stepId === currentStep.id)
   }, [fields, isWizard, currentStep])
 
-  // Handle Next Step
   const handleNext = async () => {
     if (!currentStep) return
-
-    // Trigger validation only for current visible fields
     const fieldIds = visibleFields.map(f => f.id)
     const isValid = await trigger(fieldIds)
-
     if (isValid) {
       setCurrentStepIndex(prev => prev + 1)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
-  // Handle Previous Step
   const handleBack = () => {
     setCurrentStepIndex(prev => Math.max(0, prev - 1))
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  // Submit handler
   const onFormSubmit = async (data: Record<string, unknown>) => {
     setIsSubmitting(true)
     try {
-      // Filter out hidden field values
       const cleanedData: Record<string, unknown> = {}
       for (const field of fields) {
         if (isFieldVisible(field, data)) {
           cleanedData[field.id] = data[field.id]
         }
       }
-
       if (onSubmit) {
         await onSubmit(cleanedData)
       }
@@ -117,7 +102,6 @@ export function DynamicFormRenderer({
     }
   }
 
-  // Success state
   if (isSuccess) {
     return (
       <FormLayout>
@@ -141,14 +125,12 @@ export function DynamicFormRenderer({
 
   return (
     <FormLayout title={formSchema.title}>
-      {/* Wizard Stepper */}
       {isWizard && steps && (
         <div className="mb-8">
           <div className="flex items-center justify-between">
             {steps.map((step, index) => {
               const isActive = index === currentStepIndex
               const isCompleted = index < currentStepIndex
-              const _isFuture = index > currentStepIndex
 
               const stepIndicatorClass =
                 isActive || isCompleted
@@ -184,7 +166,6 @@ export function DynamicFormRenderer({
                         />
                       )}
                     </div>
-                    {/* Render step title only on desktop to avoid clutter mobile */}
                     <span
                       className={`absolute top-10 hidden whitespace-nowrap text-xs font-medium transition-colors md:block ${
                         isActive ? 'text-foreground' : 'text-muted-foreground'
@@ -197,7 +178,6 @@ export function DynamicFormRenderer({
               )
             })}
           </div>
-          {/* Mobile step title */}
           <div className="mt-6 text-center md:hidden">
             <h3 className="text-lg font-semibold text-foreground">
               {currentStep?.title}
@@ -211,7 +191,6 @@ export function DynamicFormRenderer({
         </div>
       )}
 
-      {/* Desktop step description - shows under title if desired, or we can put it above fields */}
       {isWizard && currentStep && (
         <div className="mb-6 hidden md:block">
           <h2 className="text-xl font-semibold">{currentStep.title}</h2>
@@ -227,7 +206,6 @@ export function DynamicFormRenderer({
           noValidate
           className="space-y-6"
         >
-          {/* Form fields */}
           <div className="space-y-5">
             {visibleFields.map(field => (
               <FormFieldRenderer key={field.id} field={field} />
@@ -239,7 +217,6 @@ export function DynamicFormRenderer({
             )}
           </div>
 
-          {/* Navigation & Submit */}
           <div className="flex items-center justify-between pt-6">
             <div>
               {isWizard && currentStepIndex > 0 && (

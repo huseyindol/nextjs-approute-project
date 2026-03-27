@@ -1,6 +1,6 @@
 'use client'
 
-import { isFieldVisible } from '@/app/(admin)/admin/_utils/condition-evaluator'
+import { isFieldVisible } from '@/lib/form/condition-evaluator'
 import type { Field } from '@/types/form'
 import { useFormContext, useWatch } from 'react-hook-form'
 import { CheckboxGroup } from './CheckboxGroup'
@@ -21,11 +21,9 @@ export function FormFieldRenderer({ field }: Readonly<FormFieldRendererProps>) {
     getValues,
   } = useFormContext()
 
-  // Watch dependent field for conditional visibility
   const dependentFieldId = field.condition?.field
   useWatch({ name: dependentFieldId ?? '' })
 
-  // Check visibility
   if (field.condition) {
     const allValues = getValues()
     if (!isFieldVisible(field, allValues)) {
@@ -34,11 +32,6 @@ export function FormFieldRenderer({ field }: Readonly<FormFieldRendererProps>) {
   }
 
   const error = errors[field.id]?.message as string | undefined
-
-  // Debug log for checking if options are coming from backend
-  if (field.type === 'select' || field.type === 'radio') {
-    console.log(`Field ${field.id} (${field.type}) options:`, field.options)
-  }
 
   switch (field.type) {
     case 'text':
@@ -54,7 +47,6 @@ export function FormFieldRenderer({ field }: Readonly<FormFieldRendererProps>) {
           {...register(field.id)}
         />
       )
-
     case 'number':
       return (
         <FormInput
@@ -65,7 +57,6 @@ export function FormFieldRenderer({ field }: Readonly<FormFieldRendererProps>) {
           {...register(field.id, { valueAsNumber: true })}
         />
       )
-
     case 'date':
       return (
         <FormInput
@@ -76,7 +67,6 @@ export function FormFieldRenderer({ field }: Readonly<FormFieldRendererProps>) {
           {...register(field.id)}
         />
       )
-
     case 'textarea':
       return (
         <FormTextarea
@@ -86,7 +76,6 @@ export function FormFieldRenderer({ field }: Readonly<FormFieldRendererProps>) {
           {...register(field.id)}
         />
       )
-
     case 'select':
       return (
         <FormSelect
@@ -101,7 +90,6 @@ export function FormFieldRenderer({ field }: Readonly<FormFieldRendererProps>) {
           {...register(field.id)}
         />
       )
-
     case 'radio':
       return (
         <RadioGroup
@@ -117,7 +105,6 @@ export function FormFieldRenderer({ field }: Readonly<FormFieldRendererProps>) {
           required={field.required}
         />
       )
-
     case 'multi_checkbox':
       return (
         <CheckboxGroup
@@ -134,7 +121,6 @@ export function FormFieldRenderer({ field }: Readonly<FormFieldRendererProps>) {
           }))}
         />
       )
-
     case 'checkbox':
       return (
         <CheckboxGroup
@@ -145,10 +131,8 @@ export function FormFieldRenderer({ field }: Readonly<FormFieldRendererProps>) {
           }}
           name={field.id}
           error={error}
-          // No options passed = Single boolean mode
         />
       )
-
     default:
       return (
         <FormInput

@@ -1,38 +1,23 @@
 import type { Field, FieldType } from '@/types/form'
 import { z } from 'zod'
 
-/**
- * Dynamically generates a Zod schema from form field definitions.
- *
- * @param fields - Array of field definitions
- * @param visibleFields - Optional Set of visible field IDs (hidden fields become optional)
- * @returns Zod object schema for form validation
- */
 export function generateZodSchema(
   fields: Field[],
   visibleFields?: Set<string>,
 ): z.ZodObject<Record<string, z.ZodTypeAny>> {
   const shape: Record<string, z.ZodTypeAny> = {}
-
   for (const field of fields) {
     let fieldSchema = createFieldSchema(field)
-
-    // If visibleFields is provided, make hidden fields optional
     if (visibleFields && !visibleFields.has(field.id)) {
       fieldSchema = fieldSchema.optional()
     } else if (!field.required) {
       fieldSchema = fieldSchema.optional()
     }
-
     shape[field.id] = fieldSchema
   }
-
   return z.object(shape)
 }
 
-/**
- * Creates a Zod schema for a single field based on its type and validation rules.
- */
 function createFieldSchema(field: Field): z.ZodTypeAny {
   const { type, label, required, validation } = field
   let schema: z.ZodTypeAny
@@ -47,7 +32,6 @@ function createFieldSchema(field: Field): z.ZodTypeAny {
         )
       }
       break
-
     case 'number':
       schema = z.coerce.number()
       if (validation?.min != null) {
@@ -63,16 +47,13 @@ function createFieldSchema(field: Field): z.ZodTypeAny {
         )
       }
       break
-
     case 'checkbox':
       schema = z.boolean()
       break
-
     case 'select':
     case 'radio':
       schema = z.string()
       break
-
     case 'date':
       schema = z
         .string()
@@ -80,7 +61,6 @@ function createFieldSchema(field: Field): z.ZodTypeAny {
           message: `${label} geçerli bir tarih olmalıdır`,
         })
       break
-
     case 'phone':
       schema = z.string()
       if (validation?.pattern) {
@@ -95,11 +75,9 @@ function createFieldSchema(field: Field): z.ZodTypeAny {
         )
       }
       break
-
     case 'url':
       schema = z.string().url(`${label} geçerli bir URL olmalıdır`)
       break
-
     case 'text':
     case 'textarea':
     default:
@@ -125,7 +103,6 @@ function createFieldSchema(field: Field): z.ZodTypeAny {
       break
   }
 
-  // Add required validation
   if (required && type !== 'checkbox') {
     if (schema instanceof z.ZodString) {
       schema = schema.min(1, `${label} zorunludur`)
@@ -135,9 +112,6 @@ function createFieldSchema(field: Field): z.ZodTypeAny {
   return schema
 }
 
-/**
- * Gets the default value for a field based on its type.
- */
 export function getDefaultFieldValue(type: FieldType): unknown {
   switch (type) {
     case 'checkbox':
@@ -152,9 +126,6 @@ export function getDefaultFieldValue(type: FieldType): unknown {
   }
 }
 
-/**
- * Generates default values for all form fields.
- */
 export function generateDefaultValues(
   fields: Field[],
 ): Record<string, unknown> {
