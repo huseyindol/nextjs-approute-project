@@ -1,5 +1,5 @@
 import dynamic from 'next/dynamic'
-import { getPageBySlugService } from '../../(admin)/admin/_services/pages.services'
+import { getPageBySlugService } from '@/services/site/pages.services'
 import { PageResponseType, Page as PageType } from '../../../types/BaseResponse'
 
 type Props = {

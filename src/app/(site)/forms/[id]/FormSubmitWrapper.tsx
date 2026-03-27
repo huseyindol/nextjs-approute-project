@@ -1,6 +1,6 @@
 'use client'
 
-import { submitFormService } from '@/app/(admin)/admin/_services/forms.services'
+import { submitFormService } from '@/services/site/forms.services'
 import { DynamicFormRenderer } from '@/components/forms/DynamicFormRenderer'
 import type { FormSchema } from '@/types/form'
 

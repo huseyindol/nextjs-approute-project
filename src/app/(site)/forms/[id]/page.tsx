@@ -1,4 +1,4 @@
-import { getFormByIdService } from '@/app/(admin)/admin/_services/forms.services'
+import { getFormByIdService } from '@/services/site/forms.services'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { FormSubmitWrapper } from './FormSubmitWrapper'
