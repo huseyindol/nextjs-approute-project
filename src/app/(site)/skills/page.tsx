@@ -1,5 +1,8 @@
-import Hero from '../../../components/Hero'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import Skills from '@/components/Skills'
 import type { Metadata } from 'next'
+
+const SITE_URL = 'https://next.huseyindol.com'
 
 export const metadata: Metadata = {
   title: 'Yetenekler',
@@ -13,19 +16,36 @@ export const metadata: Metadata = {
     'TypeScript',
     'JavaScript',
     'Node.js',
-    'Frontend',
+    'Docker',
+    'Frontend Teknolojileri',
     'Yazılım',
+    'Web Geliştirme',
   ],
   alternates: {
-    canonical: 'https://next.huseyindol.com/skills',
+    canonical: `${SITE_URL}/skills`,
+  },
+  openGraph: {
+    title: 'Yetenekler | Hüseyin DOL',
+    description:
+      'React, Next.js, TypeScript, Node.js, Docker ve daha fazlası. 10+ yıllık deneyimle uzman seviyesinde frontend teknolojileri.',
+    url: `${SITE_URL}/skills`,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Yetenekler | Hüseyin DOL',
+    description:
+      'React, Next.js, TypeScript, Node.js, Docker ve daha fazlası. Uzman seviyesinde frontend teknolojileri.',
   },
 }
 
-const Skills = () => {
+export const revalidate = 3600
+
+export default function SkillsPage() {
   return (
-    <div>
-      Skills <hr /> <Hero />
-    </div>
+    <main className="min-h-screen">
+      <ErrorBoundary>
+        <Skills />
+      </ErrorBoundary>
+    </main>
   )
 }
-export default Skills

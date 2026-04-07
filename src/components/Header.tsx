@@ -44,11 +44,11 @@ export default function Header() {
 
         <nav className="hidden items-center space-x-6 md:flex">
           <Link
-            href="#about"
+            href="/about"
             className="text-muted-foreground transition-colors hover:text-primary"
             onClick={() =>
               sendGTMEvent({
-                virtual: '#about',
+                virtual: '/about',
                 event: 'buttonClick',
                 target: 'about',
               })
@@ -57,11 +57,11 @@ export default function Header() {
             Hakkında
           </Link>
           <Link
-            href="#skills"
+            href="/skills"
             className="text-muted-foreground transition-colors hover:text-primary"
             onClick={() =>
               sendGTMEvent({
-                virtual: '#skills',
+                virtual: '/skills',
                 event: 'buttonClick',
                 target: 'skills',
               })
@@ -70,11 +70,11 @@ export default function Header() {
             Yetenekler
           </Link>
           <Link
-            href="#experience"
+            href="/experience"
             className="text-muted-foreground transition-colors hover:text-primary"
             onClick={() =>
               sendGTMEvent({
-                virtual: '#experience',
+                virtual: '/experience',
                 event: 'buttonClick',
                 target: 'experience',
               })
@@ -100,17 +100,17 @@ export default function Header() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem asChild>
-                <Link href="#about" className="w-full">
+                <Link href="/about" className="w-full">
                   Hakkında
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="#skills" className="w-full">
+                <Link href="/skills" className="w-full">
                   Yetenekler
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="#experience" className="w-full">
+                <Link href="/experience" className="w-full">
                   Deneyim
                 </Link>
               </DropdownMenuItem>

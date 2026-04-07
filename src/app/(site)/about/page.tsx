@@ -1,5 +1,8 @@
-import Hero from '../../../components/Hero'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import Hero from '@/components/Hero'
 import type { Metadata } from 'next'
+
+const SITE_URL = 'https://next.huseyindol.com'
 
 export const metadata: Metadata = {
   title: 'Hakkımda',
@@ -8,24 +11,40 @@ export const metadata: Metadata = {
   keywords: [
     'Hüseyin DOL',
     'Hakkımda',
+    'Senior Frontend Developer',
     'Frontend Developer',
     'Yazılım Geliştirici',
+    'React Developer',
+    'Next.js Developer',
+    'TypeScript',
     'İstanbul',
     'Biyografi',
   ],
   alternates: {
-    canonical: 'https://next.huseyindol.com/about',
+    canonical: `${SITE_URL}/about`,
+  },
+  openGraph: {
+    title: 'Hakkımda | Hüseyin DOL',
+    description:
+      'Hüseyin DOL hakkında: 10+ yıllık deneyime sahip Senior Frontend Developer. React, Next.js ve TypeScript uzmanlığı.',
+    url: `${SITE_URL}/about`,
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Hakkımda | Hüseyin DOL',
+    description:
+      'Hüseyin DOL hakkında: 10+ yıllık deneyime sahip Senior Frontend Developer.',
   },
 }
 
-const About = () => {
+export const revalidate = 3600
+
+export default function AboutPage() {
   return (
-    <div>
-      About
-      <hr />
-      <Hero />
-    </div>
+    <main className="min-h-screen">
+      <ErrorBoundary>
+        <Hero />
+      </ErrorBoundary>
+    </main>
   )
 }
-
-export default About
