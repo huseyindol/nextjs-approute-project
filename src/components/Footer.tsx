@@ -2,14 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import {
-  GithubIcon,
-  Heart,
-  LinkedinIcon,
-  Mail,
-  MapPin,
-  Phone,
-} from 'lucide-react'
+import { GithubIcon, Heart, LinkedinIcon, Mail, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -99,12 +92,6 @@ export default function Footer() {
                     <a href="mailto:huseyindol@gmail.com">
                       huseyindol@gmail.com
                     </a>
-                  </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Phone className="h-5 w-5 text-primary" />
-                  <span>
-                    <a href="tel:+905445582825">+90 (544) 558 28 25</a>
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">
