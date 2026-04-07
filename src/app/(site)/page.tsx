@@ -2,7 +2,34 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import Experience from '@/components/experience'
 import Hero from '@/components/Hero'
 import Skills from '@/components/Skills'
+import type { Metadata } from 'next'
 import dynamicImport from 'next/dynamic'
+
+export const metadata: Metadata = {
+  title: 'Hüseyin DOL | Senior Frontend Developer',
+  description:
+    '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı ve kullanıcı dostu web uygulamaları geliştiriyorum. Ekip liderliği ve mentorluk konularında da deneyimliyim.',
+  keywords: [
+    'Hüseyin DOL',
+    'Senior Frontend Developer',
+    'React Developer',
+    'Next.js Developer',
+    'TypeScript',
+    'JavaScript',
+    'Web Development',
+    'İstanbul',
+    'Türkiye',
+  ],
+  alternates: {
+    canonical: 'https://next.huseyindol.com',
+  },
+  openGraph: {
+    title: 'Hüseyin DOL | Senior Frontend Developer',
+    description:
+      '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı web uygulamaları geliştiriyorum.',
+    url: 'https://next.huseyindol.com',
+  },
+}
 
 const ExperienceWithErrorDemo = dynamicImport(
   () => import('@/components/ExperienceWithErrorDemo'),

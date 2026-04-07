@@ -1,0 +1,63 @@
+# Hüseyin DOL — Full Profile
+
+> Senior Frontend Developer with 10+ years of experience building modern, scalable web applications using React, Next.js, and TypeScript. Based in Sancaktepe, İstanbul, Turkey.
+
+## About
+
+Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professional experience in web development. He specializes in the React ecosystem, modern JavaScript/TypeScript, and scalable frontend architecture. He is experienced in team leadership, code review, and mentoring junior and mid-level developers.
+
+- Location: Sancaktepe, İstanbul, Turkey
+- Email: huseyindol@gmail.com
+- Phone: +90 544 558 28 25
+- GitHub: https://github.com/huseyindol
+- LinkedIn: https://www.linkedin.com/in/huseyindol/
+- CV: https://next.huseyindol.com/assets/files/HuseyinDOL.pdf
+
+## Core Technical Skills
+
+### Frontend (Expert)
+- React (8+ years)
+- Next.js (5+ years)
+- TypeScript
+- JavaScript (10+ years)
+- HTML5 (10+ years)
+- CSS3 / Sass (10+ years)
+- Tailwind CSS
+- Redux (6+ years)
+- Framer Motion
+
+### Backend & Databases
+- Node.js (7+ years, Advanced)
+- Express.js (6+ years, Advanced)
+- Prisma (6+ years, Advanced)
+- MongoDB (5+ years, Advanced)
+- PostgreSQL (3+ years, Intermediate)
+- Java / Spring (3+ years, Intermediate)
+
+### DevOps & Tooling
+- Git (10+ years, Expert)
+- Docker (3+ years, Intermediate)
+- Nginx (4+ years, Intermediate)
+- Vercel
+- Figma (5+ years, Advanced)
+- VS Code (8+ years, Expert)
+- Postman (6+ years, Advanced)
+
+## Current Tech Stack (This Portfolio)
+
+- Framework: Next.js 16 (App Router, Server Components, Server Actions)
+- UI: Tailwind CSS 4, Shadcn UI, Framer Motion
+- Forms: React Hook Form + Zod 4
+- Data Fetching: TanStack Query 5
+- Testing: Vitest 4 + Testing Library
+- Email: Resend
+- Analytics: Google Tag Manager, Vercel Analytics
+- Deployment: Vercel
+
+## Portfolio Pages
+
+- [Home](https://next.huseyindol.com): Hero introduction, skills grid, and experience section with industry filter
+- [About](https://next.huseyindol.com/about): Professional background
+- [Experience](https://next.huseyindol.com/experience): Full career history
+- [Skills](https://next.huseyindol.com/skills): Complete technical skill set
+- [CV](https://next.huseyindol.com/assets/files/HuseyinDOL.pdf): Downloadable resume (PDF)
