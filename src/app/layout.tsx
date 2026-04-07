@@ -1,10 +1,12 @@
 import ScrollToTop from '@/components/ScrollToTopButton'
+import { PersonJsonLd } from '@/components/JsonLd'
 import { WebVitals } from '@/components/WebVitals'
 import Providers from '@/providers/Providers'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ThemeProvider } from 'next-themes'
+import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { cookies } from 'next/headers'
 import Script from 'next/script'
@@ -29,59 +31,77 @@ const geistMono = Geist_Mono({
   weight: ['400', '500', '600', '700'],
 })
 
-// Metadata export for better performance (static instead of async)
-// export const metadata: Metadata = {
-//   title: {
-//     default: 'Hüseyin DOL | Senior Frontend Developer',
-//     template: '%s | Hüseyin DOL',
-//   },
-//   description:
-//     '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak modern web uygulamaları geliştiriyorum.',
-//   keywords: [
-//     'Frontend Developer',
-//     'React',
-//     'Next.js',
-//     'TypeScript',
-//     'Web Development',
-//   ],
-//   authors: [{ name: 'Hüseyin DOL' }],
-//   creator: 'Hüseyin DOL',
-//   openGraph: {
-//     type: 'website',
-//     locale: 'tr_TR',
-//     url: 'https://next.huseyindol.com',
-//     siteName: 'Hüseyin DOL Portfolio',
-//     title: 'Hüseyin DOL | Senior Frontend Developer',
-//     description:
-//       '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak modern web uygulamaları geliştiriyorum.',
-//   },
-//   twitter: {
-//     card: 'summary_large_image',
-//     title: 'Hüseyin DOL | Senior Frontend Developer',
-//     description:
-//       '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak modern web uygulamaları geliştiriyorum.',
-//   },
-//   robots: {
-//     index: true,
-//     follow: true,
-//     googleBot: {
-//       index: true,
-//       follow: true,
-//       'max-video-preview': -1,
-//       'max-image-preview': 'large',
-//       'max-snippet': -1,
-//     },
-//   },
-//   icons: {
-//     icon: '/assets/img/favicon.ico',
-//     shortcut: '/assets/img/favicon.ico',
-//     apple: '/assets/img/favicon.ico',
-//   },
-//   // Performance: Preconnect to external domains
-//   other: {
-//     'X-DNS-Prefetch-Control': 'on',
-//   },
-// }
+const SITE_URL = 'https://next.huseyindol.com'
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Hüseyin DOL | Senior Frontend Developer',
+    template: '%s | Hüseyin DOL',
+  },
+  description:
+    '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı ve kullanıcı dostu web uygulamaları geliştiriyorum. Ekip liderliği ve mentorluk konularında da deneyimliyim.',
+  keywords: [
+    'Hüseyin DOL',
+    'Senior Frontend Developer',
+    'Frontend Developer',
+    'React Developer',
+    'Next.js Developer',
+    'TypeScript',
+    'JavaScript',
+    'Web Development',
+    'React',
+    'Next.js',
+    'İstanbul',
+    'Türkiye',
+    'Yazılım Geliştirici',
+  ],
+  authors: [{ name: 'Hüseyin DOL', url: SITE_URL }],
+  creator: 'Hüseyin DOL',
+  openGraph: {
+    type: 'website',
+    locale: 'tr_TR',
+    url: SITE_URL,
+    siteName: 'Hüseyin DOL | Portfolio',
+    title: 'Hüseyin DOL | Senior Frontend Developer',
+    description:
+      '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı web uygulamaları geliştiriyorum.',
+    images: [
+      {
+        url: '/assets/img/huseyindol.png',
+        width: 1200,
+        height: 630,
+        alt: 'Hüseyin DOL - Senior Frontend Developer',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Hüseyin DOL | Senior Frontend Developer',
+    description:
+      '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı web uygulamaları geliştiriyorum.',
+    images: ['/assets/img/huseyindol.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  icons: {
+    icon: '/assets/img/favicon.ico',
+    shortcut: '/assets/img/favicon.ico',
+    apple: '/assets/img/favicon.ico',
+  },
+  alternates: {
+    canonical: SITE_URL,
+  },
+}
 
 export default async function RootLayout({
   children,
@@ -108,6 +128,7 @@ export default async function RootLayout({
           src="https://www.googletagmanager.com/gtag/js?id=G-749L34H6ZZ"
         />
 
+        <PersonJsonLd />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
