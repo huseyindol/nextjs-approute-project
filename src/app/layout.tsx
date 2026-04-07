@@ -2,14 +2,13 @@ import ScrollToTop from '@/components/ScrollToTopButton'
 import { PersonJsonLd } from '@/components/JsonLd'
 import { WebVitals } from '@/components/WebVitals'
 import Providers from '@/providers/Providers'
-import { GoogleTagManager } from '@next/third-parties/google'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ThemeProvider } from 'next-themes'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { cookies } from 'next/headers'
-import Script from 'next/script'
 import Datalayer from '../components/Datalayer'
 import './globals.css'
 
@@ -121,12 +120,7 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        <GoogleTagManager gtmId="G-749L34H6ZZ" />
-        <Script
-          id="google-tag-manager"
-          strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-749L34H6ZZ"
-        />
+        <GoogleAnalytics gaId="G-ETR2NBJH5V" />
 
         <PersonJsonLd />
         <ThemeProvider
