@@ -8,7 +8,6 @@ Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professio
 
 - Location: Sancaktepe, İstanbul, Turkey
 - Email: huseyindol@gmail.com
-- Phone: +90 544 558 28 25
 - GitHub: https://github.com/huseyindol
 - LinkedIn: https://www.linkedin.com/in/huseyindol/
 - CV: https://next.huseyindol.com/assets/files/HuseyinDOL.pdf

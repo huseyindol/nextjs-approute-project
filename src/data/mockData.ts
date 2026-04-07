@@ -11,7 +11,6 @@ export const siteInfo: siteInfoType = {
   description:
     '10+ yıllık deneyimim ile <strong>React, Next.js ve TypeScript</strong> kullanarak ölçeklenebilir, performanslı ve kullanıcı dostu web uygulamaları geliştiriyorum. Ekip liderliği ve mentorluk konularında da deneyimliyim.',
   email: 'huseyindol@gmail.com',
-  phone: '+90 544 558 28 25',
   location: 'Sancaktepe, İstanbul, Türkiye',
   experience: '10+',
   cvUrl: '/assets/files/HuseyinDOL.pdf',

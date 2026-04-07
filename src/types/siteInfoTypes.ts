@@ -6,7 +6,7 @@ export type siteInfoType = {
   }
   description: string
   email: string
-  phone: string
+  phone?: string
   location: string
   experience: string
   cvUrl: string
