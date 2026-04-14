@@ -42,6 +42,8 @@ export const metadata: Metadata = {
     '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı ve kullanıcı dostu web uygulamaları geliştiriyorum. Ekip liderliği ve mentorluk konularında da deneyimliyim.',
   keywords: [
     'Hüseyin DOL',
+    'huseyindol',
+    'huseyin dol',
     'Senior Frontend Developer',
     'Frontend Developer',
     'React Developer',
@@ -99,6 +101,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: SITE_URL,
+    // AI crawler'lar için llms.txt discovery
+    types: {
+      'text/plain': `${SITE_URL}/llms.txt`,
+    },
   },
 }
 

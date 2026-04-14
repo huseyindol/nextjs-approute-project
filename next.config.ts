@@ -77,6 +77,21 @@ const nextConfig = {
           },
         ],
       },
+      // AI arama motorları için llms.txt dosyaları
+      {
+        source: '/llms.txt',
+        headers: [
+          { key: 'Content-Type', value: 'text/plain; charset=utf-8' },
+          { key: 'X-Robots-Tag', value: 'all' },
+        ],
+      },
+      {
+        source: '/llms-full.txt',
+        headers: [
+          { key: 'Content-Type', value: 'text/plain; charset=utf-8' },
+          { key: 'X-Robots-Tag', value: 'all' },
+        ],
+      },
     ]
   },
 }
