@@ -1,12 +1,12 @@
-import ScrollToTop from '@/components/ScrollToTopButton'
 import { PersonJsonLd } from '@/components/JsonLd'
+import ScrollToTop from '@/components/ScrollToTopButton'
 import { WebVitals } from '@/components/WebVitals'
 import Providers from '@/providers/Providers'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import { ThemeProvider } from 'next-themes'
 import type { Metadata } from 'next'
+import { ThemeProvider } from 'next-themes'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { cookies } from 'next/headers'
 import Datalayer from '../components/Datalayer'
@@ -30,7 +30,8 @@ const geistMono = Geist_Mono({
   weight: ['400', '500', '600', '700'],
 })
 
-const SITE_URL = 'https://next.huseyindol.com'
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

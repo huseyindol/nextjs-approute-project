@@ -1,84 +1,86 @@
-import { ErrorBoundary } from '@/components/ErrorBoundary'
-import Experience from '@/components/experience'
-import Hero from '@/components/Hero'
-import Skills from '@/components/Skills'
+import { getPageBySlugService } from '@/services/site/pages.services'
 import type { Metadata } from 'next'
-import dynamicImport from 'next/dynamic'
+import dynamic from 'next/dynamic'
+import { PageResponseType, Page as PageType } from '../../types/BaseResponse'
 
-export const metadata: Metadata = {
-  title: 'Hüseyin DOL | Senior Frontend Developer',
-  description:
-    '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı ve kullanıcı dostu web uygulamaları geliştiriyorum. Ekip liderliği ve mentorluk konularında da deneyimliyim.',
-  keywords: [
-    'Hüseyin DOL',
-    'Senior Frontend Developer',
-    'React Developer',
-    'Next.js Developer',
-    'TypeScript',
-    'JavaScript',
-    'Web Development',
-    'İstanbul',
-    'Türkiye',
-  ],
-  alternates: {
-    canonical: 'https://next.huseyindol.com',
-  },
-  openGraph: {
-    title: 'Hüseyin DOL | Senior Frontend Developer',
-    description:
-      '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı web uygulamaları geliştiriyorum.',
-    url: 'https://next.huseyindol.com',
-  },
-}
+// Sabit SEO değerleri
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'
+const SITE_NAME = 'Hüseyin DOL'
 
-const ExperienceWithErrorDemo = dynamicImport(
-  () => import('@/components/ExperienceWithErrorDemo'),
-  {
-    loading: () => <div>Loading...</div>,
-    ssr: true,
-  },
-)
-
-// ✨ Cache Strategy: ISR with dynamic searchParams support
-export const revalidate = 3600 // 1 saat (3600 saniye) sonra yeniden oluştur
+// Root URL ("/") için kullanılacak slug
+const HOME_SLUG = 'home'
 
 // Page props interface
 interface HomeProps {
-  searchParams?: Promise<{ industry?: string }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+// Dynamic page template component props
+type PageTemplateProps = {
+  pageInfo: PageType
+  searchParams?: { industry?: string }
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  // searchParams'ı await et (Next.js 15+ async searchParams)
   const resolvedSearchParams = await searchParams
+  const response: PageResponseType = await getPageBySlugService(HOME_SLUG)
+
+  const DynamicComponent = response.data.template
+    ? dynamic<PageTemplateProps>(
+        () => import(`@/components/dynamic/pages/${response.data.template}`),
+      )
+    : null
 
   return (
-    <main className="min-h-screen">
-      <ErrorBoundary>
-        <Hero />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <Skills />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <Experience searchParams={resolvedSearchParams} />
-      </ErrorBoundary>
-
-      {/* 🧪 ErrorBoundary Demo Section - Sadece Development */}
-      {process.env.NODE_ENV === 'development' && (
-        <ErrorBoundary>
-          <ExperienceWithErrorDemo />
-        </ErrorBoundary>
+    <section
+      id="about"
+      className="flex items-center justify-center py-24 pt-24 md:pt-32"
+    >
+      {DynamicComponent && (
+        <DynamicComponent
+          pageInfo={response.data as PageType}
+          searchParams={resolvedSearchParams as { industry?: string }}
+        />
       )}
-
-      {/* Server Actions Demo Section */}
-      {/* <section className="bg-gray-50 py-16 dark:bg-gray-900">
-        <div className="container mx-auto px-4">
-          <h2 className="mb-8 text-center text-3xl font-bold text-gray-900 dark:text-white">
-            Server Actions Demo
-          </h2>
-          <PostsFetcher />
-        </div>
-      </section> */}
-    </main>
+    </section>
   )
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const response: PageResponseType = await getPageBySlugService(HOME_SLUG)
+
+  const { seoInfo, title, description } = response.data
+  const pageTitle = seoInfo?.title || title
+  const pageDescription = seoInfo?.description || description
+  const pageKeywords = seoInfo?.keywords || ''
+  const canonicalUrl = seoInfo?.canonicalUrl
+    ? `${SITE_URL}${seoInfo.canonicalUrl}`
+    : SITE_URL
+
+  return {
+    title: pageTitle,
+    description: pageDescription,
+    keywords: pageKeywords,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    robots: {
+      index: !seoInfo?.noIndex,
+      follow: !seoInfo?.noFollow,
+    },
+    openGraph: {
+      title: pageTitle,
+      description: pageDescription,
+      url: canonicalUrl,
+      siteName: SITE_NAME,
+      type: 'website',
+      locale: 'tr_TR',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: pageTitle,
+      description: pageDescription,
+    },
+  }
 }

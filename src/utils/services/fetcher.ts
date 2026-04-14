@@ -7,6 +7,7 @@ import {
 import { refreshService } from '../../services/auth/refreshService'
 import { RefreshTokenResponseType } from '../../types/AuthResponse'
 import { CookieEnum } from '../constant/cookieConstant'
+import { buildApiUrl } from '../helpers/tenant'
 
 // Helper function to remove all auth cookies
 const removeAllAuthCookies = () => {
@@ -34,7 +35,6 @@ const prepareRequestCSROptions = (options: RequestInit) => {
     ...options.headers,
     ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
   }
-  console.log('prepareRequestCSROptions', options)
   return options
 }
 
@@ -42,7 +42,6 @@ export const fetcher = async <T>(
   url: string,
   options: RequestInit = {},
 ): Promise<T> => {
-  console.log('fetcher')
   if (typeof window === 'undefined') {
     options = await prepareRequestSSROptions(options)
   } else {
@@ -51,8 +50,10 @@ export const fetcher = async <T>(
   if (url.includes('/auth/refresh') || url.includes('/auth/login')) {
     delete (options.headers as Record<string, string>)?.Authorization
   }
-  console.log('options', `${process.env.NEXT_PUBLIC_API}${url}`, options)
-  let response = await fetch(`${process.env.NEXT_PUBLIC_API}${url}`, options)
+
+  const fullUrl = await buildApiUrl(url)
+  console.log('fullUrl', fullUrl)
+  let response = await fetch(fullUrl, options)
   if (!response.ok) {
     if (response.status === 401) {
       // In CSR: try to refresh token if fetchOngoing is enabled
@@ -79,11 +80,7 @@ export const fetcher = async <T>(
               Authorization: `Bearer ${csrRefreshTokenResponse.data.token}`,
             }),
           }
-          // console.log('options', options)
-          response = await fetch(
-            `${process.env.NEXT_PUBLIC_API}${url}`,
-            options,
-          )
+          response = await fetch(fullUrl, options)
         }
       } else {
         redirect('/login')

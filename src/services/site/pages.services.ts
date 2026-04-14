@@ -4,7 +4,7 @@ import { fetcher } from '@/utils/services/fetcher'
 // GET - Tek sayfa getir (slug ile) — site tarafı için
 export const getPageBySlugService = async (slug: string) => {
   try {
-    const response: PageResponseType = await fetcher(`/api/v1/pages/${slug}`, {
+    const response: PageResponseType = await fetcher(`/pages/${slug}`, {
       method: 'GET',
     })
     if (!response.result) {

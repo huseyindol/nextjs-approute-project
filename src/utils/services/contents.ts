@@ -4,6 +4,7 @@ import {
   SectionData,
   SectionInfo,
 } from '@/types/content'
+import { buildApiUrl } from '@/utils/helpers/tenant'
 
 /**
  * Site-side content fetcher - Server Component'lerde kullanılır
@@ -13,18 +14,16 @@ export async function getContentsBySectionKey<T = Record<string, unknown>>(
   sectionKey: string,
 ): Promise<T[]> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API}/api/v1/contents/section/${sectionKey}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        next: {
-          revalidate: 60, // 1 dakika cache
-        },
+    const url = await buildApiUrl(`/contents/section/${sectionKey}`)
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    )
+      next: {
+        revalidate: 60, // 1 dakika cache
+      },
+    })
 
     if (!response.ok) {
       console.error(`Failed to fetch contents for section ${sectionKey}`)
@@ -59,18 +58,16 @@ export async function getContentItemsBySectionKey<T = Record<string, unknown>>(
   sectionKey: string,
 ): Promise<ContentItem<T>[]> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API}/api/v1/contents/section/${sectionKey}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        next: {
-          revalidate: 60,
-        },
+    const url = await buildApiUrl(`/contents/section/${sectionKey}`)
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    )
+      next: {
+        revalidate: 60,
+      },
+    })
 
     if (!response.ok) {
       console.error(`Failed to fetch contents for section ${sectionKey}`)
@@ -110,18 +107,16 @@ export async function getSectionDataBySectionKey<T = Record<string, unknown>>(
   }
 
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API}/api/v1/contents/section/${sectionKey}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        next: {
-          revalidate: 60, // 1 dakika cache
-        },
+    const url = await buildApiUrl(`/contents/section/${sectionKey}`)
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    )
+      next: {
+        revalidate: 60, // 1 dakika cache
+      },
+    })
 
     if (!response.ok) {
       console.error(`Failed to fetch contents for section ${sectionKey}`)

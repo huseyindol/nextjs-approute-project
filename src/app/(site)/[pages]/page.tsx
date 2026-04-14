@@ -1,6 +1,12 @@
-import dynamic from 'next/dynamic'
 import { getPageBySlugService } from '@/services/site/pages.services'
+import type { Metadata } from 'next'
+import dynamic from 'next/dynamic'
 import { PageResponseType, Page as PageType } from '../../../types/BaseResponse'
+
+// Sabit SEO değerleri
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'
+const SITE_NAME = 'Hüseyin DOL'
 
 type Props = {
   params: Promise<{ pages: string }>
@@ -10,15 +16,14 @@ type Props = {
 // Dynamic page template component props
 type PageTemplateProps = {
   pageInfo: PageType
+  searchParams?: { industry?: string }
 }
 
 export default async function Page(props: Props) {
   const params = await props.params
   const searchParams = await props.searchParams
-  // console.log('Page', params, searchParams)
-  // console.log(`/api/v1/pages/${params.pages}`)
   const response: PageResponseType = await getPageBySlugService(params.pages)
-  // console.log('pagesResponse', response)
+
   const DynamicComponent = response.data.template
     ? dynamic<PageTemplateProps>(
         () => import(`@/components/dynamic/pages/${response.data.template}`),
@@ -32,26 +37,51 @@ export default async function Page(props: Props) {
     >
       {/* burada template bilgisi ne geliyorsa o component render edilecek ilgili component ise components/dynamic/pages altında aranacak */}
       {DynamicComponent && (
-        <DynamicComponent pageInfo={response.data as PageType} />
+        <DynamicComponent
+          pageInfo={response.data as PageType}
+          searchParams={searchParams as { industry?: string }}
+        />
       )}
     </section>
   )
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const response: PageResponseType = await getPageBySlugService(
     (await params).pages,
   )
+
+  const { seoInfo, title, description } = response.data
+  const pageTitle = seoInfo?.title || title
+  const pageDescription = seoInfo?.description || description
+  const pageKeywords = seoInfo?.keywords || ''
+  const canonicalUrl = seoInfo?.canonicalUrl
+    ? `${SITE_URL}${seoInfo.canonicalUrl}`
+    : SITE_URL
+
   return {
-    title: response.data.seoInfo.title,
-    description: response.data.seoInfo.description,
-    keywords: response.data.seoInfo.keywords,
+    title: pageTitle,
+    description: pageDescription,
+    keywords: pageKeywords,
     alternates: {
-      canonical: response.data.seoInfo.canonicalUrl,
+      canonical: canonicalUrl,
     },
     robots: {
-      index: !response.data.seoInfo.noIndex,
-      follow: !response.data.seoInfo.noFollow,
+      index: !seoInfo?.noIndex,
+      follow: !seoInfo?.noFollow,
+    },
+    openGraph: {
+      title: pageTitle,
+      description: pageDescription,
+      url: canonicalUrl,
+      siteName: SITE_NAME,
+      type: 'website',
+      locale: 'tr_TR',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: pageTitle,
+      description: pageDescription,
     },
   }
 }

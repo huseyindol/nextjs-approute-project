@@ -73,6 +73,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       },
     ],
-    sitemap: 'https://next.huseyindol.com/sitemap.xml',
+    sitemap: 'https://www.huseyindol.com/sitemap.xml',
   }
 }

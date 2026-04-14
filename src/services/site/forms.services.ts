@@ -7,12 +7,9 @@ import { fetcher } from '@/utils/services/fetcher'
 // GET - Tek form getir (ID ile) — site tarafı için
 export const getFormByIdService = async (id: string) => {
   try {
-    const response: FormSchemaResponseType = await fetcher(
-      `/api/v1/forms/${id}`,
-      {
-        method: 'GET',
-      },
-    )
+    const response: FormSchemaResponseType = await fetcher(`/forms/${id}`, {
+      method: 'GET',
+    })
     if (!response.result) {
       throw new Error('Error get form', { cause: response.message })
     }
@@ -30,7 +27,7 @@ export const submitFormService = async (
 ) => {
   try {
     const response: FormSubmissionResponseType = await fetcher(
-      `/api/v1/forms/${formId}/submit`,
+      `/forms/${formId}/submit`,
       {
         method: 'POST',
         headers: {

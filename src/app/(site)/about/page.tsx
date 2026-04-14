@@ -2,7 +2,8 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import Hero from '@/components/Hero'
 import type { Metadata } from 'next'
 
-const SITE_URL = 'https://next.huseyindol.com'
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'
 
 export const metadata: Metadata = {
   title: 'Hakkımda',
