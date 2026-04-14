@@ -1,4 +1,4 @@
-# Hüseyin DOL
+# Hüseyin DOL (huseyindol)
 
 > Senior Frontend Developer with 10+ years of experience building modern, scalable web applications using React, Next.js, and TypeScript. Based in Sancaktepe, İstanbul, Turkey.
 

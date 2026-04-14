@@ -5,10 +5,12 @@ export function PersonJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: 'Hüseyin DOL',
+    alternateName: 'huseyindol',
     url: SITE_URL,
     jobTitle: 'Senior Frontend Developer',
     image: `${SITE_URL}/assets/img/huseyindol.png`,
     email: 'huseyindol@gmail.com',
+    identifier: 'huseyindol',
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Sancaktepe',
