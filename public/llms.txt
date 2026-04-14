@@ -6,11 +6,11 @@ Hüseyin DOL specializes in scalable, performant, and user-friendly frontend arc
 
 ## Portfolio
 
-- [Home](https://next.huseyindol.com): Portfolio overview — skills, experience highlights, and hero section
-- [About](https://next.huseyindol.com/about): Professional background and personal story
-- [Experience](https://next.huseyindol.com/experience): Career history, roles, and achievements
-- [Skills](https://next.huseyindol.com/skills): Technical skill set across frontend, backend, and tooling
-- [CV / Resume](https://next.huseyindol.com/assets/files/HuseyinDOL.pdf): Downloadable resume (PDF)
+- [Home](https://www.huseyindol.com): Portfolio overview — skills, experience highlights, and hero section
+- [About](https://www.huseyindol.com/about): Professional background and personal story
+- [Experience](https://www.huseyindol.com/experience): Career history, roles, and achievements
+- [Skills](https://www.huseyindol.com/skills): Technical skill set across frontend, backend, and tooling
+- [CV / Resume](https://www.huseyindol.com/assets/files/HuseyinDOL.pdf): Downloadable resume (PDF)
 
 ## Contact
 

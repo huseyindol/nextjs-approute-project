@@ -10,7 +10,7 @@ Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professio
 - Email: huseyindol@gmail.com
 - GitHub: https://github.com/huseyindol
 - LinkedIn: https://www.linkedin.com/in/huseyindol/
-- CV: https://next.huseyindol.com/assets/files/HuseyinDOL.pdf
+- CV: https://www.huseyindol.com/assets/files/HuseyinDOL.pdf
 
 ## Core Technical Skills
 
@@ -55,8 +55,8 @@ Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professio
 
 ## Portfolio Pages
 
-- [Home](https://next.huseyindol.com): Hero introduction, skills grid, and experience section with industry filter
-- [About](https://next.huseyindol.com/about): Professional background
-- [Experience](https://next.huseyindol.com/experience): Full career history
-- [Skills](https://next.huseyindol.com/skills): Complete technical skill set
-- [CV](https://next.huseyindol.com/assets/files/HuseyinDOL.pdf): Downloadable resume (PDF)
+- [Home](https://www.huseyindol.com): Hero introduction, skills grid, and experience section with industry filter
+- [About](https://www.huseyindol.com/about): Professional background
+- [Experience](https://www.huseyindol.com/experience): Full career history
+- [Skills](https://www.huseyindol.com/skills): Complete technical skill set
+- [CV](https://www.huseyindol.com/assets/files/HuseyinDOL.pdf): Downloadable resume (PDF)

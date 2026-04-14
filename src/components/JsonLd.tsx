@@ -1,4 +1,5 @@
-const SITE_URL = 'https://next.huseyindol.com'
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'
 
 export function PersonJsonLd() {
   const schema = {
