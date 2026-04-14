@@ -4,6 +4,7 @@ import { INDUSTRIES } from '@/schemas/constants'
 import { ExperienceType } from '@/schemas/dynamic/experienceSchema'
 import { Building, Calendar, MapPin } from 'lucide-react'
 import Link from 'next/link'
+import { getSectionDataBySectionKey } from '@/utils/services/contents'
 
 // Mock data - API boşsa veya hata varsa kullanılır
 const mockExperiences: ExperienceType[] = [
@@ -196,18 +197,18 @@ export default async function Experience({ searchParams }: ExperienceProps) {
   const selectedIndustry = searchParams?.industry || 'all'
 
   // API'den section verilerini çek (title, description + items)
-  // const { sectionInfo, items } =
-  //   await getSectionDataBySectionKey<ExperienceType>(
-  //     'portfolio_experience',
-  //     DEFAULT_SECTION_INFO,
-  //   )
+  const { sectionInfo, items } =
+    await getSectionDataBySectionKey<ExperienceType>(
+      'portfolio_experience',
+      DEFAULT_SECTION_INFO,
+    )
 
   // Fallback to mock data if API returns empty
-  const allExperiences = mockExperiences
+  const allExperiences = items && items.length > 0 ? items : mockExperiences
 
   // Section bilgileri (API'den veya fallback)
-  const title = DEFAULT_SECTION_INFO.title
-  const description = DEFAULT_SECTION_INFO.description
+  const title = sectionInfo.title
+  const description = sectionInfo.description
 
   // Filter experiences by industry - INDUSTRIES constant kullanılıyor
   const filteredExperiences =

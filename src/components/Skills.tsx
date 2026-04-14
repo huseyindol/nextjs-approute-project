@@ -3,6 +3,15 @@ import { Card } from '@/components/ui/card'
 import { skills as mockSkills } from '@/data/mockData'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getSectionDataBySectionKey } from '@/utils/services/contents'
+
+export interface SkillType {
+  name: string
+  level: string
+  years: string
+  imageUrl: string
+  url: string
+}
 
 // Fallback section bilgisi
 const DEFAULT_SECTION_INFO = {
@@ -12,17 +21,17 @@ const DEFAULT_SECTION_INFO = {
 
 export default async function Skills() {
   // API'den section verilerini çek (title, description + items)
-  // const { sectionInfo, items } = await getSectionDataBySectionKey<SkillType>(
-  //   'portfolio_skills',
-  //   DEFAULT_SECTION_INFO,
-  // )
+  const { sectionInfo, items } = await getSectionDataBySectionKey<SkillType>(
+    'portfolio_skills',
+    DEFAULT_SECTION_INFO,
+  )
 
   // Fallback to mock data if API returns empty
-  const skills = mockSkills
+  const skills = items && items.length > 0 ? items : mockSkills
 
   // Section bilgileri (API'den veya fallback)
-  const title = DEFAULT_SECTION_INFO.title
-  const description = DEFAULT_SECTION_INFO.description
+  const title = sectionInfo.title
+  const description = sectionInfo.description
 
   return (
     <section id="skills" className="bg-muted/30 py-20">

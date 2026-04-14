@@ -244,6 +244,6 @@ export const metadataHomePage: Metadata = {
   description:
     'Frontend Developer & UI/UX Designer olarak çalışmalarım ve deneyimlerim',
   alternates: {
-    canonical: 'https://next.huseyindol.com',
+    canonical: 'https://www.huseyindol.com',
   },
 }
