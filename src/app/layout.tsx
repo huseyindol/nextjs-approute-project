@@ -101,6 +101,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: SITE_URL,
+    // AI crawler'lar için llms.txt discovery
+    types: {
+      'text/plain': `${SITE_URL}/llms.txt`,
+    },
   },
 }
 
