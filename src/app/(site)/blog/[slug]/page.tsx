@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { ArrowLeftIcon, CalendarIcon, ClockIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Metadata } from 'next'
+import { ArticleJsonLd } from '@/components/JsonLd'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -88,6 +89,16 @@ export default async function BlogPostPage({ params }: Readonly<Props>) {
 
   return (
     <div className="container mx-auto min-h-screen bg-transparent px-6 pb-20 pt-32">
+      <ArticleJsonLd
+        title={post.frontmatter.title}
+        description={
+          (post.frontmatter.description as string) || post.frontmatter.title
+        }
+        url={`${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'}/blog/${post.slug}`}
+        imageUrl={post.frontmatter.coverImage}
+        datePublished={post.frontmatter.publishedAt as string}
+        authorName={post.frontmatter.author}
+      />
       <article className="mx-auto max-w-7xl">
         <div className="mb-4">
           <Link

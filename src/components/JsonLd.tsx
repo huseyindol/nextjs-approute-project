@@ -41,3 +41,54 @@ export function PersonJsonLd() {
     />
   )
 }
+
+export interface ArticleJsonLdProps {
+  title: string
+  description: string
+  url: string
+  imageUrl?: string
+  datePublished: string
+  authorName: string
+}
+
+export function ArticleJsonLd({
+  title,
+  description,
+  url,
+  imageUrl,
+  datePublished,
+  authorName,
+}: Readonly<ArticleJsonLdProps>) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description: description,
+    image: imageUrl ? [imageUrl] : [],
+    datePublished: datePublished,
+    author: {
+      '@type': 'Person',
+      name: authorName,
+      url: SITE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Hüseyin DOL',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/assets/img/huseyindol.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': url,
+    },
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  )
+}
