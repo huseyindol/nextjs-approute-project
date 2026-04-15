@@ -33,17 +33,14 @@ export default async function Home({ searchParams }: HomeProps) {
     : null
 
   return (
-    <section
-      id="about"
-      className="flex items-center justify-center py-24 pt-24 md:pt-32"
-    >
+    <>
       {DynamicComponent && (
         <DynamicComponent
           pageInfo={response.data as PageType}
           searchParams={resolvedSearchParams as { industry?: string }}
         />
       )}
-    </section>
+    </>
   )
 }
 
