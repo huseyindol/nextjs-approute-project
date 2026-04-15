@@ -1,6 +1,6 @@
 ---
-title: "Next.js Backend as a Frontend: API Routes"
-description: "Route Handlers ile Next.js içerisinde proxy oluşturarak mikroservislere köprü yapmak ve webhook dinl..."
+title: 'Next.js Backend as a Frontend: API Routes'
+description: 'Route Handlers ile Next.js içerisinde proxy oluşturarak mikroservislere köprü yapmak ve webhook dinl...'
 publishedAt: '2026-04-17'
 category: 'Frontend'
 author: 'Hüseyin DOL'
@@ -23,12 +23,13 @@ Route Handlers (API Route'ları) kullanarak arka plan sunucularına bir proxy t�
 // app/api/public/route.ts
 export async function GET(request: Request) {
   // Backend API'sine header tabanlı köprü kuralım
-  const res = await fetch('https://hidden-api.internal', { headers });
-  return NextResponse.json(await res.json());
+  const res = await fetch('https://hidden-api.internal', { headers })
+  return NextResponse.json(await res.json())
 }
 ```
 
 Bu sayede arka uç (backend) sunucularımızı tamamen izole bir özel ağa (Private Network) çekebiliyor ve yalnızca Next.js sunucusunun onlara ulaşabilmesine izin vererek güvenlik ve performans (rate limiting) katmanı elde ediyoruz.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

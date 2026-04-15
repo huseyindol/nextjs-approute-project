@@ -1,5 +1,5 @@
 ---
-title: "Elly Admin Panel Mimarisi: Next.js App Router"
+title: 'Elly Admin Panel Mimarisi: Next.js App Router'
 description: "Elly-admin-panel geliştirilirken Next.js'in SSR yeteneklerini ve App Router esnekliklerini kullandık..."
 publishedAt: '2026-04-17'
 category: 'Frontend'
@@ -22,12 +22,13 @@ Yükleme sürelerini minimize etmek için istemci (Client) ve sunucu (Server) bi
 ```tsx
 // app/admin/users/page.tsx (Server Component)
 export default async function AdminUsersPage() {
-   const users = await db.query.users();
-   return <UsersTable data={users} />
+  const users = await db.query.users()
+  return <UsersTable data={users} />
 }
 ```
 
 Verinin işlendiği yere en yakın noktada çekilmesi, paneller arası geçişlerde sıfıra yakın (zero-latency) bir hissiyat yarattı. CMS içindeki ağır analiz sorguları bile sunucu gücüyle anında cevap veriyor.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

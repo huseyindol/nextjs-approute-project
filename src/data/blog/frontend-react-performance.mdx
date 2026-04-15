@@ -1,6 +1,6 @@
 ---
-title: "React Render Performans Optimizasyonu"
-description: "React Suspense, Lazy Loading ve RSC (React Server Components) konseptleri ile gereksiz re-render pro..."
+title: 'React Render Performans Optimizasyonu'
+description: 'React Suspense, Lazy Loading ve RSC (React Server Components) konseptleri ile gereksiz re-render pro...'
 publishedAt: '2026-04-16'
 category: 'Frontend'
 author: 'Hüseyin DOL'
@@ -22,11 +22,18 @@ Darboğazları önlemek adına `React.memo`, `useMemo` ve `useCallback` fonksiyo
 ```tsx
 const HeavyComponent = memo(({ dataset }) => {
   // Yoğun DOM iterasyonları
-  return <div>{dataset.map(item => <span key={item.id}>{item.val}</span>)}</div>
-});
+  return (
+    <div>
+      {dataset.map(item => (
+        <span key={item.id}>{item.val}</span>
+      ))}
+    </div>
+  )
+})
 ```
 
 Bileşen bağımlılıklarını izole ettiğimiz bu yaklaşımlar, büyük ölçekli ve binlerce node barındıran dashboard ekranlarında bile uygulamanın 60FPS hızında, tamamen akıcı çalışmasını garantiliyor.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

@@ -12,8 +12,9 @@ Bu makalede, geliştirdiğim `elly` projesi etrafında şekillenen **Backend (Ar
 
 ## 1. Elly Backend Mimarisine Genel Bakış
 
-Java tabanlı `elly` projemiz tamamen **Mikroservis** esnekliklerine açık, ancak katmanlı monolit yapısının birleşimi gibi hareket eden modern bir Spring Boot API'sidir. 
+Java tabanlı `elly` projemiz tamamen **Mikroservis** esnekliklerine açık, ancak katmanlı monolit yapısının birleşimi gibi hareket eden modern bir Spring Boot API'sidir.
 Mimaride hedeflenen noktalar:
+
 - %100 Güvenlik (Role-Based Access Control)
 - Tenant-Based System (Multitenancy altyapısı)
 - Hızlı tepki süreleri (Redis)
@@ -23,6 +24,7 @@ Mimaride hedeflenen noktalar:
 
 Kullanıcıların ne yapabileceğini belirleyen yetki hiyerarşisi (RBAC) tasarladık. Spring Security `@PreAuthorize` anatasyonunu method seviyesine indirgeyerek, endpoint'te hangi kullanıcının izni olduğunu veritabanındaki rolleriyle yönetebiliyoruz.
 Ancak burada devasa bir problem doğuyor: Her istekte 3 SQL sorgusu atmak!
+
 - `Users` tablosu kontrolü
 - `Roles ve Permissions` kontrolü
 - `User_Tenants` kontrolü
@@ -35,11 +37,11 @@ Aynı zamanda **Event-driven invalidation** tekniği ile bir kullanıcının rol
 ## 4. SMTP Sorunları ve RabbitMQ Asenkron İşlemleri
 
 `elly` projesi kapsamında çoklu müşteri (Tenant-based) mimarisinden ötürü, Spring'in varsayılan Mail konfigürasyonunu kapatarak veritabanından dinamik olarak okunan SMTP hesaplarını devreye aldım.
-Kullanıcı kayıt olduğunda ya da email onayı gerektiğinde sisteme binen yük, Java'nın synchronous akışını tamamen yavaşlatır. Bunun için işlemleri **RabbitMQ** Message Broker'a taşıdım. İstek kuyruğa atılır, arka plandaki Consumer'lar podlar üzerinden mail atma işlemini dener. 
+Kullanıcı kayıt olduğunda ya da email onayı gerektiğinde sisteme binen yük, Java'nın synchronous akışını tamamen yavaşlatır. Bunun için işlemleri **RabbitMQ** Message Broker'a taşıdım. İstek kuyruğa atılır, arka plandaki Consumer'lar podlar üzerinden mail atma işlemini dener.
 
 K8s ortamında geçici SMTP bağlantı retleri ile (connection refused) karşılaşmıştık. Mail handler içerisine "Delayed Retry Mechanism" ekleyerek başarısız gönderimlerin sonsuz bir sıkı döngü (tight loop) yaratmasını engelledik.
 
 ## Sonuç
 
-Elly projesi, güçlü Java backend dinamikleri ile modern "Cloud Native" araçlarının harmanlandığı oldukça keyifli bir platform haline geldi. 
+Elly projesi, güçlü Java backend dinamikleri ile modern "Cloud Native" araçlarının harmanlandığı oldukça keyifli bir platform haline geldi.
 Verilerin PostgreSQL'de güvenle saklandığı, asenkron yüklerin RabbitMQ ile azaltıldığı, saniyelik statik verilerin Redis ile şahlandığı tam donanımlı bir DevOps & Backend harikasıdır.

@@ -27,12 +27,12 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-supersecret}
       POSTGRES_DB: ${DB_NAME:-elly_db}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]
+      test: ['CMD-SHELL', 'pg_isready -U admin']
       interval: 10s
       timeout: 5s
       retries: 5

@@ -1,5 +1,5 @@
 ---
-title: "Modern React Mimarisi ve Clean Code Pratikleri"
+title: 'Modern React Mimarisi ve Clean Code Pratikleri'
 description: "State yönetimi, Custom Hook'ların gücü ve Declarative (Bildirimsel) kod yazımının React ekosistemind..."
 publishedAt: '2026-04-16'
 category: 'Frontend'
@@ -22,15 +22,18 @@ Projelerde karmaşık durumları yönetirken side-effect (useEffect) kullanımı
 ```tsx
 // Örnek: İş mantığının UI'dan izole edilmesi
 export function useProfileData(userId: string) {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(null)
   useEffect(() => {
-     fetch('/api/user/' + userId).then(res => res.json()).then(setData);
-  }, [userId]);
-  return data;
+    fetch('/api/user/' + userId)
+      .then(res => res.json())
+      .then(setData)
+  }, [userId])
+  return data
 }
 ```
 
 Custom hook'lar üzerinde ilerlediğimizde UI bileşenleri tamamen "aptal" (dumb) hale gelir ve sadece gelen datayı basmakla ilgilenir. Bu izolasyon, ekibin projeye adaptasyon sürecini aylar seviyesinden haftalara indirir.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

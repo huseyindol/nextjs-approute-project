@@ -1,6 +1,6 @@
 ---
-title: "Next.js ile Kusursuz SEO ve Metadata Yönetimi"
-description: "Dynamic Content içeren uygulamalardaki metadata dinamik atamaları (generateMetadata) ve robots.txt e..."
+title: 'Next.js ile Kusursuz SEO ve Metadata Yönetimi'
+description: 'Dynamic Content içeren uygulamalardaki metadata dinamik atamaları (generateMetadata) ve robots.txt e...'
 publishedAt: '2026-04-17'
 category: 'Frontend'
 author: 'Hüseyin DOL'
@@ -21,10 +21,10 @@ Dynamic SEO yetenekleri kapsamında yer alan `generateMetadata` fonksiyonu ile U
 
 ```tsx
 export async function generateMetadata({ params }): Promise<Metadata> {
-  const post = await getPost(params.id);
+  const post = await getPost(params.id)
   return {
     title: post.title,
-    openGraph: { images: [post.cover] }
+    openGraph: { images: [post.cover] },
   }
 }
 ```
@@ -32,4 +32,5 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 Paylaşım ağlarındaki URL önizlemeleri tamamen doğru bilgiyle (Görsel ve Açıklama dahil) görünmekte olup, Google botları sayfalarımızı indexlerken tam teşekküllü (SSR) HTML'e saniyeler içinde erişebilmektedir.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

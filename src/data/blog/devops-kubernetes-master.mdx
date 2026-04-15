@@ -33,13 +33,13 @@ spec:
         app: elly
     spec:
       containers:
-      - name: backend
-        image: huseyindol/elly:latest
-        ports:
-        - containerPort: 8080
+        - name: backend
+          image: huseyindol/elly:latest
+          ports:
+            - containerPort: 8080
 ```
 
-## 2. Kubernetes Üzerinde PostgreSQL 
+## 2. Kubernetes Üzerinde PostgreSQL
 
 Veritabanlarını K8s üzerinde tutmak, StatefulSet objeleriyle olmalıdır. K8s'de Pod'lar her an ölebilir, bu nedenle kalıcılığı sağlamak için PersistentVolumeClaim (PVC) objelerinden yararlanırız. Bu şekilde `Elly` veritabanımız, Kubernetes Node'u değişse dahi verisini güvende tutar. Güvenlik tarafında ise auth bilgileri `Secret` objelerinde barındırılır.
 
@@ -51,8 +51,8 @@ Message Broker yapıları, asenkron iletişimde hayati rol oynar. K8s üzerinde 
 
 Tüm bu iç microservice mimarisinin internete açılan kapısı Nginx-Ingress'tir. Ingress Controller, dışarıdan gelen HTTP(S) isteklerini Host veya Path bazlı yönlendirir.
 
-* `TLS Offloading`: SSL sertifikaları Nginx tarafında çözülür, içeriye şifresiz aktarılarak servislerin SSL yükü hafifletilir.
-* `Rate Limiting`: Annotation'lar yardımıyla Nginx üzerinden gelen saniyedeki istek sayıları sınırlandırılır.
+- `TLS Offloading`: SSL sertifikaları Nginx tarafında çözülür, içeriye şifresiz aktarılarak servislerin SSL yükü hafifletilir.
+- `Rate Limiting`: Annotation'lar yardımıyla Nginx üzerinden gelen saniyedeki istek sayıları sınırlandırılır.
 
 ## 5. Kubernetes İçerisinde Redis
 
@@ -62,8 +62,8 @@ Kullanıcı yetkilendirmeleri (RBAC) gibi veritabanını çok yoran işlemleri h
 
 Kurulan bu devasa ekosistemde, hangi servisin hata verdiğini saniyeler içinde görebilmeliyiz.
 
-* **Prometheus:** K8s Cluster'ı üzerindeki metric'leri toplar (CPU kullanımı, Bellek şişmesi, Nginx request süreleri).
-* **Grafana:** Prometheus'tan aldığı bu istatistiksel verileri oldukça başarılı "Dashboard" (gösterge paneli) arayüzleriyle bizlere sunar.
-* **Zipkin (Distributed Tracing):** İstekler sisteme girdiğinde RabbitMQ ve Java servisleri arasında geçen zamanı takip ederek "bottleneck" (dar boğaz) nerede anlayabilmemizi sağlar. 
+- **Prometheus:** K8s Cluster'ı üzerindeki metric'leri toplar (CPU kullanımı, Bellek şişmesi, Nginx request süreleri).
+- **Grafana:** Prometheus'tan aldığı bu istatistiksel verileri oldukça başarılı "Dashboard" (gösterge paneli) arayüzleriyle bizlere sunar.
+- **Zipkin (Distributed Tracing):** İstekler sisteme girdiğinde RabbitMQ ve Java servisleri arasında geçen zamanı takip ederek "bottleneck" (dar boğaz) nerede anlayabilmemizi sağlar.
 
 K8s yönetimi başlı başına bir disiplin olsa da, temelleri doğru atılan manifest dosyaları (yaml) ve sağlam bir mimari eşliğinde sonsuz ölçeklenebilen kusursuz bir otomasyon ortamı sunar.

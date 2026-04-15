@@ -1,6 +1,6 @@
 ---
-title: "React ve Shadcn UI: Tasarım Sistemleri"
-description: "Klasik komponent kütüphanelerinin aksine, kodu tamamen bizim sahiplendiğimiz Shadcn UI mimarisi ile ..."
+title: 'React ve Shadcn UI: Tasarım Sistemleri'
+description: 'Klasik komponent kütüphanelerinin aksine, kodu tamamen bizim sahiplendiğimiz Shadcn UI mimarisi ile ...'
 publishedAt: '2026-04-16'
 category: 'Frontend'
 author: 'Hüseyin DOL'
@@ -20,14 +20,19 @@ Klasik component kütüphanelerinin aksine (Ant Design, MUI), takımın ihtiyaç
 Komponent kodlarının paket modülü yerine bizzat kaynak kodumuzun (`src/components`) içerisine kopyalanması bize devasa bir esneklik sunuyor. Tailwind CSS ile entegre olan bu yapı sayesinde projenin kurumsal renk kartelasını ve varyasyonlarını kolayca adapte ediyoruz.
 
 ```tsx
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 
 export function CTASection() {
-  return <Button variant="destructive" className="animate-pulse">Sil ve Devam Et</Button>
+  return (
+    <Button variant="destructive" className="animate-pulse">
+      Sil ve Devam Et
+    </Button>
+  )
 }
 ```
 
 Hazır ama aynı zamanda baştan yazılabilir olan bu mimari sayesinde kod tekrarından kurtulurken, kurumsal projelerin ihtiyaç duyduğu o spesifik tasarım ince ayarlarını dakikalar içinde üretebiliyoruz.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

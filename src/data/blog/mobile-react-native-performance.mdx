@@ -1,6 +1,6 @@
 ---
-title: "React Native FlatList Performans İpuçları"
-description: "Binlerce verinin mobil ekranda kasma donma yaşamadan listelenebilmesi için memoization, keyextractor..."
+title: 'React Native FlatList Performans İpuçları'
+description: 'Binlerce verinin mobil ekranda kasma donma yaşamadan listelenebilmesi için memoization, keyextractor...'
 publishedAt: '2026-04-21'
 category: 'Mobile'
 author: 'Hüseyin DOL'
@@ -20,7 +20,7 @@ React Native'in tartışmasız en büyük kronik rahatsızlıklarından biri ço
 Kullanıcıların yüzlerce öğeyi "pürüzsüz" ve 0 frame-drop (kare kaybı) ile kaydırabilmesi için FlatList veya RecyclerListView komponentlerini spesifik render kotalarıyla entegre ediyoruz. Özellikle List Item'leri memo componentler yapmak işin kritik virajıdır.
 
 ```tsx
-<FlatList 
+<FlatList
   data={feed}
   keyExtractor={item => item.id}
   // Ekran dışında render edilecek görünmez alan sayısı
@@ -33,4 +33,5 @@ Kullanıcıların yüzlerce öğeyi "pürüzsüz" ve 0 frame-drop (kare kaybı) 
 Yüksek resourcelu görsel medyalarla bile uygulamanın "Aşırı ısınması" veya FPS çökmesini bertaraf edebiliyor, kullanıcının sanki native Kotlin / Swift dilinde yazılmış bir uygulamada geziyormuş hissiyatını güçlendiriyoruz.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._
