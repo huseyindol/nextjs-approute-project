@@ -31,10 +31,7 @@ export default async function Page(props: Props) {
     : null
 
   return (
-    <section
-      id="about"
-      className="flex items-center justify-center py-24 pt-24 md:pt-32"
-    >
+    <>
       {/* burada template bilgisi ne geliyorsa o component render edilecek ilgili component ise components/dynamic/pages altında aranacak */}
       {DynamicComponent && (
         <DynamicComponent
@@ -42,7 +39,7 @@ export default async function Page(props: Props) {
           searchParams={searchParams as { industry?: string }}
         />
       )}
-    </section>
+    </>
   )
 }
 
