@@ -1,8 +1,10 @@
+import { getAllPosts } from '@/lib/mdx'
 import type { MetadataRoute } from 'next'
 
-const BASE_URL = 'https://www.huseyindol.com'
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date()
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -30,7 +32,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
+    {
+      url: `${BASE_URL}/blog`,
+      lastModified,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
   ]
 
-  return staticRoutes
+  const posts = await getAllPosts()
+  const dynamicBlogRoutes: MetadataRoute.Sitemap = posts.map(post => ({
+    url: `${BASE_URL}/blog/${post.slug}`,
+    lastModified: post.frontmatter.publishedAt
+      ? new Date(post.frontmatter.publishedAt)
+      : lastModified,
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }))
+
+  return [...staticRoutes, ...dynamicBlogRoutes]
 }
