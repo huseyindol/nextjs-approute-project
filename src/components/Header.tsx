@@ -82,6 +82,19 @@ export default function Header() {
           >
             Deneyim
           </Link>
+          <Link
+            href="/blog"
+            className="text-muted-foreground transition-colors hover:text-emerald-600 dark:hover:text-emerald-400"
+            onClick={() =>
+              sendGTMEvent({
+                virtual: '/blog',
+                event: 'buttonClick',
+                target: 'blog',
+              })
+            }
+          >
+            Makalelerim
+          </Link>
           <ThemeToggle />
         </nav>
 
@@ -112,6 +125,14 @@ export default function Header() {
               <DropdownMenuItem asChild>
                 <Link href="/experience" className="w-full">
                   Deneyim
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href="/blog"
+                  className="w-full text-emerald-600 hover:text-emerald-700 dark:text-emerald-400"
+                >
+                  Makalelerim
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>

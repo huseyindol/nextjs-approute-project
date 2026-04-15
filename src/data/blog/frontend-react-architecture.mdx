@@ -1,0 +1,36 @@
+---
+title: "Modern React Mimarisi ve Clean Code Pratikleri"
+description: "State yönetimi, Custom Hook'ların gücü ve Declarative (Bildirimsel) kod yazımının React ekosistemind..."
+publishedAt: '2026-04-16'
+category: 'Frontend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2000&auto=format&fit=crop'
+readingTime: '6'
+order: 99
+---
+
+Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> State yönetimi, Custom Hook'ların gücü ve Declarative (Bildirimsel) kod yazımının React ekosistemindeki önemine değindik. Projelerimizde Side effect'leri en aza indiren fonksiyonel yaklaşımlar sergiledik. React 19 ve concurrent özelliklerinin uygulamadaki performans getirileri muazzamdır.
+
+Modern Front-end dünyasında React'in giderek karmaşıklaşan yapısı, sürdürülebilir bir mimari tasarlamayı zorunlu kılıyor. Uygulamalar büyüdükçe, bileşen hiyerarşisinde kaybolmamak için "Separation of Concerns" (Sorumlulukların Ayrılığı) prensibini en temel yapıtaşı yapmalıyız.
+
+Projelerde karmaşık durumları yönetirken side-effect (useEffect) kullanımını minimize ediyor ve iş mantığını tamamen **Custom Hook** yapılarına devrediyorum. "Container/Presenter" mantığını modern Hook ekosistemiyle birleştirmek, testlerin kolaylaşmasını ve kodun her yerde kullanılabilmesini (reusability) sağlıyor. Özellikle React 18 ile gelen concurrent rendering, performans hedeflerimiz için devrimseldir.
+
+```tsx
+// Örnek: İş mantığının UI'dan izole edilmesi
+export function useProfileData(userId: string) {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+     fetch('/api/user/' + userId).then(res => res.json()).then(setData);
+  }, [userId]);
+  return data;
+}
+```
+
+Custom hook'lar üzerinde ilerlediğimizde UI bileşenleri tamamen "aptal" (dumb) hale gelir ve sadece gelen datayı basmakla ilgilenir. Bu izolasyon, ekibin projeye adaptasyon sürecini aylar seviyesinden haftalara indirir.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

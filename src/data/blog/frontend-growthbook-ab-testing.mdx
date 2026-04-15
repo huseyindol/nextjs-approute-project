@@ -1,0 +1,31 @@
+---
+title: "Growthbook İle A/B Testleri ve Feature Flag Yönetimi"
+description: "Yeni bir Newsletter arayüzünün konversiyon (dönüşüm) oranını etkileyip etkilemeyeceğini test etmek i..."
+publishedAt: '2026-04-20'
+category: 'Frontend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop'
+readingTime: '7'
+order: 5
+---
+
+Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> Yeni bir Newsletter arayüzünün konversiyon (dönüşüm) oranını etkileyip etkilemeyeceğini test etmek için projeye Growthbook SDK ekleyip %50 trafikli A/B test senaryosu yürüttük.
+
+Yeni çıkardığınız çılgın bir sayfa tasarımının satışı patlatacağından emin misiniz? Şirket vizyonunda kararlar "sezgilere" değil, her zaman dataya (veriye) dayandırılmadır. Bu amaçla Feature Flag yetenekleriyle A/B testlerini vazgeçilmez görüyoruz.
+
+Growthbook SDK yapısını projeye entegre ederek, ana sayfadaki "Ödeme Yap" butonunun yeşil renkli halini kullanıcıların %50'sine, mavi renkli halini diğer %50'sine bölüp rastgele sunuyoruz. Sistemin ayakta kalması ve riskin bölünmesi bu deneylere dayanıyor.
+
+```ts
+const isNewHeaderOn = growthbook.isOn('new-header-experiment');
+// Canlı trafik esnasında kurala göre komponenti seçelim
+return isNewHeaderOn ? <HeaderV2 /> : <HeaderV1 />;
+```
+
+Herhangi vahim bir bug veya satın almada çöküş yaşanırsa kod değiştirmeden Growthbook paneli üzerinden o feature-flag bayrağını anında kapatıyor, problemi tek saniyede %100 oranında önlemiş oluyoruz.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

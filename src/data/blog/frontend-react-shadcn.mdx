@@ -1,0 +1,33 @@
+---
+title: "React ve Shadcn UI: Tasarım Sistemleri"
+description: "Klasik komponent kütüphanelerinin aksine, kodu tamamen bizim sahiplendiğimiz Shadcn UI mimarisi ile ..."
+publishedAt: '2026-04-16'
+category: 'Frontend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop'
+readingTime: '7'
+order: 99
+---
+
+Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> Klasik komponent kütüphanelerinin aksine, kodu tamamen bizim sahiplendiğimiz Shadcn UI mimarisi ile projelerde inanılmaz bir standartlaşma sağladık. Tailwind CSS'in utility first yaklaşımıyla birleştiğinde ortaya premium sonuçlar çıkıyor.
+
+Klasik component kütüphanelerinin aksine (Ant Design, MUI), takımın ihtiyaçlarına %100 uyumlu ve erişilebilir bir UI sistemi kurmak son derece meşakkatli bir süreçti. Shadcn UI bu zorluğu Headless (Radix) felsefesiyle çözdü.
+
+Komponent kodlarının paket modülü yerine bizzat kaynak kodumuzun (`src/components`) içerisine kopyalanması bize devasa bir esneklik sunuyor. Tailwind CSS ile entegre olan bu yapı sayesinde projenin kurumsal renk kartelasını ve varyasyonlarını kolayca adapte ediyoruz.
+
+```tsx
+import { Button } from "@/components/ui/button"
+
+export function CTASection() {
+  return <Button variant="destructive" className="animate-pulse">Sil ve Devam Et</Button>
+}
+```
+
+Hazır ama aynı zamanda baştan yazılabilir olan bu mimari sayesinde kod tekrarından kurtulurken, kurumsal projelerin ihtiyaç duyduğu o spesifik tasarım ince ayarlarını dakikalar içinde üretebiliyoruz.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

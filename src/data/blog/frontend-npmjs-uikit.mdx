@@ -1,0 +1,29 @@
+---
+title: "Kurumsal UI Kit İnşası: NPMJS Üzerinde Paketleme"
+description: "Firmamın frontend projelerindeki karmaşayı çözmek için geliştirdiğimiz UI-Kit çalışmasının hikayesi...."
+publishedAt: '2026-04-18'
+category: 'Frontend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop'
+readingTime: '7'
+order: 99
+---
+
+Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> Firmamın frontend projelerindeki karmaşayı çözmek için geliştirdiğimiz UI-Kit çalışmasının hikayesi. Button, Badge, Banner, Newsletter alanı gibi componentleri nasıl izole bir pakete dönüştürdük?
+
+Büyüyen yazılım ekiplerinin birbirinden kopuk projeler geliştirdiğinde, renk farklılıkları, komponent uyumsuzlukları gibi krizlerle boğuştuğu bir gerçektir. Takım sinerjisini artırmak adına ortak bir dil (UI-Kit) kurmak kaçınılmazdır.
+
+Firmanın kimliğini yansıtan Button, Banner, Form elementleri gibi tüm yapı taşlarını dışa bağımlı olmadan kendi NPM paketimiz olarak yayımladık. Monorepo (Turborepo) stratejisi yardımıyla projeler arasında "ortak akıl" yürütecek bir CSS ve bileşen standardı oluşturduk.
+
+```bash
+npm install @huseyindol/ui-kit
+```
+
+Bu yaklaşım sayesinde, ürün yönetimi yeni bir platform sipariş ettiğinde geliştirici ekibi sıfırdan tasarım yazmakla uğraşmıyor, markanın hazır bloklarını bir araya getirerek %40 efor tasarrufuyla yayına çıkabiliyor.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

@@ -1,0 +1,25 @@
+---
+title: "Reanimated ve Akışkan 60FPS Animasyonlar"
+description: "UI/UX standartlarını çok yukarılara çekmek için JS thread dışına çıkarılan ve mikro-animasyonları ku..."
+publishedAt: '2026-04-21'
+category: 'Mobile'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1491895200222-0fc4a4c35e18?q=80&w=2000&auto=format&fit=crop'
+readingTime: '5'
+order: 99
+---
+
+Bu makale **Mobile** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> UI/UX standartlarını çok yukarılara çekmek için JS thread dışına çıkarılan ve mikro-animasyonları kusursuz yöneten Reanimated 3 implementasyonlarımız.
+
+Profesyonel mobil ürünleri rakiplerinden ayırt eden şey işlevi kadar sunduğu mikro-etkileşimler (Micro-animations) ve pürüzsüz geri bildirim dokularıdır. Ancak React Native JS ipliği animasyonlar için çok yavaştır.
+
+Asıl devrimi, React'in ana JS ipliğini atlayarak Native donanım seviyesinde asenkron olarak çalışan `react-native-reanimated` (v3) implementasyonuyla sağladık. Akıcı shared element transition'ları ve donanım hızlandırması ile 60FPS sınırlarına ulaşıyoruz.
+
+Kullanıcının tıkladığı nesnenin yumuşakça esnemesi, sayfalar arasındaki sürükleme ivmesinin parmak hızını algılayıp tepki vermesi, UI/UX deneyimi açısından ürünümüzün kalitesini premium segmente yükseltti.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

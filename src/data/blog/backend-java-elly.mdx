@@ -1,0 +1,45 @@
+---
+title: 'Java ve Spring Boot ile Master Proje: Elly Mimarisi'
+description: 'Gelişmiş bir arkaplan mimarisi tasarımı. Java Spring Boot kullanarak RBAC yetkilendirme, Redis caching ve RabbitMQ ile mikroservis iletişimi kurmak.'
+publishedAt: '2026-04-15'
+category: 'Backend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2000&auto=format&fit=crop'
+readingTime: '9'
+---
+
+Bu makalede, geliştirdiğim `elly` projesi etrafında şekillenen **Backend (Arka Yüz)** mimarisinin zorluklarını ve çözüm yollarını sizlerle paylaşıyorum. Bir projenin tek tıkla ayağa kalkması ve milyonlarca veriyi saniyeler içerisinde işleyebilmesinin mimari gerekliliklerini Java/Spring Boot ekosistemi üzerinden anlatacağım.
+
+## 1. Elly Backend Mimarisine Genel Bakış
+
+Java tabanlı `elly` projemiz tamamen **Mikroservis** esnekliklerine açık, ancak katmanlı monolit yapısının birleşimi gibi hareket eden modern bir Spring Boot API'sidir. 
+Mimaride hedeflenen noktalar:
+- %100 Güvenlik (Role-Based Access Control)
+- Tenant-Based System (Multitenancy altyapısı)
+- Hızlı tepki süreleri (Redis)
+- Asenkron görev işleyici (RabbitMQ üzerinden Email Worker)
+
+## 2. Güvenlik ve RBAC (Role-Based Access Control)
+
+Kullanıcıların ne yapabileceğini belirleyen yetki hiyerarşisi (RBAC) tasarladık. Spring Security `@PreAuthorize` anatasyonunu method seviyesine indirgeyerek, endpoint'te hangi kullanıcının izni olduğunu veritabanındaki rolleriyle yönetebiliyoruz.
+Ancak burada devasa bir problem doğuyor: Her istekte 3 SQL sorgusu atmak!
+- `Users` tablosu kontrolü
+- `Roles ve Permissions` kontrolü
+- `User_Tenants` kontrolü
+
+## 3. Performans Kurtarıcısı: Redis Cache
+
+Yukarıda bahsedilen yoğun SQL sorgularını çözmek adına araya **Redis** sistemini soktum. `JwtAuthenticationFilter` katmanında cache'den user yetkilerini çektim ve `CachedUserDetails` isimli özel bir DTO yazdım. Bu sayede DB'ye inmeden, Redisten saniyenin binde biri sürelerde yetkilendirme doğrulamasını sağladım.
+Aynı zamanda **Event-driven invalidation** tekniği ile bir kullanıcının rolü değiştiğinde Redis'teki bilginin anında güncellenmesini koordine ettim.
+
+## 4. SMTP Sorunları ve RabbitMQ Asenkron İşlemleri
+
+`elly` projesi kapsamında çoklu müşteri (Tenant-based) mimarisinden ötürü, Spring'in varsayılan Mail konfigürasyonunu kapatarak veritabanından dinamik olarak okunan SMTP hesaplarını devreye aldım.
+Kullanıcı kayıt olduğunda ya da email onayı gerektiğinde sisteme binen yük, Java'nın synchronous akışını tamamen yavaşlatır. Bunun için işlemleri **RabbitMQ** Message Broker'a taşıdım. İstek kuyruğa atılır, arka plandaki Consumer'lar podlar üzerinden mail atma işlemini dener. 
+
+K8s ortamında geçici SMTP bağlantı retleri ile (connection refused) karşılaşmıştık. Mail handler içerisine "Delayed Retry Mechanism" ekleyerek başarısız gönderimlerin sonsuz bir sıkı döngü (tight loop) yaratmasını engelledik.
+
+## Sonuç
+
+Elly projesi, güçlü Java backend dinamikleri ile modern "Cloud Native" araçlarının harmanlandığı oldukça keyifli bir platform haline geldi. 
+Verilerin PostgreSQL'de güvenle saklandığı, asenkron yüklerin RabbitMQ ile azaltıldığı, saniyelik statik verilerin Redis ile şahlandığı tam donanımlı bir DevOps & Backend harikasıdır.

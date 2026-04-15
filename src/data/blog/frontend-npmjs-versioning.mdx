@@ -1,0 +1,33 @@
+---
+title: "NPM Paketlerinde Semantik Versiyonlama (SemVer)"
+description: "Yüzlerce farklı uygulamaya giden NPM paketinin güncellemelerinde hata oluşmaması için Breaking Chang..."
+publishedAt: '2026-04-18'
+category: 'Frontend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2000&auto=format&fit=crop'
+readingTime: '4'
+order: 99
+---
+
+Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> Yüzlerce farklı uygulamaya giden NPM paketinin güncellemelerinde hata oluşmaması için Breaking Change yönetimi, Git flow senkronizasyonu ve Semantic Versioning ilkelerini uyguladık.
+
+Stabil çalışan bir paket ekosistemi tasarlıyorsanız, en büyük kabusunuz yanlış yapılan masum bir güncellemenin yüzlerce projeyi ayn anda çökertmesi ihtimalidir. Bu felaketi önlemenin tek anahtarı düzgün versiyon takibidir.
+
+Tıpkı dev küresel kütüphaneler gibi katı bir Semantic Versioning (SemVer) (MAJOR.MINOR.PATCH) stratejisi benimsiyor, eski versiyon kullanan sistemlerin "backward breaking-change" (geriye dönük uyumsuzluk) yaşamasını engelliyoruz. Bu uyarıları CHANGELOG aracılığıyla geliştiricilere bildiriyoruz.
+
+```json
+{
+  "name": "@huseyindol/ui-kit",
+  "version": "1.2.4",
+  "dependencies": { "react": "^18.2.0" }
+}
+```
+
+Herkesin kod yazdığı ortamlarda bağımlılık (Dependency) kilitlemesi kullanarak "bende çalışıyordu" mazeretlerini bitiriyor ve release (sürüm) stratejisinde yüksek kaliteli kod güvencesi sunuyoruz.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

@@ -1,0 +1,59 @@
+---
+title: 'Docker İçerisinde PostgreSQL Ayağa Kaldırmak'
+description: 'Docker Compose ile PostgreSQL veritabanını izolasyon kurallarına uygun, persistency (kalıcılık) ve güvenlik parametreleriyle başlatma rehberi.'
+publishedAt: '2026-04-12'
+category: 'DevOps'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1605745341112-85968b19335b?q=80&w=2000&auto=format&fit=crop'
+readingTime: '5'
+---
+
+Bu makale, önceki **Modern PostgreSQL Kullanımı ve İpuçları** yazımızın bir devamı niteliğindedir. Uygulamalarımızı geliştirirken her ortamda (Local, Staging, Production) birebir aynı bağımlılık altyapısını kurabilmenin en iyi yolu Container (Docker vb.) mimarisinden geçer.
+
+## Docker Compose ile PostgreSQL Kurulumu
+
+PostgreSQL'i saf şekilde işletim sistemine kurmak (bare-metal) yerine containerize etmek izolasyon anlamında büyük fayda sağlar. Aşağıdaki `docker-compose.yml` dosyası, verilerin konteyner silindiğinde kaybolmaması için **volume binding** kullanılarak yapılandırılmış modern bir PostgreSQL konfigürasyonudur.
+
+```yaml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: elly_db_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-supersecret}
+      POSTGRES_DB: ${DB_NAME:-elly_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+```
+
+### Konfigürasyon Detayları
+
+1. **Alpine Imajı (`postgres:15-alpine`):**
+   Debian veya Ubuntu tabanlı devasa imajlar yerine, güvenlik ve performans açısından son derece hafif olan Alpine Linux tercih edildi. İmaj boyutundan tasarruf ederken build hızlarını çok artırır.
+2. **Kalıcı Veri Depolama (`volumes: pgdata`):**
+   Konteyner yeniden başlatıldığında ya da silinip tekrar up edildiğinde, host makinede `pgdata` ismiyle ayrılmış olan Docker volume içerisindeki veriler güvenle veritabanına geri bağlanır.
+3. **Başlangıç Scriptleri (`init.sql`):**
+   `/docker-entrypoint-initdb.d` dizini, PostgreSQL imajının ayağa kalktığında bir kere çalıştırdığı klasördür. Buraya vereceğimiz `init.sql` sayesinde varsayılan tablo yapılarımızı otomatik tanımlayabiliriz.
+4. **Healthcheck Mekanizması:**
+   Veritabanının gerçek anlamda hazır olup olmadığını anlamak için Network Port'unun açılması yetmez, Postgres'in accept_connection state'ine geçmesi gerekir. `pg_isready` aracıyla kontrol ederek buna bağımlı servislerin sadece DB tam manasıyla aktifleşince başlatılmasını sağlıyoruz.
+
+## Geliştirme Sürecindeki Etkisi
+
+`elly` projemizi ayağa kaldırırken de bu yapıyı tercih ettim. Back-end takımı sadece `docker-compose up -d` komutunu çalıştırarak, saatlerce süren veritabanı indirme ve ayarlama gibi bağımlılık işlemlerinden tamamen kurtuluyor ve saniyeler içinde koda odaklanabiliyor.
+
+Bir sonraki durağımız, tüm bu yapıların yatayda sonsuz ölçüde nasıl scale edildiği yer olan **Kubernetes** olacak!

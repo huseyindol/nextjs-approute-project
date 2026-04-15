@@ -1,0 +1,25 @@
+---
+title: "A/B Testlerinde Veriye Dayalı Karar Alma (Metrics)"
+description: "Growthbook raporlamalarından elde ettiğimiz p-value ve istatistiksel sonuçlara göre, arayüzde tasarl..."
+publishedAt: '2026-04-20'
+category: 'Frontend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2000&auto=format&fit=crop'
+readingTime: '6'
+order: 99
+---
+
+Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> Growthbook raporlamalarından elde ettiğimiz p-value ve istatistiksel sonuçlara göre, arayüzde tasarladığımız değişiklikleri kalıcı hale getirme sürecimiz.
+
+Feature flag kullanıldığında bir özelliğin ne zaman test aşamasından ana akıma geçileceğine istatistik karar verir. Yeterince trafik izlendikten sonra "bayrak" mantığı devreden çıkıp kod kalıcı hale gelmelidir.
+
+Growthbook panellerindeki matematiksel metrik değerlerini (P-Value ve Significance oranlarını) analiz ediyoruz. Eğer özellik Conversion Rate'i (Dönüşüm Oranını) istatistiksel açıdan artırıp başarı sağladıysa, takım liderliğiyle kodu ana mimariye sabitliyoruz.
+
+Başarısı kanıtlanan özelliklerin Flag tanımlamaları kod bloklarından (if conditions) temizlenerek (Technical Debt) kod yığını oluşumu engellenmiş olur, ürün başarılı mimarisi ile yoluna devam eder.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

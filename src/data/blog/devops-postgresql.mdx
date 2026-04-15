@@ -1,0 +1,65 @@
+---
+title: 'Modern PostgreSQL Kullanımı ve İpuçları'
+description: 'DevOps süreçlerinde modern PostgreSQL kullanımı, performans ipuçları, konfigürasyon temelleri ve veri tabanı yönetimi.'
+publishedAt: '2026-04-10'
+category: 'DevOps'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?q=80&w=2000&auto=format&fit=crop'
+readingTime: '6'
+---
+
+Bu yazımda, DevOps süreçleri ve arka uç(backend) mimarisi tasarımı kapsamında **PostgreSQL(PgSQL)** kullanımında elde ettiğim spesifik deneyimleri paylaşıyorum. Açık kaynak kodlu ve geniş veri tipleri kapasitesi sunan Postgres, günümüzün veri odaklı (data-intensive) uygulamalarında bir standart haline gelmiştir.
+
+## PostgreSQL Neden Tercih Sebebimiz?
+
+Büyük ve ilişkisel veritabanı şemalarında Postgres'in sunduğu olanaklar hayat kurtarır.
+- **JSONB Desteği:** İlişkisel yapıyı korurken aynı tablolarda no-SQL (doküman bazlı) JSON sorguları yapmaya olanak sağlar.
+- **Concurrent Indexing (Eşzamanlı İndeksleme):** Tabloları kilitlemeden indeks oluşturma kabiliyeti, sıfır kesinti (zero-downtime) gerektiren deployment süreçlerinde kritik bir özelliktir.
+- **Güçlü Transaction Yönetimi:** Acid uyumluluğunu en üst seviyede tutarken izole transaction tipleri sayesinde conflict'leri çözer.
+
+## Temel Konfigürasyon İpuçları (postgresql.conf)
+
+Performans kazanımlarının ilk adımı her zaman default `postgresql.conf` paramerelerinin donanıma göre ölçeklenmesinden geçer.
+
+```conf
+# Örnek performans odaklı yapılandırma (16GB RAM)
+max_connections = 200
+shared_buffers = 4GB 
+effective_cache_size = 12GB
+maintenance_work_mem = 1GB
+checkpoint_completion_target = 0.9
+wal_buffers = 16MB
+default_statistics_target = 100
+random_page_cost = 1.1 # SSD diskler için düşürülmelidir
+```
+
+> **Önemli Not:** `shared_buffers` genellikle sistem belleğinin (RAM) %25'i kadar ayarlanmalıdır. Çok yüksek ayarlandığında OS caching ile çakışabileceği unutulmamalıdır.
+
+## İleri İndeksleme Performansı Analizi (EXPLAIN ANALYZE)
+
+Postgres'te performans yavaşlığının teşhisi komut satırında `EXPLAIN ANALYZE` ile başlar.
+Özellikle Elly projemizde karmaşık RBAC (Rol tabanlı yetkilendirme) join sorgularını optimize ederken b-tree yerine spesifik indeksleme teknikleri kullandık.
+
+```sql
+EXPLAIN ANALYZE 
+SELECT * FROM users u
+JOIN user_roles ur ON u.id = ur.user_id
+JOIN roles r ON ur.role_id = r.id
+WHERE r.role_name = 'ADMIN';
+```
+
+Eğer sorgu planlarında "Sequential Scan" görüyorsanız ve tablonuz milyarlarca satır içeriyorsa, ilgili kolonlara kesinlikle indeks atmalısınız. Ancak yazım frekansı okuma frekansından yüksek tablolar için indekslerin yazma maliyetini de artıracağını unutmamak gerekir.
+
+## Veri Yedekleme ve Kurtarma (pg_dump ve pg_restore)
+
+PgSQL dünyasında logical ve physical backup olmak üzere iki yöntem yer alır. En yaygın kullanılanı **logical backup** olup `pg_dump` aracı ile alınır.
+
+```bash
+# Sıkıştırılmış Custom format ile yedek alma
+pg_dump -U postgres -Fc -d elly_db > elly_backup.dump
+
+# Veritabanını geri yükleme
+pg_restore -U postgres -d elly_db_new -1 elly_backup.dump
+```
+
+Sonraki makalelerimde, Docker ve Kubernetes içerisinde PostgreSQL veritabanını Containerize olarak nasıl deploy ve manage ettiğimizi detaylıca inceleyeceğiz. Bizimle kalın!

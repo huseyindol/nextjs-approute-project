@@ -1,0 +1,32 @@
+---
+title: "React Render Performans Optimizasyonu"
+description: "React Suspense, Lazy Loading ve RSC (React Server Components) konseptleri ile gereksiz re-render pro..."
+publishedAt: '2026-04-16'
+category: 'Frontend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop'
+readingTime: '5'
+order: 3
+---
+
+Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> React Suspense, Lazy Loading ve RSC (React Server Components) konseptleri ile gereksiz re-render problemlerinin nasıl önüne geçilir? UseMemo ve UseCallback hook'larının doğru zamanda kullanımı üzerine case studyler inceledik.
+
+React'in popülerliği arttıkça, sıkça karşılaşılan performans darboğazlarının başında "gereksiz tekrar render edilme" (unnecessary re-renders) sorunu geliyor. Bir state değiştiğinde tüm uygulamanın yeniden şekillenmesi, mobil cihazlarda pil ve CPU israfına neden olmaktadır.
+
+Darboğazları önlemek adına `React.memo`, `useMemo` ve `useCallback` fonksiyonlarını her yerde değil, yalnızca rendering ağaçlarındaki maliyetli hesaplamalarda kalkan olarak kullanmalıyız. Çok uzun listeler içinse Virtualization (react-window) tek çaremizdir.
+
+```tsx
+const HeavyComponent = memo(({ dataset }) => {
+  // Yoğun DOM iterasyonları
+  return <div>{dataset.map(item => <span key={item.id}>{item.val}</span>)}</div>
+});
+```
+
+Bileşen bağımlılıklarını izole ettiğimiz bu yaklaşımlar, büyük ölçekli ve binlerce node barındıran dashboard ekranlarında bile uygulamanın 60FPS hızında, tamamen akıcı çalışmasını garantiliyor.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

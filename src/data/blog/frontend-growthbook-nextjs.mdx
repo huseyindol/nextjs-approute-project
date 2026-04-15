@@ -1,0 +1,25 @@
+---
+title: "Next.js App Router İçerisinde Growthbook Entegrasyonu"
+description: "Server Side Rendering tarafında feature flag'ları okuyarak (Next.js Middleware üzerinden) kullanıcıl..."
+publishedAt: '2026-04-20'
+category: 'Frontend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=2000&auto=format&fit=crop'
+readingTime: '5'
+order: 99
+---
+
+Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> Server Side Rendering tarafında feature flag'ları okuyarak (Next.js Middleware üzerinden) kullanıcılara statik gecikme olmadan ilgili deneyi sunma metotlarımız.
+
+A/B testleri client tabanlı (React useEffect) yürütüldüğünde, kullanıcı önce eski versiyonu görüp sonra saniyelik bir sıçrama ile (Flickering) yeni tasarımı görebiliyor. SSR odaklı modern dünyada bu gecikme kabul edilemez.
+
+Uyguladığımız teknikte Growthbook Feature algoritmalarını Next.js'in `middleware` seviyesine çıkartıp Edge sunucularda değerlendiriyoruz. Ziyaretçi hangi test varyantında olduğunu daha ilk HTML üretilirken seziyor.
+
+Titreme efektinin sıfırlandığı, tamamen Server-Side Rendering (SSR) ile desteklenen bu kusursuz deneyim sayesinde arama motorları testlerimizi kötü amaçlı yönlendirmeler olarak damgalamıyor, performans metriklerimiz stabil kalıyor.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

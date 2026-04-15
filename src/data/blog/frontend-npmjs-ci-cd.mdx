@@ -1,0 +1,37 @@
+---
+title: "GitHub Actions ile NPM Paket Dağıtımı (CI/CD Otomasyonu)"
+description: "Kod main branch'e birleştiği anda testlerden geçen component paketinin otomatik olarak NPM Registry'..."
+publishedAt: '2026-04-18'
+category: 'Frontend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=2000&auto=format&fit=crop'
+readingTime: '6'
+order: 4
+---
+
+Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> Kod main branch'e birleştiği anda testlerden geçen component paketinin otomatik olarak NPM Registry'ye yeni versiyonla nasıl pushlandığı üzerindeki otomasyon tecrübemiz.
+
+Lokal ortamda geliştirdiğimiz NPM paketini elle versiyonlamak ve teker teker registry'e atmak insan hatasına açık, yorucu ve çağdışı bir yöntemdir. Geliştirme kültürümüz Continuous Integration felsefesine dayanmalıdır.
+
+Kod base üzerinde "Pull Request" `main` dalına kabul edildiğinde tetiklenen GitHub Actions ile bir pipeline (boru hattı) kurguladık. Önce vitest koşuluyor, kod kalite kontrolden geçiyor ve eğer her şey başarılıysa botlar versiyon atlayıp o an NPM'e release çıkıyor.
+
+```yaml
+name: Publish Package
+on:
+  release:
+    types: [created]
+jobs:
+  publish:
+    run: npm publish --access public
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+```
+
+Yapılan bu entegrasyon sadece hız kazandırmakla kalmadı; aynı zamanda yazılımcının "paket yayınlama stresi" ortadan kaldırıldı, kodun teste girmesi zorunlu hale gelerek ürün kalitesi zirveye oturtuldu.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

@@ -1,0 +1,35 @@
+---
+title: "Next.js ile Kusursuz SEO ve Metadata Yönetimi"
+description: "Dynamic Content içeren uygulamalardaki metadata dinamik atamaları (generateMetadata) ve robots.txt e..."
+publishedAt: '2026-04-17'
+category: 'Frontend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?q=80&w=2000&auto=format&fit=crop'
+readingTime: '5'
+order: 1
+---
+
+Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> Dynamic Content içeren uygulamalardaki metadata dinamik atamaları (generateMetadata) ve robots.txt entegrasyonu. Sitemap.xml jenerasyonları ile Google indeks sürelerini minimize ediyoruz.
+
+Ziyaretçiye statik göründüğü halde içeriklerini dinamik veri tabanlarından alan sitelerde Arama Motoru Optimizasyonu (SEO) en büyük challenge'dır. React'in kendi başına çözemediği bu kısmı Next.js ile kusursuz yönetebiliyoruz.
+
+Dynamic SEO yetenekleri kapsamında yer alan `generateMetadata` fonksiyonu ile URL'ye (Slug) bağlı değişen içerikleri sunucu tarafında çekiyor ve doğrudan Head tag'lerine (OpenGraph dahil) basabiliyoruz. Bunu sitemap ve robots.txt entegrasyonuyla birleştiriyoruz.
+
+```tsx
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const post = await getPost(params.id);
+  return {
+    title: post.title,
+    openGraph: { images: [post.cover] }
+  }
+}
+```
+
+Paylaşım ağlarındaki URL önizlemeleri tamamen doğru bilgiyle (Görsel ve Açıklama dahil) görünmekte olup, Google botları sayfalarımızı indexlerken tam teşekküllü (SSR) HTML'e saniyeler içinde erişebilmektedir.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

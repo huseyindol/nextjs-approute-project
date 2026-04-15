@@ -1,0 +1,35 @@
+---
+title: "Storybook Args ve Controls İle Bileşen Testleri"
+description: "Props değiştirmelerini kod yazmadan Visual (Görsel) arayüzde test etme deneyimi. Tasarım departmanı ..."
+publishedAt: '2026-04-19'
+category: 'Frontend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2000&auto=format&fit=crop'
+readingTime: '4'
+order: 99
+---
+
+Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> Props değiştirmelerini kod yazmadan Visual (Görsel) arayüzde test etme deneyimi. Tasarım departmanı ve Developer iletişimsizliğini Storybook aracılığıyla minimuma indirmenin formülleri.
+
+Storybook'un asıl güçlü tarafı sadece bir katalog sunması değil; aynı zamanda interaktif bir manipülasyon (Args & Controls) alanı yaratmasıdır. Yeni özellik ekleneceği zaman bu kontroller developer deneyimini eşsiz kılar.
+
+Props değerlerini arayüzde bir panel (Controls) aracılığıyla değiştirilebilir kılarak, statik yazılmış component'in `size`, `color`, `isLoading` gibi özelliklerini kod yazmadan deneme fırsatı yakalıyoruz.
+
+```tsx
+export const Primary: Story = {
+  args: {
+    primary: true,
+    label: 'Modern Button',
+    size: 'large',
+  },
+};
+```
+
+Bu etkileşimli alan sayesinde tasarımcılar "Acaba bu buton hata verdiğinde padding nasıl görünüyor?" sorusunun cevabını bana sormak yerine saniyeler içinde Storybook'tan değiştirebiliyorlar. Uçtan uca iletişim devrimi yaratıyor.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

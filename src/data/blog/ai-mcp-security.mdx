@@ -1,0 +1,25 @@
+---
+title: "Yapay Zeka Protokollerinde Güvenlik ve İzolasyon"
+description: "MCP serverleri üzerinden sağlanan \"safe-to-run\" komutlarda riskli operasyonları nasıl limitleriz? LL..."
+publishedAt: '2026-04-22'
+category: 'AI'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2000&auto=format&fit=crop'
+readingTime: '5'
+order: 99
+---
+
+Bu makale **AI** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi aktarmaktadır.
+
+## Genel Bakış
+
+> MCP serverleri üzerinden sağlanan "safe-to-run" komutlarda riskli operasyonları nasıl limitleriz? LLM'lerin sadece okuma-yetkili (read-only) bağlanmasına uygun mimari teknikleri.
+
+Bir LLM asistanının sisteminizin derinliklerine erişebilmesi muazzam bir güç olsa da; veri tabanına Drop komutu gönderebilecek olmaları ya da finansal bilgileri yanlış yetkiyle çekmeleri ölümcül güvenlik zafiyetleridir.
+
+Bu noktada Model Context Protocol içerisinde "Okuma İzni Verilenler" (Read-Only) ve "Mutasyona (Mutation) Uğratan İşlemler" olarak izole bir güvenlik konsepti yazıyoruz. Kurumsal senaryolarda Human-In-The-Loop mimarisiyle, riskli görülen "Sistemi Yeniden Başlat" isteğinde model önce yetkili bir developer'dan onay düğmesine (Approval) basmasını şart koşuyor.
+
+Uygulanan sandbox ve onaya dayalı otomasyonlar (Safe-to-Run) devrim yaratırken mimarimizin kontrolden çıkarak şirket zararlısına dönüşmesi ve halüsinasyon gören model tehlikesinin kökünü güvenli bir filtre ile kazımış oluyoruz.
+
+---
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

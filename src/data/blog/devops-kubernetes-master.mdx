@@ -1,0 +1,69 @@
+---
+title: 'Kubernetes: Microservice Ekosisteminin Orkestrasyonu'
+description: 'Docker, PostgreSQL, RabbitMQ, Redis ve Monitoring araçlarının (Zipkin, Prometheus, Grafana) Kubernetes ortamında yapılandırılması.'
+publishedAt: '2026-04-14'
+category: 'DevOps'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?q=80&w=2000&auto=format&fit=crop'
+readingTime: '12'
+---
+
+Modern, bulut-yerel (cloud-native) mimarilerin merkezinde yer alan **Kubernetes (K8s)**, konteynerleştirilmiş uygulamaların dağıtımını, ölçeklendirilmesini ve yönetimini otomatikleştiren açık kaynak kodlu bir orkestrasyon sistemidir. `Elly` mimarisinde de tüm ekosistemi tek bir çatı altında kontrol edebilmek için K8s kullandım.
+
+Bu makalede, K8s ekosisteminde deneyimlediğimiz kritik bileşenlerin (Postgres, RabbitMQ, Redis vb.) nasıl yapılandırıldığına dair mimari özetleri paylaşıyorum.
+
+## 1. Kubernetes İçerisinde Docker
+
+Bildiğiniz üzere Docker, K8s'in CRI (Container Runtime Interface) destekli imaj formatlarını çalıştırmak için endüstri standardıydı (daha sonraları containerd/CRI-O'ya geçilse de mentalite aynıdır). Bütün uygulamalarımız, Dockerfile ile build alınmış, test edilmiş imajlar halinde K8s deployment YAML dosyaları üzerinden cluster'a dahil edilir.
+
+```yaml
+# Örnek Java Backend Deployment (Elly Uygulaması)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elly-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: elly
+  template:
+    metadata:
+      labels:
+        app: elly
+    spec:
+      containers:
+      - name: backend
+        image: huseyindol/elly:latest
+        ports:
+        - containerPort: 8080
+```
+
+## 2. Kubernetes Üzerinde PostgreSQL 
+
+Veritabanlarını K8s üzerinde tutmak, StatefulSet objeleriyle olmalıdır. K8s'de Pod'lar her an ölebilir, bu nedenle kalıcılığı sağlamak için PersistentVolumeClaim (PVC) objelerinden yararlanırız. Bu şekilde `Elly` veritabanımız, Kubernetes Node'u değişse dahi verisini güvende tutar. Güvenlik tarafında ise auth bilgileri `Secret` objelerinde barındırılır.
+
+## 3. RabbitMQ Yönetimi (K8s)
+
+Message Broker yapıları, asenkron iletişimde hayati rol oynar. K8s üzerinde RabbitMQ cluster ayağa kaldırırken `StatefulSet` kullanıp Erlang Cookie secret'larını dağıtmalıyız. RabbitMQ için Headless Service yaratarak Pod'ların birbiriyle IP üzerinden konuşup cluster oluşturmasını sağlarız. (Özellikle smtp-rabbitmq-issue gibi bağlantı problemleri esnasında sağlık kontrollerinin doğru yapılması K8s liveness/readiness probları ile çözüldü).
+
+## 4. Ingress ve Nginx Ayarları
+
+Tüm bu iç microservice mimarisinin internete açılan kapısı Nginx-Ingress'tir. Ingress Controller, dışarıdan gelen HTTP(S) isteklerini Host veya Path bazlı yönlendirir.
+
+* `TLS Offloading`: SSL sertifikaları Nginx tarafında çözülür, içeriye şifresiz aktarılarak servislerin SSL yükü hafifletilir.
+* `Rate Limiting`: Annotation'lar yardımıyla Nginx üzerinden gelen saniyedeki istek sayıları sınırlandırılır.
+
+## 5. Kubernetes İçerisinde Redis
+
+Kullanıcı yetkilendirmeleri (RBAC) gibi veritabanını çok yoran işlemleri hızlandırmak adına K8s içerisine bir Redis hizmeti kurduk. JWT token doğrulama veya user rollerinin her istekte SQL sorgusu yaratmasını engellemek amacı ile Redis podlarımıza hızlı erişim (`ClusterIP`) sağladık. Olası bir pod çökmesinde `Redis Sentinel` yetenekleri failover(hata toleransı) operasyonlarını otonom yürütmektedir.
+
+## 6. Gözlemlenebilirlik: Zipkin + Prometheus + Grafana
+
+Kurulan bu devasa ekosistemde, hangi servisin hata verdiğini saniyeler içinde görebilmeliyiz.
+
+* **Prometheus:** K8s Cluster'ı üzerindeki metric'leri toplar (CPU kullanımı, Bellek şişmesi, Nginx request süreleri).
+* **Grafana:** Prometheus'tan aldığı bu istatistiksel verileri oldukça başarılı "Dashboard" (gösterge paneli) arayüzleriyle bizlere sunar.
+* **Zipkin (Distributed Tracing):** İstekler sisteme girdiğinde RabbitMQ ve Java servisleri arasında geçen zamanı takip ederek "bottleneck" (dar boğaz) nerede anlayabilmemizi sağlar. 
+
+K8s yönetimi başlı başına bir disiplin olsa da, temelleri doğru atılan manifest dosyaları (yaml) ve sağlam bir mimari eşliğinde sonsuz ölçeklenebilen kusursuz bir otomasyon ortamı sunar.

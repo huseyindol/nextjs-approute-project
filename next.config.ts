@@ -53,6 +53,18 @@ const nextConfig = {
         port: '8080',
         pathname: '/**',
       },
+      {
+        protocol: 'https' as const,
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https' as const,
+        hostname: 'github.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 
