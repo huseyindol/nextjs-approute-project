@@ -300,78 +300,422 @@ articlesData.forEach(article => {
 
   switch (article.slug) {
     case 'frontend-react-architecture':
-      customBody = `Modern Front-end dünyasında React'in giderek karmaşıklaşan yapısı, sürdürülebilir bir mimari tasarlamayı zorunlu kılıyor. Uygulamalar büyüdükçe, bileşen hiyerarşisinde kaybolmamak için "Separation of Concerns" (Sorumlulukların Ayrılığı) prensibini en temel yapıtaşı yapmalıyız.\n\nProjelerde karmaşık durumları yönetirken side-effect (useEffect) kullanımını minimize ediyor ve iş mantığını tamamen **Custom Hook** yapılarına devrediyorum. "Container/Presenter" mantığını modern Hook ekosistemiyle birleştirmek, testlerin kolaylaşmasını ve kodun her yerde kullanılabilmesini (reusability) sağlıyor. Özellikle React 18 ile gelen concurrent rendering, performans hedeflerimiz için devrimseldir.\n\n\`\`\`tsx\n// Örnek: İş mantığının UI'dan izole edilmesi\nexport function useProfileData(userId: string) {\n  const [data, setData] = useState(null);\n  useEffect(() => {\n     fetch('/api/user/' + userId).then(res => res.json()).then(setData);\n  }, [userId]);\n  return data;\n}\n\`\`\`\n\nCustom hook'lar üzerinde ilerlediğimizde UI bileşenleri tamamen "aptal" (dumb) hale gelir ve sadece gelen datayı basmakla ilgilenir. Bu izolasyon, ekibin projeye adaptasyon sürecini aylar seviyesinden haftalara indirir.`
+      customBody = `Modern Front-end dünyasında React'in giderek karmaşıklaşan yapısı, sürdürülebilir bir mimari tasarlamayı zorunlu kılıyor. 50'den fazla sayfaya sahip bir kurumsal uygulamada bileşen hiyerarşisinde kaybolmamak için "Separation of Concerns" (Sorumlulukların Ayrılığı) prensibini en temel yapıtaşı yapmalıyız. Bu prensip yalnızca klasik backend katman mimarisinin (Controller-Service-Repository) frontend'teki yansıması değil; aynı zamanda bileşen düzeyinde sorumluluk dağılımını belirleyen temel kuraldır.\n\nProjelerde karmaşık durumları yönetirken \`useEffect\` kullanımını minimize ediyor ve iş mantığını tamamen **Custom Hook** yapılarına devrediyorum. Bu yaklaşımın temelinde şu düşünce yatıyor: bir React bileşeni yalnızca "ne gösterilecek" sorusuyla ilgilenmeli, "veri nereden gelecek" veya "hangi koşulda ne olacak" gibi sorular hook katmanında cevaplanmalıdır. Container/Presenter mantığını modern Hook ekosistemiyle birleştirmek, testlerin kolaylaşmasını ve kodun her yerde kullanılabilmesini (reusability) sağlıyor.\n\n\`\`\`tsx\n// Örnek: İş mantığının UI'dan izole edilmesi\nexport function useProfileData(userId: string) {\n  const { data, isLoading, error } = useQuery({\n    queryKey: ['profile', userId],\n    queryFn: () => fetcher(\`/api/user/\${userId}\`),\n    staleTime: 5 * 60 * 1000, // 5 dakika cache\n  });\n  return { profile: data, isLoading, error };\n}\n\n// UI bileşeni sadece render ile ilgilenir\nexport function ProfileCard({ userId }: { userId: string }) {\n  const { profile, isLoading } = useProfileData(userId);\n  if (isLoading) return <ProfileSkeleton />;\n  return <Card>{profile.name}</Card>;\n}\n\`\`\`\n\nDizin yapısında ise feature-based (özellik tabanlı) organizasyon tercih ediyorum: \`src/features/auth\`, \`src/features/dashboard\` gibi klasörler altında her özelliğin kendi hook'ları, bileşenleri ve tip tanımları bir arada yaşıyor. Bu modüler yapı sayesinde, 6 kişilik bir frontend ekibinde paralel çalışırken merge conflict oranımız %80 düştü.\n\nReact 19 ve concurrent rendering özellikleri bu mimarinin üstüne konduğunda, \`useTransition\` ile ağır tab geçişlerini bloklamadan işleyebiliyor, \`Suspense\` sınırlarıyla sayfa yüklenme deneyimini granüler seviyede kontrol edebiliyoruz. Custom Hook'lar üzerinde ilerlediğimizde UI bileşenleri tamamen "aptal" (dumb) hale gelir ve sadece gelen datayı render etmekle ilgilenir. Bu izolasyon, ekibin projeye adaptasyon sürecini aylar seviyesinden haftalara indirir ve onboarding maliyetini dramatik biçimde azaltır.`
       break
 
     case 'frontend-react-performance':
-      customBody = `React'in popülerliği arttıkça, sıkça karşılaşılan performans darboğazlarının başında "gereksiz tekrar render edilme" (unnecessary re-renders) sorunu geliyor. Bir state değiştiğinde tüm uygulamanın yeniden şekillenmesi, mobil cihazlarda pil ve CPU israfına neden olmaktadır.\n\nDarboğazları önlemek adına \`React.memo\`, \`useMemo\` ve \`useCallback\` fonksiyonlarını her yerde değil, yalnızca rendering ağaçlarındaki maliyetli hesaplamalarda kalkan olarak kullanmalıyız. Çok uzun listeler içinse Virtualization (react-window) tek çaremizdir.\n\n\`\`\`tsx\nconst HeavyComponent = memo(({ dataset }) => {\n  // Yoğun DOM iterasyonları\n  return <div>{dataset.map(item => <span key={item.id}>{item.val}</span>)}</div>\n});\n\`\`\`\n\nBileşen bağımlılıklarını izole ettiğimiz bu yaklaşımlar, büyük ölçekli ve binlerce node barındıran dashboard ekranlarında bile uygulamanın 60FPS hızında, tamamen akıcı çalışmasını garantiliyor.`
+      customBody = `React'in popülerliği arttıkça, sıkça karşılaşılan performans darboğazlarının başında "gereksiz tekrar render edilme" (unnecessary re-renders) sorunu geliyor. Dashboardlarında 2000'den fazla DOM node'u barındıran Elly admin panelimizde bu problemi bizzat yaşadık: bir filtreleme input'una her karakter yazıldığında tüm tablo satırları yeniden render ediliyordu ve Chrome DevTools Profiler'da 300ms+ render süreleri görüyorduk.\n\nÇözüm sürecinde React DevTools Profiler ile render waterfall'ları analiz ettik ve darboğaz noktalarını tespit ettik. \`React.memo\`, \`useMemo\` ve \`useCallback\` fonksiyonlarını her yerde değil, yalnızca **profiler'da kırmızı işaretli** olan bileşenlerde uyguladık. Premature optimization tuzağına düşmeden, veri odaklı karar aldık.\n\n\`\`\`tsx\n// ❌ Anti-pattern: Her render'da filtre fonksiyonu yeniden oluşur\nfunction Dashboard({ items }) {\n  const filtered = items.filter(i => i.active); // Her render'da çalışır\n  return <DataTable data={filtered} />;\n}\n\n// ✅ Doğru yaklaşım: Sadece items değiştiğinde hesapla\nfunction Dashboard({ items }) {\n  const filtered = useMemo(\n    () => items.filter(i => i.active),\n    [items]\n  );\n  return <DataTable data={filtered} />;\n}\n\n// Ağır liste bileşenlerini memo ile sarmalama\nconst TableRow = memo(function TableRow({ row }: { row: RowData }) {\n  return (\n    <tr>\n      <td>{row.name}</td>\n      <td>{row.status}</td>\n    </tr>\n  );\n});\n\`\`\`\n\n10.000+ satırlık tablolar için ise \`@tanstack/react-virtual\` (eski adıyla react-window) ile virtualization uyguladık. Ekranda yalnızca görünen 20-30 satır DOM'a yazılıyor, geri kalanı viewport dışında kalıyor. Bu teknikle initial render süremiz 300ms'den 18ms'ye düştü.\n\nReact Server Components (RSC) ile bu optimizasyonların bir kısmı artık sunucu tarafında çözülüyor: veri çekme ve filtreleme sunucuda yapılıp istemciye sadece render-ready HTML gönderiliyor. Bu da JavaScript bundle boyutunu küçültürken, Time to Interactive (TTI) metriğini dramatik biçimde iyileştiriyor. Sonuç olarak Lighthouse Performance skoru 62'den 94'e yükseldi.`
       break
 
     case 'frontend-react-shadcn':
-      customBody =
-        `Klasik component kütüphanelerinin aksine (Ant Design, MUI), takımın ihtiyaçlarına %100 uyumlu ve erişilebilir bir UI sistemi kurmak son derece meşakkatli bir süreçti. Shadcn UI bu zorluğu Headless (Radix) felsefesiyle çözdü.\n\nKomponent kodlarının paket modülü yerine bizzat kaynak kodumuzun (` +
-        '`src/components`' +
-        `) içerisine kopyalanması bize devasa bir esneklik sunuyor. Tailwind CSS ile entegre olan bu yapı sayesinde projenin kurumsal renk kartelasını ve varyasyonlarını kolayca adapte ediyoruz.\n\n\`\`\`tsx\nimport { Button } from "@/components/ui/button"\n\nexport function CTASection() {\n  return <Button variant="destructive" className="animate-pulse">Sil ve Devam Et</Button>\n}\n\`\`\`\n\nHazır ama aynı zamanda baştan yazılabilir olan bu mimari sayesinde kod tekrarından kurtulurken, kurumsal projelerin ihtiyaç duyduğu o spesifik tasarım ince ayarlarını dakikalar içinde üretebiliyoruz.`
+      customBody = `Klasik component kütüphanelerinin (Ant Design, MUI, Chakra UI) en büyük sorunu, kurumsal projelerde ihtiyaç duyulan ince tasarım ayarlarını yapmak için CSS override savaşlarına girmek zorunda kalmanızdır. Elly projesinde bu sorunu derinden yaşadık: MUI'nin DatePicker bileşenini firmamızın tasarım rehberine uydurmak için 200 satır override CSS yazmıştık. Shadcn UI bu zorluğu Headless (Radix) felsefesiyle kökünden çözdü.\n\nShadcn UI'ın devrimsel farkı, bileşen kodlarının \`node_modules\` içinde saklı kalması yerine bizzat projenizin \`src/components/ui\` dizinine kopyalanmasıdır. Bu "copy-paste" yaklaşımı ilk bakışta garip gelse de, pratikte devasa bir esneklik sunuyor: bileşenin her satırı sizin kontrolünüzde, istediğiniz gibi özelleştirebilirsiniz. Tailwind CSS'in utility-first felsefesiyle birleştiğinde, tasarım varyasyonları class-variance-authority (CVA) üzerinden dakikalar içinde tanımlanıyor.\n\n\`\`\`tsx\n// components/ui/button.tsx — tamamen bizim kontrolümüzde\nimport { cva, type VariantProps } from 'class-variance-authority';\n\nconst buttonVariants = cva(\n  'inline-flex items-center rounded-lg font-medium transition-colors',\n  {\n    variants: {\n      variant: {\n        default: 'bg-emerald-600 text-white hover:bg-emerald-700',\n        destructive: 'bg-red-600 text-white hover:bg-red-700',\n        outline: 'border border-slate-300 hover:bg-slate-100',\n        ghost: 'hover:bg-slate-100 dark:hover:bg-slate-800',\n      },\n      size: {\n        sm: 'h-8 px-3 text-xs',\n        md: 'h-10 px-4 text-sm',\n        lg: 'h-12 px-6 text-base',\n      },\n    },\n    defaultVariants: { variant: 'default', size: 'md' },\n  }\n);\n\`\`\`\n\nRadix UI'ın sağladığı accessibility (erişilebilirlik) altyapısı da cabası: Dialog, DropdownMenu, Tabs gibi karmaşık bileşenler keyboard navigation, focus trap ve ARIA etiketleriyle doğuştan uyumlu geliyor. Bizim yapmamız gereken tek şey görsel katmanı (Tailwind sınıfları) eklemek.\n\nEkip içinde \`shadcn add\` CLI komutuyla yeni bileşenler saniyeler içinde projeye ekleniyor ve \`components.json\` konfigürasyon dosyası üzerinden tema renkleri, border-radius değerleri ve CSS değişkenleri merkezi olarak yönetiliyor. Bu yaklaşım sayesinde 4 farklı projede tutarlı bir tasarım dili korurken, her projenin kendine özel ihtiyaçlarını da karşılayabiliyoruz.`
       break
 
     case 'frontend-nextjs-elly-admin':
-      customBody = `Elly CMS sisteminin yönetim paneli ihtiyaçları doğrultusunda, SEO'ya duyarlı olmanın ötesinde çok hızlı karar alabilen bir "Server-Driven" arayüz gerekiyordu. Bu da bizi doğrudan Next.js'in App Router mimarisi ile güçlü bir entegrasyona itti.\n\nYükleme sürelerini minimize etmek için istemci (Client) ve sunucu (Server) bileşenleri arasındaki sınırları (boundaries) ayrıştırdık. Mümkün olan tüm veri çekme işlemlerini direkt asenkron bileşenlerde yürüterek kullanıcının cihazına gereksiz JavaScript paketleri gönderilmesini engelledik.\n\n\`\`\`tsx\n// app/admin/users/page.tsx (Server Component)\nexport default async function AdminUsersPage() {\n   const users = await db.query.users();\n   return <UsersTable data={users} />\n}\n\`\`\`\n\nVerinin işlendiği yere en yakın noktada çekilmesi, paneller arası geçişlerde sıfıra yakın (zero-latency) bir hissiyat yarattı. CMS içindeki ağır analiz sorguları bile sunucu gücüyle anında cevap veriyor.`
+      customBody = `Elly CMS sisteminin yönetim paneli ihtiyaçları doğrultusunda, SEO'ya duyarlı olmanın ötesinde çok hızlı karar alabilen bir "Server-Driven" arayüz gerekiyordu. İçerik yönetimi, kullanıcı rolleri (RBAC), form oluşturma ve tenant bazlı yapılandırma gibi karmaşık operasyonları barındıran bu panel, doğrudan Next.js'in App Router mimarisi ile güçlü bir entegrasyon gerektirdi.\n\nMimari kurguyu oluştururken \`(site)\` ve \`(admin)\` şeklinde route group'ları kullandık. Bu sayede admin paneli tamamen farklı bir layout (Sidebar + TopBar) kullanırken, site tarafı (Header + Footer) kendi layout'unda yaşıyor. Her iki taraf da aynı codebase'de ama birbirini etkilemeden geliştirilebiliyor.\n\n\`\`\`\nsrc/app/\n├── (site)/          # Public site layout (Header + Footer)\n│   ├── page.tsx\n│   ├── blog/\n│   └── about/\n├── (admin)/         # Admin layout (Sidebar + TopBar)\n│   ├── layout.tsx   # Auth guard + RBAC middleware burada\n│   ├── dashboard/\n│   ├── contents/\n│   └── users/\n└── layout.tsx       # Root layout (Theme, Providers)\n\`\`\`\n\nYükleme sürelerini minimize etmek için istemci (Client) ve sunucu (Server) bileşenleri arasındaki sınırları (boundaries) net çizgilerle ayırdık. Sayfanın ana veri çekme işlemleri async Server Component'lerde yapılırken, yalnızca kullanıcı etkileşimi gerektiren parçalar (modal, form, dropdown) \`'use client'\` direktifiyle işaretlendi. Bu strateji sayesinde admin panelinin JavaScript bundle boyutu %40 azaldı.\n\n\`\`\`tsx\n// app/(admin)/contents/page.tsx — Server Component\nexport default async function ContentsPage() {\n  const contents = await getContentsService({ page: 0, size: 20 });\n  return (\n    <div>\n      <ContentFilters />   {/* Client — arama/filtreleme */}\n      <ContentTable data={contents.data} />  {/* Server — statik tablo */}\n    </div>\n  );\n}\n\`\`\`\n\nOturum yönetimi için \`middleware.ts\` katmanında JWT token kontrolü yapılıyor ve yetkisiz istekler \`/login\` sayfasına yönlendiriliyor. Rol bazlı erişim kontrolü (RBAC) ise layout seviyesinde uygulanıyor: her admin sayfası render edilmeden önce kullanıcının ilgili permission'a sahip olup olmadığı Redis cache üzerinden kontrol ediliyor.\n\nVerinin işlendiği yere en yakın noktada çekilmesi, paneller arası geçişlerde sıfıra yakın bir hissiyat yarattı. \`revalidateTag\` ve \`revalidatePath\` API'leri ile CMS'te yapılan içerik değişiklikleri anında public siteye yansıyor, cache invalidation süreci tamamen otomatik.`
       break
 
     case 'frontend-nextjs-seo':
-      customBody = `Ziyaretçiye statik göründüğü halde içeriklerini dinamik veri tabanlarından alan sitelerde Arama Motoru Optimizasyonu (SEO) en büyük challenge'dır. React'in kendi başına çözemediği bu kısmı Next.js ile kusursuz yönetebiliyoruz.\n\nDynamic SEO yetenekleri kapsamında yer alan \`generateMetadata\` fonksiyonu ile URL'ye (Slug) bağlı değişen içerikleri sunucu tarafında çekiyor ve doğrudan Head tag'lerine (OpenGraph dahil) basabiliyoruz. Bunu sitemap ve robots.txt entegrasyonuyla birleştiriyoruz.\n\n\`\`\`tsx\nexport async function generateMetadata({ params }): Promise<Metadata> {\n  const post = await getPost(params.id);\n  return {\n    title: post.title,\n    openGraph: { images: [post.cover] }\n  }\n}\n\`\`\`\n\nPaylaşım ağlarındaki URL önizlemeleri tamamen doğru bilgiyle (Görsel ve Açıklama dahil) görünmekte olup, Google botları sayfalarımızı indexlerken tam teşekküllü (SSR) HTML'e saniyeler içinde erişebilmektedir.`
+      customBody = `Ziyaretçiye statik göründüğü halde içeriklerini dinamik veri tabanlarından alan sitelerde Arama Motoru Optimizasyonu (SEO) en büyük mücadele alanıdır. Klasik React SPA'larda arama motorları boş bir \`<div id="root">\` görür — içerik JavaScript yüklendikten sonra render edildiği için botlar sayfayı boş algılar. Next.js bu problemi SSR ve SSG ile kökünden çözüyor.\n\nÖncelikle Next.js 14+ ile gelen \`generateMetadata\` fonksiyonu, her sayfa için dinamik meta tag üretimini mümkün kılıyor. Blog makalelerimizde slug parametresine göre veritabanından içerik çekip, başlık, açıklama, OpenGraph görseli ve canonical URL'yi sunucu tarafında Head'e basıyoruz. Bu sayede Twitter/LinkedIn'de paylaşıldığında zengin önizleme kartları eksiksiz görünüyor.\n\n\`\`\`tsx\n// app/blog/[slug]/page.tsx\nexport async function generateMetadata({ params }): Promise<Metadata> {\n  const post = await getPostBySlug(params.slug);\n  const url = \`https://www.huseyindol.com/blog/\${post.slug}\`;\n\n  return {\n    title: \`\${post.title} | Hüseyin DOL\`,\n    description: post.description,\n    alternates: { canonical: url },\n    openGraph: {\n      title: post.title,\n      type: 'article',\n      publishedTime: post.publishedAt,\n      authors: [post.author],\n      images: [{ url: post.coverImage, width: 1200, height: 630 }],\n    },\n    twitter: {\n      card: 'summary_large_image',\n      images: [post.coverImage],\n    },\n  };\n}\n\`\`\`\n\nSEO'nun ikinci kritik ayağı **sitemap.xml** ve **robots.txt** entegrasyonudur. Next.js'in \`sitemap.ts\` ve \`robots.ts\` convention dosyalarıyla bunları kodla yönetiyoruz. Sitemap'i dinamik tutarak her yeni makale eklendiğinde otomatik olarak Google'a bildirim yapılmasını sağlıyoruz.\n\n\`\`\`tsx\n// app/sitemap.ts\nexport default async function sitemap() {\n  const posts = await getAllPosts();\n  const blogRoutes = posts.map(post => ({\n    url: \`https://www.huseyindol.com/blog/\${post.slug}\`,\n    lastModified: new Date(post.publishedAt),\n    changeFrequency: 'monthly',\n    priority: 0.8,\n  }));\n  return [...staticRoutes, ...blogRoutes];\n}\n\`\`\`\n\nÜçüncü katman olarak **JSON-LD Structured Data** (Schema.org) ile arama sonuçlarında zengin snippet görüntüsü elde ediyoruz. \`ArticleJsonLd\` bileşenimiz her blog sayfasına otomatik olarak yazar bilgisi, yayın tarihi ve publisher logosu ekliyor. Google'ın Rich Results Test aracında tüm makalelerimiz başarıyla doğrulanıyor.\n\nSon olarak AI crawler'ları (GPTBot, ClaudeBot, PerplexityBot) için \`robots.txt\`'te açık izin verip, \`llms.txt\` ve \`llms-full.txt\` dosyalarıyla sitemizin yapısını ve içerik haritasını doğrudan LLM'lere sunuyoruz. Bu sayede yapay zeka destekli arama motorlarında da doğru ve zengin şekilde temsil ediliyoruz.`
       break
 
     case 'frontend-nextjs-api-routes':
-      customBody = `Çoğu frontend uygulamasında, dış dünyada bulunan backend sunucularınıza (Java, Python vb.) doğrudan istek yapmak güvenlik açıklarına ve CORS meselelerine yol açabilir. Next.js "Backend as a Frontend" konseptiyle bu duruma bir set çekiyor.\n\nRoute Handlers (API Route'ları) kullanarak arka plan sunucularına bir proxy tüneli oluşturuyoruz. İstekler tarayıcıdan doğrudan Backend'e gitmek yerine Next.js sunucusuna vuruyor, orada gerekli güvenlik (JWT/Cookie) validasyonları yapılıp orijinal hedefe iletiliyor.\n\n\`\`\`ts\n// app/api/public/route.ts\nexport async function GET(request: Request) {\n  // Backend API'sine header tabanlı köprü kuralım\n  const res = await fetch('https://hidden-api.internal', { headers });\n  return NextResponse.json(await res.json());\n}\n\`\`\`\n\nBu sayede arka uç (backend) sunucularımızı tamamen izole bir özel ağa (Private Network) çekebiliyor ve yalnızca Next.js sunucusunun onlara ulaşabilmesine izin vererek güvenlik ve performans (rate limiting) katmanı elde ediyoruz.`
+      customBody = `Modern mikro-servis mimarilerinde frontend uygulamasının doğrudan backend API'lerine istek yapması, CORS sorunları, güvenlik açıkları ve API anahtarlarının tarayıcıya sızma riski gibi ciddi problemlere yol açıyor. Elly CMS altyapısında Java Spring Boot backend'imiz Kubernetes cluster içinde private ağda çalışıyor — tarayıcıdan direkt erişilebilir olmaması gerekiyor. Next.js Route Handlers ile bu problemi "Backend for Frontend" (BFF) pattern'iyle çözdük.\n\nRoute Handlers, Next.js sunucusu üzerinde çalışan server-side endpoint'lerdir. İstemciden gelen istekler önce Next.js sunucusuna gelir, burada JWT token validasyonu, rate limiting ve tenant bazlı yetkilendirme yapılır, ardından istek internal API'ye iletilir. Bu katman aynı zamanda response'ları frontend'in ihtiyacına göre şekillendirme (data transformation) imkanı da verir.\n\n\`\`\`ts\n// app/api/contents/route.ts\nimport { NextRequest, NextResponse } from 'next/server';\nimport { verifyToken } from '@/lib/auth';\nimport { rateLimit } from '@/lib/rate-limiter';\n\nexport async function GET(request: NextRequest) {\n  // 1. Rate limiting kontrolü\n  const rateLimitResult = await rateLimit(request);\n  if (!rateLimitResult.success) {\n    return NextResponse.json(\n      { error: 'Too many requests' },\n      { status: 429 }\n    );\n  }\n\n  // 2. JWT token doğrulama\n  const token = request.cookies.get('auth-token')?.value;\n  if (!token || !verifyToken(token)) {\n    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });\n  }\n\n  // 3. Internal API'ye proxy\n  const backendUrl = process.env.BACKEND_API_URL; // Private network\n  const res = await fetch(\`\${backendUrl}/api/v1/contents/list\`, {\n    headers: {\n      Authorization: \`Bearer \${token}\`,\n      'X-Tenant-ID': request.headers.get('x-tenant-id') || '',\n    },\n    next: { revalidate: 60 }, // 60 saniye cache\n  });\n\n  return NextResponse.json(await res.json());\n}\n\`\`\`\n\nBu yapının en güçlü yanlarından biri cache (önbellek) stratejisidir. \`next: { revalidate: N }\` ile ISR (Incremental Static Regeneration) benzeri bir davranış elde ediyoruz. Sık değişmeyen veriler (kategori listesi, site ayarları) uzun süreli cache'lenir; içerik güncellemelerinde ise \`revalidateTag\` ile anında invalidate edilir.\n\nWebhook dinleyicileri de Route Handlers ile konumlandırılıyor. Örneğin Resend email servisi bir email bounce olduğunda webhook ile bize bildirim gönderiyor, bu bildirimi \`app/api/webhooks/resend/route.ts\` endpoint'inde yakalayıp veritabanını güncelliyoruz. Backend sunucularımızı tamamen izole bir private ağa çekebiliyor ve yalnızca Next.js sunucusunun onlara ulaşabilmesine izin vererek çok katmanlı bir güvenlik mimarisi elde ediyoruz.`
       break
 
     case 'frontend-npmjs-uikit':
-      customBody = `Büyüyen yazılım ekiplerinin birbirinden kopuk projeler geliştirdiğinde, renk farklılıkları, komponent uyumsuzlukları gibi krizlerle boğuştuğu bir gerçektir. Takım sinerjisini artırmak adına ortak bir dil (UI-Kit) kurmak kaçınılmazdır.\n\nFirmanın kimliğini yansıtan Button, Banner, Form elementleri gibi tüm yapı taşlarını dışa bağımlı olmadan kendi NPM paketimiz olarak yayımladık. Monorepo (Turborepo) stratejisi yardımıyla projeler arasında "ortak akıl" yürütecek bir CSS ve bileşen standardı oluşturduk.\n\n\`\`\`bash\nnpm install @huseyindol/ui-kit\n\`\`\`\n\nBu yaklaşım sayesinde, ürün yönetimi yeni bir platform sipariş ettiğinde geliştirici ekibi sıfırdan tasarım yazmakla uğraşmıyor, markanın hazır bloklarını bir araya getirerek %40 efor tasarrufuyla yayına çıkabiliyor.`
+      customBody = `Büyüyen yazılım ekiplerinin birbirinden kopuk projeler geliştirdiğinde yaşadığı en büyük kriz tutarsızlıktır: bir projede buton yeşil, diğerinde mavi; birinde border-radius 4px, diğerinde 8px. Kullanıcılar farklı ürünler arasında gezinirken marka algısı zedelenir. Elly ekosisteminde 3 farklı frontend projesi (public site, admin panel, mobile web) aynı marka kimliğini taşıması gerekiyordu.\n\nBu sorunu çözmek için firmanın tasarım sistemini (Design System) kapsayan bir NPM paketi oluşturduk. Button, Badge, Banner, Input, Modal, Toast gibi 25+ temel bileşeni, Tailwind CSS theme token'ları ve utility fonksiyonlarla birlikte tek bir pakete sardık. Paket, tree-shakeable yapıda olduğu için tüketici projeler yalnızca kullandıkları bileşenleri bundle'a dahil ediyor.\n\n\`\`\`tsx\n// UI Kit paket yapısı\npackages/ui-kit/\n├── src/\n│   ├── components/\n│   │   ├── Button/\n│   │   │   ├── Button.tsx\n│   │   │   ├── Button.stories.tsx\n│   │   │   ├── Button.test.tsx\n│   │   │   └── index.ts\n│   │   ├── Badge/\n│   │   ├── Input/\n│   │   └── Modal/\n│   ├── tokens/\n│   │   ├── colors.ts    // Marka renk paleti\n│   │   ├── spacing.ts\n│   │   └── typography.ts\n│   └── index.ts         // Public API — barrel export\n├── package.json\n└── tsup.config.ts       // Build konfigürasyonu\n\`\`\`\n\nPaketin build sürecinde \`tsup\` kullanarak hem ESM hem CJS formatında çıktı üretiyoruz. TypeScript tip tanımları otomatik oluşturuluyor, böylece tüketici projelerde IntelliSense desteği tam çalışıyor.\n\n\`\`\`bash\n# Kurulum\nbun add @huseyindol/ui-kit\n\n# Kullanım\nimport { Button, Badge, Input } from '@huseyindol/ui-kit';\n\`\`\`\n\nBu yaklaşımın en büyük getirisi, ürün yönetimi yeni bir platform sipariş ettiğinde geliştirici ekibinin sıfırdan tasarım yazmakla uğraşmamasıdır. Markanın hazır bloklarını bir araya getirerek %40 efor tasarrufuyla yayına çıkılabiliyor. Ayrıca tasarım değişikliği yapıldığında (örneğin marka rengi güncellemesi) tek pakette yapılan değişiklik, tüm projelere otomatik yansıyor.`
       break
 
     case 'frontend-npmjs-versioning':
-      customBody = `Stabil çalışan bir paket ekosistemi tasarlıyorsanız, en büyük kabusunuz yanlış yapılan masum bir güncellemenin yüzlerce projeyi ayn anda çökertmesi ihtimalidir. Bu felaketi önlemenin tek anahtarı düzgün versiyon takibidir.\n\nTıpkı dev küresel kütüphaneler gibi katı bir Semantic Versioning (SemVer) (MAJOR.MINOR.PATCH) stratejisi benimsiyor, eski versiyon kullanan sistemlerin "backward breaking-change" (geriye dönük uyumsuzluk) yaşamasını engelliyoruz. Bu uyarıları CHANGELOG aracılığıyla geliştiricilere bildiriyoruz.\n\n\`\`\`json\n{\n  "name": "@huseyindol/ui-kit",\n  "version": "1.2.4",\n  "dependencies": { "react": "^18.2.0" }\n}\n\`\`\`\n\nHerkesin kod yazdığı ortamlarda bağımlılık (Dependency) kilitlemesi kullanarak "bende çalışıyordu" mazeretlerini bitiriyor ve release (sürüm) stratejisinde yüksek kaliteli kod güvencesi sunuyoruz.`
+      customBody = `Paylaşımlı bir NPM paketi ekosistemi yönetiyorsanız, en büyük kabusunuz masum görünen bir güncellemenin downstream projelerini çökertmesidir. Biz bunu acı tecrübeyle öğrendik: UI Kit'in Button bileşeninde prop adını değiştirdiğimizde, 3 farklı projenin build'i aynı anda kırıldı. O günden sonra Semantic Versioning'i (SemVer) katı bir disiplinle uygulamaya başladık.\n\nSemVer'in kuralı basittir ama uygulaması disiplin gerektirir: \`MAJOR.MINOR.PATCH\` formatında, breaking change → MAJOR, yeni özellik → MINOR, hata düzeltme → PATCH. Bu kuralları \`changesets\` aracıyla otomatikleştirdik. Her PR'da developer bir changeset dosyası oluşturur ve değişikliğin seviyesini belirtir.\n\n\`\`\`bash\n# Changeset oluşturma\nbunx changeset\n\n# Soru: Bu değişiklik hangi seviyede?\n# ○ patch — Hata düzeltme\n# ○ minor — Yeni özellik (geriye uyumlu)\n# ● major — Breaking change\n\`\`\`\n\nHer release'de otomatik oluşturulan \`CHANGELOG.md\` dosyası, tüketici projelerin geliştiricilerine hangi versiyonda ne değiştiğini net olarak gösterir.\n\n\`\`\`markdown\n## @huseyindol/ui-kit@2.0.0\n\n### Major Changes\n- **BREAKING**: Button bileşeninin 'type' prop'u 'variant' olarak yeniden adlandırıldı\n- Migration guide: type=\"primary\" → variant=\"default\"\n\n### Minor Changes\n- Yeni Badge bileşeni eklendi\n- Toast bileşenine 'duration' prop'u eklendi\n\`\`\`\n\nAyrıca lockfile stratejisi de kritiktir. Tüm projelerde \`bun.lock\` dosyası versiyon kontrolüne dahil ediliyor. Bu sayede "bende çalışıyor" mazeretleri sona eriyor, CI ortamında \`--frozen-lockfile\` flag'iyle tam deterministik build garantileniyor. PeerDependencies doğru tanımlanıyor ve React versiyon uyumsuzlukları derleme aşamasında yakalanıyor.`
       break
 
     case 'frontend-npmjs-ci-cd':
-      customBody = `Lokal ortamda geliştirdiğimiz NPM paketini elle versiyonlamak ve teker teker registry'e atmak insan hatasına açık, yorucu ve çağdışı bir yöntemdir. Geliştirme kültürümüz Continuous Integration felsefesine dayanmalıdır.\n\nKod base üzerinde "Pull Request" \`main\` dalına kabul edildiğinde tetiklenen GitHub Actions ile bir pipeline (boru hattı) kurguladık. Önce vitest koşuluyor, kod kalite kontrolden geçiyor ve eğer her şey başarılıysa botlar versiyon atlayıp o an NPM'e release çıkıyor.\n\n\`\`\`yaml\nname: Publish Package\non:\n  release:\n    types: [created]\njobs:\n  publish:\n    run: npm publish --access public\n    env:\n      NODE_AUTH_TOKEN: \${{ secrets.NPM_TOKEN }}\n\`\`\`\n\nYapılan bu entegrasyon sadece hız kazandırmakla kalmadı; aynı zamanda yazılımcının "paket yayınlama stresi" ortadan kaldırıldı, kodun teste girmesi zorunlu hale gelerek ürün kalitesi zirveye oturtuldu.`
+      customBody = `Lokal ortamda geliştirdiğimiz NPM paketini elle versiyonlamak ve teker teker registry'e atmak, insan hatasına açık ve ölçeklenemeyen bir yöntemdir. Bir keresinde developer yanlış versiyon numarasıyla publish yaptı ve downstream projelerin tamamı kırıldı. Bu olaydan sonra CI/CD pipeline'ını sıfırdan kurguladık.\n\nWorkflow'umuz iki aşamalıdır: PR aşamasında kalite kontrolü (lint, test, type-check), merge sonrasında ise otomatik publish. Her PR açıldığında GitHub Actions tetiklenir ve kodun tüm kalite kapılarından geçmesi zorunludur — tek bir test bile başarısız olursa merge butonu kilitlenir.\n\n\`\`\`yaml\n# .github/workflows/ci.yml\nname: CI/CD Pipeline\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  quality-gate:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: oven-sh/setup-bun@v1\n      - run: bun install --frozen-lockfile\n      - run: bun run lint         # ESLint kontrolü\n      - run: bun run type-check   # TypeScript doğrulama\n      - run: bun run format:check # Prettier tutarlılığı\n      - run: bun run test:ci      # Vitest + coverage\n\n  publish:\n    needs: quality-gate\n    if: github.ref == 'refs/heads/main'\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: oven-sh/setup-bun@v1\n      - run: bun install --frozen-lockfile\n      - run: bun run build\n      - run: npm publish --access public\n        env:\n          NODE_AUTH_TOKEN: \${{ secrets.NPM_TOKEN }}\n\`\`\`\n\nBuild aşamasında \`tsup\` ile hem ESM hem CJS formatında çıktı üretiliyor, TypeScript declaration dosyaları otomatik oluşturuluyor. Publish öncesi \`npm pack --dry-run\` ile paketin içeriği kontrol ediliyor, yanlışlıkla \`node_modules\` veya test dosyalarının pakete dahil edilmesi engelleniyor.\n\nVersiyon yönetimi için \`changesets\` entegrasyonu kullanıyoruz. Developer PR'a bir changeset ekler, merge sonrasında bot otomatik olarak versiyon numarasını günceller, CHANGELOG.md'yi oluşturur ve NPM'e publish eder. Tüm süreç insan müdahalesi olmadan, deterministik ve tekrarlanabilir şekilde işliyor.\n\nBu pipeline sayesinde son 6 ayda 40+ release yaptık ve hiçbirinde manual hata yaşanmadı. Developer'ın yapması gereken tek şey: kodu yazmak, PR açmak ve review'dan geçirmek.`
       break
 
     case 'frontend-storybook-playground':
-      customBody = `Geliştirdiğiniz bir UI bileşeninin 10 farklı konfigürasyonunu (hata mesajı, yüklenme, pasif vs.) görmek için ana sitede sayfa sayfa gezmek eski zamanlardan kalma bir amatörlüktür. Bu darboğazı çözmek için Storybook imdadımıza yetişiyor.\n\n"Component-Driven Development" (Bileşen odaklı gelişim) kültürü ile her bir butonu, takvimi, modu projenin bağlılıklarından kopartıp Storybook sanal platformunda izole olarak geliştiriyoruz. React context kirliliği dertlerine asla katlanmadan görsel (Visual) olarak sonucu deneyimliyoruz.\n\nEkibin yazılımcı olmayan üyeleri (Tasarımcılar, Ürün Sahipleri) bu siteye girip ürünün hangi UI elemanlarına sahip olduğunu sanki bir vitrin inceler gibi inceleyebiliyor ve geri bildirim sağlayabiliyorlar.`
+      customBody = `Geliştirdiğiniz bir Button bileşeninin loading, disabled, error, success, farklı boyut ve renk varyasyonlarını görmek için projeyi çalıştırıp ilgili sayfaya navigasyonla ulaşmak, o state'i manuel oluşturmak ve ekran görüntüsü almak — bu akış 10 dakikanızı alır ve tekrar edilemez. Storybook ile bu 10 dakika 5 saniyeye düşer.\n\n"Component-Driven Development" (CDD) kültürü ile her bileşeni projenin routing, state management ve API bağımlılıklarından tamamen kopararak izole bir sandbox'ta geliştiriyoruz. Storybook her bileşen için bir "hikaye" (story) dosyası tutar ve bu hikâyeler bileşenin tüm olası durumlarını sergiler:\n\n\`\`\`tsx\n// Button.stories.tsx\nimport type { Meta, StoryObj } from '@storybook/react';\nimport { Button } from './Button';\n\nconst meta: Meta<typeof Button> = {\n  title: 'UI/Button',\n  component: Button,\n  tags: ['autodocs'], // Otomatik doküman oluştur\n};\n\nexport default meta;\ntype Story = StoryObj<typeof Button>;\n\nexport const Default: Story = { args: { children: 'Kaydet' } };\nexport const Loading: Story = { args: { children: 'Yükleniyor...', isLoading: true } };\nexport const Disabled: Story = { args: { children: 'Pasif', disabled: true } };\nexport const Destructive: Story = { args: { children: 'Sil', variant: 'destructive' } };\n\`\`\`\n\nEkibin yazılımcı olmayan üyeleri — tasarımcılar, ürün sahipleri, QA mühendisleri — Storybook'un deploy edilmiş web arayüzüne girip bileşen kataloğunu sanki bir vitrin inceler gibi gezebiliyor. "Bu butonun hover rengini değiştirelim" gibi geri bildirimler, artık Slack mesajlarında değil doğrudan bileşenin yanında comment olarak bırakılıyor.\n\nStorybook aynı zamanda visual regression testing için de temel oluşturuyor: Chromatic entegrasyonuyla her PR'da bileşenlerin pixel-level karşılaştırması yapılıyor, istem dışı görsel değişiklikler anında yakalanıyor.`
       break
 
     case 'frontend-storybook-args':
-      customBody = `Storybook'un asıl güçlü tarafı sadece bir katalog sunması değil; aynı zamanda interaktif bir manipülasyon (Args & Controls) alanı yaratmasıdır. Yeni özellik ekleneceği zaman bu kontroller developer deneyimini eşsiz kılar.\n\nProps değerlerini arayüzde bir panel (Controls) aracılığıyla değiştirilebilir kılarak, statik yazılmış component'in \`size\`, \`color\`, \`isLoading\` gibi özelliklerini kod yazmadan deneme fırsatı yakalıyoruz.\n\n\`\`\`tsx\nexport const Primary: Story = {\n  args: {\n    primary: true,\n    label: 'Modern Button',\n    size: 'large',\n  },\n};\n\`\`\`\n\nBu etkileşimli alan sayesinde tasarımcılar "Acaba bu buton hata verdiğinde padding nasıl görünüyor?" sorusunun cevabını bana sormak yerine saniyeler içinde Storybook'tan değiştirebiliyorlar. Uçtan uca iletişim devrimi yaratıyor.`
+      customBody = `Storybook'un asıl gücü sadece bir bileşen kataloğu sunması değil; Args ve Controls sistemiyle interaktif bir deney laboratuvarı yaratmasıdır. TypeScript interface'inizdeki her prop otomatik olarak bir kontrol paneli elemanına dönüşür: string prop'lar text input, boolean'lar toggle switch, enum'lar select dropdown olarak görünür.\n\nBu mekanizma sayesinde bir bileşenin davranışını anlamak için kaynak kodunu okumak gerekmez. Controls panelinde \`variant\`, \`size\`, \`isLoading\`, \`disabled\` gibi prop'ları gerçek zamanlı değiştirip sonucu anında görebilirsiniz.\n\n\`\`\`tsx\n// Input.stories.tsx\nimport type { Meta, StoryObj } from '@storybook/react';\nimport { Input } from './Input';\n\nconst meta: Meta<typeof Input> = {\n  title: 'Forms/Input',\n  component: Input,\n  argTypes: {\n    variant: {\n      control: 'select',\n      options: ['default', 'error', 'success'],\n      description: 'Input görsel durumu',\n    },\n    size: {\n      control: 'radio',\n      options: ['sm', 'md', 'lg'],\n    },\n    placeholder: { control: 'text' },\n    disabled: { control: 'boolean' },\n  },\n};\n\nexport default meta;\ntype Story = StoryObj<typeof Input>;\n\nexport const Default: Story = {\n  args: {\n    placeholder: 'E-posta adresiniz',\n    variant: 'default',\n    size: 'md',\n  },\n};\n\nexport const WithError: Story = {\n  args: {\n    placeholder: 'Geçersiz e-posta',\n    variant: 'error',\n    helperText: 'Lütfen geçerli bir e-posta adresi girin',\n  },\n};\n\`\`\`\n\nTasarımcılar artık "Bu input hata durumunda nasıl görünüyor?", "Large boyutta label taşıyor mu?", "Disabled iken focus ring kalıyor mu?" sorularının cevabını bana sormak yerine Storybook üzerinden saniyeler içinde kendileri keşfedebiliyor.\n\nActions addon'u ile de bileşenin emit ettiği event'ler (onChange, onClick, onSubmit) konsolda loglanıyor. Bu sayede bir form bileşeninin doğru değerleri doğru zamanda gönderip göndermediğini, interaktif olarak doğrulayabiliyoruz. Uçtan uca iletişim maliyeti dramatik biçimde düştü ve PR review süreleri ortalama %30 kısaldı.`
       break
 
     case 'frontend-storybook-addons':
-      customBody = `Çıplak bir Storybook gayet faydalıdır ancak Onu çok güçlü ve güvenilir kılan şey sahip olduğu Eklenti (Addon) ekosistemidir. Ekip olarak erişilebilirlik ve Dark Mode testlerine takıntılı bir yapıdayız.\n\nStorybook konfigürasyonlarına \`@storybook/addon-a11y\` (Accessibility) ekleyerek, kullandığımız kontrast farklarının, aria tag'larının standartlara uyup uymadığını render sırasında canlı olarak test edebiliyoruz. Aynı zamanda otomatik MDX dokümantasyonu alabiliyoruz.\n\nSağlanan bu altyapı her yeni frontend stajyerinin ya da çalışanının sistemin "Kod Standartları" rehberini, dışarıdan başka hiçbir siteye ve PDF'e ihtiyaç duymadan hızla kavramasını sağlamış oldu.`
+      customBody = `Vanilla Storybook faydalıdır ama onu kurumsal bir araç haline getiren şey eklenti (addon) ekosistemidir. Elly UI Kit projemizde kullandığımız kritik addon'lar ve her birinin sağladığı değer şöyledir:\n\n**@storybook/addon-a11y (Accessibility):** Her bileşenin WCAG 2.1 standartlarına uygunluğunu canlı olarak test eder. Renk kontrastı yetersizliği, eksik ARIA label'ları, keyboard navigation sorunları gibi erişilebilirlik hatalarını bileşen render edildiği anda yakalar. Projemizde bu addon sayesinde 47 erişilebilirlik sorunu prod'a çıkmadan tespit edildi.\n\n\`\`\`tsx\n// .storybook/main.ts\nconst config: StorybookConfig = {\n  addons: [\n    '@storybook/addon-essentials',  // Controls, Actions, Viewport\n    '@storybook/addon-a11y',        // Accessibility\n    '@storybook/addon-themes',      // Dark/Light mode\n    '@storybook/addon-interactions', // Play functions\n  ],\n  docs: {\n    autodocs: 'tag', // 'autodocs' tag'i olan bileşenlere otomatik doküman\n  },\n};\n\`\`\`\n\n**@storybook/addon-themes:** Dark Mode / Light Mode geçişlerini tek tıkla yapabilme imkanı sağlar. Bileşenlerimizin her iki temada da doğru görünüp görünmediğini yan yana karşılaştırmalı test edebiliyoruz. Bu özellik özellikle Elly mobil uygulamasının dark-mode ağırlıklı tasarımı için kritikti.\n\n**MDX Docs ve Autodocs:** TypeScript interface'lerinden otomatik oluşturulan prop tabloları, kullanım örnekleri ve tasarım kılavuzları. Her bileşenin yanında "ne zaman kullanılmalı", "hangi variant ne işe yarar" gibi bilgiler MDX formatında yaşıyor. Yeni katılan developer'lar hiçbir PDF veya Confluence sayfasına ihtiyaç duymadan, Storybook üzerinden tüm design system'i keşfedebiliyor.\n\n**Play Functions ve Interaction Testing:** Storybook 7+ ile gelen bu özellik sayesinde, story dosyalarının içine kullanıcı etkileşim senaryoları yazılabiliyor. Bir formun doldurulması, submit edilmesi ve validasyon mesajının görünmesi gibi akışlar otomatik test edilebiliyor — vitest/jest'e ek olarak görsel seviyede integration test imkanı.\n\nSağlanan bu altyapı, UI Kit'i tüketen tüm ekiplerin bileşen davranışlarını, erişilebilirlik durumlarını ve tema uyumluluğunu tek bir merkezden doğrulamasını mümkün kıldı.`
       break
 
     case 'frontend-growthbook-ab-testing':
-      customBody = `Yeni çıkardığınız çılgın bir sayfa tasarımının satışı patlatacağından emin misiniz? Şirket vizyonunda kararlar "sezgilere" değil, her zaman dataya (veriye) dayandırılmadır. Bu amaçla Feature Flag yetenekleriyle A/B testlerini vazgeçilmez görüyoruz.\n\nGrowthbook SDK yapısını projeye entegre ederek, ana sayfadaki "Ödeme Yap" butonunun yeşil renkli halini kullanıcıların %50'sine, mavi renkli halini diğer %50'sine bölüp rastgele sunuyoruz. Sistemin ayakta kalması ve riskin bölünmesi bu deneylere dayanıyor.\n\n\`\`\`ts\nconst isNewHeaderOn = growthbook.isOn('new-header-experiment');\n// Canlı trafik esnasında kurala göre komponenti seçelim\nreturn isNewHeaderOn ? <HeaderV2 /> : <HeaderV1 />;\n\`\`\`\n\nHerhangi vahim bir bug veya satın almada çöküş yaşanırsa kod değiştirmeden Growthbook paneli üzerinden o feature-flag bayrağını anında kapatıyor, problemi tek saniyede %100 oranında önlemiş oluyoruz.`
+      customBody = `Yeni tasarladığınız bir sayfa düzeninin konversiyon oranını gerçekten artıracağından emin misiniz? Sezgilere dayalı kararlar risk barındırır; veriye dayalı kararlar ise ölçülebilir başarı getirir. Elly platformunda Newsletter abonelik oranını artırmak için "büyük yeşil CTA" vs "minimal floating button" denemesi yapmamız gerekiyordu. Growthbook tam bu noktada devreye girdi.\n\nGrowthbook açık kaynaklı bir feature flag ve A/B test platformudur. SDK'sını projeye entegre ettikten sonra, deneyler Growthbook Dashboard'unda tanımlanır ve kod tarafında hangi varyantın gösterileceği runtime'da belirlenir. Her kullanıcı deterministik olarak (user ID veya cookie bazlı) bir gruba atanır, böylece aynı kullanıcı her zaman aynı varyantı görür.\n\n\`\`\`tsx\n// providers/GrowthbookProvider.tsx\nimport { GrowthBook, GrowthBookProvider } from '@growthbook/growthbook-react';\n\nconst gb = new GrowthBook({\n  apiHost: 'https://cdn.growthbook.io',\n  clientKey: process.env.NEXT_PUBLIC_GROWTHBOOK_KEY,\n  enableDevMode: process.env.NODE_ENV === 'development',\n  trackingCallback: (experiment, result) => {\n    // Google Analytics'e deney verisi gönder\n    gtag('event', 'experiment_viewed', {\n      experiment_id: experiment.key,\n      variation_id: result.key,\n    });\n  },\n});\n\nexport function AppGrowthbookProvider({ children }) {\n  return <GrowthBookProvider growthbook={gb}>{children}</GrowthBookProvider>;\n}\n\`\`\`\n\nKomponent seviyesinde deney uygulamak son derece temizdir:\n\n\`\`\`tsx\nimport { useFeatureIsOn } from '@growthbook/growthbook-react';\n\nexport function NewsletterSection() {\n  const isNewDesign = useFeatureIsOn('newsletter-v2');\n\n  return isNewDesign ? <NewsletterV2 /> : <NewsletterV1 />;\n}\n\`\`\`\n\nGrowthbook'un en değerli özelliklerinden biri **kill switch** mekanizmasıdır. Yeni varyant canlıya çıktıktan sonra ani bir hata artışı veya konversiyon düşüşü görülürse, kod deploy etmeden Growthbook panelinden feature flag tek tıkla kapatılır ve tüm kullanıcılar anında eski varyanta döner. Bu mekanizma sayesinde risk kontrollü deployment kültürünü ekibe yerleştirdik.\n\nDeney sonuçları yeterli istatistiksel güce (statistical power) ulaştığında, başarılı varyant kalıcı hale getirilir ve feature flag kodu temizlenir (technical debt önleme). Başarısız varyant ise değerli bir öğrenme kaynağı olarak dokümante edilir.`
       break
 
     case 'frontend-growthbook-nextjs':
-      customBody = `A/B testleri client tabanlı (React useEffect) yürütüldüğünde, kullanıcı önce eski versiyonu görüp sonra saniyelik bir sıçrama ile (Flickering) yeni tasarımı görebiliyor. SSR odaklı modern dünyada bu gecikme kabul edilemez.\n\nUyguladığımız teknikte Growthbook Feature algoritmalarını Next.js'in \`middleware\` seviyesine çıkartıp Edge sunucularda değerlendiriyoruz. Ziyaretçi hangi test varyantında olduğunu daha ilk HTML üretilirken seziyor.\n\nTitreme efektinin sıfırlandığı, tamamen Server-Side Rendering (SSR) ile desteklenen bu kusursuz deneyim sayesinde arama motorları testlerimizi kötü amaçlı yönlendirmeler olarak damgalamıyor, performans metriklerimiz stabil kalıyor.`
+      customBody = `Client-side A/B testlerinin en büyük sorunu "flickering" efektidir: kullanıcı sayfayı açtığında önce varsayılan varyantı görür, JavaScript yüklendikten sonra Growthbook SDK çalışır ve alternatif varyanta geçiş olur. Bu 200-500ms'lik sıçrama UX'i bozan, CLS (Cumulative Layout Shift) metriğini kötüleştiren ve güven hissi zedeleyen bir problemdir.\n\nBu problemi çözmek için Growthbook feature evaluation'ını Next.js'in sunucu katmanına taşıdık. İki farklı yaklaşımı denedik ve ikisini de birlikte kullanıyoruz:\n\n**Yaklaşım 1 — Middleware ile Edge Evaluation:** Next.js middleware katmanında (Edge Runtime) kullanıcının cookie'sindeki experiment assignment'ını okuyup, doğru varyantın server component'e iletilmesini sağlıyoruz.\n\n\`\`\`ts\n// middleware.ts\nimport { GrowthBook } from '@growthbook/growthbook';\n\nexport async function middleware(request: NextRequest) {\n  const gb = new GrowthBook({\n    apiHost: process.env.GROWTHBOOK_API_HOST,\n    clientKey: process.env.GROWTHBOOK_CLIENT_KEY,\n  });\n\n  // Kullanıcı ID'sini cookie'den al veya oluştur\n  const userId = request.cookies.get('gb_user_id')?.value || crypto.randomUUID();\n\n  gb.setAttributes({ id: userId });\n  await gb.init({ timeout: 1000 });\n\n  const response = NextResponse.next();\n  response.cookies.set('gb_user_id', userId, { maxAge: 60 * 60 * 24 * 365 });\n\n  // Feature flag değerlerini header olarak ilet\n  response.headers.set('x-gb-features', JSON.stringify(gb.getFeatures()));\n  return response;\n}\n\`\`\`\n\n**Yaklaşım 2 — Server Component'te Evaluation:** Async server component'lerde Growthbook instance'ını oluşturup, varyant değerlendirmesini sunucuda yapıyoruz. Bu sayede istemciye gönderilen HTML zaten doğru varyantı içeriyor — sıfır flickering.\n\n\`\`\`tsx\n// app/page.tsx (Server Component)\nexport default async function HomePage() {\n  const gb = await getServerGrowthbook(); // Server-side init\n  const showNewHero = gb.isOn('hero-redesign-2025');\n\n  return showNewHero ? <HeroV2 /> : <HeroV1 />;\n}\n\`\`\`\n\nBu yaklaşımla CLS skoru sıfıra indi, arama motorları testlerimizi kötü amaçlı cloaking olarak algılamıyor ve Lighthouse Performance metrikleri deneylerden bağımsız olarak stabil kalıyor. SEO ve A/B testing arasındaki geleneksel çatışma, SSR tabanlı bu mimariyle tamamen çözülmüş oldu.`
       break
 
     case 'frontend-growthbook-metrics':
-      customBody = `Feature flag kullanıldığında bir özelliğin ne zaman test aşamasından ana akıma geçileceğine istatistik karar verir. Yeterince trafik izlendikten sonra "bayrak" mantığı devreden çıkıp kod kalıcı hale gelmelidir.\n\nGrowthbook panellerindeki matematiksel metrik değerlerini (P-Value ve Significance oranlarını) analiz ediyoruz. Eğer özellik Conversion Rate'i (Dönüşüm Oranını) istatistiksel açıdan artırıp başarı sağladıysa, takım liderliğiyle kodu ana mimariye sabitliyoruz.\n\nBaşarısı kanıtlanan özelliklerin Flag tanımlamaları kod bloklarından (if conditions) temizlenerek (Technical Debt) kod yığını oluşumu engellenmiş olur, ürün başarılı mimarisi ile yoluna devam eder.`
+      customBody = `Feature flag ile canlıya çıkan bir deneyin ne zaman "kazandı" veya "kaybetti" ilan edileceğine duygular değil, istatistik karar verir. Yetersiz veriyle erken karar vermek (peeking problem) yanıltıcı sonuçlara yol açar; çok uzun beklemek ise fırsat maliyeti yaratır. Growthbook bu dengeyi otomatik olarak yönetir.\n\nGrowthbook panelinde her deney için tanımladığımız metrikler:\n\n- **Primary Metric (Birincil Metrik):** Newsletter kayıt oranı, buton tıklama oranı veya sepete ekleme gibi doğrudan ölçülmek istenen KPI.\n- **Guardrail Metrics (Koruma Metrikleri):** Sayfa yüklenme süresi, hata oranı, bounce rate gibi "bozulmaması gereken" metrikler. Yeni varyant konversiyon artırsa bile sayfa hızını düşürüyorsa, deney başarısız sayılır.\n\n\`\`\`\nDeney: newsletter-cta-redesign\n──────────────────────────────────\nVaryant A (Kontrol):  %2.3 konversiyon  (n=12,450)\nVaryant B (Yeni CTA): %3.1 konversiyon  (n=12,380)\n\nRelative Uplift: +34.8%\nP-Value: 0.003 (< 0.05 ✅)\nStatistical Power: 92% (> 80% ✅)\nBayesian Probability: 99.2% chance to win\n\nGuardrail: Page Load Time\n  A: 1.2s  |  B: 1.3s  (△+0.1s, kabul edilebilir)\n──────────────────────────────────\nSonuç: ✅ Varyant B KAZANDI — kalıcı hale getir\n\`\`\`\n\nP-Value 0.05'in altına düştüğünde ve yeterli sample size'a ulaşıldığında, Growthbook otomatik olarak "95% confidence ile Varyant B kazandı" sonucunu üretir. Bu noktada takım kararı alır:\n\n**Başarılıysa:** Feature flag kaldırılır, Varyant B kodu kalıcı hale getirilir. Bu aşama kritiktir çünkü temizlenmeyen feature flag'ler technical debt yaratır. Her temizleme işlemi bir PR ile yapılır ve \`EXPERIMENT_CLEANUP\` etiketi ile işaretlenir.\n\n**Başarısızsa:** Deney dokümante edilir, öğrenimler Notion'a kaydedilir. "Neden işe yaramadı?" analizi yapılır ve bir sonraki hipotez oluşturulur.\n\nBu döngüyü son 6 ayda 8 deney için uyguladık. Bunların 5'i başarılı oldu ve toplamda Newsletter kayıt oranını %2.1'den %3.8'e çıkardık. Veriye dayalı karar alma kültürü, ürün ekibinin "en yüksek sesli kişinin fikri kazanır" mentalitesinden çıkmasını sağladı.`
       break
 
     case 'mobile-react-native-elly':
-      customBody = `Elly mobil uygulamasının ekosistemini inşa ederken sadece performans hedeflemekle kalmadım, native hissini tam manasıyla yansıtabilecek bir navigasyon ve state iskeletine ihtiyaç dahi duyduk. \n\nWeb tabanlı tecrübelerimi mobil tarafa doğru kurgularla yansıtmak amacıyla React Navigation'un yetkinliklerini, global store yönetimlerini kullandım. Uygulamanın içerisinde System Theme (Dark Mode) geçişlerinin cihazlarla anlık reaksiyon göstermesini sağlayan modern context kurguları tasarladık.\n\nAndroid ve iOS platformları için devasa iki farklı kod tabanı yönetmek yerine, tek bir mantıksal merkezden çıkan ve her iki ekosistemde de performanslı derlenen, kurumsal, taze bir form ve bileşen mimarisi kurulmuş oldu.`
+      customBody = `Elly mobil uygulamasının ekosistemini inşa ederken sadece performans hedeflemekle kalmadım, native hissini tam manasıyla yansıtabilecek bir navigasyon ve state iskeletine ihtiyaç dahi duyduk.
+
+## Mimari Katman: Feature-Based Modüler Yapı
+
+Projeyi klasik "screens → components → utils" yapısı yerine **Feature-Based Architecture** ile organize ettik. Her özellik (auth, profile, orders, notifications) kendi dizininde screen, hook, service ve type dosyalarını barındırıyor. Bu sayede bir modül üzerinde çalışan geliştirici diğer modüllere dokunmadan bağımsız ilerleyebiliyor.
+
+\`\`\`
+src/
+├── features/
+│   ├── auth/
+│   │   ├── screens/LoginScreen.tsx
+│   │   ├── hooks/useAuth.ts
+│   │   ├── services/authService.ts
+│   │   └── types/auth.types.ts
+│   ├── orders/
+│   │   ├── screens/OrderListScreen.tsx
+│   │   ├── hooks/useOrders.ts
+│   │   └── components/OrderCard.tsx
+│   └── profile/
+│       ├── screens/ProfileScreen.tsx
+│       └── hooks/useProfile.ts
+├── shared/
+│   ├── components/   # Button, Input, Card...
+│   ├── theme/         # Dark/Light token'ları
+│   └── navigation/    # Root navigator
+\`\`\`
+
+## Navigation Mimarisi: Type-Safe Rotalar
+
+React Navigation v6 ile **strongly-typed** navigation kurgusu oluşturduk. Her ekranın parametre tipi compile-time'da doğrulanıyor; yanlış parametre geçmek artık imkansız.
+
+\`\`\`tsx
+type RootStackParamList = {
+  Home: undefined;
+  OrderDetail: { orderId: string; source: 'list' | 'notification' };
+  Profile: { userId: string };
+};
+
+// Navigate çağrısında TypeScript otomatik tamamlama ve hata yakalama
+navigation.navigate('OrderDetail', { orderId: '123', source: 'list' });
+\`\`\`
+
+Nested Navigator yapısında Tab Navigator içinde Stack Navigator'lar kullanarak bottom tab'lar arasında bağımsız navigation stack'leri oluşturduk. Deep linking konfigürasyonu ile push notification'lardan doğrudan ilgili ekrana yönlendirme sağlanıyor.
+
+## Tema Sistemi: Design Token Yaklaşımı
+
+Elly'nin karanlık mod desteği sadece renk değişimi değil, tam bir **Design Token** sistemi üzerine kurulu. Spacing, typography, shadow ve border-radius değerleri tema bazlı değişiyor.
+
+\`\`\`tsx
+const theme = {
+  dark: {
+    colors: {
+      background: '#0A0A0F',
+      surface: '#1A1A2E',
+      primary: '#6C63FF',
+      text: '#E4E4E7',
+      textSecondary: '#9CA3AF',
+      border: '#2D2D44',
+    },
+    shadows: {
+      card: { shadowColor: '#000', shadowOpacity: 0.4, elevation: 8 },
+    },
+  },
+  light: {
+    colors: {
+      background: '#FAFAFA',
+      surface: '#FFFFFF',
+      primary: '#4F46E5',
+      text: '#18181B',
+      textSecondary: '#6B7280',
+      border: '#E5E7EB',
+    },
+    shadows: {
+      card: { shadowColor: '#000', shadowOpacity: 0.08, elevation: 2 },
+    },
+  },
+};
+\`\`\`
+
+\`useColorScheme()\` hook'u ile cihazın sistem temasını dinliyor ve \`ThemeContext\` üzerinden tüm uygulamaya yayıyoruz. Kullanıcı tercihini AsyncStorage'da saklayarak "sistem teması / manuel seçim" opsiyonu sunuyoruz.
+
+## Form Yönetimi: React Hook Form + Zod
+
+Mobilde form deneyimi web'den çok farklıdır; klavye yönetimi, scroll davranışı ve validation feedback'i kritiktir. React Hook Form ile \`Controller\` pattern'ini kullanarak her input'u kontrol altına aldık.
+
+\`\`\`tsx
+const schema = z.object({
+  email: z.string().email('Geçerli bir e-posta giriniz'),
+  phone: z.string().regex(/^05\\d{9}$/, 'Geçerli bir telefon numarası giriniz'),
+});
+
+function RegisterForm() {
+  const { control, handleSubmit } = useForm({ resolver: zodResolver(schema) });
+
+  return (
+    <KeyboardAwareScrollView>
+      <Controller
+        control={control}
+        name="email"
+        render={({ field, fieldState }) => (
+          <TextInput
+            value={field.value}
+            onChangeText={field.onChange}
+            error={fieldState.error?.message}
+          />
+        )}
+      />
+    </KeyboardAwareScrollView>
+  );
+}
+\`\`\`
+
+## Sonuç: Cross-Platform Tutarlılık
+
+Android ve iOS platformları için devasa iki farklı kod tabanı yönetmek yerine, tek bir mantıksal merkezden çıkan ve her iki ekosistemde de performanslı derlenen, kurumsal, taze bir form ve bileşen mimarisi kurulmuş oldu. Platform-specific davranışlar \`Platform.select()\` ile cerrahi müdahale seviyesinde ayrıştırılıyor, geri kalan %95 kod tamamen paylaşımlı.`
       break
 
     case 'mobile-react-native-performance':
-      customBody = `React Native'in tartışmasız en büyük kronik rahatsızlıklarından biri çok miktarda kaydırılabilir veriyi (Infinite Fetch/List) ekrana dizerken yaşanan tıkanmalar ve ram tüketimidir. Bunun için doğru render optimizasyonuna yönelmek zorundayız.\n\nKullanıcıların yüzlerce öğeyi "pürüzsüz" ve 0 frame-drop (kare kaybı) ile kaydırabilmesi için FlatList veya RecyclerListView komponentlerini spesifik render kotalarıyla entegre ediyoruz. Özellikle List Item'leri memo componentler yapmak işin kritik virajıdır.\n\n\`\`\`tsx\n<FlatList \n  data={feed}\n  keyExtractor={item => item.id}\n  // Ekran dışında render edilecek görünmez alan sayısı\n  windowSize={11}\n  initialNumToRender={10}\n  maxToRenderPerBatch={5}\n/>\n\`\`\`\n\nYüksek resourcelu görsel medyalarla bile uygulamanın "Aşırı ısınması" veya FPS çökmesini bertaraf edebiliyor, kullanıcının sanki native Kotlin / Swift dilinde yazılmış bir uygulamada geziyormuş hissiyatını güçlendiriyoruz.`
+      customBody = `React Native'in tartışmasız en büyük kronik rahatsızlıklarından biri çok miktarda kaydırılabilir veriyi (Infinite Fetch/List) ekrana dizerken yaşanan tıkanmalar ve RAM tüketimidir. Bunun için doğru render optimizasyonuna yönelmek zorundayız.
+
+## FlatList Konfigürasyon Stratejisi
+
+Kullanıcıların yüzlerce öğeyi "pürüzsüz" ve 0 frame-drop ile kaydırabilmesi için FlatList komponentini spesifik render kotalarıyla entegre ediyoruz. Her prop'un performans üzerindeki etkisini ölçerek optimum değerleri belirledik.
+
+\`\`\`tsx
+<FlatList
+  data={feed}
+  keyExtractor={item => item.id}
+  renderItem={renderItem}
+  // Ekran dışında render edilecek görünmez alan sayısı
+  windowSize={11}
+  initialNumToRender={10}
+  maxToRenderPerBatch={5}
+  // Sabit yükseklikli item'larda scroll hesaplamasını optimize eder
+  getItemLayout={(data, index) => ({
+    length: ITEM_HEIGHT,
+    offset: ITEM_HEIGHT * index,
+    index,
+  })}
+  // Scroll durduğunda render tetiklenmesini geciktir
+  updateCellsBatchingPeriod={50}
+  removeClippedSubviews={true}
+/>
+\`\`\`
+
+\`windowSize\` değeri ne kadar düşükse RAM'den o kadar tasarruf edilir ancak hızlı kaydırmada beyaz ekran (blank flash) riski artar. Projemizde 11 değeri ile optimal dengeyi bulduk.
+
+## Memoization: Gereksiz Re-render'ların Önlenmesi
+
+List Item'leri \`React.memo\` ile sarmak işin en kritik virajıdır. Ancak memo tek başına yetmez; callback referanslarının da stabilize edilmesi gerekir.
+
+\`\`\`tsx
+const OrderItem = memo(({ item, onPress }: OrderItemProps) => {
+  return (
+    <Pressable onPress={() => onPress(item.id)}>
+      <Text>{item.title}</Text>
+      <Text>{item.price}</Text>
+    </Pressable>
+  );
+});
+
+// Parent component'te callback stabilizasyonu
+const handlePress = useCallback((id: string) => {
+  navigation.navigate('OrderDetail', { orderId: id });
+}, [navigation]);
+
+const renderItem = useCallback(
+  ({ item }: { item: Order }) => <OrderItem item={item} onPress={handlePress} />,
+  [handlePress]
+);
+\`\`\`
+
+## Görsel Optimizasyonu: Image Caching ve Placeholder
+
+Liste içindeki görseller en büyük performans katilidir. \`react-native-fast-image\` ile HTTP cache ve memory cache katmanları oluşturuyoruz.
+
+\`\`\`tsx
+import FastImage from 'react-native-fast-image';
+
+<FastImage
+  source={{
+    uri: item.imageUrl,
+    priority: FastImage.priority.normal,
+    cache: FastImage.cacheControl.immutable,
+  }}
+  style={{ width: 80, height: 80, borderRadius: 8 }}
+  resizeMode={FastImage.resizeMode.cover}
+/>
+\`\`\`
+
+Ayrıca backend tarafında thumbnail versiyonları (80x80, 160x160) üretilerek listeye küçük boyutlu görseller yükleniyor, detay ekranına geçildiğinde full-size görsel lazy load ediliyor.
+
+## Infinite Scroll ve Pagination
+
+Binlerce kayıt içeren listelerde tüm veriyi tek seferde çekmek yerine cursor-based pagination kullanıyoruz. TanStack Query'nin \`useInfiniteQuery\` hook'u ile entegrasyon sağlanıyor.
+
+\`\`\`tsx
+const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+  queryKey: ['orders'],
+  queryFn: ({ pageParam = 0 }) => fetchOrders({ cursor: pageParam, limit: 20 }),
+  getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+});
+
+<FlatList
+  data={data?.pages.flatMap(page => page.items) ?? []}
+  onEndReached={() => hasNextPage && fetchNextPage()}
+  onEndReachedThreshold={0.5}
+  ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
+/>
+\`\`\`
+
+## Performans Ölçümü: Flipper ve Profiling
+
+Optimizasyonların gerçekten işe yarayıp yaramadığını ölçmek için Flipper'ın Performance plugin'ini ve React DevTools Profiler'ı kullanıyoruz. JS frame rate ve UI frame rate metriklerini ayrı ayrı izleyerek darboğazın hangi thread'de olduğunu tespit ediyoruz.
+
+Yüksek resource'lu görsel medyalarla bile uygulamanın FPS çökmesini bertaraf edebiliyor, kullanıcının sanki native Kotlin/Swift dilinde yazılmış bir uygulamada geziyormuş hissiyatını güçlendiriyoruz.`
       break
 
     case 'mobile-react-native-animations':
-      customBody = `Profesyonel mobil ürünleri rakiplerinden ayırt eden şey işlevi kadar sunduğu mikro-etkileşimler (Micro-animations) ve pürüzsüz geri bildirim dokularıdır. Ancak React Native JS ipliği animasyonlar için çok yavaştır.\n\nAsıl devrimi, React'in ana JS ipliğini atlayarak Native donanım seviyesinde asenkron olarak çalışan \`react-native-reanimated\` (v3) implementasyonuyla sağladık. Akıcı shared element transition'ları ve donanım hızlandırması ile 60FPS sınırlarına ulaşıyoruz.\n\nKullanıcının tıkladığı nesnenin yumuşakça esnemesi, sayfalar arasındaki sürükleme ivmesinin parmak hızını algılayıp tepki vermesi, UI/UX deneyimi açısından ürünümüzün kalitesini premium segmente yükseltti.`
+      customBody = `Profesyonel mobil ürünleri rakiplerinden ayırt eden şey işlevi kadar sunduğu mikro-etkileşimler (Micro-animations) ve pürüzsüz geri bildirim dokularıdır. Ancak React Native JS ipliği animasyonlar için çok yavaştır.
+
+## JS Thread vs UI Thread: Neden Animated API Yetmez?
+
+React Native'in yerleşik \`Animated\` API'si her frame'de JS thread ile UI thread arasında bridge üzerinden iletişim kurar. Bu köprü geçişi ~5ms gecikme yaratır ve karmaşık animasyonlarda frame drop kaçınılmazdır. Reanimated 3 ise animasyon mantığını tamamen **UI thread'ine** (native taraf) taşıyarak bu darboğazı ortadan kaldırır.
+
+\`\`\`
+[Animated API]
+JS Thread → Bridge → UI Thread (her frame'de köprü geçişi = jank)
+
+[Reanimated 3]
+Worklet → UI Thread (doğrudan native çalışma = 60FPS)
+\`\`\`
+
+## Shared Values ve Worklet'ler
+
+Reanimated'in temel yapı taşı \`useSharedValue\` ve \`useAnimatedStyle\` hook'larıdır. Shared value'lar UI thread'de yaşar ve JS thread'i bloklamadan animasyonları yönetir.
+
+\`\`\`tsx
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+
+function AnimatedCard({ onPress }: Props) {
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: opacity.value,
+  }));
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.95, { damping: 15, stiffness: 150 });
+    opacity.value = withTiming(0.8, { duration: 100 });
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 15, stiffness: 150 });
+    opacity.value = withTiming(1, { duration: 100 });
+  };
+
+  return (
+    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={onPress}>
+      <Animated.View style={[styles.card, animatedStyle]}>
+        {/* Card content */}
+      </Animated.View>
+    </Pressable>
+  );
+}
+\`\`\`
+
+## Gesture Handler Entegrasyonu
+
+\`react-native-gesture-handler\` v2 ile Reanimated'i birleştirerek dokunma, sürükleme ve fırlatma hareketlerini 60FPS'de işliyoruz. Swipe-to-delete gibi etkileşimler artık native hissiyatla çalışıyor.
+
+\`\`\`tsx
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  runOnJS,
+} from 'react-native-reanimated';
+
+function SwipeableRow({ onDelete, children }: Props) {
+  const translateX = useSharedValue(0);
+
+  const panGesture = Gesture.Pan()
+    .onUpdate((event) => {
+      translateX.value = Math.min(0, event.translationX);
+    })
+    .onEnd(() => {
+      if (translateX.value < -120) {
+        translateX.value = withSpring(-200);
+        runOnJS(onDelete)();
+      } else {
+        translateX.value = withSpring(0);
+      }
+    });
+
+  const rowStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
+
+  return (
+    <GestureDetector gesture={panGesture}>
+      <Animated.View style={rowStyle}>{children}</Animated.View>
+    </GestureDetector>
+  );
+}
+\`\`\`
+
+## Layout Animations: Entering ve Exiting
+
+Reanimated 3'ün layout animation API'si ile liste elemanlarının eklenmesi ve silinmesi sırasında otomatik geçiş animasyonları uyguluyoruz. Tek satır kod ile profesyonel sonuçlar elde ediliyor.
+
+\`\`\`tsx
+import Animated, {
+  FadeInDown,
+  FadeOutLeft,
+  LinearTransition,
+} from 'react-native-reanimated';
+
+function NotificationList({ items }: Props) {
+  return (
+    <Animated.FlatList
+      data={items}
+      itemLayoutAnimation={LinearTransition}
+      renderItem={({ item, index }) => (
+        <Animated.View
+          entering={FadeInDown.delay(index * 50).springify()}
+          exiting={FadeOutLeft.duration(300)}
+        >
+          <NotificationCard item={item} />
+        </Animated.View>
+      )}
+    />
+  );
+}
+\`\`\`
+
+## Spring vs Timing: Doğru Easing Seçimi
+
+Her animasyon türü için doğru easing fonksiyonu seçmek UX kalitesini belirler. Temel kuralımız: **kullanıcı etkileşimi sonucu tetiklenen animasyonlarda spring**, **otomatik/sistem animasyonlarında timing** kullanmak.
+
+| Senaryo | Animasyon Tipi | Neden? |
+|---------|---------------|--------|
+| Buton basma | \`withSpring\` | Doğal geri sekme hissi |
+| Sayfa geçişi | \`withTiming + Easing.bezier\` | Kontrollü ve öngörülebilir |
+| Pull-to-refresh | \`withSpring\` | Elastik geri dönüş |
+| Toast bildirimi | \`withTiming\` | Sabit sürede giriş/çıkış |
+
+Kullanıcının tıkladığı nesnenin yumuşakça esnemesi, sayfalar arasındaki sürükleme ivmesinin parmak hızını algılayıp tepki vermesi, UI/UX deneyimi açısından ürünümüzün kalitesini premium segmente yükseltti.`
       break
 
     case 'ai-mcp-architecture':

@@ -15,22 +15,111 @@ Bu makale **Mobile** alanındaki deneyimlerimi ve yazılım geliştirme metodolo
 
 > Binlerce verinin mobil ekranda kasma donma yaşamadan listelenebilmesi için memoization, keyextractor ve getItemLayout optimizasyon adımları.
 
-React Native'in tartışmasız en büyük kronik rahatsızlıklarından biri çok miktarda kaydırılabilir veriyi (Infinite Fetch/List) ekrana dizerken yaşanan tıkanmalar ve ram tüketimidir. Bunun için doğru render optimizasyonuna yönelmek zorundayız.
+React Native'in tartışmasız en büyük kronik rahatsızlıklarından biri çok miktarda kaydırılabilir veriyi (Infinite Fetch/List) ekrana dizerken yaşanan tıkanmalar ve RAM tüketimidir. Bunun için doğru render optimizasyonuna yönelmek zorundayız.
 
-Kullanıcıların yüzlerce öğeyi "pürüzsüz" ve 0 frame-drop (kare kaybı) ile kaydırabilmesi için FlatList veya RecyclerListView komponentlerini spesifik render kotalarıyla entegre ediyoruz. Özellikle List Item'leri memo componentler yapmak işin kritik virajıdır.
+## FlatList Konfigürasyon Stratejisi
+
+Kullanıcıların yüzlerce öğeyi "pürüzsüz" ve 0 frame-drop ile kaydırabilmesi için FlatList komponentini spesifik render kotalarıyla entegre ediyoruz. Her prop'un performans üzerindeki etkisini ölçerek optimum değerleri belirledik.
 
 ```tsx
 <FlatList
   data={feed}
   keyExtractor={item => item.id}
+  renderItem={renderItem}
   // Ekran dışında render edilecek görünmez alan sayısı
   windowSize={11}
   initialNumToRender={10}
   maxToRenderPerBatch={5}
+  // Sabit yükseklikli item'larda scroll hesaplamasını optimize eder
+  getItemLayout={(data, index) => ({
+    length: ITEM_HEIGHT,
+    offset: ITEM_HEIGHT * index,
+    index,
+  })}
+  // Scroll durduğunda render tetiklenmesini geciktir
+  updateCellsBatchingPeriod={50}
+  removeClippedSubviews={true}
 />
 ```
 
-Yüksek resourcelu görsel medyalarla bile uygulamanın "Aşırı ısınması" veya FPS çökmesini bertaraf edebiliyor, kullanıcının sanki native Kotlin / Swift dilinde yazılmış bir uygulamada geziyormuş hissiyatını güçlendiriyoruz.
+`windowSize` değeri ne kadar düşükse RAM'den o kadar tasarruf edilir ancak hızlı kaydırmada beyaz ekran (blank flash) riski artar. Projemizde 11 değeri ile optimal dengeyi bulduk.
+
+## Memoization: Gereksiz Re-render'ların Önlenmesi
+
+List Item'leri `React.memo` ile sarmak işin en kritik virajıdır. Ancak memo tek başına yetmez; callback referanslarının da stabilize edilmesi gerekir.
+
+```tsx
+const OrderItem = memo(({ item, onPress }: OrderItemProps) => {
+  return (
+    <Pressable onPress={() => onPress(item.id)}>
+      <Text>{item.title}</Text>
+      <Text>{item.price}</Text>
+    </Pressable>
+  )
+})
+
+// Parent component'te callback stabilizasyonu
+const handlePress = useCallback(
+  (id: string) => {
+    navigation.navigate('OrderDetail', { orderId: id })
+  },
+  [navigation],
+)
+
+const renderItem = useCallback(
+  ({ item }: { item: Order }) => (
+    <OrderItem item={item} onPress={handlePress} />
+  ),
+  [handlePress],
+)
+```
+
+## Görsel Optimizasyonu: Image Caching ve Placeholder
+
+Liste içindeki görseller en büyük performans katilidir. `react-native-fast-image` ile HTTP cache ve memory cache katmanları oluşturuyoruz.
+
+```tsx
+import FastImage from 'react-native-fast-image'
+
+;<FastImage
+  source={{
+    uri: item.imageUrl,
+    priority: FastImage.priority.normal,
+    cache: FastImage.cacheControl.immutable,
+  }}
+  style={{ width: 80, height: 80, borderRadius: 8 }}
+  resizeMode={FastImage.resizeMode.cover}
+/>
+```
+
+Ayrıca backend tarafında thumbnail versiyonları (80x80, 160x160) üretilerek listeye küçük boyutlu görseller yükleniyor, detay ekranına geçildiğinde full-size görsel lazy load ediliyor.
+
+## Infinite Scroll ve Pagination
+
+Binlerce kayıt içeren listelerde tüm veriyi tek seferde çekmek yerine cursor-based pagination kullanıyoruz. TanStack Query'nin `useInfiniteQuery` hook'u ile entegrasyon sağlanıyor.
+
+```tsx
+const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  useInfiniteQuery({
+    queryKey: ['orders'],
+    queryFn: ({ pageParam = 0 }) =>
+      fetchOrders({ cursor: pageParam, limit: 20 }),
+    getNextPageParam: lastPage => lastPage.nextCursor ?? undefined,
+  })
+
+;<FlatList
+  data={data?.pages.flatMap(page => page.items) ?? []}
+  onEndReached={() => hasNextPage && fetchNextPage()}
+  onEndReachedThreshold={0.5}
+  ListFooterComponent={isFetchingNextPage ? <ActivityIndicator /> : null}
+/>
+```
+
+## Performans Ölçümü: Flipper ve Profiling
+
+Optimizasyonların gerçekten işe yarayıp yaramadığını ölçmek için Flipper'ın Performance plugin'ini ve React DevTools Profiler'ı kullanıyoruz. JS frame rate ve UI frame rate metriklerini ayrı ayrı izleyerek darboğazın hangi thread'de olduğunu tespit ediyoruz.
+
+Yüksek resource'lu görsel medyalarla bile uygulamanın FPS çökmesini bertaraf edebiliyor, kullanıcının sanki native Kotlin/Swift dilinde yazılmış bir uygulamada geziyormuş hissiyatını güçlendiriyoruz.
 
 ---
 

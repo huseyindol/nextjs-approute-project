@@ -15,19 +15,37 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Yüzlerce farklı uygulamaya giden NPM paketinin güncellemelerinde hata oluşmaması için Breaking Change yönetimi, Git flow senkronizasyonu ve Semantic Versioning ilkelerini uyguladık.
 
-Stabil çalışan bir paket ekosistemi tasarlıyorsanız, en büyük kabusunuz yanlış yapılan masum bir güncellemenin yüzlerce projeyi ayn anda çökertmesi ihtimalidir. Bu felaketi önlemenin tek anahtarı düzgün versiyon takibidir.
+Paylaşımlı bir NPM paketi ekosistemi yönetiyorsanız, en büyük kabusunuz masum görünen bir güncellemenin downstream projelerini çökertmesidir. Biz bunu acı tecrübeyle öğrendik: UI Kit'in Button bileşeninde prop adını değiştirdiğimizde, 3 farklı projenin build'i aynı anda kırıldı. O günden sonra Semantic Versioning'i (SemVer) katı bir disiplinle uygulamaya başladık.
 
-Tıpkı dev küresel kütüphaneler gibi katı bir Semantic Versioning (SemVer) (MAJOR.MINOR.PATCH) stratejisi benimsiyor, eski versiyon kullanan sistemlerin "backward breaking-change" (geriye dönük uyumsuzluk) yaşamasını engelliyoruz. Bu uyarıları CHANGELOG aracılığıyla geliştiricilere bildiriyoruz.
+SemVer'in kuralı basittir ama uygulaması disiplin gerektirir: `MAJOR.MINOR.PATCH` formatında, breaking change → MAJOR, yeni özellik → MINOR, hata düzeltme → PATCH. Bu kuralları `changesets` aracıyla otomatikleştirdik. Her PR'da developer bir changeset dosyası oluşturur ve değişikliğin seviyesini belirtir.
 
-```json
-{
-  "name": "@huseyindol/ui-kit",
-  "version": "1.2.4",
-  "dependencies": { "react": "^18.2.0" }
-}
+```bash
+# Changeset oluşturma
+bunx changeset
+
+# Soru: Bu değişiklik hangi seviyede?
+# ○ patch — Hata düzeltme
+# ○ minor — Yeni özellik (geriye uyumlu)
+# ● major — Breaking change
 ```
 
-Herkesin kod yazdığı ortamlarda bağımlılık (Dependency) kilitlemesi kullanarak "bende çalışıyordu" mazeretlerini bitiriyor ve release (sürüm) stratejisinde yüksek kaliteli kod güvencesi sunuyoruz.
+Her release'de otomatik oluşturulan `CHANGELOG.md` dosyası, tüketici projelerin geliştiricilerine hangi versiyonda ne değiştiğini net olarak gösterir.
+
+```markdown
+## @huseyindol/ui-kit@2.0.0
+
+### Major Changes
+
+- **BREAKING**: Button bileşeninin 'type' prop'u 'variant' olarak yeniden adlandırıldı
+- Migration guide: type="primary" → variant="default"
+
+### Minor Changes
+
+- Yeni Badge bileşeni eklendi
+- Toast bileşenine 'duration' prop'u eklendi
+```
+
+Ayrıca lockfile stratejisi de kritiktir. Tüm projelerde `bun.lock` dosyası versiyon kontrolüne dahil ediliyor. Bu sayede "bende çalışıyor" mazeretleri sona eriyor, CI ortamında `--frozen-lockfile` flag'iyle tam deterministik build garantileniyor. PeerDependencies doğru tanımlanıyor ve React versiyon uyumsuzlukları derleme aşamasında yakalanıyor.
 
 ---
 

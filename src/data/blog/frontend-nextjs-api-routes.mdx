@@ -15,20 +15,46 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Route Handlers ile Next.js içerisinde proxy oluşturarak mikroservislere köprü yapmak ve webhook dinleyicilerini konumlandırmak. Cache konfigürasyonları ve Revalidate süreçleri.
 
-Çoğu frontend uygulamasında, dış dünyada bulunan backend sunucularınıza (Java, Python vb.) doğrudan istek yapmak güvenlik açıklarına ve CORS meselelerine yol açabilir. Next.js "Backend as a Frontend" konseptiyle bu duruma bir set çekiyor.
+Modern mikro-servis mimarilerinde frontend uygulamasının doğrudan backend API'lerine istek yapması, CORS sorunları, güvenlik açıkları ve API anahtarlarının tarayıcıya sızma riski gibi ciddi problemlere yol açıyor. Elly CMS altyapısında Java Spring Boot backend'imiz Kubernetes cluster içinde private ağda çalışıyor — tarayıcıdan direkt erişilebilir olmaması gerekiyor. Next.js Route Handlers ile bu problemi "Backend for Frontend" (BFF) pattern'iyle çözdük.
 
-Route Handlers (API Route'ları) kullanarak arka plan sunucularına bir proxy tüneli oluşturuyoruz. İstekler tarayıcıdan doğrudan Backend'e gitmek yerine Next.js sunucusuna vuruyor, orada gerekli güvenlik (JWT/Cookie) validasyonları yapılıp orijinal hedefe iletiliyor.
+Route Handlers, Next.js sunucusu üzerinde çalışan server-side endpoint'lerdir. İstemciden gelen istekler önce Next.js sunucusuna gelir, burada JWT token validasyonu, rate limiting ve tenant bazlı yetkilendirme yapılır, ardından istek internal API'ye iletilir. Bu katman aynı zamanda response'ları frontend'in ihtiyacına göre şekillendirme (data transformation) imkanı da verir.
 
 ```ts
-// app/api/public/route.ts
-export async function GET(request: Request) {
-  // Backend API'sine header tabanlı köprü kuralım
-  const res = await fetch('https://hidden-api.internal', { headers })
+// app/api/contents/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import { verifyToken } from '@/lib/auth'
+import { rateLimit } from '@/lib/rate-limiter'
+
+export async function GET(request: NextRequest) {
+  // 1. Rate limiting kontrolü
+  const rateLimitResult = await rateLimit(request)
+  if (!rateLimitResult.success) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
+  // 2. JWT token doğrulama
+  const token = request.cookies.get('auth-token')?.value
+  if (!token || !verifyToken(token)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  // 3. Internal API'ye proxy
+  const backendUrl = process.env.BACKEND_API_URL // Private network
+  const res = await fetch(`${backendUrl}/api/v1/contents/list`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'X-Tenant-ID': request.headers.get('x-tenant-id') || '',
+    },
+    next: { revalidate: 60 }, // 60 saniye cache
+  })
+
   return NextResponse.json(await res.json())
 }
 ```
 
-Bu sayede arka uç (backend) sunucularımızı tamamen izole bir özel ağa (Private Network) çekebiliyor ve yalnızca Next.js sunucusunun onlara ulaşabilmesine izin vererek güvenlik ve performans (rate limiting) katmanı elde ediyoruz.
+Bu yapının en güçlü yanlarından biri cache (önbellek) stratejisidir. `next: { revalidate: N }` ile ISR (Incremental Static Regeneration) benzeri bir davranış elde ediyoruz. Sık değişmeyen veriler (kategori listesi, site ayarları) uzun süreli cache'lenir; içerik güncellemelerinde ise `revalidateTag` ile anında invalidate edilir.
+
+Webhook dinleyicileri de Route Handlers ile konumlandırılıyor. Örneğin Resend email servisi bir email bounce olduğunda webhook ile bize bildirim gönderiyor, bu bildirimi `app/api/webhooks/resend/route.ts` endpoint'inde yakalayıp veritabanını güncelliyoruz. Backend sunucularımızı tamamen izole bir private ağa çekebiliyor ve yalnızca Next.js sunucusunun onlara ulaşabilmesine izin vererek çok katmanlı bir güvenlik mimarisi elde ediyoruz.
 
 ---
 

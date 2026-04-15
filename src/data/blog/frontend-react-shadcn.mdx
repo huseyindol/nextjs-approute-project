@@ -15,23 +15,38 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Klasik komponent kütüphanelerinin aksine, kodu tamamen bizim sahiplendiğimiz Shadcn UI mimarisi ile projelerde inanılmaz bir standartlaşma sağladık. Tailwind CSS'in utility first yaklaşımıyla birleştiğinde ortaya premium sonuçlar çıkıyor.
 
-Klasik component kütüphanelerinin aksine (Ant Design, MUI), takımın ihtiyaçlarına %100 uyumlu ve erişilebilir bir UI sistemi kurmak son derece meşakkatli bir süreçti. Shadcn UI bu zorluğu Headless (Radix) felsefesiyle çözdü.
+Klasik component kütüphanelerinin (Ant Design, MUI, Chakra UI) en büyük sorunu, kurumsal projelerde ihtiyaç duyulan ince tasarım ayarlarını yapmak için CSS override savaşlarına girmek zorunda kalmanızdır. Elly projesinde bu sorunu derinden yaşadık: MUI'nin DatePicker bileşenini firmamızın tasarım rehberine uydurmak için 200 satır override CSS yazmıştık. Shadcn UI bu zorluğu Headless (Radix) felsefesiyle kökünden çözdü.
 
-Komponent kodlarının paket modülü yerine bizzat kaynak kodumuzun (`src/components`) içerisine kopyalanması bize devasa bir esneklik sunuyor. Tailwind CSS ile entegre olan bu yapı sayesinde projenin kurumsal renk kartelasını ve varyasyonlarını kolayca adapte ediyoruz.
+Shadcn UI'ın devrimsel farkı, bileşen kodlarının `node_modules` içinde saklı kalması yerine bizzat projenizin `src/components/ui` dizinine kopyalanmasıdır. Bu "copy-paste" yaklaşımı ilk bakışta garip gelse de, pratikte devasa bir esneklik sunuyor: bileşenin her satırı sizin kontrolünüzde, istediğiniz gibi özelleştirebilirsiniz. Tailwind CSS'in utility-first felsefesiyle birleştiğinde, tasarım varyasyonları class-variance-authority (CVA) üzerinden dakikalar içinde tanımlanıyor.
 
 ```tsx
-import { Button } from '@/components/ui/button'
+// components/ui/button.tsx — tamamen bizim kontrolümüzde
+import { cva, type VariantProps } from 'class-variance-authority'
 
-export function CTASection() {
-  return (
-    <Button variant="destructive" className="animate-pulse">
-      Sil ve Devam Et
-    </Button>
-  )
-}
+const buttonVariants = cva(
+  'inline-flex items-center rounded-lg font-medium transition-colors',
+  {
+    variants: {
+      variant: {
+        default: 'bg-emerald-600 text-white hover:bg-emerald-700',
+        destructive: 'bg-red-600 text-white hover:bg-red-700',
+        outline: 'border border-slate-300 hover:bg-slate-100',
+        ghost: 'hover:bg-slate-100 dark:hover:bg-slate-800',
+      },
+      size: {
+        sm: 'h-8 px-3 text-xs',
+        md: 'h-10 px-4 text-sm',
+        lg: 'h-12 px-6 text-base',
+      },
+    },
+    defaultVariants: { variant: 'default', size: 'md' },
+  },
+)
 ```
 
-Hazır ama aynı zamanda baştan yazılabilir olan bu mimari sayesinde kod tekrarından kurtulurken, kurumsal projelerin ihtiyaç duyduğu o spesifik tasarım ince ayarlarını dakikalar içinde üretebiliyoruz.
+Radix UI'ın sağladığı accessibility (erişilebilirlik) altyapısı da cabası: Dialog, DropdownMenu, Tabs gibi karmaşık bileşenler keyboard navigation, focus trap ve ARIA etiketleriyle doğuştan uyumlu geliyor. Bizim yapmamız gereken tek şey görsel katmanı (Tailwind sınıfları) eklemek.
+
+Ekip içinde `shadcn add` CLI komutuyla yeni bileşenler saniyeler içinde projeye ekleniyor ve `components.json` konfigürasyon dosyası üzerinden tema renkleri, border-radius değerleri ve CSS değişkenleri merkezi olarak yönetiliyor. Bu yaklaşım sayesinde 4 farklı projede tutarlı bir tasarım dili korurken, her projenin kendine özel ihtiyaçlarını da karşılayabiliyoruz.
 
 ---
 

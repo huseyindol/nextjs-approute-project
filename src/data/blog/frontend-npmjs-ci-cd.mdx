@@ -15,23 +15,51 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Kod main branch'e birleştiği anda testlerden geçen component paketinin otomatik olarak NPM Registry'ye yeni versiyonla nasıl pushlandığı üzerindeki otomasyon tecrübemiz.
 
-Lokal ortamda geliştirdiğimiz NPM paketini elle versiyonlamak ve teker teker registry'e atmak insan hatasına açık, yorucu ve çağdışı bir yöntemdir. Geliştirme kültürümüz Continuous Integration felsefesine dayanmalıdır.
+Lokal ortamda geliştirdiğimiz NPM paketini elle versiyonlamak ve teker teker registry'e atmak, insan hatasına açık ve ölçeklenemeyen bir yöntemdir. Bir keresinde developer yanlış versiyon numarasıyla publish yaptı ve downstream projelerin tamamı kırıldı. Bu olaydan sonra CI/CD pipeline'ını sıfırdan kurguladık.
 
-Kod base üzerinde "Pull Request" `main` dalına kabul edildiğinde tetiklenen GitHub Actions ile bir pipeline (boru hattı) kurguladık. Önce vitest koşuluyor, kod kalite kontrolden geçiyor ve eğer her şey başarılıysa botlar versiyon atlayıp o an NPM'e release çıkıyor.
+Workflow'umuz iki aşamalıdır: PR aşamasında kalite kontrolü (lint, test, type-check), merge sonrasında ise otomatik publish. Her PR açıldığında GitHub Actions tetiklenir ve kodun tüm kalite kapılarından geçmesi zorunludur — tek bir test bile başarısız olursa merge butonu kilitlenir.
 
 ```yaml
-name: Publish Package
+# .github/workflows/ci.yml
+name: CI/CD Pipeline
+
 on:
-  release:
-    types: [created]
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
 jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install --frozen-lockfile
+      - run: bun run lint # ESLint kontrolü
+      - run: bun run type-check # TypeScript doğrulama
+      - run: bun run format:check # Prettier tutarlılığı
+      - run: bun run test:ci # Vitest + coverage
+
   publish:
-    run: npm publish --access public
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    needs: quality-gate
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
 
-Yapılan bu entegrasyon sadece hız kazandırmakla kalmadı; aynı zamanda yazılımcının "paket yayınlama stresi" ortadan kaldırıldı, kodun teste girmesi zorunlu hale gelerek ürün kalitesi zirveye oturtuldu.
+Build aşamasında `tsup` ile hem ESM hem CJS formatında çıktı üretiliyor, TypeScript declaration dosyaları otomatik oluşturuluyor. Publish öncesi `npm pack --dry-run` ile paketin içeriği kontrol ediliyor, yanlışlıkla `node_modules` veya test dosyalarının pakete dahil edilmesi engelleniyor.
+
+Versiyon yönetimi için `changesets` entegrasyonu kullanıyoruz. Developer PR'a bir changeset ekler, merge sonrasında bot otomatik olarak versiyon numarasını günceller, CHANGELOG.md'yi oluşturur ve NPM'e publish eder. Tüm süreç insan müdahalesi olmadan, deterministik ve tekrarlanabilir şekilde işliyor.
+
+Bu pipeline sayesinde son 6 ayda 40+ release yaptık ve hiçbirinde manual hata yaşanmadı. Developer'ın yapması gereken tek şey: kodu yazmak, PR açmak ve review'dan geçirmek.
 
 ---
 

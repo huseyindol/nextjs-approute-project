@@ -15,21 +15,54 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Dynamic Content içeren uygulamalardaki metadata dinamik atamaları (generateMetadata) ve robots.txt entegrasyonu. Sitemap.xml jenerasyonları ile Google indeks sürelerini minimize ediyoruz.
 
-Ziyaretçiye statik göründüğü halde içeriklerini dinamik veri tabanlarından alan sitelerde Arama Motoru Optimizasyonu (SEO) en büyük challenge'dır. React'in kendi başına çözemediği bu kısmı Next.js ile kusursuz yönetebiliyoruz.
+Ziyaretçiye statik göründüğü halde içeriklerini dinamik veri tabanlarından alan sitelerde Arama Motoru Optimizasyonu (SEO) en büyük mücadele alanıdır. Klasik React SPA'larda arama motorları boş bir `<div id="root">` görür — içerik JavaScript yüklendikten sonra render edildiği için botlar sayfayı boş algılar. Next.js bu problemi SSR ve SSG ile kökünden çözüyor.
 
-Dynamic SEO yetenekleri kapsamında yer alan `generateMetadata` fonksiyonu ile URL'ye (Slug) bağlı değişen içerikleri sunucu tarafında çekiyor ve doğrudan Head tag'lerine (OpenGraph dahil) basabiliyoruz. Bunu sitemap ve robots.txt entegrasyonuyla birleştiriyoruz.
+Öncelikle Next.js 14+ ile gelen `generateMetadata` fonksiyonu, her sayfa için dinamik meta tag üretimini mümkün kılıyor. Blog makalelerimizde slug parametresine göre veritabanından içerik çekip, başlık, açıklama, OpenGraph görseli ve canonical URL'yi sunucu tarafında Head'e basıyoruz. Bu sayede Twitter/LinkedIn'de paylaşıldığında zengin önizleme kartları eksiksiz görünüyor.
 
 ```tsx
+// app/blog/[slug]/page.tsx
 export async function generateMetadata({ params }): Promise<Metadata> {
-  const post = await getPost(params.id)
+  const post = await getPostBySlug(params.slug)
+  const url = `https://www.huseyindol.com/blog/${post.slug}`
+
   return {
-    title: post.title,
-    openGraph: { images: [post.cover] },
+    title: `${post.title} | Hüseyin DOL`,
+    description: post.description,
+    alternates: { canonical: url },
+    openGraph: {
+      title: post.title,
+      type: 'article',
+      publishedTime: post.publishedAt,
+      authors: [post.author],
+      images: [{ url: post.coverImage, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      images: [post.coverImage],
+    },
   }
 }
 ```
 
-Paylaşım ağlarındaki URL önizlemeleri tamamen doğru bilgiyle (Görsel ve Açıklama dahil) görünmekte olup, Google botları sayfalarımızı indexlerken tam teşekküllü (SSR) HTML'e saniyeler içinde erişebilmektedir.
+SEO'nun ikinci kritik ayağı **sitemap.xml** ve **robots.txt** entegrasyonudur. Next.js'in `sitemap.ts` ve `robots.ts` convention dosyalarıyla bunları kodla yönetiyoruz. Sitemap'i dinamik tutarak her yeni makale eklendiğinde otomatik olarak Google'a bildirim yapılmasını sağlıyoruz.
+
+```tsx
+// app/sitemap.ts
+export default async function sitemap() {
+  const posts = await getAllPosts()
+  const blogRoutes = posts.map(post => ({
+    url: `https://www.huseyindol.com/blog/${post.slug}`,
+    lastModified: new Date(post.publishedAt),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }))
+  return [...staticRoutes, ...blogRoutes]
+}
+```
+
+Üçüncü katman olarak **JSON-LD Structured Data** (Schema.org) ile arama sonuçlarında zengin snippet görüntüsü elde ediyoruz. `ArticleJsonLd` bileşenimiz her blog sayfasına otomatik olarak yazar bilgisi, yayın tarihi ve publisher logosu ekliyor. Google'ın Rich Results Test aracında tüm makalelerimiz başarıyla doğrulanıyor.
+
+Son olarak AI crawler'ları (GPTBot, ClaudeBot, PerplexityBot) için `robots.txt`'te açık izin verip, `llms.txt` ve `llms-full.txt` dosyalarıyla sitemizin yapısını ve içerik haritasını doğrudan LLM'lere sunuyoruz. Bu sayede yapay zeka destekli arama motorlarında da doğru ve zengin şekilde temsil ediliyoruz.
 
 ---
 

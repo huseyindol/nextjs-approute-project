@@ -15,15 +15,43 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Firmamın frontend projelerindeki karmaşayı çözmek için geliştirdiğimiz UI-Kit çalışmasının hikayesi. Button, Badge, Banner, Newsletter alanı gibi componentleri nasıl izole bir pakete dönüştürdük?
 
-Büyüyen yazılım ekiplerinin birbirinden kopuk projeler geliştirdiğinde, renk farklılıkları, komponent uyumsuzlukları gibi krizlerle boğuştuğu bir gerçektir. Takım sinerjisini artırmak adına ortak bir dil (UI-Kit) kurmak kaçınılmazdır.
+Büyüyen yazılım ekiplerinin birbirinden kopuk projeler geliştirdiğinde yaşadığı en büyük kriz tutarsızlıktır: bir projede buton yeşil, diğerinde mavi; birinde border-radius 4px, diğerinde 8px. Kullanıcılar farklı ürünler arasında gezinirken marka algısı zedelenir. Elly ekosisteminde 3 farklı frontend projesi (public site, admin panel, mobile web) aynı marka kimliğini taşıması gerekiyordu.
 
-Firmanın kimliğini yansıtan Button, Banner, Form elementleri gibi tüm yapı taşlarını dışa bağımlı olmadan kendi NPM paketimiz olarak yayımladık. Monorepo (Turborepo) stratejisi yardımıyla projeler arasında "ortak akıl" yürütecek bir CSS ve bileşen standardı oluşturduk.
+Bu sorunu çözmek için firmanın tasarım sistemini (Design System) kapsayan bir NPM paketi oluşturduk. Button, Badge, Banner, Input, Modal, Toast gibi 25+ temel bileşeni, Tailwind CSS theme token'ları ve utility fonksiyonlarla birlikte tek bir pakete sardık. Paket, tree-shakeable yapıda olduğu için tüketici projeler yalnızca kullandıkları bileşenleri bundle'a dahil ediyor.
 
-```bash
-npm install @huseyindol/ui-kit
+```tsx
+// UI Kit paket yapısı
+packages/ui-kit/
+├── src/
+│   ├── components/
+│   │   ├── Button/
+│   │   │   ├── Button.tsx
+│   │   │   ├── Button.stories.tsx
+│   │   │   ├── Button.test.tsx
+│   │   │   └── index.ts
+│   │   ├── Badge/
+│   │   ├── Input/
+│   │   └── Modal/
+│   ├── tokens/
+│   │   ├── colors.ts    // Marka renk paleti
+│   │   ├── spacing.ts
+│   │   └── typography.ts
+│   └── index.ts         // Public API — barrel export
+├── package.json
+└── tsup.config.ts       // Build konfigürasyonu
 ```
 
-Bu yaklaşım sayesinde, ürün yönetimi yeni bir platform sipariş ettiğinde geliştirici ekibi sıfırdan tasarım yazmakla uğraşmıyor, markanın hazır bloklarını bir araya getirerek %40 efor tasarrufuyla yayına çıkabiliyor.
+Paketin build sürecinde `tsup` kullanarak hem ESM hem CJS formatında çıktı üretiyoruz. TypeScript tip tanımları otomatik oluşturuluyor, böylece tüketici projelerde IntelliSense desteği tam çalışıyor.
+
+```bash
+# Kurulum
+bun add @huseyindol/ui-kit
+
+# Kullanım
+import { Button, Badge, Input } from '@huseyindol/ui-kit';
+```
+
+Bu yaklaşımın en büyük getirisi, ürün yönetimi yeni bir platform sipariş ettiğinde geliştirici ekibinin sıfırdan tasarım yazmakla uğraşmamasıdır. Markanın hazır bloklarını bir araya getirerek %40 efor tasarrufuyla yayına çıkılabiliyor. Ayrıca tasarım değişikliği yapıldığında (örneğin marka rengi güncellemesi) tek pakette yapılan değişiklik, tüm projelere otomatik yansıyor.
 
 ---
 

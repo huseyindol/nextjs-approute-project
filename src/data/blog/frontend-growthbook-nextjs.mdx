@@ -15,11 +15,50 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Server Side Rendering tarafında feature flag'ları okuyarak (Next.js Middleware üzerinden) kullanıcılara statik gecikme olmadan ilgili deneyi sunma metotlarımız.
 
-A/B testleri client tabanlı (React useEffect) yürütüldüğünde, kullanıcı önce eski versiyonu görüp sonra saniyelik bir sıçrama ile (Flickering) yeni tasarımı görebiliyor. SSR odaklı modern dünyada bu gecikme kabul edilemez.
+Client-side A/B testlerinin en büyük sorunu "flickering" efektidir: kullanıcı sayfayı açtığında önce varsayılan varyantı görür, JavaScript yüklendikten sonra Growthbook SDK çalışır ve alternatif varyanta geçiş olur. Bu 200-500ms'lik sıçrama UX'i bozan, CLS (Cumulative Layout Shift) metriğini kötüleştiren ve güven hissi zedeleyen bir problemdir.
 
-Uyguladığımız teknikte Growthbook Feature algoritmalarını Next.js'in `middleware` seviyesine çıkartıp Edge sunucularda değerlendiriyoruz. Ziyaretçi hangi test varyantında olduğunu daha ilk HTML üretilirken seziyor.
+Bu problemi çözmek için Growthbook feature evaluation'ını Next.js'in sunucu katmanına taşıdık. İki farklı yaklaşımı denedik ve ikisini de birlikte kullanıyoruz:
 
-Titreme efektinin sıfırlandığı, tamamen Server-Side Rendering (SSR) ile desteklenen bu kusursuz deneyim sayesinde arama motorları testlerimizi kötü amaçlı yönlendirmeler olarak damgalamıyor, performans metriklerimiz stabil kalıyor.
+**Yaklaşım 1 — Middleware ile Edge Evaluation:** Next.js middleware katmanında (Edge Runtime) kullanıcının cookie'sindeki experiment assignment'ını okuyup, doğru varyantın server component'e iletilmesini sağlıyoruz.
+
+```ts
+// middleware.ts
+import { GrowthBook } from '@growthbook/growthbook'
+
+export async function middleware(request: NextRequest) {
+  const gb = new GrowthBook({
+    apiHost: process.env.GROWTHBOOK_API_HOST,
+    clientKey: process.env.GROWTHBOOK_CLIENT_KEY,
+  })
+
+  // Kullanıcı ID'sini cookie'den al veya oluştur
+  const userId = request.cookies.get('gb_user_id')?.value || crypto.randomUUID()
+
+  gb.setAttributes({ id: userId })
+  await gb.init({ timeout: 1000 })
+
+  const response = NextResponse.next()
+  response.cookies.set('gb_user_id', userId, { maxAge: 60 * 60 * 24 * 365 })
+
+  // Feature flag değerlerini header olarak ilet
+  response.headers.set('x-gb-features', JSON.stringify(gb.getFeatures()))
+  return response
+}
+```
+
+**Yaklaşım 2 — Server Component'te Evaluation:** Async server component'lerde Growthbook instance'ını oluşturup, varyant değerlendirmesini sunucuda yapıyoruz. Bu sayede istemciye gönderilen HTML zaten doğru varyantı içeriyor — sıfır flickering.
+
+```tsx
+// app/page.tsx (Server Component)
+export default async function HomePage() {
+  const gb = await getServerGrowthbook() // Server-side init
+  const showNewHero = gb.isOn('hero-redesign-2025')
+
+  return showNewHero ? <HeroV2 /> : <HeroV1 />
+}
+```
+
+Bu yaklaşımla CLS skoru sıfıra indi, arama motorları testlerimizi kötü amaçlı cloaking olarak algılamıyor ve Lighthouse Performance metrikleri deneylerden bağımsız olarak stabil kalıyor. SEO ve A/B testing arasındaki geleneksel çatışma, SSR tabanlı bu mimariyle tamamen çözülmüş oldu.
 
 ---
 

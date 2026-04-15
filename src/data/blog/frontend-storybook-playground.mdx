@@ -15,11 +15,37 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Geliştirdiğimiz UI-Kit NPM paketinin içerisindeki bileşenleri takım arkadaşlarına ve tasarımcılarına tanıtmak adına Storybook kullanarak elde ettiğimiz hız kazanımlarını değerlendiriyoruz.
 
-Geliştirdiğiniz bir UI bileşeninin 10 farklı konfigürasyonunu (hata mesajı, yüklenme, pasif vs.) görmek için ana sitede sayfa sayfa gezmek eski zamanlardan kalma bir amatörlüktür. Bu darboğazı çözmek için Storybook imdadımıza yetişiyor.
+Geliştirdiğiniz bir Button bileşeninin loading, disabled, error, success, farklı boyut ve renk varyasyonlarını görmek için projeyi çalıştırıp ilgili sayfaya navigasyonla ulaşmak, o state'i manuel oluşturmak ve ekran görüntüsü almak — bu akış 10 dakikanızı alır ve tekrar edilemez. Storybook ile bu 10 dakika 5 saniyeye düşer.
 
-"Component-Driven Development" (Bileşen odaklı gelişim) kültürü ile her bir butonu, takvimi, modu projenin bağlılıklarından kopartıp Storybook sanal platformunda izole olarak geliştiriyoruz. React context kirliliği dertlerine asla katlanmadan görsel (Visual) olarak sonucu deneyimliyoruz.
+"Component-Driven Development" (CDD) kültürü ile her bileşeni projenin routing, state management ve API bağımlılıklarından tamamen kopararak izole bir sandbox'ta geliştiriyoruz. Storybook her bileşen için bir "hikaye" (story) dosyası tutar ve bu hikâyeler bileşenin tüm olası durumlarını sergiler:
 
-Ekibin yazılımcı olmayan üyeleri (Tasarımcılar, Ürün Sahipleri) bu siteye girip ürünün hangi UI elemanlarına sahip olduğunu sanki bir vitrin inceler gibi inceleyebiliyor ve geri bildirim sağlayabiliyorlar.
+```tsx
+// Button.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react'
+import { Button } from './Button'
+
+const meta: Meta<typeof Button> = {
+  title: 'UI/Button',
+  component: Button,
+  tags: ['autodocs'], // Otomatik doküman oluştur
+}
+
+export default meta
+type Story = StoryObj<typeof Button>
+
+export const Default: Story = { args: { children: 'Kaydet' } }
+export const Loading: Story = {
+  args: { children: 'Yükleniyor...', isLoading: true },
+}
+export const Disabled: Story = { args: { children: 'Pasif', disabled: true } }
+export const Destructive: Story = {
+  args: { children: 'Sil', variant: 'destructive' },
+}
+```
+
+Ekibin yazılımcı olmayan üyeleri — tasarımcılar, ürün sahipleri, QA mühendisleri — Storybook'un deploy edilmiş web arayüzüne girip bileşen kataloğunu sanki bir vitrin inceler gibi gezebiliyor. "Bu butonun hover rengini değiştirelim" gibi geri bildirimler, artık Slack mesajlarında değil doğrudan bileşenin yanında comment olarak bırakılıyor.
+
+Storybook aynı zamanda visual regression testing için de temel oluşturuyor: Chromatic entegrasyonuyla her PR'da bileşenlerin pixel-level karşılaştırması yapılıyor, istem dışı görsel değişiklikler anında yakalanıyor.
 
 ---
 

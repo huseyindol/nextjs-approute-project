@@ -15,17 +15,47 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Yeni bir Newsletter arayüzünün konversiyon (dönüşüm) oranını etkileyip etkilemeyeceğini test etmek için projeye Growthbook SDK ekleyip %50 trafikli A/B test senaryosu yürüttük.
 
-Yeni çıkardığınız çılgın bir sayfa tasarımının satışı patlatacağından emin misiniz? Şirket vizyonunda kararlar "sezgilere" değil, her zaman dataya (veriye) dayandırılmadır. Bu amaçla Feature Flag yetenekleriyle A/B testlerini vazgeçilmez görüyoruz.
+Yeni tasarladığınız bir sayfa düzeninin konversiyon oranını gerçekten artıracağından emin misiniz? Sezgilere dayalı kararlar risk barındırır; veriye dayalı kararlar ise ölçülebilir başarı getirir. Elly platformunda Newsletter abonelik oranını artırmak için "büyük yeşil CTA" vs "minimal floating button" denemesi yapmamız gerekiyordu. Growthbook tam bu noktada devreye girdi.
 
-Growthbook SDK yapısını projeye entegre ederek, ana sayfadaki "Ödeme Yap" butonunun yeşil renkli halini kullanıcıların %50'sine, mavi renkli halini diğer %50'sine bölüp rastgele sunuyoruz. Sistemin ayakta kalması ve riskin bölünmesi bu deneylere dayanıyor.
+Growthbook açık kaynaklı bir feature flag ve A/B test platformudur. SDK'sını projeye entegre ettikten sonra, deneyler Growthbook Dashboard'unda tanımlanır ve kod tarafında hangi varyantın gösterileceği runtime'da belirlenir. Her kullanıcı deterministik olarak (user ID veya cookie bazlı) bir gruba atanır, böylece aynı kullanıcı her zaman aynı varyantı görür.
 
-```ts
-const isNewHeaderOn = growthbook.isOn('new-header-experiment');
-// Canlı trafik esnasında kurala göre komponenti seçelim
-return isNewHeaderOn ? <HeaderV2 /> : <HeaderV1 />;
+```tsx
+// providers/GrowthbookProvider.tsx
+import { GrowthBook, GrowthBookProvider } from '@growthbook/growthbook-react'
+
+const gb = new GrowthBook({
+  apiHost: 'https://cdn.growthbook.io',
+  clientKey: process.env.NEXT_PUBLIC_GROWTHBOOK_KEY,
+  enableDevMode: process.env.NODE_ENV === 'development',
+  trackingCallback: (experiment, result) => {
+    // Google Analytics'e deney verisi gönder
+    gtag('event', 'experiment_viewed', {
+      experiment_id: experiment.key,
+      variation_id: result.key,
+    })
+  },
+})
+
+export function AppGrowthbookProvider({ children }) {
+  return <GrowthBookProvider growthbook={gb}>{children}</GrowthBookProvider>
+}
 ```
 
-Herhangi vahim bir bug veya satın almada çöküş yaşanırsa kod değiştirmeden Growthbook paneli üzerinden o feature-flag bayrağını anında kapatıyor, problemi tek saniyede %100 oranında önlemiş oluyoruz.
+Komponent seviyesinde deney uygulamak son derece temizdir:
+
+```tsx
+import { useFeatureIsOn } from '@growthbook/growthbook-react'
+
+export function NewsletterSection() {
+  const isNewDesign = useFeatureIsOn('newsletter-v2')
+
+  return isNewDesign ? <NewsletterV2 /> : <NewsletterV1 />
+}
+```
+
+Growthbook'un en değerli özelliklerinden biri **kill switch** mekanizmasıdır. Yeni varyant canlıya çıktıktan sonra ani bir hata artışı veya konversiyon düşüşü görülürse, kod deploy etmeden Growthbook panelinden feature flag tek tıkla kapatılır ve tüm kullanıcılar anında eski varyanta döner. Bu mekanizma sayesinde risk kontrollü deployment kültürünü ekibe yerleştirdik.
+
+Deney sonuçları yeterli istatistiksel güce (statistical power) ulaştığında, başarılı varyant kalıcı hale getirilir ve feature flag kodu temizlenir (technical debt önleme). Başarısız varyant ise değerli bir öğrenme kaynağı olarak dokümante edilir.
 
 ---
 

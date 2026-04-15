@@ -15,11 +15,37 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Growthbook raporlamalarından elde ettiğimiz p-value ve istatistiksel sonuçlara göre, arayüzde tasarladığımız değişiklikleri kalıcı hale getirme sürecimiz.
 
-Feature flag kullanıldığında bir özelliğin ne zaman test aşamasından ana akıma geçileceğine istatistik karar verir. Yeterince trafik izlendikten sonra "bayrak" mantığı devreden çıkıp kod kalıcı hale gelmelidir.
+Feature flag ile canlıya çıkan bir deneyin ne zaman "kazandı" veya "kaybetti" ilan edileceğine duygular değil, istatistik karar verir. Yetersiz veriyle erken karar vermek (peeking problem) yanıltıcı sonuçlara yol açar; çok uzun beklemek ise fırsat maliyeti yaratır. Growthbook bu dengeyi otomatik olarak yönetir.
 
-Growthbook panellerindeki matematiksel metrik değerlerini (P-Value ve Significance oranlarını) analiz ediyoruz. Eğer özellik Conversion Rate'i (Dönüşüm Oranını) istatistiksel açıdan artırıp başarı sağladıysa, takım liderliğiyle kodu ana mimariye sabitliyoruz.
+Growthbook panelinde her deney için tanımladığımız metrikler:
 
-Başarısı kanıtlanan özelliklerin Flag tanımlamaları kod bloklarından (if conditions) temizlenerek (Technical Debt) kod yığını oluşumu engellenmiş olur, ürün başarılı mimarisi ile yoluna devam eder.
+- **Primary Metric (Birincil Metrik):** Newsletter kayıt oranı, buton tıklama oranı veya sepete ekleme gibi doğrudan ölçülmek istenen KPI.
+- **Guardrail Metrics (Koruma Metrikleri):** Sayfa yüklenme süresi, hata oranı, bounce rate gibi "bozulmaması gereken" metrikler. Yeni varyant konversiyon artırsa bile sayfa hızını düşürüyorsa, deney başarısız sayılır.
+
+```
+Deney: newsletter-cta-redesign
+──────────────────────────────────
+Varyant A (Kontrol):  %2.3 konversiyon  (n=12,450)
+Varyant B (Yeni CTA): %3.1 konversiyon  (n=12,380)
+
+Relative Uplift: +34.8%
+P-Value: 0.003 (< 0.05 ✅)
+Statistical Power: 92% (> 80% ✅)
+Bayesian Probability: 99.2% chance to win
+
+Guardrail: Page Load Time
+  A: 1.2s  |  B: 1.3s  (△+0.1s, kabul edilebilir)
+──────────────────────────────────
+Sonuç: ✅ Varyant B KAZANDI — kalıcı hale getir
+```
+
+P-Value 0.05'in altına düştüğünde ve yeterli sample size'a ulaşıldığında, Growthbook otomatik olarak "95% confidence ile Varyant B kazandı" sonucunu üretir. Bu noktada takım kararı alır:
+
+**Başarılıysa:** Feature flag kaldırılır, Varyant B kodu kalıcı hale getirilir. Bu aşama kritiktir çünkü temizlenmeyen feature flag'ler technical debt yaratır. Her temizleme işlemi bir PR ile yapılır ve `EXPERIMENT_CLEANUP` etiketi ile işaretlenir.
+
+**Başarısızsa:** Deney dokümante edilir, öğrenimler Notion'a kaydedilir. "Neden işe yaramadı?" analizi yapılır ve bir sonraki hipotez oluşturulur.
+
+Bu döngüyü son 6 ayda 8 deney için uyguladık. Bunların 5'i başarılı oldu ve toplamda Newsletter kayıt oranını %2.1'den %3.8'e çıkardık. Veriye dayalı karar alma kültürü, ürün ekibinin "en yüksek sesli kişinin fikri kazanır" mentalitesinden çıkmasını sağladı.
 
 ---
 

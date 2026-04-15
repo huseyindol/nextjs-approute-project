@@ -15,21 +15,56 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Props değiştirmelerini kod yazmadan Visual (Görsel) arayüzde test etme deneyimi. Tasarım departmanı ve Developer iletişimsizliğini Storybook aracılığıyla minimuma indirmenin formülleri.
 
-Storybook'un asıl güçlü tarafı sadece bir katalog sunması değil; aynı zamanda interaktif bir manipülasyon (Args & Controls) alanı yaratmasıdır. Yeni özellik ekleneceği zaman bu kontroller developer deneyimini eşsiz kılar.
+Storybook'un asıl gücü sadece bir bileşen kataloğu sunması değil; Args ve Controls sistemiyle interaktif bir deney laboratuvarı yaratmasıdır. TypeScript interface'inizdeki her prop otomatik olarak bir kontrol paneli elemanına dönüşür: string prop'lar text input, boolean'lar toggle switch, enum'lar select dropdown olarak görünür.
 
-Props değerlerini arayüzde bir panel (Controls) aracılığıyla değiştirilebilir kılarak, statik yazılmış component'in `size`, `color`, `isLoading` gibi özelliklerini kod yazmadan deneme fırsatı yakalıyoruz.
+Bu mekanizma sayesinde bir bileşenin davranışını anlamak için kaynak kodunu okumak gerekmez. Controls panelinde `variant`, `size`, `isLoading`, `disabled` gibi prop'ları gerçek zamanlı değiştirip sonucu anında görebilirsiniz.
 
 ```tsx
-export const Primary: Story = {
+// Input.stories.tsx
+import type { Meta, StoryObj } from '@storybook/react'
+import { Input } from './Input'
+
+const meta: Meta<typeof Input> = {
+  title: 'Forms/Input',
+  component: Input,
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['default', 'error', 'success'],
+      description: 'Input görsel durumu',
+    },
+    size: {
+      control: 'radio',
+      options: ['sm', 'md', 'lg'],
+    },
+    placeholder: { control: 'text' },
+    disabled: { control: 'boolean' },
+  },
+}
+
+export default meta
+type Story = StoryObj<typeof Input>
+
+export const Default: Story = {
   args: {
-    primary: true,
-    label: 'Modern Button',
-    size: 'large',
+    placeholder: 'E-posta adresiniz',
+    variant: 'default',
+    size: 'md',
+  },
+}
+
+export const WithError: Story = {
+  args: {
+    placeholder: 'Geçersiz e-posta',
+    variant: 'error',
+    helperText: 'Lütfen geçerli bir e-posta adresi girin',
   },
 }
 ```
 
-Bu etkileşimli alan sayesinde tasarımcılar "Acaba bu buton hata verdiğinde padding nasıl görünüyor?" sorusunun cevabını bana sormak yerine saniyeler içinde Storybook'tan değiştirebiliyorlar. Uçtan uca iletişim devrimi yaratıyor.
+Tasarımcılar artık "Bu input hata durumunda nasıl görünüyor?", "Large boyutta label taşıyor mu?", "Disabled iken focus ring kalıyor mu?" sorularının cevabını bana sormak yerine Storybook üzerinden saniyeler içinde kendileri keşfedebiliyor.
+
+Actions addon'u ile de bileşenin emit ettiği event'ler (onChange, onClick, onSubmit) konsolda loglanıyor. Bu sayede bir form bileşeninin doğru değerleri doğru zamanda gönderip göndermediğini, interaktif olarak doğrulayabiliyoruz. Uçtan uca iletişim maliyeti dramatik biçimde düştü ve PR review süreleri ortalama %30 kısaldı.
 
 ---
 

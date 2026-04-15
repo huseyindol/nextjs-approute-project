@@ -15,24 +15,32 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > State yönetimi, Custom Hook'ların gücü ve Declarative (Bildirimsel) kod yazımının React ekosistemindeki önemine değindik. Projelerimizde Side effect'leri en aza indiren fonksiyonel yaklaşımlar sergiledik. React 19 ve concurrent özelliklerinin uygulamadaki performans getirileri muazzamdır.
 
-Modern Front-end dünyasında React'in giderek karmaşıklaşan yapısı, sürdürülebilir bir mimari tasarlamayı zorunlu kılıyor. Uygulamalar büyüdükçe, bileşen hiyerarşisinde kaybolmamak için "Separation of Concerns" (Sorumlulukların Ayrılığı) prensibini en temel yapıtaşı yapmalıyız.
+Modern Front-end dünyasında React'in giderek karmaşıklaşan yapısı, sürdürülebilir bir mimari tasarlamayı zorunlu kılıyor. 50'den fazla sayfaya sahip bir kurumsal uygulamada bileşen hiyerarşisinde kaybolmamak için "Separation of Concerns" (Sorumlulukların Ayrılığı) prensibini en temel yapıtaşı yapmalıyız. Bu prensip yalnızca klasik backend katman mimarisinin (Controller-Service-Repository) frontend'teki yansıması değil; aynı zamanda bileşen düzeyinde sorumluluk dağılımını belirleyen temel kuraldır.
 
-Projelerde karmaşık durumları yönetirken side-effect (useEffect) kullanımını minimize ediyor ve iş mantığını tamamen **Custom Hook** yapılarına devrediyorum. "Container/Presenter" mantığını modern Hook ekosistemiyle birleştirmek, testlerin kolaylaşmasını ve kodun her yerde kullanılabilmesini (reusability) sağlıyor. Özellikle React 18 ile gelen concurrent rendering, performans hedeflerimiz için devrimseldir.
+Projelerde karmaşık durumları yönetirken `useEffect` kullanımını minimize ediyor ve iş mantığını tamamen **Custom Hook** yapılarına devrediyorum. Bu yaklaşımın temelinde şu düşünce yatıyor: bir React bileşeni yalnızca "ne gösterilecek" sorusuyla ilgilenmeli, "veri nereden gelecek" veya "hangi koşulda ne olacak" gibi sorular hook katmanında cevaplanmalıdır. Container/Presenter mantığını modern Hook ekosistemiyle birleştirmek, testlerin kolaylaşmasını ve kodun her yerde kullanılabilmesini (reusability) sağlıyor.
 
 ```tsx
 // Örnek: İş mantığının UI'dan izole edilmesi
 export function useProfileData(userId: string) {
-  const [data, setData] = useState(null)
-  useEffect(() => {
-    fetch('/api/user/' + userId)
-      .then(res => res.json())
-      .then(setData)
-  }, [userId])
-  return data
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['profile', userId],
+    queryFn: () => fetcher(`/api/user/${userId}`),
+    staleTime: 5 * 60 * 1000, // 5 dakika cache
+  })
+  return { profile: data, isLoading, error }
+}
+
+// UI bileşeni sadece render ile ilgilenir
+export function ProfileCard({ userId }: { userId: string }) {
+  const { profile, isLoading } = useProfileData(userId)
+  if (isLoading) return <ProfileSkeleton />
+  return <Card>{profile.name}</Card>
 }
 ```
 
-Custom hook'lar üzerinde ilerlediğimizde UI bileşenleri tamamen "aptal" (dumb) hale gelir ve sadece gelen datayı basmakla ilgilenir. Bu izolasyon, ekibin projeye adaptasyon sürecini aylar seviyesinden haftalara indirir.
+Dizin yapısında ise feature-based (özellik tabanlı) organizasyon tercih ediyorum: `src/features/auth`, `src/features/dashboard` gibi klasörler altında her özelliğin kendi hook'ları, bileşenleri ve tip tanımları bir arada yaşıyor. Bu modüler yapı sayesinde, 6 kişilik bir frontend ekibinde paralel çalışırken merge conflict oranımız %80 düştü.
+
+React 19 ve concurrent rendering özellikleri bu mimarinin üstüne konduğunda, `useTransition` ile ağır tab geçişlerini bloklamadan işleyebiliyor, `Suspense` sınırlarıyla sayfa yüklenme deneyimini granüler seviyede kontrol edebiliyoruz. Custom Hook'lar üzerinde ilerlediğimizde UI bileşenleri tamamen "aptal" (dumb) hale gelir ve sadece gelen datayı render etmekle ilgilenir. Bu izolasyon, ekibin projeye adaptasyon sürecini aylar seviyesinden haftalara indirir ve onboarding maliyetini dramatik biçimde azaltır.
 
 ---
 

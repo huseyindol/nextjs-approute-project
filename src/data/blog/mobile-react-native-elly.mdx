@@ -17,9 +17,119 @@ Bu makale **Mobile** alanındaki deneyimlerimi ve yazılım geliştirme metodolo
 
 Elly mobil uygulamasının ekosistemini inşa ederken sadece performans hedeflemekle kalmadım, native hissini tam manasıyla yansıtabilecek bir navigasyon ve state iskeletine ihtiyaç dahi duyduk.
 
-Web tabanlı tecrübelerimi mobil tarafa doğru kurgularla yansıtmak amacıyla React Navigation'un yetkinliklerini, global store yönetimlerini kullandım. Uygulamanın içerisinde System Theme (Dark Mode) geçişlerinin cihazlarla anlık reaksiyon göstermesini sağlayan modern context kurguları tasarladık.
+## Mimari Katman: Feature-Based Modüler Yapı
 
-Android ve iOS platformları için devasa iki farklı kod tabanı yönetmek yerine, tek bir mantıksal merkezden çıkan ve her iki ekosistemde de performanslı derlenen, kurumsal, taze bir form ve bileşen mimarisi kurulmuş oldu.
+Projeyi klasik "screens → components → utils" yapısı yerine **Feature-Based Architecture** ile organize ettik. Her özellik (auth, profile, orders, notifications) kendi dizininde screen, hook, service ve type dosyalarını barındırıyor. Bu sayede bir modül üzerinde çalışan geliştirici diğer modüllere dokunmadan bağımsız ilerleyebiliyor.
+
+```
+src/
+├── features/
+│   ├── auth/
+│   │   ├── screens/LoginScreen.tsx
+│   │   ├── hooks/useAuth.ts
+│   │   ├── services/authService.ts
+│   │   └── types/auth.types.ts
+│   ├── orders/
+│   │   ├── screens/OrderListScreen.tsx
+│   │   ├── hooks/useOrders.ts
+│   │   └── components/OrderCard.tsx
+│   └── profile/
+│       ├── screens/ProfileScreen.tsx
+│       └── hooks/useProfile.ts
+├── shared/
+│   ├── components/   # Button, Input, Card...
+│   ├── theme/         # Dark/Light token'ları
+│   └── navigation/    # Root navigator
+```
+
+## Navigation Mimarisi: Type-Safe Rotalar
+
+React Navigation v6 ile **strongly-typed** navigation kurgusu oluşturduk. Her ekranın parametre tipi compile-time'da doğrulanıyor; yanlış parametre geçmek artık imkansız.
+
+```tsx
+type RootStackParamList = {
+  Home: undefined
+  OrderDetail: { orderId: string; source: 'list' | 'notification' }
+  Profile: { userId: string }
+}
+
+// Navigate çağrısında TypeScript otomatik tamamlama ve hata yakalama
+navigation.navigate('OrderDetail', { orderId: '123', source: 'list' })
+```
+
+Nested Navigator yapısında Tab Navigator içinde Stack Navigator'lar kullanarak bottom tab'lar arasında bağımsız navigation stack'leri oluşturduk. Deep linking konfigürasyonu ile push notification'lardan doğrudan ilgili ekrana yönlendirme sağlanıyor.
+
+## Tema Sistemi: Design Token Yaklaşımı
+
+Elly'nin karanlık mod desteği sadece renk değişimi değil, tam bir **Design Token** sistemi üzerine kurulu. Spacing, typography, shadow ve border-radius değerleri tema bazlı değişiyor.
+
+```tsx
+const theme = {
+  dark: {
+    colors: {
+      background: '#0A0A0F',
+      surface: '#1A1A2E',
+      primary: '#6C63FF',
+      text: '#E4E4E7',
+      textSecondary: '#9CA3AF',
+      border: '#2D2D44',
+    },
+    shadows: {
+      card: { shadowColor: '#000', shadowOpacity: 0.4, elevation: 8 },
+    },
+  },
+  light: {
+    colors: {
+      background: '#FAFAFA',
+      surface: '#FFFFFF',
+      primary: '#4F46E5',
+      text: '#18181B',
+      textSecondary: '#6B7280',
+      border: '#E5E7EB',
+    },
+    shadows: {
+      card: { shadowColor: '#000', shadowOpacity: 0.08, elevation: 2 },
+    },
+  },
+}
+```
+
+`useColorScheme()` hook'u ile cihazın sistem temasını dinliyor ve `ThemeContext` üzerinden tüm uygulamaya yayıyoruz. Kullanıcı tercihini AsyncStorage'da saklayarak "sistem teması / manuel seçim" opsiyonu sunuyoruz.
+
+## Form Yönetimi: React Hook Form + Zod
+
+Mobilde form deneyimi web'den çok farklıdır; klavye yönetimi, scroll davranışı ve validation feedback'i kritiktir. React Hook Form ile `Controller` pattern'ini kullanarak her input'u kontrol altına aldık.
+
+```tsx
+const schema = z.object({
+  email: z.string().email('Geçerli bir e-posta giriniz'),
+  phone: z.string().regex(/^05\d{9}$/, 'Geçerli bir telefon numarası giriniz'),
+})
+
+function RegisterForm() {
+  const { control, handleSubmit } = useForm({ resolver: zodResolver(schema) })
+
+  return (
+    <KeyboardAwareScrollView>
+      <Controller
+        control={control}
+        name="email"
+        render={({ field, fieldState }) => (
+          <TextInput
+            value={field.value}
+            onChangeText={field.onChange}
+            error={fieldState.error?.message}
+          />
+        )}
+      />
+    </KeyboardAwareScrollView>
+  )
+}
+```
+
+## Sonuç: Cross-Platform Tutarlılık
+
+Android ve iOS platformları için devasa iki farklı kod tabanı yönetmek yerine, tek bir mantıksal merkezden çıkan ve her iki ekosistemde de performanslı derlenen, kurumsal, taze bir form ve bileşen mimarisi kurulmuş oldu. Platform-specific davranışlar `Platform.select()` ile cerrahi müdahale seviyesinde ayrıştırılıyor, geri kalan %95 kod tamamen paylaşımlı.
 
 ---
 

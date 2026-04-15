@@ -15,19 +15,42 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Elly-admin-panel geliştirilirken Next.js'in SSR yeteneklerini ve App Router esnekliklerini kullandık. Layout pattern'i ile yetkilendirme katmanları, Server Actions üzerinden data mutasyonları sağlandı.
 
-Elly CMS sisteminin yönetim paneli ihtiyaçları doğrultusunda, SEO'ya duyarlı olmanın ötesinde çok hızlı karar alabilen bir "Server-Driven" arayüz gerekiyordu. Bu da bizi doğrudan Next.js'in App Router mimarisi ile güçlü bir entegrasyona itti.
+Elly CMS sisteminin yönetim paneli ihtiyaçları doğrultusunda, SEO'ya duyarlı olmanın ötesinde çok hızlı karar alabilen bir "Server-Driven" arayüz gerekiyordu. İçerik yönetimi, kullanıcı rolleri (RBAC), form oluşturma ve tenant bazlı yapılandırma gibi karmaşık operasyonları barındıran bu panel, doğrudan Next.js'in App Router mimarisi ile güçlü bir entegrasyon gerektirdi.
 
-Yükleme sürelerini minimize etmek için istemci (Client) ve sunucu (Server) bileşenleri arasındaki sınırları (boundaries) ayrıştırdık. Mümkün olan tüm veri çekme işlemlerini direkt asenkron bileşenlerde yürüterek kullanıcının cihazına gereksiz JavaScript paketleri gönderilmesini engelledik.
+Mimari kurguyu oluştururken `(site)` ve `(admin)` şeklinde route group'ları kullandık. Bu sayede admin paneli tamamen farklı bir layout (Sidebar + TopBar) kullanırken, site tarafı (Header + Footer) kendi layout'unda yaşıyor. Her iki taraf da aynı codebase'de ama birbirini etkilemeden geliştirilebiliyor.
+
+```
+src/app/
+├── (site)/          # Public site layout (Header + Footer)
+│   ├── page.tsx
+│   ├── blog/
+│   └── about/
+├── (admin)/         # Admin layout (Sidebar + TopBar)
+│   ├── layout.tsx   # Auth guard + RBAC middleware burada
+│   ├── dashboard/
+│   ├── contents/
+│   └── users/
+└── layout.tsx       # Root layout (Theme, Providers)
+```
+
+Yükleme sürelerini minimize etmek için istemci (Client) ve sunucu (Server) bileşenleri arasındaki sınırları (boundaries) net çizgilerle ayırdık. Sayfanın ana veri çekme işlemleri async Server Component'lerde yapılırken, yalnızca kullanıcı etkileşimi gerektiren parçalar (modal, form, dropdown) `'use client'` direktifiyle işaretlendi. Bu strateji sayesinde admin panelinin JavaScript bundle boyutu %40 azaldı.
 
 ```tsx
-// app/admin/users/page.tsx (Server Component)
-export default async function AdminUsersPage() {
-  const users = await db.query.users()
-  return <UsersTable data={users} />
+// app/(admin)/contents/page.tsx — Server Component
+export default async function ContentsPage() {
+  const contents = await getContentsService({ page: 0, size: 20 })
+  return (
+    <div>
+      <ContentFilters /> {/* Client — arama/filtreleme */}
+      <ContentTable data={contents.data} /> {/* Server — statik tablo */}
+    </div>
+  )
 }
 ```
 
-Verinin işlendiği yere en yakın noktada çekilmesi, paneller arası geçişlerde sıfıra yakın (zero-latency) bir hissiyat yarattı. CMS içindeki ağır analiz sorguları bile sunucu gücüyle anında cevap veriyor.
+Oturum yönetimi için `middleware.ts` katmanında JWT token kontrolü yapılıyor ve yetkisiz istekler `/login` sayfasına yönlendiriliyor. Rol bazlı erişim kontrolü (RBAC) ise layout seviyesinde uygulanıyor: her admin sayfası render edilmeden önce kullanıcının ilgili permission'a sahip olup olmadığı Redis cache üzerinden kontrol ediliyor.
+
+Verinin işlendiği yere en yakın noktada çekilmesi, paneller arası geçişlerde sıfıra yakın bir hissiyat yarattı. `revalidateTag` ve `revalidatePath` API'leri ile CMS'te yapılan içerik değişiklikleri anında public siteye yansıyor, cache invalidation süreci tamamen otomatik.
 
 ---
 

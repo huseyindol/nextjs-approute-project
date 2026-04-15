@@ -15,11 +15,32 @@ Bu makale **Frontend** alanındaki deneyimlerimi ve yazılım geliştirme metodo
 
 > Makine okunabilir otomatik dokümantasyon (MDX tabanlı), Dark Mode testleri ve Accessibility (Erişilebilirlik) puanlarını kontrol eden araçlar ile Storybook yapımızı nasıl şaha kaldırdık?
 
-Çıplak bir Storybook gayet faydalıdır ancak Onu çok güçlü ve güvenilir kılan şey sahip olduğu Eklenti (Addon) ekosistemidir. Ekip olarak erişilebilirlik ve Dark Mode testlerine takıntılı bir yapıdayız.
+Vanilla Storybook faydalıdır ama onu kurumsal bir araç haline getiren şey eklenti (addon) ekosistemidir. Elly UI Kit projemizde kullandığımız kritik addon'lar ve her birinin sağladığı değer şöyledir:
 
-Storybook konfigürasyonlarına `@storybook/addon-a11y` (Accessibility) ekleyerek, kullandığımız kontrast farklarının, aria tag'larının standartlara uyup uymadığını render sırasında canlı olarak test edebiliyoruz. Aynı zamanda otomatik MDX dokümantasyonu alabiliyoruz.
+**@storybook/addon-a11y (Accessibility):** Her bileşenin WCAG 2.1 standartlarına uygunluğunu canlı olarak test eder. Renk kontrastı yetersizliği, eksik ARIA label'ları, keyboard navigation sorunları gibi erişilebilirlik hatalarını bileşen render edildiği anda yakalar. Projemizde bu addon sayesinde 47 erişilebilirlik sorunu prod'a çıkmadan tespit edildi.
 
-Sağlanan bu altyapı her yeni frontend stajyerinin ya da çalışanının sistemin "Kod Standartları" rehberini, dışarıdan başka hiçbir siteye ve PDF'e ihtiyaç duymadan hızla kavramasını sağlamış oldu.
+```tsx
+// .storybook/main.ts
+const config: StorybookConfig = {
+  addons: [
+    '@storybook/addon-essentials', // Controls, Actions, Viewport
+    '@storybook/addon-a11y', // Accessibility
+    '@storybook/addon-themes', // Dark/Light mode
+    '@storybook/addon-interactions', // Play functions
+  ],
+  docs: {
+    autodocs: 'tag', // 'autodocs' tag'i olan bileşenlere otomatik doküman
+  },
+}
+```
+
+**@storybook/addon-themes:** Dark Mode / Light Mode geçişlerini tek tıkla yapabilme imkanı sağlar. Bileşenlerimizin her iki temada da doğru görünüp görünmediğini yan yana karşılaştırmalı test edebiliyoruz. Bu özellik özellikle Elly mobil uygulamasının dark-mode ağırlıklı tasarımı için kritikti.
+
+**MDX Docs ve Autodocs:** TypeScript interface'lerinden otomatik oluşturulan prop tabloları, kullanım örnekleri ve tasarım kılavuzları. Her bileşenin yanında "ne zaman kullanılmalı", "hangi variant ne işe yarar" gibi bilgiler MDX formatında yaşıyor. Yeni katılan developer'lar hiçbir PDF veya Confluence sayfasına ihtiyaç duymadan, Storybook üzerinden tüm design system'i keşfedebiliyor.
+
+**Play Functions ve Interaction Testing:** Storybook 7+ ile gelen bu özellik sayesinde, story dosyalarının içine kullanıcı etkileşim senaryoları yazılabiliyor. Bir formun doldurulması, submit edilmesi ve validasyon mesajının görünmesi gibi akışlar otomatik test edilebiliyor — vitest/jest'e ek olarak görsel seviyede integration test imkanı.
+
+Sağlanan bu altyapı, UI Kit'i tüketen tüm ekiplerin bileşen davranışlarını, erişilebilirlik durumlarını ve tema uyumluluğunu tek bir merkezden doğrulamasını mümkün kıldı.
 
 ---
 
