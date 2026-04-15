@@ -1,6 +1,6 @@
 ---
-title: 'Growthbook İle A/B Testleri ve Feature Flag Yönetimi'
-description: 'Yeni bir Newsletter arayüzünün konversiyon (dönüşüm) oranını etkileyip etkilemeyeceğini test etmek i...'
+title: "Growthbook İle A/B Testleri ve Feature Flag Yönetimi"
+description: "Yeni bir Newsletter arayüzünün konversiyon (dönüşüm) oranını etkileyip etkilemeyeceğini test etmek i..."
 publishedAt: '2026-04-20'
 category: 'Frontend'
 author: 'Hüseyin DOL'
@@ -21,7 +21,7 @@ Growthbook açık kaynaklı bir feature flag ve A/B test platformudur. SDK'sın�
 
 ```tsx
 // providers/GrowthbookProvider.tsx
-import { GrowthBook, GrowthBookProvider } from '@growthbook/growthbook-react'
+import { GrowthBook, GrowthBookProvider } from '@growthbook/growthbook-react';
 
 const gb = new GrowthBook({
   apiHost: 'https://cdn.growthbook.io',
@@ -32,24 +32,24 @@ const gb = new GrowthBook({
     gtag('event', 'experiment_viewed', {
       experiment_id: experiment.key,
       variation_id: result.key,
-    })
+    });
   },
-})
+});
 
 export function AppGrowthbookProvider({ children }) {
-  return <GrowthBookProvider growthbook={gb}>{children}</GrowthBookProvider>
+  return <GrowthBookProvider growthbook={gb}>{children}</GrowthBookProvider>;
 }
 ```
 
 Komponent seviyesinde deney uygulamak son derece temizdir:
 
 ```tsx
-import { useFeatureIsOn } from '@growthbook/growthbook-react'
+import { useFeatureIsOn } from '@growthbook/growthbook-react';
 
 export function NewsletterSection() {
-  const isNewDesign = useFeatureIsOn('newsletter-v2')
+  const isNewDesign = useFeatureIsOn('newsletter-v2');
 
-  return isNewDesign ? <NewsletterV2 /> : <NewsletterV1 />
+  return isNewDesign ? <NewsletterV2 /> : <NewsletterV1 />;
 }
 ```
 
@@ -58,5 +58,4 @@ Growthbook'un en değerli özelliklerinden biri **kill switch** mekanizmasıdır
 Deney sonuçları yeterli istatistiksel güce (statistical power) ulaştığında, başarılı varyant kalıcı hale getirilir ve feature flag kodu temizlenir (technical debt önleme). Başarısız varyant ise değerli bir öğrenme kaynağı olarak dokümante edilir.
 
 ---
-
-_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

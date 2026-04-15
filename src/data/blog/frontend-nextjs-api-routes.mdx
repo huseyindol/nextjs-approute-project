@@ -1,6 +1,6 @@
 ---
-title: 'Next.js Backend as a Frontend: API Routes'
-description: 'Route Handlers ile Next.js içerisinde proxy oluşturarak mikroservislere köprü yapmak ve webhook dinl...'
+title: "Next.js Backend as a Frontend: API Routes"
+description: "Route Handlers ile Next.js içerisinde proxy oluşturarak mikroservislere köprü yapmak ve webhook dinl..."
 publishedAt: '2026-04-17'
 category: 'Frontend'
 author: 'Hüseyin DOL'
@@ -21,34 +21,37 @@ Route Handlers, Next.js sunucusu üzerinde çalışan server-side endpoint'lerdi
 
 ```ts
 // app/api/contents/route.ts
-import { NextRequest, NextResponse } from 'next/server'
-import { verifyToken } from '@/lib/auth'
-import { rateLimit } from '@/lib/rate-limiter'
+import { NextRequest, NextResponse } from 'next/server';
+import { verifyToken } from '@/lib/auth';
+import { rateLimit } from '@/lib/rate-limiter';
 
 export async function GET(request: NextRequest) {
   // 1. Rate limiting kontrolü
-  const rateLimitResult = await rateLimit(request)
+  const rateLimitResult = await rateLimit(request);
   if (!rateLimitResult.success) {
-    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429 }
+    );
   }
 
   // 2. JWT token doğrulama
-  const token = request.cookies.get('auth-token')?.value
+  const token = request.cookies.get('auth-token')?.value;
   if (!token || !verifyToken(token)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   // 3. Internal API'ye proxy
-  const backendUrl = process.env.BACKEND_API_URL // Private network
+  const backendUrl = process.env.BACKEND_API_URL; // Private network
   const res = await fetch(`${backendUrl}/api/v1/contents/list`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'X-Tenant-ID': request.headers.get('x-tenant-id') || '',
     },
     next: { revalidate: 60 }, // 60 saniye cache
-  })
+  });
 
-  return NextResponse.json(await res.json())
+  return NextResponse.json(await res.json());
 }
 ```
 
@@ -57,5 +60,4 @@ Bu yapının en güçlü yanlarından biri cache (önbellek) stratejisidir. `nex
 Webhook dinleyicileri de Route Handlers ile konumlandırılıyor. Örneğin Resend email servisi bir email bounce olduğunda webhook ile bize bildirim gönderiyor, bu bildirimi `app/api/webhooks/resend/route.ts` endpoint'inde yakalayıp veritabanını güncelliyoruz. Backend sunucularımızı tamamen izole bir private ağa çekebiliyor ve yalnızca Next.js sunucusunun onlara ulaşabilmesine izin vererek çok katmanlı bir güvenlik mimarisi elde ediyoruz.
 
 ---
-
-_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

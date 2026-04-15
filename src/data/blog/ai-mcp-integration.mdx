@@ -1,6 +1,6 @@
 ---
-title: 'Kendi MCP Sunucunuzu Java/Node İle Yazmak'
-description: 'McpProjectScaffold içinde, Custom tool tanımlamaları ve prompt veritabanı enjekte etme işlemlerinin ...'
+title: "Kendi MCP Sunucunuzu Java/Node İle Yazmak"
+description: "McpProjectScaffold içinde, Custom tool tanımlamaları ve prompt veritabanı enjekte etme işlemlerinin ..."
 publishedAt: '2026-04-22'
 category: 'AI'
 author: 'Hüseyin DOL'
@@ -17,13 +17,118 @@ Bu makale **AI** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi
 
 Şirketinizdeki çok değerli backend metrikleri ya da CI/CD süreçlerinizi yöneten araçlarınız yapay zekanın doğrudan müdahalesine tamamen uzağa konuşlandırılmış durumda. Bunu kırmanın anahtarı kendi özel MCP sunucunuzu (Server) inşa etmektir.
 
-Java ve TypeScript kullanarak geliştirdiğimiz özel entegrasyonlar sayesinden, LLM bir kullanıcının fatura detayıyla ilgili isteğini çözümleyip "Sizin yolladığınız Java /api/invoice routerına" otonom istek vurabiliyor. Kendi iç Tools yeteneklerini model'in kullanımına sunuyoruz.
+## MCP Server Anatomisi
 
-Projelerde yarattığımız bu interaktif AI proxy'si sayesinde müşteri temsilciliği fonksiyonlarından tutun, DevOps pipeline analizlerine kadar on binlerce dolarlık Ar-Ge asistanı, yazdığımız Node/Java endpointleriyle bütünleşik hale geldi.
+Bir MCP sunucusu temelinde JSON-RPC 2.0 protokolü üzerinden iletişim kuran bir servistir. İki transport yöntemi desteklenir: **stdio** (yerel geliştirme için) ve **SSE/Streamable HTTP** (uzak sunucular için). Sunucu, model'e hangi araçların mevcut olduğunu bildirir ve model bu araçları çağırdığında sonuçları döner.
+
+```
+MCP Server Yaşam Döngüsü:
+1. initialize    → Sunucu yeteneklerini bildir
+2. tools/list    → Mevcut araçları listele
+3. tools/call    → Model bir aracı çağırır
+4. resources/read → Model bir kaynağı okur
+5. shutdown      → Bağlantıyı kapat
+```
+
+## TypeScript ile MCP Server Geliştirme
+
+Node.js tarafında `@modelcontextprotocol/sdk` paketi ile hızlıca bir MCP sunucusu ayağa kaldırabilirsiniz. Aşağıda gerçek projemizden basitleştirilmiş bir örnek:
+
+```ts
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
+
+const server = new McpServer({
+  name: 'elly-backend-tools',
+  version: '1.0.0',
+});
+
+// Tool tanımlama: Fatura detayı sorgulama
+server.tool(
+  'get_invoice',
+  'Belirtilen fatura ID ile fatura detaylarını getirir',
+  { invoiceId: z.string().describe('Fatura ID') },
+  async ({ invoiceId }) => {
+    const response = await fetch(
+      process.env.API_BASE_URL + '/api/v1/invoices/' + invoiceId,
+      { headers: { Authorization: 'Bearer ' + process.env.API_TOKEN } }
+    );
+    const invoice = await response.json();
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify(invoice, null, 2),
+      }],
+    };
+  }
+);
+
+// Tool: Son hataları listele
+server.tool(
+  'list_recent_errors',
+  'Son N dakikadaki uygulama hatalarını listeler',
+  {
+    minutes: z.number().default(60).describe('Kaç dakikalık hata logu'),
+    severity: z.enum(['ERROR', 'WARN', 'CRITICAL']).default('ERROR'),
+  },
+  async ({ minutes, severity }) => {
+    const errors = await queryErrorLogs(minutes, severity);
+    return {
+      content: [{
+        type: 'text',
+        text: formatErrorReport(errors),
+      }],
+    };
+  }
+);
+
+// Resource: Sistem metrikleri
+server.resource(
+  'system://metrics',
+  'Anlık sistem performans metrikleri',
+  async () => ({
+    contents: [{
+      uri: 'system://metrics',
+      mimeType: 'application/json',
+      text: JSON.stringify(await getSystemMetrics()),
+    }],
+  })
+);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);
+```
+
+## Java Spring Boot ile MCP Server
+
+Backend ekibimizin Java tarafında Spring Boot ile MCP sunucusu geliştirmesi de mümkün. Spring AI projesinin MCP desteği sayesinde mevcut REST controller'larınızı MCP tool'larına dönüştürmek son derece kolay.
+
+```java
+@McpTool(description = "Müşteri siparişlerini sorgular")
+public class OrderSearchTool {
+
+    @Tool("search_orders")
+    public List<OrderDTO> searchOrders(
+        @Param("customerId") String customerId,
+        @Param("status") OrderStatus status
+    ) {
+        return orderService.findByCustomerAndStatus(customerId, status);
+    }
+}
+```
+
+## Gerçek Dünya Kullanım Senaryoları
+
+Projelerde yarattığımız bu interaktif AI proxy'si sayesinde:
+
+- **Müşteri Hizmetleri:** Agent, müşteri ID'siyle sipariş geçmişini sorgulayıp doğal dilde özetleyebiliyor
+- **DevOps Analizi:** CI/CD pipeline hatalarını otomatik analiz edip çözüm önerileri sunuyor
+- **Log İnceleme:** Binlerce satırlık log dosyasından anlamlı pattern'leri çıkarıyor
+- **Veritabanı Sorguları:** Doğal dildeki soruları SQL'e çevirip güvenli bir şekilde çalıştırıyor
 
 **Detaylı inceleme ve açık kaynak (Open Source) kodları için GitHub repomuza göz atmayı unutmayın:**
 [McpProjectScaffold - Github Reposunu İnceleyin](https://github.com/huseyindol/McpProjectScaffold)
 
 ---
-
-_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

@@ -1,6 +1,6 @@
 ---
-title: 'Yapay Zeka Protokollerinde Güvenlik ve İzolasyon'
-description: 'MCP serverleri üzerinden sağlanan "safe-to-run" komutlarda riskli operasyonları nasıl limitleriz? LL...'
+title: "Yapay Zeka Protokollerinde Güvenlik ve İzolasyon"
+description: "MCP serverleri üzerinden sağlanan \"safe-to-run\" komutlarda riskli operasyonları nasıl limitleriz? LL..."
 publishedAt: '2026-04-22'
 category: 'AI'
 author: 'Hüseyin DOL'
@@ -15,12 +15,108 @@ Bu makale **AI** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi
 
 > MCP serverleri üzerinden sağlanan "safe-to-run" komutlarda riskli operasyonları nasıl limitleriz? LLM'lerin sadece okuma-yetkili (read-only) bağlanmasına uygun mimari teknikleri.
 
-Bir LLM asistanının sisteminizin derinliklerine erişebilmesi muazzam bir güç olsa da; veri tabanına Drop komutu gönderebilecek olmaları ya da finansal bilgileri yanlış yetkiyle çekmeleri ölümcül güvenlik zafiyetleridir.
+Bir LLM asistanının sisteminizin derinliklerine erişebilmesi muazzam bir güç olsa da; veri tabanına DROP komutu gönderebilecek olmaları ya da finansal bilgileri yanlış yetkiyle çekmeleri ölümcül güvenlik zafiyetleridir.
 
-Bu noktada Model Context Protocol içerisinde "Okuma İzni Verilenler" (Read-Only) ve "Mutasyona (Mutation) Uğratan İşlemler" olarak izole bir güvenlik konsepti yazıyoruz. Kurumsal senaryolarda Human-In-The-Loop mimarisiyle, riskli görülen "Sistemi Yeniden Başlat" isteğinde model önce yetkili bir developer'dan onay düğmesine (Approval) basmasını şart koşuyor.
+## Tehdit Modeli: AI Erişiminde Riskler
 
-Uygulanan sandbox ve onaya dayalı otomasyonlar (Safe-to-Run) devrim yaratırken mimarimizin kontrolden çıkarak şirket zararlısına dönüşmesi ve halüsinasyon gören model tehlikesinin kökünü güvenli bir filtre ile kazımış oluyoruz.
+MCP sunucusu aracılığıyla LLM'lerin sistemlerinize erişim sağlaması, yeni bir tehdit yüzeyi oluşturur. Bu riskleri üç kategoride değerlendiriyoruz:
+
+| Risk Kategorisi | Örnek | Etki |
+|----------------|-------|------|
+| **Prompt Injection** | Kullanıcı input'u üzerinden kötü niyetli komut enjeksiyonu | Model'in yetkisiz işlem yapması |
+| **Over-Privileged Access** | Tüm DB tablolarına yazma yetkisi verilmesi | Veri kaybı veya bozulması |
+| **Data Exfiltration** | Model'in hassas verileri yanıtlarına dahil etmesi | Gizlilik ihlali |
+| **Hallucination Risk** | Model'in var olmayan bir API endpoint'i çağırması | Sistem kararsızlığı |
+
+## Read-Only vs Mutation: Yetki Katmanları
+
+Model Context Protocol içerisinde araçları **okuma** (read-only) ve **yazma** (mutation) olarak izole ediyoruz. Okuma araçları serbest çalışırken, yazma araçları ek güvenlik katmanlarından geçer.
+
+```ts
+// Güvenlik katmanı: Tool çağrılarını sınıflandır
+const TOOL_PERMISSIONS = {
+  // Read-only: Serbest çalışabilir
+  get_invoice: { level: 'read', requiresApproval: false },
+  search_orders: { level: 'read', requiresApproval: false },
+  list_errors: { level: 'read', requiresApproval: false },
+
+  // Mutation: Human approval gerektirir
+  update_order_status: { level: 'write', requiresApproval: true },
+  delete_record: { level: 'write', requiresApproval: true },
+  restart_service: { level: 'admin', requiresApproval: true },
+};
+
+// Middleware: Her tool çağrısında yetki kontrolü
+function authorizeToolCall(toolName: string, context: RequestContext) {
+  const permission = TOOL_PERMISSIONS[toolName];
+
+  if (permission.level === 'admin' && !context.user.isAdmin) {
+    throw new ForbiddenError('Bu işlem admin yetkisi gerektirir');
+  }
+
+  if (permission.requiresApproval) {
+    return requestHumanApproval(toolName, context);
+  }
+
+  return { approved: true };
+}
+```
+
+## Human-In-The-Loop Mimarisi
+
+Riskli görülen işlemlerde model, doğrudan eyleme geçmek yerine bir onay akışı tetikler. Kurumsal senaryolarda "Sistemi Yeniden Başlat" veya "Kullanıcı Kaydını Sil" gibi işlemlerde model önce yetkili bir developer'dan onay düğmesine basmasını şart koşuyor.
+
+```
+Kullanıcı: "Hatalı siparişi iptal et"
+     │
+     ▼
+[LLM Analizi] → Sipariş #12345 tespit edildi
+     │
+     ▼
+[MCP Tool: cancel_order] → requiresApproval: true
+     │
+     ▼
+[Slack Notification] → "Agent sipariş #12345'i iptal etmek istiyor. Onaylıyor musunuz?"
+     │
+     ▼
+[Developer Onayı] → ✅ Approved / ❌ Rejected
+     │
+     ▼
+[İşlem Yürütülür veya Reddedilir]
+```
+
+## Input Sanitization ve Output Filtering
+
+Prompt injection saldırılarına karşı, tool parametrelerine gelen her değer Zod şemaları ile doğrulanıyor. SQL injection girişimleri parametrize sorgularla engellenirken, model çıktılarında PII (Personally Identifiable Information) filtreleme uygulanıyor.
+
+```ts
+// Input sanitization
+const invoiceSearchSchema = z.object({
+  query: z.string()
+    .max(200)
+    .regex(/^[a-zA-Z0-9\s\-]+$/, 'Özel karakter içeremez'),
+  dateRange: z.object({
+    from: z.string().datetime(),
+    to: z.string().datetime(),
+  }),
+});
+
+// Output filtering: Hassas alanları maskele
+function sanitizeOutput(data: Record<string, unknown>) {
+  const sensitiveFields = ['ssn', 'creditCard', 'password', 'apiKey'];
+  return Object.fromEntries(
+    Object.entries(data).map(([key, value]) =>
+      sensitiveFields.includes(key) ? [key, '***MASKED***'] : [key, value]
+    )
+  );
+}
+```
+
+## Audit Logging ve İzlenebilirlik
+
+Her MCP tool çağrısı merkezi bir audit log'a kaydediliyor. Kim, ne zaman, hangi tool'u, hangi parametrelerle çağırdı ve sonuç ne oldu — tüm bu bilgiler traceability için saklanıyor. Anomali tespit sistemi, normal dışı çağrı kalıplarında (örneğin kısa sürede çok sayıda silme işlemi) otomatik alarm üretiyor.
+
+Uygulanan sandbox ve onaya dayalı otomasyonlar (Safe-to-Run) devrim yaratırken, mimarimizin kontrolden çıkarak şirket zararlısına dönüşmesi ve halüsinasyon gören model tehlikesinin kökünü güvenli bir filtre ile kazımış oluyoruz.
 
 ---
-
-_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

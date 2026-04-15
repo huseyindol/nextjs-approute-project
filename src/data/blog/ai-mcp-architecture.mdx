@@ -1,5 +1,5 @@
 ---
-title: 'Model Context Protocol (MCP) Neden Devrimseldir?'
+title: "Model Context Protocol (MCP) Neden Devrimseldir?"
 description: "Github'daki McpProjectScaffold yapımızdan öğrendiğimiz; LLM modellerinin external dünyayla standart ..."
 publishedAt: '2026-04-22'
 category: 'AI'
@@ -15,12 +15,60 @@ Bu makale **AI** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi
 
 > Github'daki McpProjectScaffold yapımızdan öğrendiğimiz; LLM modellerinin external dünyayla standart biçimde konuşabilmesini sağlayan bu protokolün yazılım geliştirme metodolojisini nasıl değiştirdiğine odaklanıyoruz.
 
-Yapay zekanın sadece kod üreten bir asistan değil, arka plan ekosisteminize tamamen dahil olabildiği bir iletişim katmanı var: Model Context Protocol (MCP). Bu, Büyük Dil Modellerinin (LLM) dış apiler ve cihazlarla otonom görüşebilmesinin köprüsüdür.
+Yapay zekanın sadece kod üreten bir asistan değil, arka plan ekosisteminize tamamen dahil olabildiği bir iletişim katmanı var: Model Context Protocol (MCP). Bu, Büyük Dil Modellerinin (LLM) dış API'ler ve cihazlarla otonom görüşebilmesinin köprüsüdür.
 
-Kendi geliştirdiğimiz `McpProjectScaffold` yapısındaki deneyimlerim sayesinde, Claude veya OpenAI agent'larına spesifik bir kurumsal dosya sistemimizi ya da SQL database loglarımızı nasıl besleyebileceğimizi (Contextually) detaylandırıyoruz. Agent'lar bu sayede dış API'lere sadece soru sorma yetkisinden çıkıp eyleme (Action) dönüşüyorlar.
+## MCP Nedir? Temel Kavramlar
+
+MCP, Anthropic tarafından geliştirilen ve LLM'lerin dış dünyayla standart bir arayüz üzerinden etkileşim kurmasını sağlayan açık bir protokoldür. Tıpkı HTTP'nin web iletişimi için standart oluşturması gibi, MCP de yapay zeka ile araçlar arasında standart bir iletişim katmanı kurar.
+
+```
+┌─────────────┐     MCP Protocol     ┌─────────────────┐
+│  LLM Client │ ◄──────────────────► │   MCP Server    │
+│  (Claude,   │   JSON-RPC 2.0      │  (Your Tools)   │
+│   GPT, vs.) │   over stdio/SSE    │                 │
+└─────────────┘                      └────────┬────────┘
+                                              │
+                                    ┌─────────▼─────────┐
+                                    │  External Systems  │
+                                    │  - Database        │
+                                    │  - REST API        │
+                                    │  - File System     │
+                                    │  - CI/CD Pipeline  │
+                                    └───────────────────┘
+```
+
+Protokolün üç temel yapı taşı vardır:
+
+- **Tools (Araçlar):** Model'in çağırabileceği fonksiyonlar. Örneğin `search_database`, `create_ticket`, `deploy_service`.
+- **Resources (Kaynaklar):** Model'in okuyabileceği veri kaynakları. Dosya sistemindeki loglar, veritabanı tabloları, API yanıtları.
+- **Prompts (Şablonlar):** Önceden tanımlanmış görev şablonları. "Bu log dosyasını analiz et" gibi yapılandırılmış komut setleri.
+
+## McpProjectScaffold: Kendi Deneyimimiz
+
+Kendi geliştirdiğimiz `McpProjectScaffold` yapısında, Claude ve diğer LLM agent'larına kurumsal dosya sistemimizi ve SQL database loglarımızı context olarak beslemeyi başardık.
+
+```json
+{
+  "mcpServers": {
+    "elly-backend": {
+      "command": "node",
+      "args": ["./mcp-server/index.js"],
+      "env": {
+        "DB_CONNECTION": "postgresql://...",
+        "API_BASE_URL": "https://api.internal"
+      }
+    }
+  }
+}
+```
+
+Bu konfigürasyon sayesinde Claude, "Son 24 saatte en çok hata veren endpoint hangisi?" sorusuna doğrudan veritabanı sorgusu yaparak cevap verebiliyor. Agent'lar artık dış API'lere sadece soru sorma yetkisinden çıkıp eyleme (Action) dönüşüyorlar.
+
+## Neden Devrimsel?
+
+Geleneksel API entegrasyonlarında her LLM sağlayıcısı için ayrı entegrasyon kodu yazılması gerekiyordu. MCP ile tek bir sunucu yazıyorsunuz ve bu sunucu Claude, GPT, Gemini veya herhangi bir MCP uyumlu istemciyle çalışabiliyor. Bu "write once, connect everywhere" felsefesi, yapay zeka entegrasyonu maliyetini dramatik biçimde düşürüyor.
 
 Bu protokol entegrasyonu, yazılım endüstrisinde bir modelin kod dizinine dışarıdan bakması yerine bizzat ekosistemin omurgasına girerek orkestrasyona kılavuzluk yapmasını, iş yapma paradigmalarımızı derinden değiştirdiğini ispatlıyor.
 
 ---
-
-_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

@@ -1,6 +1,6 @@
 ---
-title: 'Otonom Sistemler ve Frontend Mühendisliğinin Geleceği'
-description: 'UX ve Tasarım Sistemleri artık AI tarafından üretiliyor. Yapay zekanın sadece asistan değil, bir bil...'
+title: "Otonom Sistemler ve Frontend Mühendisliğinin Geleceği"
+description: "UX ve Tasarım Sistemleri artık AI tarafından üretiliyor. Yapay zekanın sadece asistan değil, bir bil..."
 publishedAt: '2026-04-23'
 category: 'AI'
 author: 'Hüseyin DOL'
@@ -15,12 +15,86 @@ Bu makale **AI** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi
 
 > UX ve Tasarım Sistemleri artık AI tarafından üretiliyor. Yapay zekanın sadece asistan değil, bir bileşen (component) oluşturucu ve sistem mimarı rolüne büründüğü bu süreçte bizleri neler bekliyor?
 
-Frontend ve Yazılım mimarisinin geleceği salt kod üretiminden çekilip; "Talimatı analiz eden, dizaynı UI koduna ve Storybook'una kadar döken" sistem orkestrasyonuna doğru çok büyük bir kırılma yaşıyor.
+Frontend ve yazılım mimarisinin geleceği salt kod üretiminden çekilip; "Talimatı analiz eden, dizaynı UI koduna ve Storybook'una kadar döken" sistem orkestrasyonuna doğru çok büyük bir kırılma yaşıyor.
 
-Agent'ların yakın gelecekte sadece component yazmak yerine bir ürün yöneticisinin (Product Manager) Figma tasarım dosyasını okuyarak veritabanı şemasını, endpoint yapısını ve responsive mobil ekranını saniyeler içinde scaffold (inşa etme) seviyelerine çıkacağına olan tecrübemiz derinleşiyor.
+## Bugünden Yarına: Paradigma Değişimi
 
-Bu paradigma değişimiyle Frontend Geliştiricilerin bizzat kodu kazıyan madenciler olmaktan ziyade sisteme direktif veren, sınırları regüle eden ve güvenlik mimarilerini onaylayan "Sistem Revizörleri" olarak çok daha stratejik ve zeki roller alacağı ortadadır.
+Yazılım geliştirmenin evrimini üç döneme ayırabiliriz:
+
+```
+Dönem 1 (2000-2020): Manuel Kodlama
+  Developer her satırı elle yazar.
+  Araçlar: IDE, StackOverflow, dokümantasyon
+
+Dönem 2 (2020-2025): AI-Assisted Kodlama
+  AI satır/blok tamamlar, developer yönlendirir.
+  Araçlar: Copilot, ChatGPT, Claude
+
+Dönem 3 (2025+): AI-Orchestrated Geliştirme
+  AI modülleri tasarlar ve uygular, developer denetler.
+  Araçlar: Agent sistemleri, MCP, otonom pipeline'lar
+```
+
+Şu anda Dönem 2'den Dönem 3'e geçiş yaşanıyor. Bu geçişin en belirgin işareti: developer'ın "nasıl yazılacağı" yerine "ne yazılacağı" sorusuna odaklanması.
+
+## Figma-to-Code: Tasarımdan Üretime
+
+Agent'ların yakın gelecekteki en güçlü yeteneği, bir ürün yöneticisinin Figma tasarım dosyasını okuyarak tam bir uygulama iskeleti oluşturması olacak.
+
+```
+Figma Design Token'ları
+     │
+     ▼
+[AI Design Analyzer]
+     │
+     ├── Renk paleti → Tailwind theme config
+     ├── Tipografi → Font system
+     ├── Spacing → Design tokens
+     ├── Component yapısı → React bileşenleri
+     └── Responsive kurallar → Media queries
+     │
+     ▼
+Tam Çalışan React + Storybook Projesi
+```
+
+Bu vizyonun ilk adımları zaten gerçekleşiyor. Vercel'in v0 aracı, doğal dildeki açıklamalardan React bileşenleri üretiyor. Ancak asıl devrim, bileşen üretiminin ötesinde **tam sistem mimarisi** scaffold'ı seviyesine çıkacak.
+
+## Frontend Developer'ın Yeni Rolü
+
+Bu paradigma değişimiyle Frontend geliştiricilerin rolü fundamentel biçimde dönüşüyor:
+
+**Eski Rol — Kod Zanaat Ustası:**
+- Pixel-perfect CSS yazma
+- State management karmaşıklığıyla boğuşma
+- Cross-browser uyumluluk testleri
+- Bundle size optimizasyonu
+
+**Yeni Rol — Sistem Revizörü:**
+- AI çıktılarını review ve doğrulama
+- Mimari kararları yönlendirme
+- Güvenlik sınırlarını regüle etme
+- Kullanıcı deneyimi kalite güvencesi
+- AI agent'ları koordine ve orkestre etme
+
+```
+Developer'ın Yeni Sorumluluk Dağılımı (2026):
+  %30 — AI çıktı review ve kalite kontrol
+  %25 — Mimari tasarım ve sistem kararları
+  %20 — Prompt engineering ve agent konfigürasyonu
+  %15 — Karmaşık/kritik kod yazımı (AI'ın zorlandığı alanlar)
+  %10 — Kullanıcı araştırması ve UX kararları
+```
+
+## Hazırlıklı Olmak İçin Ne Yapmalı?
+
+Bu dönüşüme hazırlanmak için önerilerim:
+
+1. **MCP ve Agent SDK'larını öğrenin** — Yapay zeka araçlarını entegre etme becerisi, kod yazma becerisinden daha değerli hale gelecek.
+2. **Sistem düşüncesi geliştirin** — Tek dosya yerine tüm sistemi anlama yetkinliği kritik.
+3. **Review kültürünü güçlendirin** — AI çıktılarını değerlendirme, hataları yakalama ve kalite standartlarını koruma becerisi.
+4. **Domain uzmanlığını derinleştirin** — AI genel kod yazabilir, ama iş mantığını anlamak hala insana ait.
+
+Bu paradigma değişimiyle Frontend geliştiricilerin bizzat kodu kazıyan madenciler olmaktan ziyade sisteme direktif veren, sınırları regüle eden ve güvenlik mimarilerini onaylayan "Sistem Revizörleri" olarak çok daha stratejik ve zeki roller alacağı ortadadır.
 
 ---
-
-_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

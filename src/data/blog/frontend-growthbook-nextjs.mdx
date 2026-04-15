@@ -1,5 +1,5 @@
 ---
-title: 'Next.js App Router İçerisinde Growthbook Entegrasyonu'
+title: "Next.js App Router İçerisinde Growthbook Entegrasyonu"
 description: "Server Side Rendering tarafında feature flag'ları okuyarak (Next.js Middleware üzerinden) kullanıcıl..."
 publishedAt: '2026-04-20'
 category: 'Frontend'
@@ -23,26 +23,26 @@ Bu problemi çözmek için Growthbook feature evaluation'ını Next.js'in sunucu
 
 ```ts
 // middleware.ts
-import { GrowthBook } from '@growthbook/growthbook'
+import { GrowthBook } from '@growthbook/growthbook';
 
 export async function middleware(request: NextRequest) {
   const gb = new GrowthBook({
     apiHost: process.env.GROWTHBOOK_API_HOST,
     clientKey: process.env.GROWTHBOOK_CLIENT_KEY,
-  })
+  });
 
   // Kullanıcı ID'sini cookie'den al veya oluştur
-  const userId = request.cookies.get('gb_user_id')?.value || crypto.randomUUID()
+  const userId = request.cookies.get('gb_user_id')?.value || crypto.randomUUID();
 
-  gb.setAttributes({ id: userId })
-  await gb.init({ timeout: 1000 })
+  gb.setAttributes({ id: userId });
+  await gb.init({ timeout: 1000 });
 
-  const response = NextResponse.next()
-  response.cookies.set('gb_user_id', userId, { maxAge: 60 * 60 * 24 * 365 })
+  const response = NextResponse.next();
+  response.cookies.set('gb_user_id', userId, { maxAge: 60 * 60 * 24 * 365 });
 
   // Feature flag değerlerini header olarak ilet
-  response.headers.set('x-gb-features', JSON.stringify(gb.getFeatures()))
-  return response
+  response.headers.set('x-gb-features', JSON.stringify(gb.getFeatures()));
+  return response;
 }
 ```
 
@@ -51,15 +51,14 @@ export async function middleware(request: NextRequest) {
 ```tsx
 // app/page.tsx (Server Component)
 export default async function HomePage() {
-  const gb = await getServerGrowthbook() // Server-side init
-  const showNewHero = gb.isOn('hero-redesign-2025')
+  const gb = await getServerGrowthbook(); // Server-side init
+  const showNewHero = gb.isOn('hero-redesign-2025');
 
-  return showNewHero ? <HeroV2 /> : <HeroV1 />
+  return showNewHero ? <HeroV2 /> : <HeroV1 />;
 }
 ```
 
 Bu yaklaşımla CLS skoru sıfıra indi, arama motorları testlerimizi kötü amaçlı cloaking olarak algılamıyor ve Lighthouse Performance metrikleri deneylerden bağımsız olarak stabil kalıyor. SEO ve A/B testing arasındaki geleneksel çatışma, SSR tabanlı bu mimariyle tamamen çözülmüş oldu.
 
 ---
-
-_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*

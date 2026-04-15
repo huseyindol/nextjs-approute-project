@@ -719,27 +719,496 @@ Kullanıcının tıkladığı nesnenin yumuşakça esnemesi, sayfalar arasındak
       break
 
     case 'ai-mcp-architecture':
-      customBody = `Yapay zekanın sadece kod üreten bir asistan değil, arka plan ekosisteminize tamamen dahil olabildiği bir iletişim katmanı var: Model Context Protocol (MCP). Bu, Büyük Dil Modellerinin (LLM) dış apiler ve cihazlarla otonom görüşebilmesinin köprüsüdür.\n\nKendi geliştirdiğimiz \`McpProjectScaffold\` yapısındaki deneyimlerim sayesinde, Claude veya OpenAI agent'larına spesifik bir kurumsal dosya sistemimizi ya da SQL database loglarımızı nasıl besleyebileceğimizi (Contextually) detaylandırıyoruz. Agent'lar bu sayede dış API'lere sadece soru sorma yetkisinden çıkıp eyleme (Action) dönüşüyorlar.\n\nBu protokol entegrasyonu, yazılım endüstrisinde bir modelin kod dizinine dışarıdan bakması yerine bizzat ekosistemin omurgasına girerek orkestrasyona kılavuzluk yapmasını, iş yapma paradigmalarımızı derinden değiştirdiğini ispatlıyor.`
+      customBody = `Yapay zekanın sadece kod üreten bir asistan değil, arka plan ekosisteminize tamamen dahil olabildiği bir iletişim katmanı var: Model Context Protocol (MCP). Bu, Büyük Dil Modellerinin (LLM) dış API'ler ve cihazlarla otonom görüşebilmesinin köprüsüdür.
+
+## MCP Nedir? Temel Kavramlar
+
+MCP, Anthropic tarafından geliştirilen ve LLM'lerin dış dünyayla standart bir arayüz üzerinden etkileşim kurmasını sağlayan açık bir protokoldür. Tıpkı HTTP'nin web iletişimi için standart oluşturması gibi, MCP de yapay zeka ile araçlar arasında standart bir iletişim katmanı kurar.
+
+\`\`\`
+┌─────────────┐     MCP Protocol     ┌─────────────────┐
+│  LLM Client │ ◄──────────────────► │   MCP Server    │
+│  (Claude,   │   JSON-RPC 2.0      │  (Your Tools)   │
+│   GPT, vs.) │   over stdio/SSE    │                 │
+└─────────────┘                      └────────┬────────┘
+                                              │
+                                    ┌─────────▼─────────┐
+                                    │  External Systems  │
+                                    │  - Database        │
+                                    │  - REST API        │
+                                    │  - File System     │
+                                    │  - CI/CD Pipeline  │
+                                    └───────────────────┘
+\`\`\`
+
+Protokolün üç temel yapı taşı vardır:
+
+- **Tools (Araçlar):** Model'in çağırabileceği fonksiyonlar. Örneğin \`search_database\`, \`create_ticket\`, \`deploy_service\`.
+- **Resources (Kaynaklar):** Model'in okuyabileceği veri kaynakları. Dosya sistemindeki loglar, veritabanı tabloları, API yanıtları.
+- **Prompts (Şablonlar):** Önceden tanımlanmış görev şablonları. "Bu log dosyasını analiz et" gibi yapılandırılmış komut setleri.
+
+## McpProjectScaffold: Kendi Deneyimimiz
+
+Kendi geliştirdiğimiz \`McpProjectScaffold\` yapısında, Claude ve diğer LLM agent'larına kurumsal dosya sistemimizi ve SQL database loglarımızı context olarak beslemeyi başardık.
+
+\`\`\`json
+{
+  "mcpServers": {
+    "elly-backend": {
+      "command": "node",
+      "args": ["./mcp-server/index.js"],
+      "env": {
+        "DB_CONNECTION": "postgresql://...",
+        "API_BASE_URL": "https://api.internal"
+      }
+    }
+  }
+}
+\`\`\`
+
+Bu konfigürasyon sayesinde Claude, "Son 24 saatte en çok hata veren endpoint hangisi?" sorusuna doğrudan veritabanı sorgusu yaparak cevap verebiliyor. Agent'lar artık dış API'lere sadece soru sorma yetkisinden çıkıp eyleme (Action) dönüşüyorlar.
+
+## Neden Devrimsel?
+
+Geleneksel API entegrasyonlarında her LLM sağlayıcısı için ayrı entegrasyon kodu yazılması gerekiyordu. MCP ile tek bir sunucu yazıyorsunuz ve bu sunucu Claude, GPT, Gemini veya herhangi bir MCP uyumlu istemciyle çalışabiliyor. Bu "write once, connect everywhere" felsefesi, yapay zeka entegrasyonu maliyetini dramatik biçimde düşürüyor.
+
+Bu protokol entegrasyonu, yazılım endüstrisinde bir modelin kod dizinine dışarıdan bakması yerine bizzat ekosistemin omurgasına girerek orkestrasyona kılavuzluk yapmasını, iş yapma paradigmalarımızı derinden değiştirdiğini ispatlıyor.`
       break
 
     case 'ai-mcp-integration':
-      customBody = `Şirketinizdeki çok değerli backend metrikleri ya da CI/CD süreçlerinizi yöneten araçlarınız yapay zekanın doğrudan müdahalesine tamamen uzağa konuşlandırılmış durumda. Bunu kırmanın anahtarı kendi özel MCP sunucunuzu (Server) inşa etmektir.\n\nJava ve TypeScript kullanarak geliştirdiğimiz özel entegrasyonlar sayesinden, LLM bir kullanıcının fatura detayıyla ilgili isteğini çözümleyip "Sizin yolladığınız Java /api/invoice routerına" otonom istek vurabiliyor. Kendi iç Tools yeteneklerini model'in kullanımına sunuyoruz.\n\nProjelerde yarattığımız bu interaktif AI proxy'si sayesinde müşteri temsilciliği fonksiyonlarından tutun, DevOps pipeline analizlerine kadar on binlerce dolarlık Ar-Ge asistanı, yazdığımız Node/Java endpointleriyle bütünleşik hale geldi.\n\n**Detaylı inceleme ve açık kaynak (Open Source) kodları için GitHub repomuza göz atmayı unutmayın:**\n[McpProjectScaffold - Github Reposunu İnceleyin](https://github.com/huseyindol/McpProjectScaffold)`
+      customBody = `Şirketinizdeki çok değerli backend metrikleri ya da CI/CD süreçlerinizi yöneten araçlarınız yapay zekanın doğrudan müdahalesine tamamen uzağa konuşlandırılmış durumda. Bunu kırmanın anahtarı kendi özel MCP sunucunuzu (Server) inşa etmektir.
+
+## MCP Server Anatomisi
+
+Bir MCP sunucusu temelinde JSON-RPC 2.0 protokolü üzerinden iletişim kuran bir servistir. İki transport yöntemi desteklenir: **stdio** (yerel geliştirme için) ve **SSE/Streamable HTTP** (uzak sunucular için). Sunucu, model'e hangi araçların mevcut olduğunu bildirir ve model bu araçları çağırdığında sonuçları döner.
+
+\`\`\`
+MCP Server Yaşam Döngüsü:
+1. initialize    → Sunucu yeteneklerini bildir
+2. tools/list    → Mevcut araçları listele
+3. tools/call    → Model bir aracı çağırır
+4. resources/read → Model bir kaynağı okur
+5. shutdown      → Bağlantıyı kapat
+\`\`\`
+
+## TypeScript ile MCP Server Geliştirme
+
+Node.js tarafında \`@modelcontextprotocol/sdk\` paketi ile hızlıca bir MCP sunucusu ayağa kaldırabilirsiniz. Aşağıda gerçek projemizden basitleştirilmiş bir örnek:
+
+\`\`\`ts
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { z } from 'zod';
+
+const server = new McpServer({
+  name: 'elly-backend-tools',
+  version: '1.0.0',
+});
+
+// Tool tanımlama: Fatura detayı sorgulama
+server.tool(
+  'get_invoice',
+  'Belirtilen fatura ID ile fatura detaylarını getirir',
+  { invoiceId: z.string().describe('Fatura ID') },
+  async ({ invoiceId }) => {
+    const response = await fetch(
+      process.env.API_BASE_URL + '/api/v1/invoices/' + invoiceId,
+      { headers: { Authorization: 'Bearer ' + process.env.API_TOKEN } }
+    );
+    const invoice = await response.json();
+    return {
+      content: [{
+        type: 'text',
+        text: JSON.stringify(invoice, null, 2),
+      }],
+    };
+  }
+);
+
+// Tool: Son hataları listele
+server.tool(
+  'list_recent_errors',
+  'Son N dakikadaki uygulama hatalarını listeler',
+  {
+    minutes: z.number().default(60).describe('Kaç dakikalık hata logu'),
+    severity: z.enum(['ERROR', 'WARN', 'CRITICAL']).default('ERROR'),
+  },
+  async ({ minutes, severity }) => {
+    const errors = await queryErrorLogs(minutes, severity);
+    return {
+      content: [{
+        type: 'text',
+        text: formatErrorReport(errors),
+      }],
+    };
+  }
+);
+
+// Resource: Sistem metrikleri
+server.resource(
+  'system://metrics',
+  'Anlık sistem performans metrikleri',
+  async () => ({
+    contents: [{
+      uri: 'system://metrics',
+      mimeType: 'application/json',
+      text: JSON.stringify(await getSystemMetrics()),
+    }],
+  })
+);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);
+\`\`\`
+
+## Java Spring Boot ile MCP Server
+
+Backend ekibimizin Java tarafında Spring Boot ile MCP sunucusu geliştirmesi de mümkün. Spring AI projesinin MCP desteği sayesinde mevcut REST controller'larınızı MCP tool'larına dönüştürmek son derece kolay.
+
+\`\`\`java
+@McpTool(description = "Müşteri siparişlerini sorgular")
+public class OrderSearchTool {
+
+    @Tool("search_orders")
+    public List<OrderDTO> searchOrders(
+        @Param("customerId") String customerId,
+        @Param("status") OrderStatus status
+    ) {
+        return orderService.findByCustomerAndStatus(customerId, status);
+    }
+}
+\`\`\`
+
+## Gerçek Dünya Kullanım Senaryoları
+
+Projelerde yarattığımız bu interaktif AI proxy'si sayesinde:
+
+- **Müşteri Hizmetleri:** Agent, müşteri ID'siyle sipariş geçmişini sorgulayıp doğal dilde özetleyebiliyor
+- **DevOps Analizi:** CI/CD pipeline hatalarını otomatik analiz edip çözüm önerileri sunuyor
+- **Log İnceleme:** Binlerce satırlık log dosyasından anlamlı pattern'leri çıkarıyor
+- **Veritabanı Sorguları:** Doğal dildeki soruları SQL'e çevirip güvenli bir şekilde çalıştırıyor
+
+**Detaylı inceleme ve açık kaynak (Open Source) kodları için GitHub repomuza göz atmayı unutmayın:**
+[McpProjectScaffold - Github Reposunu İnceleyin](https://github.com/huseyindol/McpProjectScaffold)`
       break
 
     case 'ai-mcp-security':
-      customBody = `Bir LLM asistanının sisteminizin derinliklerine erişebilmesi muazzam bir güç olsa da; veri tabanına Drop komutu gönderebilecek olmaları ya da finansal bilgileri yanlış yetkiyle çekmeleri ölümcül güvenlik zafiyetleridir.\n\nBu noktada Model Context Protocol içerisinde "Okuma İzni Verilenler" (Read-Only) ve "Mutasyona (Mutation) Uğratan İşlemler" olarak izole bir güvenlik konsepti yazıyoruz. Kurumsal senaryolarda Human-In-The-Loop mimarisiyle, riskli görülen "Sistemi Yeniden Başlat" isteğinde model önce yetkili bir developer'dan onay düğmesine (Approval) basmasını şart koşuyor.\n\nUygulanan sandbox ve onaya dayalı otomasyonlar (Safe-to-Run) devrim yaratırken mimarimizin kontrolden çıkarak şirket zararlısına dönüşmesi ve halüsinasyon gören model tehlikesinin kökünü güvenli bir filtre ile kazımış oluyoruz.`
+      customBody = `Bir LLM asistanının sisteminizin derinliklerine erişebilmesi muazzam bir güç olsa da; veri tabanına DROP komutu gönderebilecek olmaları ya da finansal bilgileri yanlış yetkiyle çekmeleri ölümcül güvenlik zafiyetleridir.
+
+## Tehdit Modeli: AI Erişiminde Riskler
+
+MCP sunucusu aracılığıyla LLM'lerin sistemlerinize erişim sağlaması, yeni bir tehdit yüzeyi oluşturur. Bu riskleri üç kategoride değerlendiriyoruz:
+
+| Risk Kategorisi | Örnek | Etki |
+|----------------|-------|------|
+| **Prompt Injection** | Kullanıcı input'u üzerinden kötü niyetli komut enjeksiyonu | Model'in yetkisiz işlem yapması |
+| **Over-Privileged Access** | Tüm DB tablolarına yazma yetkisi verilmesi | Veri kaybı veya bozulması |
+| **Data Exfiltration** | Model'in hassas verileri yanıtlarına dahil etmesi | Gizlilik ihlali |
+| **Hallucination Risk** | Model'in var olmayan bir API endpoint'i çağırması | Sistem kararsızlığı |
+
+## Read-Only vs Mutation: Yetki Katmanları
+
+Model Context Protocol içerisinde araçları **okuma** (read-only) ve **yazma** (mutation) olarak izole ediyoruz. Okuma araçları serbest çalışırken, yazma araçları ek güvenlik katmanlarından geçer.
+
+\`\`\`ts
+// Güvenlik katmanı: Tool çağrılarını sınıflandır
+const TOOL_PERMISSIONS = {
+  // Read-only: Serbest çalışabilir
+  get_invoice: { level: 'read', requiresApproval: false },
+  search_orders: { level: 'read', requiresApproval: false },
+  list_errors: { level: 'read', requiresApproval: false },
+
+  // Mutation: Human approval gerektirir
+  update_order_status: { level: 'write', requiresApproval: true },
+  delete_record: { level: 'write', requiresApproval: true },
+  restart_service: { level: 'admin', requiresApproval: true },
+};
+
+// Middleware: Her tool çağrısında yetki kontrolü
+function authorizeToolCall(toolName: string, context: RequestContext) {
+  const permission = TOOL_PERMISSIONS[toolName];
+
+  if (permission.level === 'admin' && !context.user.isAdmin) {
+    throw new ForbiddenError('Bu işlem admin yetkisi gerektirir');
+  }
+
+  if (permission.requiresApproval) {
+    return requestHumanApproval(toolName, context);
+  }
+
+  return { approved: true };
+}
+\`\`\`
+
+## Human-In-The-Loop Mimarisi
+
+Riskli görülen işlemlerde model, doğrudan eyleme geçmek yerine bir onay akışı tetikler. Kurumsal senaryolarda "Sistemi Yeniden Başlat" veya "Kullanıcı Kaydını Sil" gibi işlemlerde model önce yetkili bir developer'dan onay düğmesine basmasını şart koşuyor.
+
+\`\`\`
+Kullanıcı: "Hatalı siparişi iptal et"
+     │
+     ▼
+[LLM Analizi] → Sipariş #12345 tespit edildi
+     │
+     ▼
+[MCP Tool: cancel_order] → requiresApproval: true
+     │
+     ▼
+[Slack Notification] → "Agent sipariş #12345'i iptal etmek istiyor. Onaylıyor musunuz?"
+     │
+     ▼
+[Developer Onayı] → ✅ Approved / ❌ Rejected
+     │
+     ▼
+[İşlem Yürütülür veya Reddedilir]
+\`\`\`
+
+## Input Sanitization ve Output Filtering
+
+Prompt injection saldırılarına karşı, tool parametrelerine gelen her değer Zod şemaları ile doğrulanıyor. SQL injection girişimleri parametrize sorgularla engellenirken, model çıktılarında PII (Personally Identifiable Information) filtreleme uygulanıyor.
+
+\`\`\`ts
+// Input sanitization
+const invoiceSearchSchema = z.object({
+  query: z.string()
+    .max(200)
+    .regex(/^[a-zA-Z0-9\\s\\-]+$/, 'Özel karakter içeremez'),
+  dateRange: z.object({
+    from: z.string().datetime(),
+    to: z.string().datetime(),
+  }),
+});
+
+// Output filtering: Hassas alanları maskele
+function sanitizeOutput(data: Record<string, unknown>) {
+  const sensitiveFields = ['ssn', 'creditCard', 'password', 'apiKey'];
+  return Object.fromEntries(
+    Object.entries(data).map(([key, value]) =>
+      sensitiveFields.includes(key) ? [key, '***MASKED***'] : [key, value]
+    )
+  );
+}
+\`\`\`
+
+## Audit Logging ve İzlenebilirlik
+
+Her MCP tool çağrısı merkezi bir audit log'a kaydediliyor. Kim, ne zaman, hangi tool'u, hangi parametrelerle çağırdı ve sonuç ne oldu — tüm bu bilgiler traceability için saklanıyor. Anomali tespit sistemi, normal dışı çağrı kalıplarında (örneğin kısa sürede çok sayıda silme işlemi) otomatik alarm üretiyor.
+
+Uygulanan sandbox ve onaya dayalı otomasyonlar (Safe-to-Run) devrim yaratırken, mimarimizin kontrolden çıkarak şirket zararlısına dönüşmesi ve halüsinasyon gören model tehlikesinin kökünü güvenli bir filtre ile kazımış oluyoruz.`
       break
 
     case 'ai-agents-workflow':
-      customBody = `Yakın geçmişte geliştiriciler manuel terminal betiklerine bağımlıydı. Ancak bugün, hata bildirimleri üzerinden otonom şekilde projeyi tarayıp düzeltebilen, testleri koşup PR açan "Agentic Workflow" (Ajan odaklı Sistemler) mimarisine ulaştık.\n\nKodlamayı proaktif bir devrimle yönetiyoruz; terminal komutlarımızı çalıştıran, kod bloklarını tarayıp mimari zafiyetimizi bize raporlayan (örneğin Antigravity gibi otonom developer asistanları) sistemleri IDE yetkinliklerimizle harmanlıyoruz. Girdiğimiz bağlamlarda karmaşık "Task Listleri" (Planlamalar) üretiyorlar.\n\nJunior ya da Senior ayırt etmeksizin tüm ekibin sadece bir kodlayıcıdan ziyade, bir planlayıcı ve Geliştirici Mühendis gibi projeye geniş tepeden bakabilen mimar seviyesine yükselmesi artık bu akışlarla saatler değil dakikalar alıyor.`
+      customBody = `Yakın geçmişte geliştiriciler manuel terminal betiklerine bağımlıydı. Ancak bugün, hata bildirimleri üzerinden otonom şekilde projeyi tarayıp düzeltebilen, testleri koşup PR açan "Agentic Workflow" mimarisine ulaştık.
+
+## Agentic Workflow Nedir?
+
+Klasik yazılım geliştirmede döngü şöyledir: developer kodu yazar → test eder → hata bulur → düzeltir → commit eder → review ister. Agentic workflow'da bu adımların büyük kısmı otonom agent'lar tarafından yürütülür. Developer'ın rolü **yönetici ve denetçi** olmaya evrilir.
+
+\`\`\`
+Klasik Akış:
+Developer → Kod Yaz → Test Et → Debug → Fix → PR → Review
+
+Agentic Akış:
+Developer → Talimat Ver → [Agent: Kod Yaz + Test Et + Fix] → Review → Merge
+\`\`\`
+
+## Pratikte Agent Kullanım Senaryoları
+
+Elly projesinde agent'ları günlük iş akışımıza entegre ettik. İşte gerçek senaryolardan örnekler:
+
+**Senaryo 1 — Bug Fix Otomasyonu:**
+Sentry'den gelen bir hata bildirimi agent'a iletiliyor. Agent ilgili dosyaları tarayıp hatanın kaynağını tespit ediyor, fix yazıyor, ilgili test'i güncelliyor ve PR açıyor.
+
+\`\`\`
+Input: "TypeError: Cannot read property 'name' of undefined at OrderCard.tsx:42"
+
+Agent Akışı:
+1. OrderCard.tsx dosyasını oku → 42. satırdaki null reference'ı tespit et
+2. order.customer?.name şeklinde optional chaining ekle
+3. İlgili test dosyasını bul → null case için test ekle
+4. bun run test:ci → testleri çalıştır → PASS
+5. PR aç: "fix: handle null customer in OrderCard"
+\`\`\`
+
+**Senaryo 2 — Kod Review Asistanı:**
+PR açıldığında agent otomatik olarak değişiklikleri analiz ediyor: güvenlik zaafiyetleri, performans sorunları, naming convention ihlalleri ve test coverage eksiklikleri raporlanıyor.
+
+**Senaryo 3 — Refactoring Desteği:**
+"Bu modüldeki tüm class component'leri functional component'e çevir" gibi geniş kapsamlı talimatlar veriliyor ve agent dosya dosya dönüşümü yapıyor.
+
+## Agent Teams: Paralel Çalışma Modeli
+
+Tek bir agent yerine, farklı uzmanlık alanlarına sahip agent takımları kullanıyoruz. Bu projede uyguladığımız takım yapısı:
+
+\`\`\`
+┌─────────────────┐
+│   Team Lead     │  → Görevi alt task'lara böler
+│   (Orchestrator)│
+└────────┬────────┘
+         │
+    ┌────┴────┬──────────┬──────────┐
+    ▼         ▼          ▼          ▼
+┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
+│  Test  │ │Security│ │  UI    │ │ Perf   │
+│ Writer │ │Reviewer│ │Reviewer│ │Reviewer│
+└────────┘ └────────┘ └────────┘ └────────┘
+\`\`\`
+
+Her agent kendi sorumluluğundaki dosyalarda çalışır, aynı dosyaya birden fazla agent yazamaz (conflict önleme). Bulgular yapılandırılmış formatta (impact, location, issue, fix) raporlanır.
+
+## CLAUDE.md: Agent'ın Hafızası
+
+Agent'ların projeyi anlaması için \`CLAUDE.md\` dosyası kritik öneme sahiptir. Bu dosya projenin tech stack'ini, kodlama kurallarını, dizin yapısını ve kaçınılması gereken anti-pattern'leri içerir. Agent her oturum başında bu dosyayı okuyarak projenin bağlamını kavrar.
+
+Junior ya da Senior ayırt etmeksizin tüm ekibin sadece bir kodlayıcıdan ziyade, bir planlayıcı ve Geliştirici Mühendis gibi projeye geniş tepeden bakabilen mimar seviyesine yükselmesi artık bu akışlarla saatler değil dakikalar alıyor.`
       break
 
     case 'ai-agents-pair-programming':
-      customBody = `Eskiden "Pair Programming" dediğimiz yan yana oturup kod analiz eden iki yazılımcı mentalitesi, Github Copilot'un bile ötesine geçen "Workspace-aware" (Ortam Farkındalığı yüksek) ajanlarla devasa bir verimlilik partnerliğine (eşli programlama) dönüştü.\n\nGeliştirdiğim modern sistemlerde, loglardaki Trace id'den yola çıkıp backend içerisindeki Java stacktrace serüvenini analiz eden, benimle birlikte kodu tarayıp anında fix metodolojisini sunan bir YZ partneri var. Bağlama (Context) ait eski PR/Konuşma kayıtlarına doğrudan ulaşabiliyorlar.\n\nBu sayede sadece klavye vuruşlarımız (Keystrokes) azalmakta kalmıyor, aynı zamanda projelerin günlerce süren Debug krizleri veya Resource Leak takipleri yarım saatte otonom bir test doğrulamasıyla başarıya ulaşıyor. Rekabetin boyutu inanılmaz noktalarda.`
+      customBody = `Eskiden "Pair Programming" dediğimiz yan yana oturup kod analiz eden iki yazılımcı mentalitesi, Github Copilot'un bile ötesine geçen "Workspace-aware" ajanlarla devasa bir verimlilik partnerliğine dönüştü.
+
+## Copilot'un Ötesi: Context-Aware Asistanlar
+
+Github Copilot satır bazlı otomatik tamamlama sunar — faydalıdır ama sınırlıdır. Yeni nesil AI pair programming asistanları ise **tüm projeyi** anlayan, git geçmişini bilen, CI/CD sonuçlarını okuyabilen ve hatta Slack konuşmalarınızdan bağlam çıkarabilen otonom partnerlerdir.
+
+\`\`\`
+Copilot:
+  Kapsamı: Mevcut dosya + açık tab'lar
+  Yeteneği: Satır/blok tamamlama
+  Etkileşim: Pasif (siz yazarsınız, o tamamlar)
+
+Context-Aware Agent:
+  Kapsamı: Tüm repo + git history + CI logs + issue tracker
+  Yeteneği: Multi-file refactoring, test yazma, PR açma
+  Etkileşim: Aktif (siz talimat verirsiniz, o uygular)
+\`\`\`
+
+## Gerçek Dünya Pair Programming Senaryoları
+
+**Senaryo 1 — Log Tabanlı Debug:**
+Production'da bir performance degradation fark ettik. Agent'a Trace ID verdik ve şu akış gerçekleşti:
+
+\`\`\`
+Ben: "Bu trace ID'deki yavaşlığın kaynağını bul: abc-123-def"
+
+Agent:
+1. Backend log dosyalarını taradı (Elasticsearch MCP aracılığıyla)
+2. OrderService.calculateDiscount() metodunun 3.2s sürdüğünü tespit etti
+3. İlgili Java kaynak kodunu okudu
+4. N+1 query problemi tespit etti: her sipariş için ayrı DB sorgusu
+5. Batch query ile çözüm önerdi ve PoC kodu yazdı
+6. Benchmark sonucu: 3.2s → 180ms
+
+Toplam süre: 12 dakika (manuel debug ile: tahminen 3-4 saat)
+\`\`\`
+
+**Senaryo 2 — Yeni Modül Geliştirme:**
+"Notification modülü ekle: push notification, in-app notification ve email notification desteklesin" talimatıyla agent şunları üretti:
+
+- \`src/features/notifications/\` dizin yapısı
+- TypeScript interface'leri ve enum'lar
+- Service katmanı (strategy pattern ile notification channel seçimi)
+- API route handlers
+- React hook'ları (\`useNotifications\`, \`useNotificationPreferences\`)
+- Vitest test dosyaları (%80+ coverage)
+
+**Senaryo 3 — Cross-Stack Debugging:**
+Frontend'de görünen bir hata aslında backend'den kaynaklanıyor olabilir. Agent hem TypeScript hem Java tarafını anlayabildiği için, HTTP response'daki hata kodundan yola çıkıp backend'deki Spring controller'ı inceleyip root cause'u tespit edebiliyor.
+
+## Verimlilik Metrikleri
+
+Agent destekli çalışma modelini son 3 ayda uygulayarak ölçtüğümüz sonuçlar:
+
+| Metrik | Agent Öncesi | Agent Sonrası | İyileşme |
+|--------|-------------|---------------|----------|
+| Bug fix ortalama süresi | 4.2 saat | 1.1 saat | %74 |
+| Yeni feature teslim süresi | 3.5 gün | 1.8 gün | %49 |
+| PR review süresi | 2.1 saat | 0.8 saat | %62 |
+| Test coverage | %45 | %72 | +27 puan |
+
+Bu sayede sadece klavye vuruşlarımız azalmakla kalmıyor, projelerin günlerce süren debug krizleri yarım saatte otonom bir test doğrulamasıyla başarıya ulaşıyor.`
       break
 
     case 'ai-agents-future':
-      customBody = `Frontend ve Yazılım mimarisinin geleceği salt kod üretiminden çekilip; "Talimatı analiz eden, dizaynı UI koduna ve Storybook'una kadar döken" sistem orkestrasyonuna doğru çok büyük bir kırılma yaşıyor.\n\nAgent'ların yakın gelecekte sadece component yazmak yerine bir ürün yöneticisinin (Product Manager) Figma tasarım dosyasını okuyarak veritabanı şemasını, endpoint yapısını ve responsive mobil ekranını saniyeler içinde scaffold (inşa etme) seviyelerine çıkacağına olan tecrübemiz derinleşiyor.\n\nBu paradigma değişimiyle Frontend Geliştiricilerin bizzat kodu kazıyan madenciler olmaktan ziyade sisteme direktif veren, sınırları regüle eden ve güvenlik mimarilerini onaylayan "Sistem Revizörleri" olarak çok daha stratejik ve zeki roller alacağı ortadadır.`
+      customBody = `Frontend ve yazılım mimarisinin geleceği salt kod üretiminden çekilip; "Talimatı analiz eden, dizaynı UI koduna ve Storybook'una kadar döken" sistem orkestrasyonuna doğru çok büyük bir kırılma yaşıyor.
+
+## Bugünden Yarına: Paradigma Değişimi
+
+Yazılım geliştirmenin evrimini üç döneme ayırabiliriz:
+
+\`\`\`
+Dönem 1 (2000-2020): Manuel Kodlama
+  Developer her satırı elle yazar.
+  Araçlar: IDE, StackOverflow, dokümantasyon
+
+Dönem 2 (2020-2025): AI-Assisted Kodlama
+  AI satır/blok tamamlar, developer yönlendirir.
+  Araçlar: Copilot, ChatGPT, Claude
+
+Dönem 3 (2025+): AI-Orchestrated Geliştirme
+  AI modülleri tasarlar ve uygular, developer denetler.
+  Araçlar: Agent sistemleri, MCP, otonom pipeline'lar
+\`\`\`
+
+Şu anda Dönem 2'den Dönem 3'e geçiş yaşanıyor. Bu geçişin en belirgin işareti: developer'ın "nasıl yazılacağı" yerine "ne yazılacağı" sorusuna odaklanması.
+
+## Figma-to-Code: Tasarımdan Üretime
+
+Agent'ların yakın gelecekteki en güçlü yeteneği, bir ürün yöneticisinin Figma tasarım dosyasını okuyarak tam bir uygulama iskeleti oluşturması olacak.
+
+\`\`\`
+Figma Design Token'ları
+     │
+     ▼
+[AI Design Analyzer]
+     │
+     ├── Renk paleti → Tailwind theme config
+     ├── Tipografi → Font system
+     ├── Spacing → Design tokens
+     ├── Component yapısı → React bileşenleri
+     └── Responsive kurallar → Media queries
+     │
+     ▼
+Tam Çalışan React + Storybook Projesi
+\`\`\`
+
+Bu vizyonun ilk adımları zaten gerçekleşiyor. Vercel'in v0 aracı, doğal dildeki açıklamalardan React bileşenleri üretiyor. Ancak asıl devrim, bileşen üretiminin ötesinde **tam sistem mimarisi** scaffold'ı seviyesine çıkacak.
+
+## Frontend Developer'ın Yeni Rolü
+
+Bu paradigma değişimiyle Frontend geliştiricilerin rolü fundamentel biçimde dönüşüyor:
+
+**Eski Rol — Kod Zanaat Ustası:**
+- Pixel-perfect CSS yazma
+- State management karmaşıklığıyla boğuşma
+- Cross-browser uyumluluk testleri
+- Bundle size optimizasyonu
+
+**Yeni Rol — Sistem Revizörü:**
+- AI çıktılarını review ve doğrulama
+- Mimari kararları yönlendirme
+- Güvenlik sınırlarını regüle etme
+- Kullanıcı deneyimi kalite güvencesi
+- AI agent'ları koordine ve orkestre etme
+
+\`\`\`
+Developer'ın Yeni Sorumluluk Dağılımı (2026):
+  %30 — AI çıktı review ve kalite kontrol
+  %25 — Mimari tasarım ve sistem kararları
+  %20 — Prompt engineering ve agent konfigürasyonu
+  %15 — Karmaşık/kritik kod yazımı (AI'ın zorlandığı alanlar)
+  %10 — Kullanıcı araştırması ve UX kararları
+\`\`\`
+
+## Hazırlıklı Olmak İçin Ne Yapmalı?
+
+Bu dönüşüme hazırlanmak için önerilerim:
+
+1. **MCP ve Agent SDK'larını öğrenin** — Yapay zeka araçlarını entegre etme becerisi, kod yazma becerisinden daha değerli hale gelecek.
+2. **Sistem düşüncesi geliştirin** — Tek dosya yerine tüm sistemi anlama yetkinliği kritik.
+3. **Review kültürünü güçlendirin** — AI çıktılarını değerlendirme, hataları yakalama ve kalite standartlarını koruma becerisi.
+4. **Domain uzmanlığını derinleştirin** — AI genel kod yazabilir, ama iş mantığını anlamak hala insana ait.
+
+Bu paradigma değişimiyle Frontend geliştiricilerin bizzat kodu kazıyan madenciler olmaktan ziyade sisteme direktif veren, sınırları regüle eden ve güvenlik mimarilerini onaylayan "Sistem Revizörleri" olarak çok daha stratejik ve zeki roller alacağı ortadadır.`
       break
 
     default:

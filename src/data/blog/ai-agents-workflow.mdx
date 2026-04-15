@@ -1,6 +1,6 @@
 ---
 title: "AI Agent'lar İle Yazılım Geliştirme Kültürü"
-description: 'Artık sadece kod yazmak yetmiyor, kod yazdıran sistemleri (Agent, Antigravity, Claude, vs.) mimarimi...'
+description: "Artık sadece kod yazmak yetmiyor, kod yazdıran sistemleri (Agent, Antigravity, Claude, vs.) mimarimi..."
 publishedAt: '2026-04-23'
 category: 'AI'
 author: 'Hüseyin DOL'
@@ -15,12 +15,69 @@ Bu makale **AI** alanındaki deneyimlerimi ve yazılım geliştirme metodolojimi
 
 > Artık sadece kod yazmak yetmiyor, kod yazdıran sistemleri (Agent, Antigravity, Claude, vs.) mimarimize entegre etmek gerekiyor. Kodlamadaki Agentic Workflow (ajan tabanlı akış) devrimi.
 
-Yakın geçmişte geliştiriciler manuel terminal betiklerine bağımlıydı. Ancak bugün, hata bildirimleri üzerinden otonom şekilde projeyi tarayıp düzeltebilen, testleri koşup PR açan "Agentic Workflow" (Ajan odaklı Sistemler) mimarisine ulaştık.
+Yakın geçmişte geliştiriciler manuel terminal betiklerine bağımlıydı. Ancak bugün, hata bildirimleri üzerinden otonom şekilde projeyi tarayıp düzeltebilen, testleri koşup PR açan "Agentic Workflow" mimarisine ulaştık.
 
-Kodlamayı proaktif bir devrimle yönetiyoruz; terminal komutlarımızı çalıştıran, kod bloklarını tarayıp mimari zafiyetimizi bize raporlayan (örneğin Antigravity gibi otonom developer asistanları) sistemleri IDE yetkinliklerimizle harmanlıyoruz. Girdiğimiz bağlamlarda karmaşık "Task Listleri" (Planlamalar) üretiyorlar.
+## Agentic Workflow Nedir?
+
+Klasik yazılım geliştirmede döngü şöyledir: developer kodu yazar → test eder → hata bulur → düzeltir → commit eder → review ister. Agentic workflow'da bu adımların büyük kısmı otonom agent'lar tarafından yürütülür. Developer'ın rolü **yönetici ve denetçi** olmaya evrilir.
+
+```
+Klasik Akış:
+Developer → Kod Yaz → Test Et → Debug → Fix → PR → Review
+
+Agentic Akış:
+Developer → Talimat Ver → [Agent: Kod Yaz + Test Et + Fix] → Review → Merge
+```
+
+## Pratikte Agent Kullanım Senaryoları
+
+Elly projesinde agent'ları günlük iş akışımıza entegre ettik. İşte gerçek senaryolardan örnekler:
+
+**Senaryo 1 — Bug Fix Otomasyonu:**
+Sentry'den gelen bir hata bildirimi agent'a iletiliyor. Agent ilgili dosyaları tarayıp hatanın kaynağını tespit ediyor, fix yazıyor, ilgili test'i güncelliyor ve PR açıyor.
+
+```
+Input: "TypeError: Cannot read property 'name' of undefined at OrderCard.tsx:42"
+
+Agent Akışı:
+1. OrderCard.tsx dosyasını oku → 42. satırdaki null reference'ı tespit et
+2. order.customer?.name şeklinde optional chaining ekle
+3. İlgili test dosyasını bul → null case için test ekle
+4. bun run test:ci → testleri çalıştır → PASS
+5. PR aç: "fix: handle null customer in OrderCard"
+```
+
+**Senaryo 2 — Kod Review Asistanı:**
+PR açıldığında agent otomatik olarak değişiklikleri analiz ediyor: güvenlik zaafiyetleri, performans sorunları, naming convention ihlalleri ve test coverage eksiklikleri raporlanıyor.
+
+**Senaryo 3 — Refactoring Desteği:**
+"Bu modüldeki tüm class component'leri functional component'e çevir" gibi geniş kapsamlı talimatlar veriliyor ve agent dosya dosya dönüşümü yapıyor.
+
+## Agent Teams: Paralel Çalışma Modeli
+
+Tek bir agent yerine, farklı uzmanlık alanlarına sahip agent takımları kullanıyoruz. Bu projede uyguladığımız takım yapısı:
+
+```
+┌─────────────────┐
+│   Team Lead     │  → Görevi alt task'lara böler
+│   (Orchestrator)│
+└────────┬────────┘
+         │
+    ┌────┴────┬──────────┬──────────┐
+    ▼         ▼          ▼          ▼
+┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐
+│  Test  │ │Security│ │  UI    │ │ Perf   │
+│ Writer │ │Reviewer│ │Reviewer│ │Reviewer│
+└────────┘ └────────┘ └────────┘ └────────┘
+```
+
+Her agent kendi sorumluluğundaki dosyalarda çalışır, aynı dosyaya birden fazla agent yazamaz (conflict önleme). Bulgular yapılandırılmış formatta (impact, location, issue, fix) raporlanır.
+
+## CLAUDE.md: Agent'ın Hafızası
+
+Agent'ların projeyi anlaması için `CLAUDE.md` dosyası kritik öneme sahiptir. Bu dosya projenin tech stack'ini, kodlama kurallarını, dizin yapısını ve kaçınılması gereken anti-pattern'leri içerir. Agent her oturum başında bu dosyayı okuyarak projenin bağlamını kavrar.
 
 Junior ya da Senior ayırt etmeksizin tüm ekibin sadece bir kodlayıcıdan ziyade, bir planlayıcı ve Geliştirici Mühendis gibi projeye geniş tepeden bakabilen mimar seviyesine yükselmesi artık bu akışlarla saatler değil dakikalar alıyor.
 
 ---
-
-_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._
+*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
