@@ -59,4 +59,20 @@ Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professio
 - [About](https://www.huseyindol.com/about): Professional background
 - [Experience](https://www.huseyindol.com/experience): Full career history
 - [Skills](https://www.huseyindol.com/skills): Complete technical skill set
+- [Blog](https://www.huseyindol.com/blog): Technical articles covering Frontend, Mobile, and AI topics
 - [CV](https://www.huseyindol.com/assets/files/HuseyinDOL.pdf): Downloadable resume (PDF)
+
+## Blog Articles
+
+### Frontend
+- [Next.js ile Kusursuz SEO ve Metadata Yönetimi](https://www.huseyindol.com/blog/frontend-nextjs-seo): Dynamic Content için generateMetadata, robots.txt ve Sitemap.xml ile Google indeks sürelerini minimize etme stratejileri.
+- [Elly Admin Panel Mimarisi: Next.js App Router](https://www.huseyindol.com/blog/frontend-nextjs-elly-admin): SSR, Layout pattern ile yetkilendirme katmanları ve Server Actions üzerinden data mutasyonları.
+- [React Render Performans Optimizasyonu](https://www.huseyindol.com/blog/frontend-react-performance): React Suspense, Lazy Loading ve RSC konseptleri ile gereksiz re-render problemlerini önleme.
+- [GitHub Actions ile NPM Paket Dağıtımı](https://www.huseyindol.com/blog/frontend-npmjs-ci-cd): Main branch'e birleşen kodun otomatik olarak NPM Registry'ye push edilmesi üzerine CI/CD otomasyon deneyimi.
+- [Growthbook İle A/B Testleri ve Feature Flag Yönetimi](https://www.huseyindol.com/blog/frontend-growthbook-ab-testing): Newsletter arayüzünün konversiyon oranı üzerinde %50 trafikli A/B test senaryosu.
+
+### Mobile
+- [Elly Mobile App: Modern React Native Mimarisi](https://www.huseyindol.com/blog/mobile-react-native-elly): Tam tema destekli (karanlık mod) mimari, form bileşenleri ve navigation yapılandırmaları.
+
+### AI
+- [Kendi MCP Sunucunuzu Java/Node İle Yazmak](https://www.huseyindol.com/blog/ai-mcp-integration): Custom tool tanımlamaları ve prompt veritabanı enjekte etme. Açık kaynak: https://github.com/huseyindol/McpProjectScaffold

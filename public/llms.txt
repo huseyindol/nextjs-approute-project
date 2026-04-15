@@ -10,7 +10,23 @@ Hüseyin DOL specializes in scalable, performant, and user-friendly frontend arc
 - [About](https://www.huseyindol.com/about): Professional background and personal story
 - [Experience](https://www.huseyindol.com/experience): Career history, roles, and achievements
 - [Skills](https://www.huseyindol.com/skills): Technical skill set across frontend, backend, and tooling
+- [Blog](https://www.huseyindol.com/blog): Technical articles on Frontend, Mobile, and AI topics
 - [CV / Resume](https://www.huseyindol.com/assets/files/HuseyinDOL.pdf): Downloadable resume (PDF)
+
+## Blog — Featured Articles
+
+### Frontend
+- [Next.js ile Kusursuz SEO ve Metadata Yönetimi](https://www.huseyindol.com/blog/frontend-nextjs-seo)
+- [Elly Admin Panel Mimarisi: Next.js App Router](https://www.huseyindol.com/blog/frontend-nextjs-elly-admin)
+- [React Render Performans Optimizasyonu](https://www.huseyindol.com/blog/frontend-react-performance)
+- [GitHub Actions ile NPM Paket Dağıtımı (CI/CD Otomasyonu)](https://www.huseyindol.com/blog/frontend-npmjs-ci-cd)
+- [Growthbook İle A/B Testleri ve Feature Flag Yönetimi](https://www.huseyindol.com/blog/frontend-growthbook-ab-testing)
+
+### Mobile
+- [Elly Mobile App: Modern React Native Mimarisi](https://www.huseyindol.com/blog/mobile-react-native-elly)
+
+### AI
+- [Kendi MCP Sunucunuzu Java/Node İle Yazmak](https://www.huseyindol.com/blog/ai-mcp-integration)
 
 ## Contact
 

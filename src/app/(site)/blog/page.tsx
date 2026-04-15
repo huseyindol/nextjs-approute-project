@@ -4,6 +4,9 @@ import Image from 'next/image'
 import { CalendarIcon, ClockIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'
+
 export const metadata = {
   title: 'Makalelerim | Hüseyin DOL',
   description:
@@ -18,11 +21,21 @@ export const metadata = {
     'Model Context Protocol',
     'Tech Blog',
   ],
+  alternates: {
+    canonical: `${SITE_URL}/blog`,
+  },
   openGraph: {
     title: 'Makalelerim | Hüseyin DOL',
     description:
       'Yazılım geliştirme, mimari kararlar, AI entegrasyonları, Mobile ve Frontend üzerine derlediğim teknik notlar.',
+    url: `${SITE_URL}/blog`,
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image' as const,
+    title: 'Makalelerim | Hüseyin DOL',
+    description:
+      'Yazılım geliştirme, mimari kararlar, AI entegrasyonları, Mobile ve Frontend üzerine derlediğim teknik notlar.',
   },
 }
 
