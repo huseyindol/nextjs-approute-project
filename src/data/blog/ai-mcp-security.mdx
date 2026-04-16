@@ -1,6 +1,6 @@
 ---
-title: "Yapay Zeka Protokollerinde Güvenlik ve İzolasyon"
-description: "MCP serverleri üzerinden sağlanan \"safe-to-run\" komutlarda riskli operasyonları nasıl limitleriz? LL..."
+title: 'Yapay Zeka Protokollerinde Güvenlik ve İzolasyon'
+description: 'MCP serverleri üzerinden sağlanan "safe-to-run" komutlarda riskli operasyonları nasıl limitleriz? LL...'
 publishedAt: '2026-04-22'
 category: 'AI'
 author: 'Hüseyin DOL'
@@ -21,12 +21,12 @@ Bir LLM asistanının sisteminizin derinliklerine erişebilmesi muazzam bir gü�
 
 MCP sunucusu aracılığıyla LLM'lerin sistemlerinize erişim sağlaması, yeni bir tehdit yüzeyi oluşturur. Bu riskleri üç kategoride değerlendiriyoruz:
 
-| Risk Kategorisi | Örnek | Etki |
-|----------------|-------|------|
-| **Prompt Injection** | Kullanıcı input'u üzerinden kötü niyetli komut enjeksiyonu | Model'in yetkisiz işlem yapması |
-| **Over-Privileged Access** | Tüm DB tablolarına yazma yetkisi verilmesi | Veri kaybı veya bozulması |
-| **Data Exfiltration** | Model'in hassas verileri yanıtlarına dahil etmesi | Gizlilik ihlali |
-| **Hallucination Risk** | Model'in var olmayan bir API endpoint'i çağırması | Sistem kararsızlığı |
+| Risk Kategorisi            | Örnek                                                      | Etki                            |
+| -------------------------- | ---------------------------------------------------------- | ------------------------------- |
+| **Prompt Injection**       | Kullanıcı input'u üzerinden kötü niyetli komut enjeksiyonu | Model'in yetkisiz işlem yapması |
+| **Over-Privileged Access** | Tüm DB tablolarına yazma yetkisi verilmesi                 | Veri kaybı veya bozulması       |
+| **Data Exfiltration**      | Model'in hassas verileri yanıtlarına dahil etmesi          | Gizlilik ihlali                 |
+| **Hallucination Risk**     | Model'in var olmayan bir API endpoint'i çağırması          | Sistem kararsızlığı             |
 
 ## Read-Only vs Mutation: Yetki Katmanları
 
@@ -44,21 +44,21 @@ const TOOL_PERMISSIONS = {
   update_order_status: { level: 'write', requiresApproval: true },
   delete_record: { level: 'write', requiresApproval: true },
   restart_service: { level: 'admin', requiresApproval: true },
-};
+}
 
 // Middleware: Her tool çağrısında yetki kontrolü
 function authorizeToolCall(toolName: string, context: RequestContext) {
-  const permission = TOOL_PERMISSIONS[toolName];
+  const permission = TOOL_PERMISSIONS[toolName]
 
   if (permission.level === 'admin' && !context.user.isAdmin) {
-    throw new ForbiddenError('Bu işlem admin yetkisi gerektirir');
+    throw new ForbiddenError('Bu işlem admin yetkisi gerektirir')
   }
 
   if (permission.requiresApproval) {
-    return requestHumanApproval(toolName, context);
+    return requestHumanApproval(toolName, context)
   }
 
-  return { approved: true };
+  return { approved: true }
 }
 ```
 
@@ -92,23 +92,24 @@ Prompt injection saldırılarına karşı, tool parametrelerine gelen her değer
 ```ts
 // Input sanitization
 const invoiceSearchSchema = z.object({
-  query: z.string()
+  query: z
+    .string()
     .max(200)
     .regex(/^[a-zA-Z0-9\s\-]+$/, 'Özel karakter içeremez'),
   dateRange: z.object({
     from: z.string().datetime(),
     to: z.string().datetime(),
   }),
-});
+})
 
 // Output filtering: Hassas alanları maskele
 function sanitizeOutput(data: Record<string, unknown>) {
-  const sensitiveFields = ['ssn', 'creditCard', 'password', 'apiKey'];
+  const sensitiveFields = ['ssn', 'creditCard', 'password', 'apiKey']
   return Object.fromEntries(
     Object.entries(data).map(([key, value]) =>
-      sensitiveFields.includes(key) ? [key, '***MASKED***'] : [key, value]
-    )
-  );
+      sensitiveFields.includes(key) ? [key, '***MASKED***'] : [key, value],
+    ),
+  )
 }
 ```
 
@@ -119,4 +120,5 @@ Her MCP tool çağrısı merkezi bir audit log'a kaydediliyor. Kim, ne zaman, ha
 Uygulanan sandbox ve onaya dayalı otomasyonlar (Safe-to-Run) devrim yaratırken, mimarimizin kontrolden çıkarak şirket zararlısına dönüşmesi ve halüsinasyon gören model tehlikesinin kökünü güvenli bir filtre ile kazımış oluyoruz.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

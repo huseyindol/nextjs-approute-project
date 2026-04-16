@@ -1,6 +1,6 @@
 ---
-title: "Reanimated ve Akışkan 60FPS Animasyonlar"
-description: "UI/UX standartlarını çok yukarılara çekmek için JS thread dışına çıkarılan ve mikro-animasyonları ku..."
+title: 'Reanimated ve Akışkan 60FPS Animasyonlar'
+description: 'UI/UX standartlarını çok yukarılara çekmek için JS thread dışına çıkarılan ve mikro-animasyonları ku...'
 publishedAt: '2026-04-21'
 category: 'Mobile'
 author: 'Hüseyin DOL'
@@ -39,34 +39,38 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-} from 'react-native-reanimated';
+} from 'react-native-reanimated'
 
 function AnimatedCard({ onPress }: Props) {
-  const scale = useSharedValue(1);
-  const opacity = useSharedValue(1);
+  const scale = useSharedValue(1)
+  const opacity = useSharedValue(1)
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
-  }));
+  }))
 
   const handlePressIn = () => {
-    scale.value = withSpring(0.95, { damping: 15, stiffness: 150 });
-    opacity.value = withTiming(0.8, { duration: 100 });
-  };
+    scale.value = withSpring(0.95, { damping: 15, stiffness: 150 })
+    opacity.value = withTiming(0.8, { duration: 100 })
+  }
 
   const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 150 });
-    opacity.value = withTiming(1, { duration: 100 });
-  };
+    scale.value = withSpring(1, { damping: 15, stiffness: 150 })
+    opacity.value = withTiming(1, { duration: 100 })
+  }
 
   return (
-    <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={onPress}>
+    <Pressable
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={onPress}
+    >
       <Animated.View style={[styles.card, animatedStyle]}>
         {/* Card content */}
       </Animated.View>
     </Pressable>
-  );
+  )
 }
 ```
 
@@ -75,39 +79,39 @@ function AnimatedCard({ onPress }: Props) {
 `react-native-gesture-handler` v2 ile Reanimated'i birleştirerek dokunma, sürükleme ve fırlatma hareketlerini 60FPS'de işliyoruz. Swipe-to-delete gibi etkileşimler artık native hissiyatla çalışıyor.
 
 ```tsx
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   runOnJS,
-} from 'react-native-reanimated';
+} from 'react-native-reanimated'
 
 function SwipeableRow({ onDelete, children }: Props) {
-  const translateX = useSharedValue(0);
+  const translateX = useSharedValue(0)
 
   const panGesture = Gesture.Pan()
-    .onUpdate((event) => {
-      translateX.value = Math.min(0, event.translationX);
+    .onUpdate(event => {
+      translateX.value = Math.min(0, event.translationX)
     })
     .onEnd(() => {
       if (translateX.value < -120) {
-        translateX.value = withSpring(-200);
-        runOnJS(onDelete)();
+        translateX.value = withSpring(-200)
+        runOnJS(onDelete)()
       } else {
-        translateX.value = withSpring(0);
+        translateX.value = withSpring(0)
       }
-    });
+    })
 
   const rowStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
-  }));
+  }))
 
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View style={rowStyle}>{children}</Animated.View>
     </GestureDetector>
-  );
+  )
 }
 ```
 
@@ -120,7 +124,7 @@ import Animated, {
   FadeInDown,
   FadeOutLeft,
   LinearTransition,
-} from 'react-native-reanimated';
+} from 'react-native-reanimated'
 
 function NotificationList({ items }: Props) {
   return (
@@ -136,7 +140,7 @@ function NotificationList({ items }: Props) {
         </Animated.View>
       )}
     />
-  );
+  )
 }
 ```
 
@@ -144,14 +148,15 @@ function NotificationList({ items }: Props) {
 
 Her animasyon türü için doğru easing fonksiyonu seçmek UX kalitesini belirler. Temel kuralımız: **kullanıcı etkileşimi sonucu tetiklenen animasyonlarda spring**, **otomatik/sistem animasyonlarında timing** kullanmak.
 
-| Senaryo | Animasyon Tipi | Neden? |
-|---------|---------------|--------|
-| Buton basma | `withSpring` | Doğal geri sekme hissi |
-| Sayfa geçişi | `withTiming + Easing.bezier` | Kontrollü ve öngörülebilir |
-| Pull-to-refresh | `withSpring` | Elastik geri dönüş |
-| Toast bildirimi | `withTiming` | Sabit sürede giriş/çıkış |
+| Senaryo         | Animasyon Tipi               | Neden?                     |
+| --------------- | ---------------------------- | -------------------------- |
+| Buton basma     | `withSpring`                 | Doğal geri sekme hissi     |
+| Sayfa geçişi    | `withTiming + Easing.bezier` | Kontrollü ve öngörülebilir |
+| Pull-to-refresh | `withSpring`                 | Elastik geri dönüş         |
+| Toast bildirimi | `withTiming`                 | Sabit sürede giriş/çıkış   |
 
 Kullanıcının tıkladığı nesnenin yumuşakça esnemesi, sayfalar arasındaki sürükleme ivmesinin parmak hızını algılayıp tepki vermesi, UI/UX deneyimi açısından ürünümüzün kalitesini premium segmente yükseltti.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

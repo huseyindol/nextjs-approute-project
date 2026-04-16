@@ -1,6 +1,6 @@
 ---
-title: "Storybook Args ve Controls İle Bileşen Testleri"
-description: "Props değiştirmelerini kod yazmadan Visual (Görsel) arayüzde test etme deneyimi. Tasarım departmanı ..."
+title: 'Storybook Args ve Controls İle Bileşen Testleri'
+description: 'Props değiştirmelerini kod yazmadan Visual (Görsel) arayüzde test etme deneyimi. Tasarım departmanı ...'
 publishedAt: '2026-04-19'
 category: 'Frontend'
 author: 'Hüseyin DOL'
@@ -21,8 +21,8 @@ Bu mekanizma sayesinde bir bileşenin davranışını anlamak için kaynak kodun
 
 ```tsx
 // Input.stories.tsx
-import type { Meta, StoryObj } from '@storybook/react';
-import { Input } from './Input';
+import type { Meta, StoryObj } from '@storybook/react'
+import { Input } from './Input'
 
 const meta: Meta<typeof Input> = {
   title: 'Forms/Input',
@@ -40,10 +40,10 @@ const meta: Meta<typeof Input> = {
     placeholder: { control: 'text' },
     disabled: { control: 'boolean' },
   },
-};
+}
 
-export default meta;
-type Story = StoryObj<typeof Input>;
+export default meta
+type Story = StoryObj<typeof Input>
 
 export const Default: Story = {
   args: {
@@ -51,7 +51,7 @@ export const Default: Story = {
     variant: 'default',
     size: 'md',
   },
-};
+}
 
 export const WithError: Story = {
   args: {
@@ -59,7 +59,7 @@ export const WithError: Story = {
     variant: 'error',
     helperText: 'Lütfen geçerli bir e-posta adresi girin',
   },
-};
+}
 ```
 
 Tasarımcılar artık "Bu input hata durumunda nasıl görünüyor?", "Large boyutta label taşıyor mu?", "Disabled iken focus ring kalıyor mu?" sorularının cevabını bana sormak yerine Storybook üzerinden saniyeler içinde kendileri keşfedebiliyor.
@@ -67,4 +67,5 @@ Tasarımcılar artık "Bu input hata durumunda nasıl görünüyor?", "Large boy
 Actions addon'u ile de bileşenin emit ettiği event'ler (onChange, onClick, onSubmit) konsolda loglanıyor. Bu sayede bir form bileşeninin doğru değerleri doğru zamanda gönderip göndermediğini, interaktif olarak doğrulayabiliyoruz. Uçtan uca iletişim maliyeti dramatik biçimde düştü ve PR review süreleri ortalama %30 kısaldı.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

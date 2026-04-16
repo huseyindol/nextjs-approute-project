@@ -1,6 +1,6 @@
 ---
-title: "Kendi MCP Sunucunuzu Java/Node İle Yazmak"
-description: "McpProjectScaffold içinde, Custom tool tanımlamaları ve prompt veritabanı enjekte etme işlemlerinin ..."
+title: 'Kendi MCP Sunucunuzu Java/Node İle Yazmak'
+description: 'McpProjectScaffold içinde, Custom tool tanımlamaları ve prompt veritabanı enjekte etme işlemlerinin ...'
 publishedAt: '2026-04-22'
 category: 'AI'
 author: 'Hüseyin DOL'
@@ -35,14 +35,14 @@ MCP Server Yaşam Döngüsü:
 Node.js tarafında `@modelcontextprotocol/sdk` paketi ile hızlıca bir MCP sunucusu ayağa kaldırabilirsiniz. Aşağıda gerçek projemizden basitleştirilmiş bir örnek:
 
 ```ts
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { z } from 'zod';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { z } from 'zod'
 
 const server = new McpServer({
   name: 'elly-backend-tools',
   version: '1.0.0',
-});
+})
 
 // Tool tanımlama: Fatura detayı sorgulama
 server.tool(
@@ -52,17 +52,19 @@ server.tool(
   async ({ invoiceId }) => {
     const response = await fetch(
       process.env.API_BASE_URL + '/api/v1/invoices/' + invoiceId,
-      { headers: { Authorization: 'Bearer ' + process.env.API_TOKEN } }
-    );
-    const invoice = await response.json();
+      { headers: { Authorization: 'Bearer ' + process.env.API_TOKEN } },
+    )
+    const invoice = await response.json()
     return {
-      content: [{
-        type: 'text',
-        text: JSON.stringify(invoice, null, 2),
-      }],
-    };
-  }
-);
+      content: [
+        {
+          type: 'text',
+          text: JSON.stringify(invoice, null, 2),
+        },
+      ],
+    }
+  },
+)
 
 // Tool: Son hataları listele
 server.tool(
@@ -73,31 +75,35 @@ server.tool(
     severity: z.enum(['ERROR', 'WARN', 'CRITICAL']).default('ERROR'),
   },
   async ({ minutes, severity }) => {
-    const errors = await queryErrorLogs(minutes, severity);
+    const errors = await queryErrorLogs(minutes, severity)
     return {
-      content: [{
-        type: 'text',
-        text: formatErrorReport(errors),
-      }],
-    };
-  }
-);
+      content: [
+        {
+          type: 'text',
+          text: formatErrorReport(errors),
+        },
+      ],
+    }
+  },
+)
 
 // Resource: Sistem metrikleri
 server.resource(
   'system://metrics',
   'Anlık sistem performans metrikleri',
   async () => ({
-    contents: [{
-      uri: 'system://metrics',
-      mimeType: 'application/json',
-      text: JSON.stringify(await getSystemMetrics()),
-    }],
-  })
-);
+    contents: [
+      {
+        uri: 'system://metrics',
+        mimeType: 'application/json',
+        text: JSON.stringify(await getSystemMetrics()),
+      },
+    ],
+  }),
+)
 
-const transport = new StdioServerTransport();
-await server.connect(transport);
+const transport = new StdioServerTransport()
+await server.connect(transport)
 ```
 
 ## Java Spring Boot ile MCP Server
@@ -131,4 +137,5 @@ Projelerde yarattığımız bu interaktif AI proxy'si sayesinde:
 [McpProjectScaffold - Github Reposunu İnceleyin](https://github.com/huseyindol/McpProjectScaffold)
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

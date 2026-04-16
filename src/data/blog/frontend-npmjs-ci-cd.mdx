@@ -1,5 +1,5 @@
 ---
-title: "GitHub Actions ile NPM Paket Dağıtımı (CI/CD Otomasyonu)"
+title: 'GitHub Actions ile NPM Paket Dağıtımı (CI/CD Otomasyonu)'
 description: "Kod main branch'e birleştiği anda testlerden geçen component paketinin otomatik olarak NPM Registry'..."
 publishedAt: '2026-04-18'
 category: 'Frontend'
@@ -36,10 +36,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v1
       - run: bun install --frozen-lockfile
-      - run: bun run lint         # ESLint kontrolü
-      - run: bun run type-check   # TypeScript doğrulama
+      - run: bun run lint # ESLint kontrolü
+      - run: bun run type-check # TypeScript doğrulama
       - run: bun run format:check # Prettier tutarlılığı
-      - run: bun run test:ci      # Vitest + coverage
+      - run: bun run test:ci # Vitest + coverage
 
   publish:
     needs: quality-gate
@@ -62,4 +62,5 @@ Versiyon yönetimi için `changesets` entegrasyonu kullanıyoruz. Developer PR'a
 Bu pipeline sayesinde son 6 ayda 40+ release yaptık ve hiçbirinde manual hata yaşanmadı. Developer'ın yapması gereken tek şey: kodu yazmak, PR açmak ve review'dan geçirmek.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

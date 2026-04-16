@@ -1,6 +1,6 @@
 ---
-title: "NPM Paketlerinde Semantik Versiyonlama (SemVer)"
-description: "Yüzlerce farklı uygulamaya giden NPM paketinin güncellemelerinde hata oluşmaması için Breaking Chang..."
+title: 'NPM Paketlerinde Semantik Versiyonlama (SemVer)'
+description: 'Yüzlerce farklı uygulamaya giden NPM paketinin güncellemelerinde hata oluşmaması için Breaking Chang...'
 publishedAt: '2026-04-18'
 category: 'Frontend'
 author: 'Hüseyin DOL'
@@ -35,10 +35,12 @@ Her release'de otomatik oluşturulan `CHANGELOG.md` dosyası, tüketici projeler
 ## @huseyindol/ui-kit@2.0.0
 
 ### Major Changes
+
 - **BREAKING**: Button bileşeninin 'type' prop'u 'variant' olarak yeniden adlandırıldı
 - Migration guide: type="primary" → variant="default"
 
 ### Minor Changes
+
 - Yeni Badge bileşeni eklendi
 - Toast bileşenine 'duration' prop'u eklendi
 ```
@@ -46,4 +48,5 @@ Her release'de otomatik oluşturulan `CHANGELOG.md` dosyası, tüketici projeler
 Ayrıca lockfile stratejisi de kritiktir. Tüm projelerde `bun.lock` dosyası versiyon kontrolüne dahil ediliyor. Bu sayede "bende çalışıyor" mazeretleri sona eriyor, CI ortamında `--frozen-lockfile` flag'iyle tam deterministik build garantileniyor. PeerDependencies doğru tanımlanıyor ve React versiyon uyumsuzlukları derleme aşamasında yakalanıyor.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

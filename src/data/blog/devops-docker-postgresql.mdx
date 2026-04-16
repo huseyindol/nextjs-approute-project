@@ -75,29 +75,29 @@ volumes:
 `elly` sadece Postgres değil; Redis ve RabbitMQ'yu da aynı compose ile kaldırıyor. Böylece `bun run dev` (frontend) + `./mvnw spring-boot:run` (backend) için tek komutta (`docker compose up -d`) altyapı hazır olur:
 
 ```yaml
-  redis:
-    image: redis:7-alpine
-    command: >
-      redis-server
-      --appendonly yes
-      --maxmemory 256mb
-      --maxmemory-policy allkeys-lru
-      --requirepass ${REDIS_PASSWORD:-devpass}
-    ports:
-      - '6379:6379'
-    volumes:
-      - redis_data:/data
+redis:
+  image: redis:7-alpine
+  command: >
+    redis-server
+    --appendonly yes
+    --maxmemory 256mb
+    --maxmemory-policy allkeys-lru
+    --requirepass ${REDIS_PASSWORD:-devpass}
+  ports:
+    - '6379:6379'
+  volumes:
+    - redis_data:/data
 
-  rabbitmq:
-    image: rabbitmq:3.13-management-alpine
-    ports:
-      - '5672:5672'    # AMQP
-      - '15672:15672'  # Management UI
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RMQ_USER:-admin}
-      RABBITMQ_DEFAULT_PASS: ${RMQ_PASS:-admin123}
-    volumes:
-      - rabbit_data:/var/lib/rabbitmq
+rabbitmq:
+  image: rabbitmq:3.13-management-alpine
+  ports:
+    - '5672:5672' # AMQP
+    - '15672:15672' # Management UI
+  environment:
+    RABBITMQ_DEFAULT_USER: ${RMQ_USER:-admin}
+    RABBITMQ_DEFAULT_PASS: ${RMQ_PASS:-admin123}
+  volumes:
+    - rabbit_data:/var/lib/rabbitmq
 ```
 
 ## 3. Spring Boot Docker Compose Integration

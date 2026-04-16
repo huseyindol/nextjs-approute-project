@@ -1,5 +1,5 @@
 ---
-title: "Modern React Mimarisi ve Clean Code Pratikleri"
+title: 'Modern React Mimarisi ve Clean Code Pratikleri'
 description: "State yönetimi, Custom Hook'ların gücü ve Declarative (Bildirimsel) kod yazımının React ekosistemind..."
 publishedAt: '2026-04-16'
 category: 'Frontend'
@@ -26,15 +26,15 @@ export function useProfileData(userId: string) {
     queryKey: ['profile', userId],
     queryFn: () => fetcher(`/api/user/${userId}`),
     staleTime: 5 * 60 * 1000, // 5 dakika cache
-  });
-  return { profile: data, isLoading, error };
+  })
+  return { profile: data, isLoading, error }
 }
 
 // UI bileşeni sadece render ile ilgilenir
 export function ProfileCard({ userId }: { userId: string }) {
-  const { profile, isLoading } = useProfileData(userId);
-  if (isLoading) return <ProfileSkeleton />;
-  return <Card>{profile.name}</Card>;
+  const { profile, isLoading } = useProfileData(userId)
+  if (isLoading) return <ProfileSkeleton />
+  return <Card>{profile.name}</Card>
 }
 ```
 
@@ -43,4 +43,5 @@ Dizin yapısında ise feature-based (özellik tabanlı) organizasyon tercih ediy
 React 19 ve concurrent rendering özellikleri bu mimarinin üstüne konduğunda, `useTransition` ile ağır tab geçişlerini bloklamadan işleyebiliyor, `Suspense` sınırlarıyla sayfa yüklenme deneyimini granüler seviyede kontrol edebiliyoruz. Custom Hook'lar üzerinde ilerlediğimizde UI bileşenleri tamamen "aptal" (dumb) hale gelir ve sadece gelen datayı render etmekle ilgilenir. Bu izolasyon, ekibin projeye adaptasyon sürecini aylar seviyesinden haftalara indirir ve onboarding maliyetini dramatik biçimde azaltır.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

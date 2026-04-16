@@ -111,14 +111,14 @@ Headless Service ile Pod'lar DNS üzerinden birbirine ulaşabilir; ilerideki clu
 
 Beklediğinizin aksine, `elly` cluster'ı **Nginx Ingress değil, Traefik Ingress Controller** kullanıyor (k3s ile default olarak geliyor, hafif ve pratik). `4-ingress.yaml` içinde **altı farklı host** tek bir Ingress kaynağı üzerinden yönetiliyor:
 
-| Host | Servis |
-| --- | --- |
-| `api.huseyindol.com` | `elly-app-service:8080` |
-| `admin.huseyindol.com` | `elly-app-service:8080` |
-| `redis.huseyindol.com` | `redisinsight:5540` |
-| `grafana.huseyindol.com` | `grafana:3000` |
-| `prometheus.huseyindol.com` | `prometheus:9090` |
-| `zipkin.huseyindol.com` | `zipkin:9411` |
+| Host                        | Servis                  |
+| --------------------------- | ----------------------- |
+| `api.huseyindol.com`        | `elly-app-service:8080` |
+| `admin.huseyindol.com`      | `elly-app-service:8080` |
+| `redis.huseyindol.com`      | `redisinsight:5540`     |
+| `grafana.huseyindol.com`    | `grafana:3000`          |
+| `prometheus.huseyindol.com` | `prometheus:9090`       |
+| `zipkin.huseyindol.com`     | `zipkin:9411`           |
 
 Path yönlendirmeleri:
 
@@ -147,12 +147,12 @@ JWT doğrulama + user rol cache'leri bu instance üzerinden uçar. Uygulama podl
 
 `6-monitoring.yaml` tek dosyada dört aracı birden ayağa kaldırır:
 
-| Araç | Port | Görev |
-| --- | --- | --- |
-| **Prometheus** | 9090 | `elly-app-service` actuator'ını her 15s scrape eder, 7 gün tutar |
-| **Grafana** | 3000 | Prometheus datasource pre-provisioned, `admin / admin123` |
-| **Zipkin** | 9411 | `ZIPKIN_URL` env'iyle Brave reporter'dan trace alır, in-memory |
-| **RedisInsight** | 5540 | Redis key explorer + cache monitor |
+| Araç             | Port | Görev                                                            |
+| ---------------- | ---- | ---------------------------------------------------------------- |
+| **Prometheus**   | 9090 | `elly-app-service` actuator'ını her 15s scrape eder, 7 gün tutar |
+| **Grafana**      | 3000 | Prometheus datasource pre-provisioned, `admin / admin123`        |
+| **Zipkin**       | 9411 | `ZIPKIN_URL` env'iyle Brave reporter'dan trace alır, in-memory   |
+| **RedisInsight** | 5540 | Redis key explorer + cache monitor                               |
 
 Önemli notlar:
 
@@ -165,9 +165,9 @@ JWT doğrulama + user rol cache'leri bu instance üzerinden uçar. Uygulama podl
 `7-backup-cronjob.yaml`, her gece **03:00 Europe/Istanbul** (00:00 UTC) zamanında çalışan bir `CronJob`:
 
 ```yaml
-schedule: "0 0 * * *"                     # UTC
+schedule: '0 0 * * *' # UTC
 startingDeadlineSeconds: 100
-activeDeadlineSeconds: 600                # 10 dk
+activeDeadlineSeconds: 600 # 10 dk
 concurrencyPolicy: Forbid
 successfulJobsHistoryLimit: 3
 failedJobsHistoryLimit: 1

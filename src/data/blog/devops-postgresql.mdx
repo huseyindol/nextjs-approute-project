@@ -24,11 +24,11 @@ Büyük ve ilişkisel veritabanı şemalarında Postgres'in sunduğu olanaklar h
 
 `elly` projesinde 3 farklı yaklaşım arasından **"Database-per-Tenant"** seçildi:
 
-| Strateji | Avantaj | Dezavantaj |
-| --- | --- | --- |
-| **Schema-per-tenant** | Tek DB, kolay backup | Connection pool karmaşıklaşır |
-| **Row-level (tenant_id)** | En ucuz | RLS olmazsa data leak riski |
-| **Database-per-tenant** ✅ | Tam izolasyon, bağımsız backup | DevOps maliyeti artar |
+| Strateji                   | Avantaj                        | Dezavantaj                    |
+| -------------------------- | ------------------------------ | ----------------------------- |
+| **Schema-per-tenant**      | Tek DB, kolay backup           | Connection pool karmaşıklaşır |
+| **Row-level (tenant_id)**  | En ucuz                        | RLS olmazsa data leak riski   |
+| **Database-per-tenant** ✅ | Tam izolasyon, bağımsız backup | DevOps maliyeti artar         |
 
 Bu yüzden `k8s/2c-postgres.yaml` içinde üç ayrı StatefulSet görüyoruz: `postgres-tenant1`, `postgres-tenant2`, `postgres-basedb`. Her tenant'ın kendi PVC'si, kendi backup CronJob dump'ı ve kendi connection pool'u var.
 

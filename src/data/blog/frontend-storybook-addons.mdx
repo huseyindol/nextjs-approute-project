@@ -1,6 +1,6 @@
 ---
-title: "Storybook Eklentileri: Dark Mode, A11y ve Dokümantasyon"
-description: "Makine okunabilir otomatik dokümantasyon (MDX tabanlı), Dark Mode testleri ve Accessibility (Erişile..."
+title: 'Storybook Eklentileri: Dark Mode, A11y ve Dokümantasyon'
+description: 'Makine okunabilir otomatik dokümantasyon (MDX tabanlı), Dark Mode testleri ve Accessibility (Erişile...'
 publishedAt: '2026-04-19'
 category: 'Frontend'
 author: 'Hüseyin DOL'
@@ -23,15 +23,15 @@ Vanilla Storybook faydalıdır ama onu kurumsal bir araç haline getiren şey ek
 // .storybook/main.ts
 const config: StorybookConfig = {
   addons: [
-    '@storybook/addon-essentials',  // Controls, Actions, Viewport
-    '@storybook/addon-a11y',        // Accessibility
-    '@storybook/addon-themes',      // Dark/Light mode
+    '@storybook/addon-essentials', // Controls, Actions, Viewport
+    '@storybook/addon-a11y', // Accessibility
+    '@storybook/addon-themes', // Dark/Light mode
     '@storybook/addon-interactions', // Play functions
   ],
   docs: {
     autodocs: 'tag', // 'autodocs' tag'i olan bileşenlere otomatik doküman
   },
-};
+}
 ```
 
 **@storybook/addon-themes:** Dark Mode / Light Mode geçişlerini tek tıkla yapabilme imkanı sağlar. Bileşenlerimizin her iki temada da doğru görünüp görünmediğini yan yana karşılaştırmalı test edebiliyoruz. Bu özellik özellikle Elly mobil uygulamasının dark-mode ağırlıklı tasarımı için kritikti.
@@ -43,4 +43,5 @@ const config: StorybookConfig = {
 Sağlanan bu altyapı, UI Kit'i tüketen tüm ekiplerin bileşen davranışlarını, erişilebilirlik durumlarını ve tema uyumluluğunu tek bir merkezden doğrulamasını mümkün kıldı.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

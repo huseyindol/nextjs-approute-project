@@ -1,5 +1,5 @@
 ---
-title: "Elly Admin Panel Mimarisi: Next.js App Router"
+title: 'Elly Admin Panel Mimarisi: Next.js App Router'
 description: "Elly-admin-panel geliştirilirken Next.js'in SSR yeteneklerini ve App Router esnekliklerini kullandık..."
 publishedAt: '2026-04-17'
 category: 'Frontend'
@@ -38,13 +38,13 @@ Yükleme sürelerini minimize etmek için istemci (Client) ve sunucu (Server) bi
 ```tsx
 // app/(admin)/contents/page.tsx — Server Component
 export default async function ContentsPage() {
-  const contents = await getContentsService({ page: 0, size: 20 });
+  const contents = await getContentsService({ page: 0, size: 20 })
   return (
     <div>
-      <ContentFilters />   {/* Client — arama/filtreleme */}
-      <ContentTable data={contents.data} />  {/* Server — statik tablo */}
+      <ContentFilters /> {/* Client — arama/filtreleme */}
+      <ContentTable data={contents.data} /> {/* Server — statik tablo */}
     </div>
-  );
+  )
 }
 ```
 
@@ -53,4 +53,5 @@ Oturum yönetimi için `middleware.ts` katmanında JWT token kontrolü yapılıy
 Verinin işlendiği yere en yakın noktada çekilmesi, paneller arası geçişlerde sıfıra yakın bir hissiyat yarattı. `revalidateTag` ve `revalidatePath` API'leri ile CMS'te yapılan içerik değişiklikleri anında public siteye yansıyor, cache invalidation süreci tamamen otomatik.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

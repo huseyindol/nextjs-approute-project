@@ -1,6 +1,6 @@
 ---
-title: "React ve Shadcn UI: Tasarım Sistemleri"
-description: "Klasik komponent kütüphanelerinin aksine, kodu tamamen bizim sahiplendiğimiz Shadcn UI mimarisi ile ..."
+title: 'React ve Shadcn UI: Tasarım Sistemleri'
+description: 'Klasik komponent kütüphanelerinin aksine, kodu tamamen bizim sahiplendiğimiz Shadcn UI mimarisi ile ...'
 publishedAt: '2026-04-16'
 category: 'Frontend'
 author: 'Hüseyin DOL'
@@ -21,7 +21,7 @@ Shadcn UI'ın devrimsel farkı, bileşen kodlarının `node_modules` içinde sak
 
 ```tsx
 // components/ui/button.tsx — tamamen bizim kontrolümüzde
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority'
 
 const buttonVariants = cva(
   'inline-flex items-center rounded-lg font-medium transition-colors',
@@ -40,8 +40,8 @@ const buttonVariants = cva(
       },
     },
     defaultVariants: { variant: 'default', size: 'md' },
-  }
-);
+  },
+)
 ```
 
 Radix UI'ın sağladığı accessibility (erişilebilirlik) altyapısı da cabası: Dialog, DropdownMenu, Tabs gibi karmaşık bileşenler keyboard navigation, focus trap ve ARIA etiketleriyle doğuştan uyumlu geliyor. Bizim yapmamız gereken tek şey görsel katmanı (Tailwind sınıfları) eklemek.
@@ -49,4 +49,5 @@ Radix UI'ın sağladığı accessibility (erişilebilirlik) altyapısı da cabas
 Ekip içinde `shadcn add` CLI komutuyla yeni bileşenler saniyeler içinde projeye ekleniyor ve `components.json` konfigürasyon dosyası üzerinden tema renkleri, border-radius değerleri ve CSS değişkenleri merkezi olarak yönetiliyor. Bu yaklaşım sayesinde 4 farklı projede tutarlı bir tasarım dili korurken, her projenin kendine özel ihtiyaçlarını da karşılayabiliyoruz.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

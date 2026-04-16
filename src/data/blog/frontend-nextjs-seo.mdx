@@ -1,6 +1,6 @@
 ---
-title: "Next.js ile Kusursuz SEO ve Metadata Yönetimi"
-description: "Dynamic Content içeren uygulamalardaki metadata dinamik atamaları (generateMetadata) ve robots.txt e..."
+title: 'Next.js ile Kusursuz SEO ve Metadata Yönetimi'
+description: 'Dynamic Content içeren uygulamalardaki metadata dinamik atamaları (generateMetadata) ve robots.txt e...'
 publishedAt: '2026-04-17'
 category: 'Frontend'
 author: 'Hüseyin DOL'
@@ -22,8 +22,8 @@ Ziyaretçiye statik göründüğü halde içeriklerini dinamik veri tabanlarınd
 ```tsx
 // app/blog/[slug]/page.tsx
 export async function generateMetadata({ params }): Promise<Metadata> {
-  const post = await getPostBySlug(params.slug);
-  const url = `https://www.huseyindol.com/blog/${post.slug}`;
+  const post = await getPostBySlug(params.slug)
+  const url = `https://www.huseyindol.com/blog/${post.slug}`
 
   return {
     title: `${post.title} | Hüseyin DOL`,
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }): Promise<Metadata> {
       card: 'summary_large_image',
       images: [post.coverImage],
     },
-  };
+  }
 }
 ```
 
@@ -49,14 +49,14 @@ SEO'nun ikinci kritik ayağı **sitemap.xml** ve **robots.txt** entegrasyonudur.
 ```tsx
 // app/sitemap.ts
 export default async function sitemap() {
-  const posts = await getAllPosts();
+  const posts = await getAllPosts()
   const blogRoutes = posts.map(post => ({
     url: `https://www.huseyindol.com/blog/${post.slug}`,
     lastModified: new Date(post.publishedAt),
     changeFrequency: 'monthly',
     priority: 0.8,
-  }));
-  return [...staticRoutes, ...blogRoutes];
+  }))
+  return [...staticRoutes, ...blogRoutes]
 }
 ```
 
@@ -65,4 +65,5 @@ export default async function sitemap() {
 Son olarak AI crawler'ları (GPTBot, ClaudeBot, PerplexityBot) için `robots.txt`'te açık izin verip, `llms.txt` ve `llms-full.txt` dosyalarıyla sitemizin yapısını ve içerik haritasını doğrudan LLM'lere sunuyoruz. Bu sayede yapay zeka destekli arama motorlarında da doğru ve zengin şekilde temsil ediliyoruz.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._

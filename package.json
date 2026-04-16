@@ -92,7 +92,7 @@
     "@types/uuid": "^11.0.0",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.1.4",
-    "@vitest/ui": "^4.0.16",
+    "@vitest/ui": "^4.1.4",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
     "eslint-config-next": "16.1.1",
@@ -111,7 +111,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.51.0",
-    "vitest": "^4.0.16",
+    "vitest": "^4.1.4",
     "web-vitals": "^5.1.0"
   }
 }

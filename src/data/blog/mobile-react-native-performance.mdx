@@ -1,6 +1,6 @@
 ---
-title: "React Native FlatList Performans İpuçları"
-description: "Binlerce verinin mobil ekranda kasma donma yaşamadan listelenebilmesi için memoization, keyextractor..."
+title: 'React Native FlatList Performans İpuçları'
+description: 'Binlerce verinin mobil ekranda kasma donma yaşamadan listelenebilmesi için memoization, keyextractor...'
 publishedAt: '2026-04-21'
 category: 'Mobile'
 author: 'Hüseyin DOL'
@@ -55,18 +55,23 @@ const OrderItem = memo(({ item, onPress }: OrderItemProps) => {
       <Text>{item.title}</Text>
       <Text>{item.price}</Text>
     </Pressable>
-  );
-});
+  )
+})
 
 // Parent component'te callback stabilizasyonu
-const handlePress = useCallback((id: string) => {
-  navigation.navigate('OrderDetail', { orderId: id });
-}, [navigation]);
+const handlePress = useCallback(
+  (id: string) => {
+    navigation.navigate('OrderDetail', { orderId: id })
+  },
+  [navigation],
+)
 
 const renderItem = useCallback(
-  ({ item }: { item: Order }) => <OrderItem item={item} onPress={handlePress} />,
-  [handlePress]
-);
+  ({ item }: { item: Order }) => (
+    <OrderItem item={item} onPress={handlePress} />
+  ),
+  [handlePress],
+)
 ```
 
 ## Görsel Optimizasyonu: Image Caching ve Placeholder
@@ -74,9 +79,8 @@ const renderItem = useCallback(
 Liste içindeki görseller en büyük performans katilidir. `react-native-fast-image` ile HTTP cache ve memory cache katmanları oluşturuyoruz.
 
 ```tsx
-import FastImage from 'react-native-fast-image';
-
-<FastImage
+import FastImage from 'react-native-fast-image'
+;<FastImage
   source={{
     uri: item.imageUrl,
     priority: FastImage.priority.normal,
@@ -94,13 +98,15 @@ Ayrıca backend tarafında thumbnail versiyonları (80x80, 160x160) üretilerek 
 Binlerce kayıt içeren listelerde tüm veriyi tek seferde çekmek yerine cursor-based pagination kullanıyoruz. TanStack Query'nin `useInfiniteQuery` hook'u ile entegrasyon sağlanıyor.
 
 ```tsx
-const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-  queryKey: ['orders'],
-  queryFn: ({ pageParam = 0 }) => fetchOrders({ cursor: pageParam, limit: 20 }),
-  getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
-});
+const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  useInfiniteQuery({
+    queryKey: ['orders'],
+    queryFn: ({ pageParam = 0 }) =>
+      fetchOrders({ cursor: pageParam, limit: 20 }),
+    getNextPageParam: lastPage => lastPage.nextCursor ?? undefined,
+  })
 
-<FlatList
+;<FlatList
   data={data?.pages.flatMap(page => page.items) ?? []}
   onEndReached={() => hasNextPage && fetchNextPage()}
   onEndReachedThreshold={0.5}
@@ -115,4 +121,5 @@ Optimizasyonların gerçekten işe yarayıp yaramadığını ölçmek için Flip
 Yüksek resource'lu görsel medyalarla bile uygulamanın FPS çökmesini bertaraf edebiliyor, kullanıcının sanki native Kotlin/Swift dilinde yazılmış bir uygulamada geziyormuş hissiyatını güçlendiriyoruz.
 
 ---
-*Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir.*
+
+_Bu içerik kişisel geliştirme laboratuvarımdan ve prodüksiyon maceralarımdan derlenmiştir._
