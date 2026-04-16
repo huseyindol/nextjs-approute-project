@@ -26,20 +26,85 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'
   const url = `${siteUrl}/blog/${post.slug}`
 
+  const categoryKeywords: Record<string, string[]> = {
+    Backend: [
+      'Spring Boot',
+      'Java',
+      'RBAC',
+      'Redis',
+      'RabbitMQ',
+      'JWT',
+      'PostgreSQL',
+      'Multitenancy',
+      'Spring Security',
+      'OAuth2',
+      'JPA',
+      'Hibernate',
+      'Zipkin',
+      'Actuator',
+    ],
+    DevOps: [
+      'Kubernetes',
+      'Docker',
+      'PostgreSQL',
+      'CI/CD',
+      'GitHub Actions',
+      'Helm',
+      'k3s',
+      'Traefik',
+      'Prometheus',
+      'Grafana',
+      'Redis',
+      'RabbitMQ',
+      'StatefulSet',
+      'HPA',
+    ],
+    Frontend: [
+      'React',
+      'Next.js',
+      'TypeScript',
+      'JavaScript',
+      'Tailwind CSS',
+      'SEO',
+      'Performance',
+      'App Router',
+      'Server Components',
+    ],
+    AI: [
+      'MCP',
+      'Model Context Protocol',
+      'Claude',
+      'LLM',
+      'AI Agents',
+      'Anthropic',
+      'Prompt Engineering',
+      'ChatGPT',
+    ],
+    Mobile: [
+      'React Native',
+      'Expo',
+      'Mobile Development',
+      'iOS',
+      'Android',
+      'Reanimated',
+      'Navigation',
+    ],
+  }
+
+  const baseKeywords = [
+    'Hüseyin DOL',
+    'huseyindol',
+    'Yazılım',
+    'Teknoloji',
+    'Makale',
+  ]
+  const keywords = [...(categoryKeywords[category] ?? []), ...baseKeywords]
+
   // SEO ve LLM'ler için zenginleştirilmiş semantic etiketler
   return {
     title: `${title} | Hüseyin DOL`,
     description: description,
-    keywords: [
-      category,
-      'Yazılım',
-      'Frontend',
-      'Teknoloji',
-      'Next.js',
-      'React',
-      'Makale',
-      'Hüseyin DOL',
-    ],
+    keywords,
     alternates: {
       canonical: url,
     },
@@ -97,7 +162,10 @@ export default async function BlogPostPage({ params }: Readonly<Props>) {
         url={`${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'}/blog/${post.slug}`}
         imageUrl={post.frontmatter.coverImage}
         datePublished={post.frontmatter.publishedAt as string}
+        dateModified={post.frontmatter.publishedAt as string}
         authorName={post.frontmatter.author}
+        articleSection={post.frontmatter.category}
+        wordCount={post.content.split(/\s+/).length}
       />
       <article className="mx-auto max-w-7xl">
         <div className="mb-4">

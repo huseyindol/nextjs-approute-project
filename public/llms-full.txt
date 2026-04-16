@@ -1,10 +1,10 @@
 # Hüseyin DOL — Full Profile
 
-> Senior Frontend Developer with 10+ years of experience building modern, scalable web applications using React, Next.js, and TypeScript. Based in Sancaktepe, İstanbul, Turkey.
+> Senior Frontend Developer with 10+ years of experience building modern, scalable web applications using React, Next.js, and TypeScript. Also experienced in Java Spring Boot backend, Kubernetes DevOps, and React Native mobile. Based in Sancaktepe, İstanbul, Turkey.
 
 ## About
 
-Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professional experience in web development. He specializes in the React ecosystem, modern JavaScript/TypeScript, and scalable frontend architecture. He is experienced in team leadership, code review, and mentoring junior and mid-level developers.
+Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professional experience in web development. He specializes in the React ecosystem, modern JavaScript/TypeScript, and scalable frontend architecture. He also builds full-stack Java Spring Boot applications with Kubernetes orchestration and React Native mobile apps. He is experienced in team leadership, code review, and mentoring junior and mid-level developers.
 
 - Location: Sancaktepe, İstanbul, Turkey
 - Email: huseyindol@gmail.com
@@ -28,16 +28,33 @@ Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professio
 ### Backend & Databases
 - Node.js (7+ years, Advanced)
 - Express.js (6+ years, Advanced)
+- Java / Spring Boot 3.x (3+ years, Intermediate)
+- Spring Security, RBAC, OAuth2, JWT
 - Prisma (6+ years, Advanced)
 - MongoDB (5+ years, Advanced)
-- PostgreSQL (3+ years, Intermediate)
-- Java / Spring (3+ years, Intermediate)
+- PostgreSQL 16 (3+ years, Intermediate)
+- Redis 7 (caching, AOF, LRU eviction)
+- RabbitMQ (AMQP, async email workers)
 
-### DevOps & Tooling
+### DevOps & Infrastructure
+- Docker (multi-stage builds, docker-compose)
+- Kubernetes / k3s (StatefulSet, HPA, Ingress, CronJob)
+- Traefik Ingress + cert-manager (Let's Encrypt TLS)
+- GitHub Actions CI/CD (GHCR, SSH deploy)
+- Prometheus + Grafana + Zipkin (observability)
 - Git (10+ years, Expert)
-- Docker (3+ years, Intermediate)
 - Nginx (4+ years, Intermediate)
 - Vercel
+
+### Mobile
+- React Native (Expo)
+- React Navigation
+- Animated API, Reanimated
+- iOS / Android
+
+### AI & Tools
+- MCP (Model Context Protocol)
+- Claude API / Anthropic SDK
 - Figma (5+ years, Advanced)
 - VS Code (8+ years, Expert)
 - Postman (6+ years, Advanced)
@@ -50,7 +67,7 @@ Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professio
 - Data Fetching: TanStack Query 5
 - Testing: Vitest 4 + Testing Library
 - Email: Resend
-- Analytics: Google Tag Manager, Vercel Analytics
+- Analytics: Google Analytics 4 (G-ETR2NBJH5V), Vercel Analytics
 - Deployment: Vercel
 
 ## Portfolio Pages
@@ -59,20 +76,47 @@ Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professio
 - [About](https://www.huseyindol.com/about): Professional background
 - [Experience](https://www.huseyindol.com/experience): Full career history
 - [Skills](https://www.huseyindol.com/skills): Complete technical skill set
-- [Blog](https://www.huseyindol.com/blog): Technical articles covering Frontend, Mobile, and AI topics
+- [Blog](https://www.huseyindol.com/blog): Technical articles covering Frontend, Backend, DevOps, Mobile, and AI topics
 - [CV](https://www.huseyindol.com/assets/files/HuseyinDOL.pdf): Downloadable resume (PDF)
 
 ## Blog Articles
 
+### Backend
+
+- [Java ve Spring Boot ile Master Proje: Elly Mimarisi](https://www.huseyindol.com/blog/backend-java-elly): Spring Boot 3.5 + Java 21 üzerine kurulu Elly CMS projesinin derinlemesine backend mimarisi. RBAC, multitenancy (tenant1/tenant2/basedb), Redis AOF+LRU cache, RabbitMQ async email worker (Dead Letter Exchange), OAuth2 social login, JJWT stateless auth, JSONB + hypersistence-utils, MapStruct + Lombok, Actuator + Zipkin distributed tracing, OpenAPI/Swagger, GlobalExceptionHandler.
+
+### DevOps
+
+- [Kubernetes: Microservice Ekosisteminin Orkestrasyonu](https://www.huseyindol.com/blog/devops-kubernetes-master): Elly projesinin tüm K8s altyapısı — 14 numaralı manifest organizasyonu, Base+Burst Deployment stratejisi, HPA (CPU %70 threshold), StatefulSet x3 PostgreSQL (tenant1/tenant2/basedb, 8Gi PVC), Redis 7 (AOF, allkeys-lru), RabbitMQ 3.13 Management, Traefik Ingress + cert-manager Let's Encrypt (6 host), nightly backup CronJob (3-day retention), Prometheus+Grafana+Zipkin+RedisInsight observability, GitHub Actions CI/CD (GHCR → GCP SSH deploy).
+- [Docker İçerisinde PostgreSQL Ayağa Kaldırmak](https://www.huseyindol.com/blog/devops-docker-postgresql): Multi-tenant Docker Compose (postgres-tenant1:5433, postgres-tenant2:5434), Redis+RabbitMQ compose, spring-boot-docker-compose auto-start integration, multi-stage Dockerfile (Maven 3.9.9 + Java 21 JRE, non-root spring user, HEALTHCHECK via /actuator/health), .dockerignore optimization (~50% image size reduction).
+- [Modern PostgreSQL Kullanımı ve İpuçları](https://www.huseyindol.com/blog/devops-postgresql): Database-per-Tenant strateji karşılaştırması, postgresql.conf tuning (shared_buffers, work_mem, jit=off, SSD params), PgBouncer connection pooling, EXPLAIN (ANALYZE, BUFFERS) ile RBAC join optimizasyonu, JSONB GIN indeksleme (jsonb_path_ops), partial+expression indeksler, pg_dump+WAL-G/pgBackRest backup stratejileri, Streaming Replication + Patroni yol haritası, postgres-exporter + Grafana.
+
 ### Frontend
+
 - [Next.js ile Kusursuz SEO ve Metadata Yönetimi](https://www.huseyindol.com/blog/frontend-nextjs-seo): Dynamic Content için generateMetadata, robots.txt ve Sitemap.xml ile Google indeks sürelerini minimize etme stratejileri.
 - [Elly Admin Panel Mimarisi: Next.js App Router](https://www.huseyindol.com/blog/frontend-nextjs-elly-admin): SSR, Layout pattern ile yetkilendirme katmanları ve Server Actions üzerinden data mutasyonları.
 - [React Render Performans Optimizasyonu](https://www.huseyindol.com/blog/frontend-react-performance): React Suspense, Lazy Loading ve RSC konseptleri ile gereksiz re-render problemlerini önleme.
 - [GitHub Actions ile NPM Paket Dağıtımı](https://www.huseyindol.com/blog/frontend-npmjs-ci-cd): Main branch'e birleşen kodun otomatik olarak NPM Registry'ye push edilmesi üzerine CI/CD otomasyon deneyimi.
 - [Growthbook İle A/B Testleri ve Feature Flag Yönetimi](https://www.huseyindol.com/blog/frontend-growthbook-ab-testing): Newsletter arayüzünün konversiyon oranı üzerinde %50 trafikli A/B test senaryosu.
+- [React Modern Bileşen Mimarisi](https://www.huseyindol.com/blog/frontend-react-architecture): Compound Components, Custom Hooks ve Context API kullanım kalıpları.
+- [Shadcn/UI ile Tasarım Sistemi](https://www.huseyindol.com/blog/frontend-react-shadcn): Radix UI primitifleri + Tailwind ile token tabanlı tema sistemi kurulumu.
+- [Storybook ile Component Driven Development](https://www.huseyindol.com/blog/frontend-storybook-playground): Storybook 7 ve CSF3 formatı ile izole component geliştirme.
 
 ### Mobile
+
 - [Elly Mobile App: Modern React Native Mimarisi](https://www.huseyindol.com/blog/mobile-react-native-elly): Tam tema destekli (karanlık mod) mimari, form bileşenleri ve navigation yapılandırmaları.
+- [React Native Performans Optimizasyonu](https://www.huseyindol.com/blog/mobile-react-native-performance): FlatList virtualization, memo, InteractionManager ve Hermes engine ile 60fps hedefi.
+- [React Native ile Gelişmiş Animasyonlar](https://www.huseyindol.com/blog/mobile-react-native-animations): Reanimated 3 ve Gesture Handler ile spring animasyonları ve shared element transitions.
 
 ### AI
+
 - [Kendi MCP Sunucunuzu Java/Node İle Yazmak](https://www.huseyindol.com/blog/ai-mcp-integration): Custom tool tanımlamaları ve prompt veritabanı enjekte etme. Açık kaynak: https://github.com/huseyindol/McpProjectScaffold
+- [MCP ile AI Agent Mimarisi](https://www.huseyindol.com/blog/ai-mcp-architecture): Model Context Protocol'ün mimari detayları, tool/resource/prompt primitifleri.
+- [AI Ajanlarının Geleceği](https://www.huseyindol.com/blog/ai-agents-future): Otonom ajanlar, multi-agent sistemleri ve LLM orchestration üzerine teknik analiz.
+- [AI Güvenliği: MCP Sunucu Güvenliği](https://www.huseyindol.com/blog/ai-mcp-security): MCP sunucularında güvenlik açıkları, input sanitization ve prompt injection koruması.
+
+## Open Source Projects
+
+- [elly](https://github.com/huseyindol/elly): Spring Boot 3.5 + Java 21 CMS backend. Multitenancy, RBAC, Redis, RabbitMQ, Kubernetes, GitHub Actions CI/CD.
+- [nextjs-approute-project](https://github.com/huseyindol/nextjs-approute-project): This portfolio — Next.js 16 App Router, TypeScript, Tailwind CSS 4, blog system, SEO.
+- [McpProjectScaffold](https://github.com/huseyindol/McpProjectScaffold): Open-source MCP server for project scaffolding.

@@ -31,6 +31,25 @@ export function PersonJsonLd() {
       'Web Development',
       'Redux',
       'Node.js',
+      'Java',
+      'Spring Boot',
+      'Spring Security',
+      'OAuth2',
+      'JWT',
+      'PostgreSQL',
+      'Redis',
+      'RabbitMQ',
+      'Docker',
+      'Kubernetes',
+      'CI/CD',
+      'GitHub Actions',
+      'Prometheus',
+      'Grafana',
+      'React Native',
+      'MCP',
+      'Model Context Protocol',
+      'Tailwind CSS',
+      'Framer Motion',
     ],
   }
 
@@ -48,7 +67,11 @@ export interface ArticleJsonLdProps {
   url: string
   imageUrl?: string
   datePublished: string
+  dateModified?: string
   authorName: string
+  keywords?: string[]
+  articleSection?: string
+  wordCount?: number
 }
 
 export function ArticleJsonLd({
@@ -57,19 +80,29 @@ export function ArticleJsonLd({
   url,
   imageUrl,
   datePublished,
+  dateModified,
   authorName,
+  keywords,
+  articleSection,
+  wordCount,
 }: Readonly<ArticleJsonLdProps>) {
-  const schema = {
+  const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': 'TechArticle',
     headline: title,
     description: description,
     image: imageUrl ? [imageUrl] : [],
     datePublished: datePublished,
+    dateModified: dateModified ?? datePublished,
     author: {
       '@type': 'Person',
       name: authorName,
       url: SITE_URL,
+      identifier: 'huseyindol',
+      sameAs: [
+        'https://github.com/huseyindol',
+        'https://www.linkedin.com/in/huseyindol/',
+      ],
     },
     publisher: {
       '@type': 'Organization',
@@ -83,6 +116,17 @@ export function ArticleJsonLd({
       '@type': 'WebPage',
       '@id': url,
     },
+    inLanguage: 'tr-TR',
+  }
+
+  if (keywords && keywords.length > 0) {
+    schema.keywords = keywords.join(', ')
+  }
+  if (articleSection) {
+    schema.articleSection = articleSection
+  }
+  if (wordCount && wordCount > 0) {
+    schema.wordCount = wordCount
   }
 
   return (

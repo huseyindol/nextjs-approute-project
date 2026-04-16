@@ -1,8 +1,8 @@
 # Hüseyin DOL (huseyindol)
 
-> Senior Frontend Developer with 10+ years of experience building modern, scalable web applications using React, Next.js, and TypeScript. Based in Sancaktepe, İstanbul, Turkey.
+> Senior Frontend Developer with 10+ years of experience building modern, scalable web applications using React, Next.js, and TypeScript. Also experienced in Java Spring Boot backend, Kubernetes DevOps, and React Native mobile. Based in Sancaktepe, İstanbul, Turkey.
 
-Hüseyin DOL specializes in scalable, performant, and user-friendly frontend architectures. He has hands-on experience in team leadership and mentoring junior developers.
+Hüseyin DOL specializes in scalable, performant, and user-friendly full-stack architectures. He has hands-on experience in team leadership and mentoring junior developers.
 
 ## Portfolio
 
@@ -10,10 +10,18 @@ Hüseyin DOL specializes in scalable, performant, and user-friendly frontend arc
 - [About](https://www.huseyindol.com/about): Professional background and personal story
 - [Experience](https://www.huseyindol.com/experience): Career history, roles, and achievements
 - [Skills](https://www.huseyindol.com/skills): Technical skill set across frontend, backend, and tooling
-- [Blog](https://www.huseyindol.com/blog): Technical articles on Frontend, Mobile, and AI topics
+- [Blog](https://www.huseyindol.com/blog): Technical articles on Frontend, Backend, DevOps, Mobile, and AI topics
 - [CV / Resume](https://www.huseyindol.com/assets/files/HuseyinDOL.pdf): Downloadable resume (PDF)
 
 ## Blog — Featured Articles
+
+### Backend
+- [Java ve Spring Boot ile Master Proje: Elly Mimarisi](https://www.huseyindol.com/blog/backend-java-elly)
+
+### DevOps
+- [Kubernetes: Microservice Ekosisteminin Orkestrasyonu](https://www.huseyindol.com/blog/devops-kubernetes-master)
+- [Docker İçerisinde PostgreSQL Ayağa Kaldırmak](https://www.huseyindol.com/blog/devops-docker-postgresql)
+- [Modern PostgreSQL Kullanımı ve İpuçları](https://www.huseyindol.com/blog/devops-postgresql)
 
 ### Frontend
 - [Next.js ile Kusursuz SEO ve Metadata Yönetimi](https://www.huseyindol.com/blog/frontend-nextjs-seo)
@@ -24,9 +32,13 @@ Hüseyin DOL specializes in scalable, performant, and user-friendly frontend arc
 
 ### Mobile
 - [Elly Mobile App: Modern React Native Mimarisi](https://www.huseyindol.com/blog/mobile-react-native-elly)
+- [React Native Performans Optimizasyonu](https://www.huseyindol.com/blog/mobile-react-native-performance)
+- [React Native ile Gelişmiş Animasyonlar](https://www.huseyindol.com/blog/mobile-react-native-animations)
 
 ### AI
 - [Kendi MCP Sunucunuzu Java/Node İle Yazmak](https://www.huseyindol.com/blog/ai-mcp-integration)
+- [MCP ile AI Agent Mimarisi](https://www.huseyindol.com/blog/ai-mcp-architecture)
+- [AI Ajanlarının Geleceği](https://www.huseyindol.com/blog/ai-agents-future)
 
 ## Contact
 

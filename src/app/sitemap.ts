@@ -40,14 +40,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]
 
+  // Higher priority for deep technical articles (Backend/DevOps)
+  const highPrioritySlugs = new Set([
+    'backend-java-elly',
+    'devops-kubernetes-master',
+    'devops-docker-postgresql',
+    'devops-postgresql',
+  ])
+
   const posts = await getAllPosts()
   const dynamicBlogRoutes: MetadataRoute.Sitemap = posts.map(post => ({
     url: `${BASE_URL}/blog/${post.slug}`,
     lastModified: post.frontmatter.publishedAt
       ? new Date(post.frontmatter.publishedAt)
       : lastModified,
-    changeFrequency: 'monthly',
-    priority: 0.8,
+    changeFrequency: 'monthly' as const,
+    priority: highPrioritySlugs.has(post.slug) ? 0.9 : 0.8,
   }))
 
   return [...staticRoutes, ...dynamicBlogRoutes]
