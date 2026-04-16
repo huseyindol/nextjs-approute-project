@@ -93,6 +93,7 @@ Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professio
 
 ### Frontend
 
+- [JavaScript Event Loop: Asenkron Dünyanın Motoru](https://www.huseyindol.com/blog/frontend-js-event-loop): Call Stack, Web APIs, Macrotask ve Microtask Queue mekanizmaları; Promise sırası, async/await davranışı, queueMicrotask, requestAnimationFrame ve Node.js libuv faz mimarisi.
 - [Next.js ile Kusursuz SEO ve Metadata Yönetimi](https://www.huseyindol.com/blog/frontend-nextjs-seo): Dynamic Content için generateMetadata, robots.txt ve Sitemap.xml ile Google indeks sürelerini minimize etme stratejileri.
 - [Elly Admin Panel Mimarisi: Next.js App Router](https://www.huseyindol.com/blog/frontend-nextjs-elly-admin): SSR, Layout pattern ile yetkilendirme katmanları ve Server Actions üzerinden data mutasyonları.
 - [React Render Performans Optimizasyonu](https://www.huseyindol.com/blog/frontend-react-performance): React Suspense, Lazy Loading ve RSC konseptleri ile gereksiz re-render problemlerini önleme.

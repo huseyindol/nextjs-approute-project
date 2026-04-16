@@ -46,6 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'devops-kubernetes-master',
     'devops-docker-postgresql',
     'devops-postgresql',
+    'frontend-js-event-loop',
   ])
 
   const posts = await getAllPosts()

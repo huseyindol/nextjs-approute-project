@@ -24,6 +24,7 @@ Hüseyin DOL specializes in scalable, performant, and user-friendly full-stack a
 - [Modern PostgreSQL Kullanımı ve İpuçları](https://www.huseyindol.com/blog/devops-postgresql)
 
 ### Frontend
+- [JavaScript Event Loop: Asenkron Dünyanın Motoru](https://www.huseyindol.com/blog/frontend-js-event-loop)
 - [Next.js ile Kusursuz SEO ve Metadata Yönetimi](https://www.huseyindol.com/blog/frontend-nextjs-seo)
 - [Elly Admin Panel Mimarisi: Next.js App Router](https://www.huseyindol.com/blog/frontend-nextjs-elly-admin)
 - [React Render Performans Optimizasyonu](https://www.huseyindol.com/blog/frontend-react-performance)
