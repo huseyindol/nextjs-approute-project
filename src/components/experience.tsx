@@ -1,12 +1,7 @@
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
-import { INDUSTRIES } from '@/schemas/constants'
 import { ExperienceType } from '@/schemas/dynamic/experienceSchema'
-import { Building, Calendar, MapPin } from 'lucide-react'
-import Link from 'next/link'
 import { getSectionDataBySectionKey } from '@/utils/services/contents'
+import ExperienceTimeline from './ExperienceTimeline'
 
-// Mock data - API boşsa veya hata varsa kullanılır
 const mockExperiences: ExperienceType[] = [
   {
     company: 'Hangikredi',
@@ -15,7 +10,7 @@ const mockExperiences: ExperienceType[] = [
     location: 'İstanbul',
     industry: 'Fintech',
     description:
-      "Türkiye'nin en büyük karşılaştırmalı finansal ürünler sunan şirketi. React ve Next.js kullanarak fintech uygulamaları geliştiriyorum. bulunduğum squadın developer ekibine liderlik ediyorum.",
+      "Türkiye'nin en büyük karşılaştırmalı finansal ürünler sunan şirketi. React ve Next.js kullanarak fintech uygulamaları geliştiriyorum. Bulunduğum squadın developer ekibine liderlik ediyorum.",
     technologies: [
       'React',
       'Next.js',
@@ -35,8 +30,8 @@ const mockExperiences: ExperienceType[] = [
     ],
     sortOrder: 0,
     achievements: [
-      '40% performans artışı sağlayan optimizasyonlar',
-      'NPM paketi kurulumu',
+      '%40 performans artışı sağlayan optimizasyonlar',
+      'NPM paketi kurulumu ve yayınlanması',
       'SEO, Analytics ve Datalayer entegrasyonları',
       'CI/CD Jenkins ve Docker kullanarak pipeline kurulumu',
       'Junior developer mentorluğu',
@@ -49,7 +44,7 @@ const mockExperiences: ExperienceType[] = [
     location: 'İstanbul',
     industry: 'Fintech',
     description:
-      "Fibabanka'nın Yaklaşan Ödemeler uygulaması, Müşteri kampanya yönetim ekranı ve şikayet yönetim ekranı geliştirmelerinde yer aldım.",
+      "Fibabanka'nın Yaklaşan Ödemeler uygulaması, müşteri kampanya yönetim ekranı ve şikayet yönetim ekranı geliştirmelerinde yer aldım.",
     technologies: ['React', 'Redux', 'TypeScript', 'SCSS', 'Context API'],
     sortOrder: 0,
     achievements: [
@@ -65,7 +60,7 @@ const mockExperiences: ExperienceType[] = [
     location: 'İstanbul',
     industry: 'Media',
     description:
-      'Kullanıcıların oyun oynayabildiği, oyunlara puan verebildiği, yorum yapabildiği ve gerçek zamanlı sohbetle iletişim kurabildiği çok oyunculu bir oyun platformu ve medya gruplarına ait whitelabel oyun portalları geliştirmelerinde yer aldım.',
+      'Kullanıcıların oyun oynayabildiği, puan verebildiği, yorum yapabildiği ve gerçek zamanlı sohbetle iletişim kurabildiği çok oyunculu oyun platformu ve medya gruplarına ait whitelabel oyun portalları geliştirdim.',
     technologies: [
       'JavaScript',
       'jQuery',
@@ -84,9 +79,9 @@ const mockExperiences: ExperienceType[] = [
     ],
     sortOrder: 0,
     achievements: [
-      'Medya gruplarına ait oyun portalları geliştirme',
+      'Medya gruplarına ait whitelabel oyun portalları geliştirme',
       'SEO optimizasyonları',
-      'Performans optimizasyonları, Code splitting, Lazy loading, Image optimization, Bundling optimization...',
+      'Performans optimizasyonları: code splitting, lazy loading, image optimization',
     ],
   },
   {
@@ -96,7 +91,7 @@ const mockExperiences: ExperienceType[] = [
     location: 'İstanbul',
     industry: 'E-commerce',
     description:
-      "Türkiye'nin en büyük e-ticaret platformlarından birisi olan Defacto'nun frontend geliştirme mimarısınde yer aldım.",
+      "Türkiye'nin en büyük e-ticaret platformlarından biri olan Defacto'nun frontend geliştirme mimarisinde yer aldım.",
     technologies: [
       'HTML',
       'CSS',
@@ -111,9 +106,9 @@ const mockExperiences: ExperienceType[] = [
     ],
     sortOrder: 0,
     achievements: [
-      'Frontend mimarisinde mobile ve desktop uygulamasını responsive olarak yönetilmesi',
+      'Frontend mimarisinde mobil ve desktop uygulamasını responsive olarak yönetmek',
       'SEO, Analytics ve Datalayer entegrasyonları',
-      'Performans optimizasyonları (Code splitting, Lazy loading, Image optimization, Bundling optimization...)',
+      'Performans optimizasyonları: code splitting, lazy loading, image optimization',
     ],
   },
   {
@@ -123,7 +118,7 @@ const mockExperiences: ExperienceType[] = [
     location: 'İstanbul',
     industry: 'Agency',
     description:
-      "Nuevo Softwarehouse'un frontend geliştirme ekibine katıldım. Junior developer mentorluğu yapıyordum. TCCB, OTİ, ATASUN ve BITTRT gibi büyük ölçekli firmaların frontend geliştirmelerinde yer aldım.",
+      "Nuevo Softwarehouse'un frontend geliştirme ekibine katıldım. TCCB, OTİ, ATASUN ve BITTRT gibi büyük ölçekli firmaların frontend geliştirmelerinde yer aldım.",
     technologies: [
       'React',
       'Redux',
@@ -137,7 +132,7 @@ const mockExperiences: ExperienceType[] = [
     sortOrder: 0,
     achievements: [
       'Junior developer mentorluğu',
-      'Performans optimizasyonları (Code splitting, Lazy loading, Image optimization, Bundling optimization...)',
+      'Performans optimizasyonları: code splitting, lazy loading, image optimization',
     ],
   },
   {
@@ -147,7 +142,7 @@ const mockExperiences: ExperienceType[] = [
     location: 'İstanbul',
     industry: 'Freelancer',
     description:
-      'Freelancer olarak çeşitli firmaların sistemlerinde frontend ve backend geliştirmelerinde yer aldım. Intranet projeler olduğundan panel geliştirmeleri, önyüz geliştirmeleri, Rest API ve entegrasyonları gibi geliştirmeler yapıyordum.',
+      'Freelancer olarak çeşitli firmaların sistemlerinde frontend ve backend geliştirmelerinde yer aldım. Panel geliştirmeleri, önyüz geliştirmeleri ve REST API entegrasyonları yaptım.',
     technologies: [
       'JavaScript',
       'jQuery',
@@ -156,13 +151,13 @@ const mockExperiences: ExperienceType[] = [
       'PHP',
       'Twig',
       'Codeigniter',
-      'mysql',
+      'MySQL',
     ],
     sortOrder: 0,
     achievements: [
-      'Bir çok firmanın sistemlerinde frontend ve backend geliştirmelerinde yer aldım.',
-      'Rest API ve entegrasyonları gibi geliştirmeleri.',
-      'Intranet projelerinde panel geliştirmeleri.',
+      'Birçok firmanın sistemlerinde frontend ve backend geliştirmeleri',
+      'REST API ve entegrasyonları',
+      'Intranet projelerinde panel geliştirmeleri',
     ],
   },
   {
@@ -172,151 +167,41 @@ const mockExperiences: ExperienceType[] = [
     location: 'İstanbul',
     industry: 'E-commerce',
     description:
-      "Projesoft'un frontend geliştirme ekibine katıldım. Bir çok firmanın E-Ticaret sistemlerinin frontend geliştirmelerinde yer aldım. bunlardan bazıları: kitapisler.com, kuyumcu.com.tr, feyioglu.com.tr, network.com.tr, divarese.com, beymen.com gibi.",
+      "Projesoft'un frontend geliştirme ekibinde birçok firmanın e-ticaret sistemlerinin frontend geliştirmelerinde yer aldım. kitapisler.com, kuyumcu.com.tr, feyioglu.com.tr, beymen.com gibi markalar.",
     technologies: ['JavaScript', 'jQuery', 'Bootstrap', 'SCSS', 'PHP', 'Twig'],
     sortOrder: 0,
     achievements: [
-      'Bir çok firmanın E-Ticaret sistemlerinin frontend geliştirmelerinde yer aldım.',
+      'Birçok firmanın e-ticaret sistemlerinin frontend geliştirmeleri',
     ],
   },
 ]
 
-// Fallback section bilgisi
 const DEFAULT_SECTION_INFO = {
   title: 'Profesyonel Deneyim',
-  description: 'Çeşitli sektörlerde edindiğim deneyimler ve başarılar',
+  description: 'Çeşitli sektörlerde 10+ yıllık kariyer yolculuğum',
 }
 
-// Props interface - searchParams için
 interface ExperienceProps {
   searchParams?: { industry?: string }
 }
 
 export default async function Experience({ searchParams }: ExperienceProps) {
-  // URL'den industry parametresini al
-  const selectedIndustry = searchParams?.industry || 'all'
+  const initialIndustry = searchParams?.industry ?? 'all'
 
-  // API'den section verilerini çek (title, description + items)
   const { sectionInfo, items } =
     await getSectionDataBySectionKey<ExperienceType>(
       'portfolio_experience',
       DEFAULT_SECTION_INFO,
     )
 
-  // Fallback to mock data if API returns empty
   const allExperiences = items && items.length > 0 ? items : mockExperiences
 
-  // Section bilgileri (API'den veya fallback)
-  const title = sectionInfo.title
-  const description = sectionInfo.description
-
-  // Filter experiences by industry - INDUSTRIES constant kullanılıyor
-  const filteredExperiences =
-    selectedIndustry === 'all'
-      ? allExperiences
-      : allExperiences.filter(exp => exp.industry === selectedIndustry)
-
   return (
-    <section id="experience" className="py-20">
-      <div className="container mx-auto px-6">
-        <div className="mx-auto mb-16 max-w-4xl text-center">
-          <h2 className="text-gradient mb-6 text-4xl font-bold md:text-5xl">
-            {title}
-          </h2>
-          <p className="mb-8 text-xl text-muted-foreground">{description}</p>
-
-          {/* Industry Filter - Link ile URL değiştirme (SSR) */}
-          <div className="flex flex-wrap justify-center gap-3">
-            {INDUSTRIES.map(industry => (
-              <Link
-                key={industry.value}
-                href={
-                  industry.value === 'all' ? '?' : `?industry=${industry.value}`
-                }
-                scroll={false}
-                className={`inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors ${
-                  selectedIndustry === industry.value
-                    ? 'hover:bg-primary/90 bg-primary text-primary-foreground'
-                    : 'border border-input bg-background hover:bg-accent hover:text-accent-foreground'
-                }`}
-              >
-                {industry.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div className="mx-auto max-w-4xl space-y-8">
-          {filteredExperiences.map((exp, index) => (
-            <Card
-              key={`${exp.company}-${index}`}
-              className="hover:shadow-elegant animate-fade-in-up p-8 transition-all duration-300"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <div className="mb-6 flex flex-col md:flex-row md:items-start md:justify-between">
-                <div className="flex-1">
-                  <h3 className="mb-2 text-2xl font-bold text-primary">
-                    {exp.position}
-                  </h3>
-                  <div className="mb-4 flex flex-wrap items-center gap-4 text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Building className="h-4 w-4" />
-                      <span className="font-semibold">{exp.company}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span>{exp.period}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      <span>{exp.location}</span>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="mb-4">
-                    {exp.industry}
-                  </Badge>
-                </div>
-              </div>
-
-              <p className="mb-6 leading-relaxed text-muted-foreground">
-                {exp.description}
-              </p>
-
-              <div className="grid gap-6 md:grid-cols-2">
-                <div>
-                  <h4 className="mb-3 font-semibold">Teknolojiler</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {exp.technologies.map(tech => (
-                      <Badge
-                        key={tech}
-                        variant="outline"
-                        className="bg-skill-bg"
-                      >
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="mb-3 font-semibold">Başlıca Başarılar</h4>
-                  <ul className="space-y-2">
-                    {exp.achievements.map((achievement, idx) => (
-                      <li
-                        key={idx}
-                        className="flex items-start text-sm text-muted-foreground"
-                      >
-                        <span className="mr-2 text-primary">•</span>
-                        {achievement}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
+    <ExperienceTimeline
+      experiences={allExperiences}
+      title={sectionInfo.title ?? DEFAULT_SECTION_INFO.title}
+      description={sectionInfo.description ?? DEFAULT_SECTION_INFO.description}
+      initialIndustry={initialIndustry}
+    />
   )
 }

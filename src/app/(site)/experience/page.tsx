@@ -49,7 +49,7 @@ export default async function ExperiencePage({
   const resolvedSearchParams = await searchParams
 
   return (
-    <main className="min-h-screen pt-24 md:pt-32">
+    <main className="min-h-screen">
       <ErrorBoundary>
         <Experience searchParams={resolvedSearchParams} />
       </ErrorBoundary>
