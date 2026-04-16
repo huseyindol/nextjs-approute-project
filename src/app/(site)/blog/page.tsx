@@ -1,4 +1,4 @@
-import { getAllPosts, getAllCategories } from '@/lib/mdx'
+import { getAllPosts } from '@/lib/mdx'
 import Link from 'next/link'
 import Image from 'next/image'
 import { CalendarIcon, ClockIcon } from 'lucide-react'
@@ -35,7 +35,9 @@ export default async function BlogIndexPage(props: Readonly<Props>) {
   const categoryFilter = searchParams.category as string | undefined
 
   const allPosts = await getAllPosts()
-  const categories = await getAllCategories()
+  const categories = [
+    ...new Set(allPosts.map(p => p.frontmatter.category)),
+  ].filter(Boolean)
 
   const posts = categoryFilter
     ? allPosts.filter(post => post.frontmatter.category === categoryFilter)
