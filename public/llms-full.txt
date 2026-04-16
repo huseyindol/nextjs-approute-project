@@ -83,6 +83,8 @@ Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professio
 
 ### Backend
 
+- [Spring Boot Projesini Multi-Tenant Sisteme Taşımak: AbstractRoutingDataSource](https://www.huseyindol.com/blog/backend-multitenancy-migration): Elly CMS projesinin tek veritabanından tenant1/tenant2/basedb mimarisine geçiş süreci. AbstractRoutingDataSource, TenantContext (ThreadLocal), JwtTenantFilter, LazyConnectionDataSourceProxy, JPA schema config, basedb merkezi auth ve Kubernetes StatefulSet üçlü PostgreSQL kurulumu.
+- [JJWT ile JWE: signWith ve encryptWith Birlikte Kullanılamaz](https://www.huseyindol.com/blog/backend-jwt-jwe-security): JJWT kütüphanesinde JWS+JWE kombinasyonu denemesi ve çözümü. AES-256-GCM authenticated encryption, 32-byte key normalizasyonu, token rotasyonu (tokenVersion claim), refresh token upsert pattern ve loginSource ile çok cihaz yönetimi.
 - [Java ve Spring Boot ile Master Proje: Elly Mimarisi](https://www.huseyindol.com/blog/backend-java-elly): Spring Boot 3.5 + Java 21 üzerine kurulu Elly CMS projesinin derinlemesine backend mimarisi. RBAC, multitenancy (tenant1/tenant2/basedb), Redis AOF+LRU cache, RabbitMQ async email worker (Dead Letter Exchange), OAuth2 social login, JJWT stateless auth, JSONB + hypersistence-utils, MapStruct + Lombok, Actuator + Zipkin distributed tracing, OpenAPI/Swagger, GlobalExceptionHandler.
 
 ### DevOps

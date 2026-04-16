@@ -16,6 +16,8 @@ Hüseyin DOL specializes in scalable, performant, and user-friendly full-stack a
 ## Blog — Featured Articles
 
 ### Backend
+- [Spring Boot Projesini Multi-Tenant Sisteme Taşımak: AbstractRoutingDataSource](https://www.huseyindol.com/blog/backend-multitenancy-migration)
+- [JJWT ile JWE: signWith ve encryptWith Birlikte Kullanılamaz](https://www.huseyindol.com/blog/backend-jwt-jwe-security)
 - [Java ve Spring Boot ile Master Proje: Elly Mimarisi](https://www.huseyindol.com/blog/backend-java-elly)
 
 ### DevOps

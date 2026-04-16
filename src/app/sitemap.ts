@@ -42,6 +42,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Higher priority for deep technical articles (Backend/DevOps)
   const highPrioritySlugs = new Set([
+    'backend-multitenancy-migration',
+    'backend-jwt-jwe-security',
     'backend-java-elly',
     'devops-kubernetes-master',
     'devops-docker-postgresql',
