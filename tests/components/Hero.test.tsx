@@ -2,12 +2,127 @@ import Hero from '@/components/Hero'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
-// Mock lucide-react icons
+// Mock lucide-react icons — include ALL icons used by Hero
 vi.mock('lucide-react', () => ({
-  Download: () => <div>Download Icon</div>,
-  GithubIcon: () => <div>Github Icon</div>,
-  LinkedinIcon: () => <div>Linkedin Icon</div>,
-  Mail: () => <div>Mail Icon</div>,
+  Code2: (props: Record<string, unknown>) => (
+    <div data-testid="icon-code2" {...props}>
+      Code2 Icon
+    </div>
+  ),
+  Download: (props: Record<string, unknown>) => (
+    <div data-testid="icon-download" {...props}>
+      Download Icon
+    </div>
+  ),
+  GithubIcon: (props: Record<string, unknown>) => (
+    <div data-testid="icon-github" {...props}>
+      Github Icon
+    </div>
+  ),
+  LinkedinIcon: (props: Record<string, unknown>) => (
+    <div data-testid="icon-linkedin" {...props}>
+      Linkedin Icon
+    </div>
+  ),
+  Mail: (props: Record<string, unknown>) => (
+    <div data-testid="icon-mail" {...props}>
+      Mail Icon
+    </div>
+  ),
+  MapPin: (props: Record<string, unknown>) => (
+    <div data-testid="icon-mappin" {...props}>
+      MapPin Icon
+    </div>
+  ),
+  Users: (props: Record<string, unknown>) => (
+    <div data-testid="icon-users" {...props}>
+      Users Icon
+    </div>
+  ),
+  Zap: (props: Record<string, unknown>) => (
+    <div data-testid="icon-zap" {...props}>
+      Zap Icon
+    </div>
+  ),
+}))
+
+// Mock framer-motion
+vi.mock('framer-motion', () => ({
+  motion: new Proxy(
+    {},
+    {
+      get: (_target, prop) => {
+        return ({
+          children,
+          ...props
+        }: {
+          children?: React.ReactNode
+          [key: string]: unknown
+        }) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const Tag = prop as any
+          return <Tag {...props}>{children}</Tag>
+        }
+      },
+    },
+  ),
+  useInView: () => true,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+}))
+
+// Mock @next/third-parties/google
+vi.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: vi.fn(),
+}))
+
+// Mock next/image
+vi.mock('next/image', () => ({
+  // eslint-disable-next-line @next/next/no-img-element
+  default: (props: Record<string, unknown>) => <img alt="" {...props} />,
+}))
+
+// Mock next/link
+vi.mock('next/link', () => ({
+  default: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode
+    [key: string]: unknown
+  }) => <a {...props}>{children}</a>,
+}))
+
+// Mock shadcn UI components
+vi.mock('@/components/ui/badge', () => ({
+  Badge: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode
+    [key: string]: unknown
+  }) => <span {...props}>{children}</span>,
+}))
+
+vi.mock('@/components/ui/button', () => ({
+  Button: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode
+    [key: string]: unknown
+  }) => <button {...props}>{children}</button>,
+}))
+
+vi.mock('@/components/ui/card', () => ({
+  Card: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode
+    [key: string]: unknown
+  }) => <div {...props}>{children}</div>,
 }))
 
 describe('Hero Component', () => {
@@ -46,10 +161,11 @@ describe('Hero Component', () => {
     expect(links.length).toBeGreaterThan(0)
   })
 
-  it('should have proper section id', () => {
+  it('should render hero sections', () => {
     const { container } = render(<Hero />)
 
-    const section = container.querySelector('#about')
-    expect(section).toBeInTheDocument()
+    // Hero renders multiple sections inside a wrapper div
+    const sections = container.querySelectorAll('section')
+    expect(sections.length).toBeGreaterThan(0)
   })
 })

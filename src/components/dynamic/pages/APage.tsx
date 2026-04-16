@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic'
 
 // Page props interface
 interface HomeProps {
-  searchParams?: Promise<{ industry?: string }>
+  searchParams?: { industry?: string }
   pageInfo: Page
 }
 
@@ -16,7 +16,6 @@ export default async function APage({
   pageInfo,
 }: Readonly<HomeProps>) {
   // console.log('APage-pageInfo', pageInfo)
-  const resolvedSearchParams = await searchParams
 
   const DynamicComponent = pageInfo.components.map(component => {
     return {
@@ -36,7 +35,7 @@ export default async function APage({
         <Skills />
       </ErrorBoundary>
       <ErrorBoundary>
-        <Experience searchParams={resolvedSearchParams} />
+        <Experience searchParams={searchParams} />
       </ErrorBoundary>
       {DynamicComponent.map(Component => {
         const { component: ComponentName, template, ...rest } = Component
