@@ -109,6 +109,9 @@ export const metadata: Metadata = {
       'text/plain': `${SITE_URL}/llms.txt`,
     },
   },
+  other: {
+    'google-adsense-account': 'ca-pub-8068794859489939',
+  },
 }
 
 export default async function RootLayout({
