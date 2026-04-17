@@ -68,6 +68,19 @@ Huseyin DOL'un modern portföy ve CMS sitesi. Next.js 16 App Router, React 19, T
 - `next.config.ts` — Next.js konfigürasyonu
 - `vitest.config.ts` — Test konfigürasyonu
 
+## CI/CD Kuralları (ÖNEMLİ)
+
+Her `git push` sonrası CI pipeline kontrol edilmeli. Görev tamamlanmış sayılmaz:
+
+- `bun run lint` — ESLint hata vermemeli (react-hooks v7: `set-state-in-effect` dahil)
+- `bun run type-check` — TypeScript hata vermemeli
+- `bun run format:check` — Prettier hata vermemeli
+- GitHub Actions "Lint & Type Check" ve "Generate Report" yeşil olmalı
+
+Bilinen tuzak: `useEffect` içinde doğrudan `setState()` çağırmak `react-hooks/set-state-in-effect` hatasına neden olur. Çözüm: state'i onClick handler'larına taşı.
+
+Detay: `.agents/skills/ci-pipeline.md`
+
 ## Agent Teams Koordinasyonu
 
 Bu proje `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` ile çalışır. Takım yapısı:

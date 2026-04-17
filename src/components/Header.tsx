@@ -26,10 +26,6 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => {
-    setIsOpen(false)
-  }, [pathname])
-
   function isActive(href: string) {
     return pathname === href || pathname.startsWith(href + '/')
   }
@@ -145,6 +141,7 @@ export default function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => setIsOpen(false)}
                   className={`rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                     isActive(link.href)
                       ? 'bg-primary/10 text-primary'
@@ -156,6 +153,7 @@ export default function Header() {
               ))}
               <Link
                 href="mailto:huseyindol@gmail.com"
+                onClick={() => setIsOpen(false)}
                 className="mt-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white"
               >
                 İletişime Geç
