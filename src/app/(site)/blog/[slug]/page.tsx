@@ -257,13 +257,13 @@ export default async function BlogPostPage({ params }: Readonly<Props>) {
           </header>
 
           {/* Ad — makale başlangıcı */}
-          <AdSenseAd />
+          <AdSenseAd slot="1350227419" />
 
           {/* MDX content */}
           <MdxContent source={post.content} />
 
           {/* Ad — makale sonu */}
-          <AdSenseAd />
+          <AdSenseAd slot="3777093516" />
         </article>
       </div>
     </div>

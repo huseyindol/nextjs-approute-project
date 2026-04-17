@@ -396,9 +396,9 @@ export default function ProjectsContent() {
         </div>
       </section>
 
-      {/* Ad — ekosistem bölümü sonrası */}
+      {/* Ad — ekosistem bölümü sonrası (üst) */}
       <div className="container mx-auto max-w-5xl px-6">
-        <AdSenseAd />
+        <AdSenseAd slot="1535119733" />
       </div>
 
       {/* Project cards */}
@@ -414,10 +414,14 @@ export default function ProjectsContent() {
             {projects.map((project, index) => (
               <>
                 <ProjectCard key={project.id} project={project} />
-                {/* Ad — 2. ve 4. karttan sonra */}
-                {(index === 1 || index === 3) && (
-                  <div key={`ad-${index}`}>
-                    <AdSenseAd />
+                {index === 1 && (
+                  <div key="ad-mid">
+                    <AdSenseAd slot="5199032579" />
+                  </div>
+                )}
+                {index === 3 && (
+                  <div key="ad-bottom">
+                    <AdSenseAd slot="8283314736" />
                   </div>
                 )}
               </>

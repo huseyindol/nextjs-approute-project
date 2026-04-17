@@ -7,12 +7,16 @@ declare global {
   }
 }
 
-export default function AdSenseAd() {
-  const ref = useRef(false)
+interface AdSenseAdProps {
+  slot: string
+}
+
+export default function AdSenseAd({ slot }: AdSenseAdProps) {
+  const pushed = useRef(false)
 
   useEffect(() => {
-    if (ref.current) return
-    ref.current = true
+    if (pushed.current) return
+    pushed.current = true
     try {
       ;(window.adsbygoogle = window.adsbygoogle || []).push({})
     } catch {
@@ -28,7 +32,7 @@ export default function AdSenseAd() {
         data-ad-layout="in-article"
         data-ad-format="fluid"
         data-ad-client="ca-pub-8068794859489939"
-        data-ad-slot="3777093516"
+        data-ad-slot={slot}
       />
     </div>
   )
