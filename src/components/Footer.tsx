@@ -11,6 +11,7 @@ const navLinks = [
   { href: '/about', label: 'Hakkında' },
   { href: '/skills', label: 'Yetenekler' },
   { href: '/experience', label: 'Deneyim' },
+  { href: '/projects', label: 'Projeler' },
   { href: '/blog', label: 'Makalelerim' },
 ]
 
