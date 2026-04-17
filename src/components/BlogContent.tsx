@@ -7,6 +7,16 @@ import { useRef } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import type { BlogPost } from '@/lib/mdx'
+import AdSenseAd from '@/components/AdSenseAd'
+
+const BLOG_LIST_AD_SLOTS = [
+  '7448731904',
+  '4630996875',
+  '9691751868',
+  '3401675681',
+  '3126343511',
+]
+const BLOG_LIST_LAYOUT_KEY = '-6t+ed+2i-1n-4w'
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -162,9 +172,29 @@ export default function BlogContent({
               variants={stagger}
               className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
             >
-              {posts.map(post => (
-                <PostCard key={post.slug} post={post} />
-              ))}
+              {(() => {
+                const adPositions = BLOG_LIST_AD_SLOTS.map((_, k) =>
+                  Math.floor(
+                    (posts.length * (k + 1)) / (BLOG_LIST_AD_SLOTS.length + 1),
+                  ),
+                )
+                const items: React.ReactNode[] = []
+                posts.forEach((post, i) => {
+                  items.push(<PostCard key={post.slug} post={post} />)
+                  const adIdx = adPositions.indexOf(i + 1)
+                  if (adIdx !== -1) {
+                    items.push(
+                      <div key={`ad-${adIdx}`} className="col-span-full">
+                        <AdSenseAd
+                          slot={BLOG_LIST_AD_SLOTS[adIdx]}
+                          layoutKey={BLOG_LIST_LAYOUT_KEY}
+                        />
+                      </div>,
+                    )
+                  }
+                })
+                return items
+              })()}
             </motion.div>
           )}
         </div>

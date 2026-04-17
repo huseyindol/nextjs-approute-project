@@ -9,9 +9,10 @@ declare global {
 
 interface AdSenseAdProps {
   slot: string
+  layoutKey?: string
 }
 
-export default function AdSenseAd({ slot }: AdSenseAdProps) {
+export default function AdSenseAd({ slot, layoutKey }: AdSenseAdProps) {
   const pushed = useRef(false)
 
   useEffect(() => {
@@ -26,14 +27,25 @@ export default function AdSenseAd({ slot }: AdSenseAdProps) {
 
   return (
     <div className="my-8 overflow-hidden">
-      <ins
-        className="adsbygoogle"
-        style={{ display: 'block', textAlign: 'center' }}
-        data-ad-layout="in-article"
-        data-ad-format="fluid"
-        data-ad-client="ca-pub-8068794859489939"
-        data-ad-slot={slot}
-      />
+      {layoutKey ? (
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block' }}
+          data-ad-format="fluid"
+          data-ad-layout-key={layoutKey}
+          data-ad-client="ca-pub-8068794859489939"
+          data-ad-slot={slot}
+        />
+      ) : (
+        <ins
+          className="adsbygoogle"
+          style={{ display: 'block', textAlign: 'center' }}
+          data-ad-layout="in-article"
+          data-ad-format="fluid"
+          data-ad-client="ca-pub-8068794859489939"
+          data-ad-slot={slot}
+        />
+      )}
     </div>
   )
 }
