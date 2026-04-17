@@ -1,209 +1,199 @@
 'use client'
-
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { motion, useInView } from 'framer-motion'
 import { GithubIcon, Heart, LinkedinIcon, Mail, MapPin } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useRef } from 'react'
 
 const currentYear = new Date().getFullYear()
 
+const navLinks = [
+  { href: '/about', label: 'Hakkında' },
+  { href: '/skills', label: 'Yetenekler' },
+  { href: '/experience', label: 'Deneyim' },
+  { href: '/blog', label: 'Makalelerim' },
+]
+
+const techStack = [
+  'Next.js 16',
+  'React 19',
+  'TypeScript',
+  'Tailwind CSS 4',
+  'Framer Motion',
+  'Shadcn UI',
+  'Spring Boot',
+  'Vercel',
+]
+
+const socialLinks = [
+  {
+    href: 'https://github.com/huseyindol',
+    icon: GithubIcon,
+    label: 'GitHub',
+  },
+  {
+    href: 'https://www.linkedin.com/in/huseyindol/',
+    icon: LinkedinIcon,
+    label: 'LinkedIn',
+  },
+  {
+    href: 'mailto:huseyindol@gmail.com',
+    icon: Mail,
+    label: 'E-posta',
+  },
+]
+
 export default function Footer() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-  })
-  const [isLoading, setIsLoading] = useState(false)
-  const [status, setStatus] = useState<{
-    type: 'success' | 'error' | null
-    message: string
-  }>({ type: null, message: '' })
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setStatus({ type: null, message: '' })
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setStatus({
-          type: 'success',
-          message: data.message || 'Mesajınız başarıyla gönderildi!',
-        })
-        setFormData({ name: '', email: '', message: '' })
-      } else {
-        setStatus({
-          type: 'error',
-          message: data.error || 'Bir hata oluştu. Lütfen tekrar deneyin.',
-        })
-      }
-    } catch {
-      setStatus({
-        type: 'error',
-        message: 'Ağ hatası oluştu. Lütfen tekrar deneyin.',
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <footer id="contact" className="bg-muted/30 py-20">
-      <div className="container mx-auto px-6">
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-16 text-center">
-            <h2 className="text-gradient mb-6 text-4xl font-bold md:text-5xl">
-              İletişime Geçin
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Yeni projeler, iş birlikleri veya sadece merhaba demek için!
+    <footer
+      ref={ref}
+      className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white"
+    >
+      {/* Background orbs */}
+      <div className="pointer-events-none absolute -left-40 -top-40 h-80 w-80 rounded-full bg-blue-600/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 -right-40 h-80 w-80 rounded-full bg-violet-600/10 blur-3xl" />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.04]"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle, rgba(255,255,255,1) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }}
+      />
+
+      <div className="container relative mx-auto px-6 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="grid gap-12 md:grid-cols-4"
+        >
+          {/* Brand */}
+          <div className="md:col-span-1">
+            <Link href="/" className="mb-6 flex items-center gap-3">
+              <Image
+                src="/assets/img/huseyindol.png"
+                alt="Hüseyin DOL"
+                width={44}
+                height={44}
+                className="rounded-full ring-2 ring-white/20"
+              />
+              <span className="text-lg font-bold">Hüseyin DOL</span>
+            </Link>
+            <p className="mb-6 text-sm leading-relaxed text-slate-400">
+              Senior Frontend Developer. React, Next.js ve TypeScript ile modern
+              web uygulamaları geliştiriyorum.
             </p>
+            <div className="flex items-center gap-1.5 text-sm text-slate-500">
+              <MapPin className="h-4 w-4 shrink-0" />
+              <span>Sancaktepe, İstanbul</span>
+            </div>
           </div>
 
-          <div className="mb-12 grid gap-8 md:grid-cols-2">
-            <Card className="hover:shadow-elegant p-8 transition-all">
-              <h3 className="mb-6 text-2xl font-bold">İletişim Bilgileri</h3>
-
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <Mail className="h-5 w-5 text-primary" />
-                  <span>
-                    <a href="mailto:huseyindol@gmail.com">
-                      huseyindol@gmail.com
-                    </a>
-                  </span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <MapPin className="h-5 w-5 text-primary" />
-                  <span>Sancaktepe, İstanbul, Türkiye</span>
-                </div>
-              </div>
-
-              <div className="mt-8">
-                <h4 className="mb-4 font-semibold">Sosyal Medya</h4>
-                <div className="flex space-x-4">
+          {/* Navigation */}
+          <div>
+            <h3 className="mb-5 text-xs font-semibold uppercase tracking-widest text-slate-400">
+              Sayfalar
+            </h3>
+            <ul className="space-y-3">
+              {navLinks.map(link => (
+                <li key={link.href}>
                   <Link
-                    href="https://github.com/huseyindol"
-                    target="_blank"
-                    className="hover:bg-primary hover:text-white"
-                    title="Github"
-                    aria-label="Github"
+                    href={link.href}
+                    className="text-sm text-slate-400 transition-colors hover:text-white"
                   >
-                    <GithubIcon className="h-5 w-5" />
+                    {link.label}
                   </Link>
-                  <Link
-                    href="https://www.linkedin.com/in/huseyindol/"
-                    target="_blank"
-                    className="hover:bg-primary hover:text-white"
-                    title="Linkedin"
-                    aria-label="Linkedin"
-                  >
-                    <LinkedinIcon className="h-5 w-5" />
-                  </Link>
-                  <Link
-                    href="mailto:huseyindol@gmail.com"
-                    className="hover:bg-primary hover:text-white"
-                    title="E-posta"
-                    aria-label="E-posta"
-                  >
-                    <Mail className="h-5 w-5" />
-                  </Link>
-                </div>
-              </div>
-            </Card>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-            <Card className="hover:shadow-elegant p-8 transition-all">
-              <h3 className="mb-6 text-2xl font-bold">Hızlı Mesaj</h3>
-
-              {status.type && (
-                <div
-                  className={`mb-4 rounded-md p-4 ${
-                    status.type === 'success'
-                      ? 'border border-green-200 bg-green-50 text-green-800'
-                      : 'border border-red-200 bg-red-50 text-red-800'
-                  }`}
+          {/* Tech stack */}
+          <div>
+            <h3 className="mb-5 text-xs font-semibold uppercase tracking-widest text-slate-400">
+              Bu Site
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {techStack.map(tech => (
+                <span
+                  key={tech}
+                  className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs text-slate-300"
                 >
-                  {status.message}
-                </div>
-              )}
+                  {tech}
+                </span>
+              ))}
+            </div>
+            <div className="mt-5">
+              <Link
+                href="https://github.com/huseyindol/nextjs-approute-project"
+                target="_blank"
+                className="inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
+              >
+                <GithubIcon className="h-4 w-4" />
+                Açık kaynak
+              </Link>
+            </div>
+          </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Adınız"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                    className="w-full rounded-md border border-input bg-background p-3 disabled:opacity-50"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="E-posta adresiniz"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                    className="w-full rounded-md border border-input bg-background p-3 disabled:opacity-50"
-                  />
-                </div>
-                <div>
-                  <textarea
-                    name="message"
-                    placeholder="Mesajınız"
-                    rows={4}
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                    className="w-full resize-none rounded-md border border-input bg-background p-3 disabled:opacity-50"
-                  ></textarea>
-                </div>
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="hero-gradient w-full text-white disabled:opacity-50"
+          {/* Contact */}
+          <div>
+            <h3 className="mb-5 text-xs font-semibold uppercase tracking-widest text-slate-400">
+              İletişim
+            </h3>
+            <div className="mb-6 space-y-3">
+              <a
+                href="mailto:huseyindol@gmail.com"
+                className="flex items-center gap-2.5 text-sm text-slate-400 transition-colors hover:text-white"
+              >
+                <Mail className="h-4 w-4 shrink-0 text-blue-400" />
+                huseyindol@gmail.com
+              </a>
+            </div>
+
+            <h4 className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">
+              Sosyal
+            </h4>
+            <div className="flex gap-3">
+              {socialLinks.map(s => (
+                <Link
+                  key={s.label}
+                  href={s.href}
+                  target={s.href.startsWith('mailto') ? undefined : '_blank'}
+                  aria-label={s.label}
+                  title={s.label}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-400 transition-all hover:border-white/30 hover:bg-white/10 hover:text-white"
                 >
-                  {isLoading ? 'Gönderiliyor...' : 'Mesaj Gönder'}
-                </Button>
-              </form>
-            </Card>
+                  <s.icon className="h-4 w-4" />
+                </Link>
+              ))}
+            </div>
           </div>
+        </motion.div>
 
-          <div className="border-t border-border pt-8 text-center">
-            <p className="flex items-center justify-center gap-2 text-muted-foreground">
-              © {currentYear} Hüseyin DOL. Made with
-              <Heart className="h-4 w-4 fill-current text-red-500" />
-              using React & TypeScript & Spring Boot
-            </p>
-          </div>
-        </div>
+        {/* Bottom bar */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-sm text-slate-500 sm:flex-row"
+        >
+          <p className="flex items-center gap-2">
+            © {currentYear} Hüseyin DOL. Made with
+            <Heart className="h-3.5 w-3.5 fill-current text-red-500" />
+            using React & TypeScript
+          </p>
+          <Link
+            href="/assets/files/HuseyinDOL.pdf"
+            target="_blank"
+            className="transition-colors hover:text-white"
+          >
+            CV İndir →
+          </Link>
+        </motion.div>
       </div>
     </footer>
   )
