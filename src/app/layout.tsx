@@ -8,6 +8,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import { ThemeProvider } from 'next-themes'
 import { Geist, Geist_Mono } from 'next/font/google'
+import Script from 'next/script'
 import NextTopLoader from 'nextjs-toploader'
 import { cookies } from 'next/headers'
 import Datalayer from '../components/Datalayer'
@@ -129,6 +130,12 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
         <GoogleAnalytics gaId="G-ETR2NBJH5V" />
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8068794859489939"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <NextTopLoader
           color="#6366f1"
           height={3}
