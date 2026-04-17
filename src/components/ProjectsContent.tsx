@@ -1,4 +1,5 @@
 'use client'
+import AdSenseAd from '@/components/AdSenseAd'
 import { motion, useInView } from 'framer-motion'
 import {
   GithubIcon,
@@ -395,6 +396,11 @@ export default function ProjectsContent() {
         </div>
       </section>
 
+      {/* Ad — ekosistem bölümü sonrası */}
+      <div className="container mx-auto max-w-5xl px-6">
+        <AdSenseAd />
+      </div>
+
       {/* Project cards */}
       <section className="bg-muted/20 py-20">
         <div className="container mx-auto px-6">
@@ -405,8 +411,16 @@ export default function ProjectsContent() {
             variants={stagger}
             className="mx-auto max-w-5xl space-y-8"
           >
-            {projects.map(project => (
-              <ProjectCard key={project.id} project={project} />
+            {projects.map((project, index) => (
+              <>
+                <ProjectCard key={project.id} project={project} />
+                {/* Ad — 2. ve 4. karttan sonra */}
+                {(index === 1 || index === 3) && (
+                  <div key={`ad-${index}`}>
+                    <AdSenseAd />
+                  </div>
+                )}
+              </>
             ))}
           </motion.div>
         </div>

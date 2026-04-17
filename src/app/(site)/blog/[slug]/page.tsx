@@ -1,5 +1,6 @@
 import { getPostBySlug, getAllPosts } from '@/lib/mdx'
 import { MdxContent } from '@/components/mdx-content'
+import AdSenseAd from '@/components/AdSenseAd'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -255,8 +256,14 @@ export default async function BlogPostPage({ params }: Readonly<Props>) {
             </div>
           </header>
 
+          {/* Ad — makale başlangıcı */}
+          <AdSenseAd />
+
           {/* MDX content */}
           <MdxContent source={post.content} />
+
+          {/* Ad — makale sonu */}
+          <AdSenseAd />
         </article>
       </div>
     </div>
