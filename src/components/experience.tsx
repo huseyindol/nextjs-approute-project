@@ -2,6 +2,29 @@ import { ExperienceType } from '@/schemas/dynamic/experienceSchema'
 import { getSectionDataBySectionKey } from '@/utils/services/contents'
 import ExperienceTimeline from './ExperienceTimeline'
 
+const TURKISH_MONTHS: Record<string, number> = {
+  Ocak: 1,
+  Şubat: 2,
+  Mart: 3,
+  Nisan: 4,
+  Mayıs: 5,
+  Haziran: 6,
+  Temmuz: 7,
+  Ağustos: 8,
+  Eylül: 9,
+  Ekim: 10,
+  Kasım: 11,
+  Aralık: 12,
+}
+
+function getPeriodStartValue(period: string): number {
+  const match = period.match(/^(\S+)\s+(\d{4})/)
+  if (!match) return 0
+  const month = TURKISH_MONTHS[match[1]] ?? 0
+  const year = parseInt(match[2], 10)
+  return year * 100 + month
+}
+
 const mockExperiences: ExperienceType[] = [
   {
     company: 'Hangikredi',
@@ -194,7 +217,11 @@ export default async function Experience({ searchParams }: ExperienceProps) {
       DEFAULT_SECTION_INFO,
     )
 
-  const allExperiences = items && items.length > 0 ? items : mockExperiences
+  const allExperiences = (items && items.length > 0 ? items : mockExperiences)
+    .slice()
+    .sort(
+      (a, b) => getPeriodStartValue(b.period) - getPeriodStartValue(a.period),
+    )
 
   return (
     <ExperienceTimeline
