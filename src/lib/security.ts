@@ -87,12 +87,12 @@ export function isAlphanumeric(str: string): boolean {
 export function generateCSP(): string {
   const policies = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.googleadservices.com https://googleads.g.doubleclick.net",
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://fundingchoicesmessages.google.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
-    "connect-src 'self' https://vercel.live https://*.vercel-insights.com https://www.google-analytics.com https://raw.githubusercontent.com https://avatars.githubusercontent.com http://localhost:8080 https://api.huseyindol.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.googlesyndication.com",
-    "frame-src 'self' https://vercel.live https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.safeframe.googlesyndication.com",
+    "connect-src 'self' https://vercel.live https://*.vercel-insights.com https://www.google-analytics.com https://raw.githubusercontent.com https://avatars.githubusercontent.com http://localhost:8080 https://api.huseyindol.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.googlesyndication.com https://fundingchoicesmessages.google.com",
+    "frame-src 'self' https://vercel.live https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.safeframe.googlesyndication.com https://fundingchoicesmessages.google.com",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
