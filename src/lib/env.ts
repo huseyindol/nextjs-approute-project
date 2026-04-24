@@ -19,6 +19,7 @@ const envSchema = z.object({
 
   // API Configuration
   NEXT_PUBLIC_API: z.string().optional(),
+  NEXT_PUBLIC_DEFAULT_TENANT: z.string().optional(),
 
   // Email Service (Resend)
   NEXT_PUBLIC_RESEND_API_KEY: z.string().optional(),

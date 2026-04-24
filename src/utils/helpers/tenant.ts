@@ -4,10 +4,10 @@ import { getGlobalCookies } from '@/context/CookieContext'
 /**
  * Cookie'den tenantId değerini okur.
  * SSR (Server Component) ve CSR (Client Component) ortamlarında çalışır.
- * Eğer tenantId yoksa env'deki DEFAULT_TENANT değerini döndürür.
+ * Eğer tenantId yoksa env'deki NEXT_PUBLIC_DEFAULT_TENANT değerini döndürür.
  */
 export async function getTenantId(): Promise<string> {
-  const defaultTenant = process.env.DEFAULT_TENANT ?? 'default'
+  const defaultTenant = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'default'
 
   // SSR: next/headers ile cookie oku
   if (globalThis.window === undefined) {
