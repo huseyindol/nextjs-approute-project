@@ -111,21 +111,9 @@ export default function Hero() {
 function HeroBanner() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 py-36 pt-36 text-white md:py-48 md:pt-48">
-      <motion.div
-        className="pointer-events-none absolute -left-52 -top-52 h-[500px] w-[500px] rounded-full bg-blue-600/15 blur-3xl"
-        animate={{ x: [0, 60, -20, 0], y: [0, -40, 30, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="pointer-events-none absolute -bottom-52 -right-52 h-[500px] w-[500px] rounded-full bg-violet-600/15 blur-3xl"
-        animate={{ x: [0, -50, 20, 0], y: [0, 60, -30, 0] }}
-        transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-500/10 blur-3xl"
-        animate={{ scale: [1, 1.4, 1] }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-      />
+      <div className="animate-orb-1 pointer-events-none absolute -left-52 -top-52 h-[500px] w-[500px] rounded-full bg-blue-600/15 blur-3xl" />
+      <div className="animate-orb-2 pointer-events-none absolute -bottom-52 -right-52 h-[500px] w-[500px] rounded-full bg-violet-600/15 blur-3xl" />
+      <div className="animate-orb-pulse pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl" />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.07]"
         style={{
@@ -274,16 +262,8 @@ function AboutSection() {
           >
             <motion.div variants={fadeInUp} className="flex justify-center">
               <div className="relative">
-                <motion.div
-                  className="border-primary/40 absolute inset-0 rounded-full border-2"
-                  animate={{ scale: [1, 1.15, 1], opacity: [0.7, 0, 0.7] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
-                <motion.div
-                  className="border-primary/20 absolute inset-0 rounded-full border"
-                  animate={{ scale: [1, 1.28, 1], opacity: [0.4, 0, 0.4] }}
-                  transition={{ duration: 3, delay: 0.8, repeat: Infinity }}
-                />
+                <div className="animate-ring-1 border-primary/40 absolute inset-0 rounded-full border-2" />
+                <div className="animate-ring-2 border-primary/20 absolute inset-0 rounded-full border" />
                 <div className="border-primary/20 ring-primary/10 relative h-72 w-72 overflow-hidden rounded-full border-4 shadow-2xl ring-4">
                   <Image
                     src="https://github.com/huseyindol.png"
@@ -292,28 +272,12 @@ function AboutSection() {
                     className="object-cover"
                   />
                 </div>
-                <motion.div
-                  className="absolute -bottom-3 -right-3 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-lg"
-                  animate={{ y: [0, -6, 0] }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                >
+                <div className="animate-badge-up absolute -bottom-3 -right-3 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-lg">
                   10+ yıl deneyim
-                </motion.div>
-                <motion.div
-                  className="absolute -left-3 top-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 px-4 py-2 text-xs font-bold text-white shadow-lg"
-                  animate={{ y: [0, 6, 0] }}
-                  transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                >
+                </div>
+                <div className="animate-badge-down absolute -left-3 top-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 px-4 py-2 text-xs font-bold text-white shadow-lg">
                   Full Stack
-                </motion.div>
+                </div>
               </div>
             </motion.div>
 
