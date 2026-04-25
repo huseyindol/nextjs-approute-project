@@ -187,13 +187,14 @@ export default function Footer() {
             <Heart className="h-3.5 w-3.5 fill-current text-red-500" />
             using React & TypeScript
           </p>
-          <Link
+          <a
             href="/assets/files/HuseyinDOL.pdf"
             target="_blank"
+            rel="noopener noreferrer"
             className="transition-colors hover:text-white"
           >
             CV İndir →
-          </Link>
+          </a>
         </motion.div>
       </div>
     </footer>
