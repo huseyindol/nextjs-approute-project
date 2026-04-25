@@ -1,14 +1,10 @@
-import { RateLimiter, RateLimitPresets } from '@/lib/rate-limiter'
+import { apiRateLimiter, generalRateLimiter } from '@/lib/rate-limiter-store'
 import { generateCSP, getClientIp } from '@/lib/security'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { refreshTokenProxy } from './proxy/refreshTokenProxy'
 import { removeCookies } from './proxy/removeCookies'
 import { CookieEnum } from './utils/constant/cookieConstant'
-
-// Initialize rate limiters for different routes
-const apiRateLimiter = new RateLimiter(RateLimitPresets.api)
-const generalRateLimiter = new RateLimiter(RateLimitPresets.moderate)
 
 /**
  * Middleware to handle security headers and rate limiting

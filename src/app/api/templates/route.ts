@@ -1,15 +1,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { type NextRequest, NextResponse } from 'next/server'
-import { RateLimiter, RateLimitPresets } from '@/lib/rate-limiter'
+import { apiRateLimiter } from '@/lib/rate-limiter-store'
 import { getClientIp } from '@/lib/security'
 
 const VALID_TYPES = ['pages', 'posts', 'components', 'widgets'] as const
 type TemplateType = (typeof VALID_TYPES)[number]
 
 export type TemplateOption = { value: string; label: string }
-
-const limiter = new RateLimiter(RateLimitPresets.api)
 
 function readTemplates(type: TemplateType): TemplateOption[] {
   const dir = path.join(process.cwd(), 'src/components/dynamic', type)
@@ -30,7 +28,7 @@ function readTemplates(type: TemplateType): TemplateOption[] {
 
 export async function GET(request: NextRequest) {
   const ip = getClientIp(request.headers)
-  const limit = await limiter.check(ip)
+  const limit = await apiRateLimiter.check(ip)
   const adminOrigin = process.env.NEXT_PUBLIC_ADMIN_URL ?? '*'
 
   const headers = {
