@@ -4,6 +4,9 @@
 
 Verilen konu için derinlemesine araştırılmış, SEO optimize edilmiş, AI toollarında görünür bir blog makalesi oluşturur ve `main` branch'e push eder.
 
+> ⚠️ **Karpathy Kuralları aktif.** `.agents/skills/karpathy-guidelines.md` uygula.
+> Sadece istenen konuda makale yaz. Gereksiz bölüm, spekülatif içerik ekleme. Sadelik ve odak öncelikli.
+
 ## Tetikleme
 
 ```

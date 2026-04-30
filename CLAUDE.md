@@ -111,3 +111,69 @@ Bu proje `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` ile çalışır. Takım yapısı
 3. Teammate'ler paralel çalışır, dosya ownership'e uyar
 4. Sonuçlar team lead'de birleştirilir, kalite kontrolü yapılır
 5. Final rapor kullanıcıya sunulur
+
+## Karpathy Davranış Kuralları
+
+> Kaynak: [andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills)
+> Bu kurallar tüm agent'lar ve teammate'ler için geçerlidir.
+
+**Tradeoff:** Bu kurallar hız yerine dikkat ve doğruluğu önceliklendirir. Basit görevlerde sağduyu kullan.
+
+### 1. Kodlamadan Önce Düşün
+
+**Varsayma. Belirsizliği gizleme. Trade-off'ları yüzeye çıkar.**
+
+- Varsayımlarını açıkça belirt. Emin değilsen sor.
+- Birden fazla yorum varsa hepsini sun — sessizce seçme.
+- Daha basit bir yaklaşım varsa söyle. Gerektiğinde itiraz et.
+- Bir şey belirsizse dur. Neyin belirsiz olduğunu adlandır. Sor.
+
+### 2. Sadelik Önce
+
+**Problemi çözen minimum kod. Spekülatif hiçbir şey yok.**
+
+- İstenmeyen özellik ekleme.
+- Tek kullanımlık kod için soyutlama yapma.
+- İstenmemiş "esneklik" veya "yapılandırılabilirlik" ekleme.
+- İmkansız senaryolar için hata yönetimi yazma.
+- 200 satırda yazılıp 50 satırda olabilecekse, yeniden yaz.
+
+Test: "Kıdemli bir mühendis bunu aşırı karmaşık der mi?" Evetse, sadeleştir.
+
+### 3. Cerrahi Değişiklikler
+
+**Sadece gerekeni değiştir. Sadece kendi karmaşanı temizle.**
+
+Mevcut kodu düzenlerken:
+
+- Komşu kodu, yorumları veya biçimlendirmeyi "iyileştirme".
+- Bozulmamış şeyleri refactor etme.
+- Mevcut stile uy, farklı yapardım desen bile.
+- İlgisiz ölü kod fark edersen, bahset — silme.
+
+Değişikliklerin yetim bıraktığında:
+
+- SENİN değişikliklerinin kullanılmaz kıldığı import/değişken/fonksiyonları kaldır.
+- Önceden var olan ölü kodu istenmedikçe kaldırma.
+
+Test: Her değişen satır doğrudan kullanıcının isteğine bağlanmalı.
+
+### 4. Hedef Odaklı Yürütme
+
+**Başarı kriterlerini tanımla. Doğrulanana kadar döngü yap.**
+
+Görevleri doğrulanabilir hedeflere dönüştür:
+
+- "Validasyon ekle" → "Geçersiz girişler için test yaz, sonra geçir"
+- "Bug'ı düzelt" → "Onu tekrarlayan test yaz, sonra geçir"
+- "X'i refactor et" → "Önce ve sonra testlerin geçtiğinden emin ol"
+
+Çok adımlı görevlerde kısa plan belirt:
+
+```
+1. [Adım] → doğrula: [kontrol]
+2. [Adım] → doğrula: [kontrol]
+3. [Adım] → doğrula: [kontrol]
+```
+
+Güçlü başarı kriterleri bağımsız çalışmanı sağlar. Zayıf kriterler ("çalışır hale getir") sürekli netleştirme gerektirir.
