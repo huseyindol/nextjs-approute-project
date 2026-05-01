@@ -1,22 +1,20 @@
 'use client'
 import AdSenseAd from '@/components/AdSenseAd'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 import { motion, useInView } from 'framer-motion'
 import {
-  GithubIcon,
   ExternalLinkIcon,
   ServerIcon,
   SmartphoneIcon,
   LayoutDashboardIcon,
   GlobeIcon,
-  DatabaseIcon,
-  ShieldCheckIcon,
-  ZapIcon,
   LayersIcon,
+  GamepadIcon,
+  GithubIcon,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRef } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -43,9 +41,10 @@ interface Project {
   statusLabel: string
   techStack: string[]
   highlights: string[]
-  githubUrl: string
   liveUrl?: string
   liveLabel?: string
+  ecosystemUrl?: string
+  githubUrl?: string
 }
 
 const projects: Project[] = [
@@ -76,11 +75,11 @@ const projects: Project[] = [
       'RBAC + OAuth2 (Google/GitHub) entegrasyonu',
       'Redis tenant-aware cache (AOF + LRU)',
       'RabbitMQ async email worker',
-      'Zipkin dağıtık izleme & Prometheus metrics',
     ],
     githubUrl: 'https://github.com/huseyindol/elly',
     liveUrl: 'https://api.huseyindol.com/swagger-ui/index.html',
     liveLabel: 'API Docs',
+    ecosystemUrl: '/projects/elly',
   },
   {
     id: 'elly-admin',
@@ -108,11 +107,11 @@ const projects: Project[] = [
       'AI destekli makale ve alan içeriği üretimi',
       'Dinamik form oluşturucu (wizard, multi-step, validasyonlu)',
       'SEO metadata yönetimi & canonical URL kontrolü',
-      'Server Actions üzerinden RBAC-aware data mutasyonları',
     ],
     githubUrl: 'https://github.com/huseyindol/elly-admin-panel',
     liveUrl: 'https://admin.huseyindol.com/login',
     liveLabel: 'Admin Panel',
+    ecosystemUrl: '/projects/elly',
   },
   {
     id: 'portfolio',
@@ -139,11 +138,11 @@ const projects: Project[] = [
       'MDX tabanlı teknik blog (31+ makale)',
       'unstable_cache ile 24 saatlik blog cache',
       'Framer Motion scroll animasyonları',
-      'Tam light/dark tema desteği',
     ],
     githubUrl: 'https://github.com/huseyindol/nextjs-approute-project',
     liveUrl: 'https://www.huseyindol.com',
     liveLabel: 'Siteyi Gör',
+    ecosystemUrl: '/projects/elly',
   },
   {
     id: 'elly-mobile',
@@ -169,32 +168,30 @@ const projects: Project[] = [
       'Strongly-typed navigation (compile-time doğrulama)',
       'Deep linking & push notification routing',
       'Karanlık mod odaklı tam tema sistemi',
-      "App Store & Play Store'a çıkmaya hazırlanıyor",
     ],
     githubUrl: 'https://github.com/huseyindol/elly-mobile-app',
-  },
-]
-
-const ecosystemFeatures = [
-  {
-    icon: DatabaseIcon,
-    title: 'Database-per-Tenant',
-    description: 'Her tenant kendi PostgreSQL veritabanında izole çalışır',
+    ecosystemUrl: '/projects/elly',
   },
   {
-    icon: ShieldCheckIcon,
-    title: 'Merkezi Auth',
-    description: 'JWT + OAuth2 ile tüm istemciler tek noktadan doğrulanır',
-  },
-  {
-    icon: ZapIcon,
-    title: 'Redis Cache',
-    description: 'Tenant-aware önbellekleme ile milisaniye altı yanıt süreleri',
-  },
-  {
-    icon: LayersIcon,
-    title: 'API-First',
-    description: 'Admin, web ve mobil aynı RESTful API üzerinden beslenir',
+    id: 'arcade-games',
+    title: 'Arcade Oyunlar',
+    subtitle: 'Makas & Park Etme',
+    description:
+      'Next.js App Router içerisine entegre edilmiş, Phaser oyun motoru ve Vite ile geliştirilmiş klasik 2D arcade oyunları. Akıcı 60fps oyun deneyimi ve modern web teknolojileri ile tarayıcıda doğrudan oynanabilir.',
+    icon: GamepadIcon,
+    gradient: 'from-orange-500 to-amber-600',
+    status: 'live',
+    statusLabel: 'Oyna',
+    techStack: ['Phaser', 'Next.js 16', 'React', 'TypeScript', 'Vite'],
+    highlights: [
+      'Phaser 2D oyun motoru entegrasyonu',
+      "ES Module üzerinden Next.js'e dinamik script aktarımı",
+      'Gelişmiş fizik ve animasyon motoru kullanımı',
+      'Klavye (yön tuşları) destekli interaktif oynanış',
+    ],
+    githubUrl: 'https://github.com/huseyindol/nextjs-approute-project',
+    liveUrl: '/arcade',
+    liveLabel: 'Oyna',
   },
 ]
 
@@ -207,8 +204,6 @@ const statusConfig = {
 export default function ProjectsContent() {
   const headerRef = useRef(null)
   const headerInView = useInView(headerRef, { once: true, margin: '-80px' })
-  const ecoRef = useRef(null)
-  const ecoInView = useInView(ecoRef, { once: true, margin: '-80px' })
   const gridRef = useRef(null)
   const gridInView = useInView(gridRef, { once: true, margin: '-60px' })
 
@@ -248,11 +243,11 @@ export default function ProjectsContent() {
 
             <div className="mt-10 flex justify-center gap-8 text-sm text-slate-400">
               <div className="text-center">
-                <p className="text-2xl font-bold text-white">4</p>
+                <p className="text-2xl font-bold text-white">5</p>
                 <p>Proje</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-white">3</p>
+                <p className="text-2xl font-bold text-white">4</p>
                 <p>Canlı</p>
               </div>
               <div className="text-center">
@@ -260,133 +255,76 @@ export default function ProjectsContent() {
                 <p>Flight Test</p>
               </div>
             </div>
-          </motion.div>
-        </div>
-      </section>
 
-      {/* Elly Ecosystem */}
-      <section className="bg-card py-20">
-        <div className="container mx-auto px-6">
-          <motion.div
-            ref={ecoRef}
-            initial="hidden"
-            animate={ecoInView ? 'visible' : 'hidden'}
-            variants={stagger}
-            className="mx-auto max-w-5xl"
-          >
-            <motion.div variants={fadeInUp} className="mb-12 text-center">
-              <h2 className="mb-3 text-3xl font-extrabold">Elly Ekosistemi</h2>
-              <p className="text-muted-foreground">
-                4 proje, tek omurga. Elly CMS backend her katmanı besler.
-              </p>
-            </motion.div>
-
-            {/* Architecture diagram */}
-            <motion.div
-              variants={fadeInUp}
-              className="mb-12 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-8 text-white"
-            >
-              <div className="flex flex-col items-center gap-4">
-                {/* Backend node */}
-                <div className="flex items-center gap-3 rounded-xl border border-emerald-400/30 bg-emerald-500/20 px-6 py-3">
-                  <ServerIcon className="h-5 w-5 text-emerald-400" />
-                  <div>
-                    <p className="font-bold text-emerald-300">Elly Backend</p>
-                    <p className="text-xs text-slate-400">
-                      Spring Boot 3.5 · Java 21 · PostgreSQL · Redis · RabbitMQ
-                    </p>
-                  </div>
-                </div>
-
-                {/* Connectors */}
-                <div className="flex w-full max-w-2xl items-start justify-center gap-0">
-                  <div className="flex flex-1 flex-col items-center">
-                    <div className="h-6 w-px bg-slate-600" />
-                    <div className="h-px w-full bg-slate-600" />
-                  </div>
-                  <div className="flex flex-1 flex-col items-center">
-                    <div className="h-6 w-px bg-slate-600" />
-                    <div className="h-px w-full bg-slate-600" />
-                  </div>
-                  <div className="flex flex-1 flex-col items-center">
-                    <div className="h-6 w-px bg-slate-600" />
-                    <div className="h-px w-full bg-slate-600" />
-                  </div>
-                </div>
-
-                {/* Client nodes */}
-                <div className="grid w-full max-w-2xl grid-cols-3 gap-3">
-                  {[
-                    {
-                      icon: LayoutDashboardIcon,
-                      label: 'Admin Panel',
-                      sub: 'Next.js 16',
-                      color: 'blue',
-                    },
-                    {
-                      icon: GlobeIcon,
-                      label: 'Portfolio Site',
-                      sub: 'Next.js 16',
-                      color: 'violet',
-                    },
-                    {
-                      icon: SmartphoneIcon,
-                      label: 'Mobile App',
-                      sub: 'React Native',
-                      color: 'pink',
-                    },
-                  ].map(item => (
-                    <div
-                      key={item.label}
-                      className={`flex flex-col items-center gap-2 rounded-xl border px-4 py-3 text-center ${
-                        item.color === 'blue'
-                          ? 'border-blue-400/30 bg-blue-500/20'
+            {/* Project Inline Tags */}
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-2 md:gap-3">
+              {[
+                {
+                  label: 'Elly Backend',
+                  color: 'emerald',
+                  icon: ServerIcon,
+                  target: 'elly-backend',
+                },
+                {
+                  label: 'Admin Panel',
+                  color: 'blue',
+                  icon: LayoutDashboardIcon,
+                  target: 'elly-admin',
+                },
+                {
+                  label: 'Portfolio Site',
+                  color: 'violet',
+                  icon: GlobeIcon,
+                  target: 'portfolio',
+                },
+                {
+                  label: 'Mobile App',
+                  color: 'pink',
+                  icon: SmartphoneIcon,
+                  target: 'elly-mobile',
+                },
+                {
+                  label: 'Arcade Games',
+                  color: 'orange',
+                  icon: GamepadIcon,
+                  target: 'arcade-games',
+                },
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center gap-2 md:gap-3">
+                  <div
+                    onClick={() => {
+                      document
+                        .getElementById(item.target)
+                        ?.scrollIntoView({ behavior: 'smooth' })
+                    }}
+                    className={`flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-bold backdrop-blur-md transition-all hover:scale-105 md:text-xs ${
+                      item.color === 'emerald'
+                        ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                        : item.color === 'blue'
+                          ? 'border-blue-500/30 bg-blue-500/10 text-blue-300'
                           : item.color === 'violet'
-                            ? 'border-violet-400/30 bg-violet-500/20'
-                            : 'border-pink-400/30 bg-pink-500/20'
-                      }`}
-                    >
-                      <item.icon
-                        className={`h-5 w-5 ${
-                          item.color === 'blue'
-                            ? 'text-blue-400'
-                            : item.color === 'violet'
-                              ? 'text-violet-400'
-                              : 'text-pink-400'
-                        }`}
-                      />
-                      <div>
-                        <p className="text-sm font-bold">{item.label}</p>
-                        <p className="text-xs text-slate-400">{item.sub}</p>
-                      </div>
-                    </div>
-                  ))}
+                            ? 'border-violet-500/30 bg-violet-500/10 text-violet-300'
+                            : item.color === 'pink'
+                              ? 'border-pink-500/30 bg-pink-500/10 text-pink-300'
+                              : 'border-orange-500/50 bg-orange-500/20 text-orange-300 shadow-[0_0_15px_rgba(249,115,22,0.4)] ring-1 ring-orange-500/40'
+                    }`}
+                  >
+                    <item.icon
+                      className={`h-4 w-4 ${item.color === 'orange' ? 'animate-pulse' : ''}`}
+                    />
+                    {item.label}
+                  </div>
+                  {idx !== 4 && (
+                    <div className="hidden h-px w-3 bg-slate-700/50 xl:block" />
+                  )}
                 </div>
-              </div>
-            </motion.div>
-
-            {/* Ecosystem features */}
-            <motion.div
-              variants={stagger}
-              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
-            >
-              {ecosystemFeatures.map(f => (
-                <motion.div
-                  key={f.title}
-                  variants={fadeInUp}
-                  className="bg-muted/30 rounded-xl border border-border p-5"
-                >
-                  <f.icon className="mb-3 h-6 w-6 text-primary" />
-                  <p className="mb-1 font-semibold">{f.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {f.description}
-                  </p>
-                </motion.div>
               ))}
-            </motion.div>
+            </div>
           </motion.div>
         </div>
       </section>
+
+      {/* Ad — ekosistem bölümü sonrası (üst) */}
 
       {/* Ad — ekosistem bölümü sonrası (üst) */}
       <div className="container mx-auto max-w-5xl px-6">
@@ -429,7 +367,7 @@ function ProjectCard({ project }: { project: Project }) {
   const Icon = project.icon
 
   return (
-    <motion.div variants={fadeInUp}>
+    <motion.div variants={fadeInUp} id={project.id} className="scroll-mt-24">
       <Card className="overflow-hidden border-0 shadow-sm transition-shadow duration-300 hover:shadow-lg">
         <div className="flex flex-col md:flex-row">
           {/* Left accent */}
@@ -457,14 +395,16 @@ function ProjectCard({ project }: { project: Project }) {
               </div>
 
               <div className="flex gap-2">
-                <Link
-                  href={project.githubUrl}
-                  target="_blank"
-                  aria-label="GitHub"
-                  className="hover:border-foreground/30 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  <GithubIcon className="h-4 w-4" />
-                </Link>
+                {project.githubUrl && (
+                  <Link
+                    href={project.githubUrl}
+                    target="_blank"
+                    aria-label="GitHub"
+                    className="hover:border-foreground/30 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    <GithubIcon className="h-4 w-4" />
+                  </Link>
+                )}
                 {project.liveUrl && (
                   <Link
                     href={project.liveUrl}
@@ -473,6 +413,15 @@ function ProjectCard({ project }: { project: Project }) {
                   >
                     <ExternalLinkIcon className="h-3.5 w-3.5" />
                     {project.liveLabel}
+                  </Link>
+                )}
+                {project.ecosystemUrl && (
+                  <Link
+                    href={project.ecosystemUrl}
+                    className="flex h-9 items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-4 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition-all hover:scale-105 hover:shadow-emerald-500/40"
+                  >
+                    <LayersIcon className="h-3.5 w-3.5" />
+                    Ekosistem
                   </Link>
                 )}
               </div>
