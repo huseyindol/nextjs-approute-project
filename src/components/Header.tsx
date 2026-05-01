@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
-const navLinks = [
+const mainNavLinks = [
   { href: '/about', label: 'Hakkında' },
   { href: '/skills', label: 'Yetenekler' },
   { href: '/experience', label: 'Deneyim' },
@@ -16,8 +16,17 @@ const navLinks = [
   { href: '/blog', label: 'Makalelerim' },
 ]
 
+const ellyNavLinks = [
+  { href: '/projects/elly-architecture', label: 'Architecture' },
+  { href: '/projects/elly-sunum', label: 'Sunum' },
+  { href: '/projects/elly-presentation', label: 'Sunum (EN)' },
+  { href: '/projects/elly-video', label: 'Video' },
+]
+
 export default function Header() {
   const pathname = usePathname()
+  const isEllyPage = pathname.startsWith('/projects/elly')
+  const navLinksToUse = isEllyPage ? ellyNavLinks : mainNavLinks
   const [scrolled, setScrolled] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -66,7 +75,7 @@ export default function Header() {
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-1 md:flex">
-          {navLinks.map(link => (
+          {navLinksToUse.map(link => (
             <Link
               key={link.href}
               href={link.href}
@@ -74,7 +83,9 @@ export default function Header() {
                 sendGTMEvent({
                   virtual: link.href,
                   event: 'buttonClick',
-                  target: link.href.slice(1),
+                  target: link.href.startsWith('/projects/elly')
+                    ? link.href
+                    : link.href.slice(1),
                 })
               }
               className={`relative rounded-md px-4 py-2 text-sm font-medium transition-colors ${
@@ -138,7 +149,7 @@ export default function Header() {
             className="bg-background/95 border-b border-border px-6 pb-6 pt-2 backdrop-blur-md md:hidden"
           >
             <nav className="flex flex-col gap-1">
-              {navLinks.map(link => (
+              {navLinksToUse.map(link => (
                 <Link
                   key={link.href}
                   href={link.href}
