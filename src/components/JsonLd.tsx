@@ -12,12 +12,6 @@ export function PersonJsonLd() {
     image: `${SITE_URL}/assets/img/huseyindol.png`,
     email: 'huseyindol@gmail.com',
     identifier: 'huseyindol',
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Sancaktepe',
-      addressRegion: 'İstanbul',
-      addressCountry: 'TR',
-    },
     sameAs: [
       'https://github.com/huseyindol',
       'https://www.linkedin.com/in/huseyindol/',

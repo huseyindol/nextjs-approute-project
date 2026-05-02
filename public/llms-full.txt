@@ -1,12 +1,11 @@
 # Hüseyin DOL — Full Profile
 
-> Senior Frontend Developer with 10+ years of experience building modern, scalable web applications using React, Next.js, and TypeScript. Also experienced in Java Spring Boot backend, Kubernetes DevOps, and React Native mobile. Based in Sancaktepe, İstanbul, Turkey.
+> Senior Frontend Developer with 10+ years of experience building modern, scalable web applications using React, Next.js, and TypeScript. Also experienced in Java Spring Boot backend, Kubernetes DevOps, and React Native mobile.
 
 ## About
 
 Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professional experience in web development. He specializes in the React ecosystem, modern JavaScript/TypeScript, and scalable frontend architecture. He also builds full-stack Java Spring Boot applications with Kubernetes orchestration and React Native mobile apps. He is experienced in team leadership, code review, and mentoring junior and mid-level developers.
 
-- Location: Sancaktepe, İstanbul, Turkey
 - Email: huseyindol@gmail.com
 - GitHub: https://github.com/huseyindol
 - LinkedIn: https://www.linkedin.com/in/huseyindol/

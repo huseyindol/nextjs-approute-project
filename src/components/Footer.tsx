@@ -1,6 +1,6 @@
 'use client'
 import { motion, useInView } from 'framer-motion'
-import { GithubIcon, Heart, LinkedinIcon, Mail, MapPin } from 'lucide-react'
+import { GithubIcon, Heart, LinkedinIcon, Mail } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRef } from 'react'
@@ -88,10 +88,6 @@ export default function Footer() {
               Senior Frontend Developer. React, Next.js ve TypeScript ile modern
               web uygulamaları geliştiriyorum.
             </p>
-            <div className="flex items-center gap-1.5 text-sm text-slate-500">
-              <MapPin className="h-4 w-4 shrink-0" />
-              <span>Sancaktepe, İstanbul</span>
-            </div>
           </div>
 
           {/* Navigation */}

@@ -13,7 +13,6 @@ import {
   GithubIcon,
   LinkedinIcon,
   Mail,
-  MapPin,
   Users,
   Zap,
 } from 'lucide-react'
@@ -202,10 +201,6 @@ function HeroBanner() {
                 {link.platform === 'email' && <Mail className="h-4 w-4" />}
               </Link>
             ))}
-            <div className="flex items-center gap-1.5 text-sm text-slate-400">
-              <MapPin className="h-4 w-4" />
-              <span>{siteInfo.location}</span>
-            </div>
           </motion.div>
         </motion.div>
       </div>
