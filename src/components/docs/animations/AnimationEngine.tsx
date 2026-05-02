@@ -3,10 +3,10 @@
 import React, {
   createContext,
   useContext,
-  useState,
   useEffect,
-  useRef,
   useMemo,
+  useRef,
+  useState,
 } from 'react'
 
 // --- Easing functions ---

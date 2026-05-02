@@ -1,21 +1,21 @@
 'use client'
 
-import React from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 import { motion } from 'framer-motion'
 import {
   CheckCircle2Icon,
-  ZapIcon,
-  LockIcon,
+  DatabaseIcon,
   GaugeIcon,
+  LayersIcon,
+  LockIcon,
+  MailIcon,
+  RocketIcon,
   ServerIcon,
   ShieldCheckIcon,
-  DatabaseIcon,
-  MailIcon,
-  LayersIcon,
-  RocketIcon,
+  ZapIcon,
 } from 'lucide-react'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import React from 'react'
 
 const sections = [
   { id: 'overview', title: 'What is Elly?' },
@@ -86,7 +86,7 @@ const PresentationDoc = () => {
             <p className="font-mono text-xs uppercase tracking-[0.3em] text-violet-400">
               CMS Platform · Spring Boot 3.5 · Java 21
             </p>
-            <h1 className="bg-linear-to-br from-white to-white/50 bg-clip-text text-5xl font-extrabold tracking-tight text-transparent md:text-7xl">
+            <h1 className="bg-linear-to-br from-white to-white/50 bg-clip-text text-5xl font-extrabold leading-normal tracking-tight text-transparent md:text-7xl">
               Elly
             </h1>
             <p className="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground">
@@ -1023,7 +1023,7 @@ const PresentationDoc = () => {
           <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-3">
             {[
               {
-                title: 'Now · High Priority',
+                title: 'Critical path · Data and list performance',
                 color: 'text-rose-400',
                 icon: RocketIcon,
                 items: [
@@ -1034,7 +1034,7 @@ const PresentationDoc = () => {
                 ],
               },
               {
-                title: 'Soon · This Sprint',
+                title: 'Maturity · Rollout and measurement',
                 color: 'text-amber-400',
                 icon: ZapIcon,
                 items: [
@@ -1045,7 +1045,7 @@ const PresentationDoc = () => {
                 ],
               },
               {
-                title: 'Later · Scaling',
+                title: 'Capacity · Read scale and distribution',
                 color: 'text-emerald-400',
                 icon: LayersIcon,
                 items: [

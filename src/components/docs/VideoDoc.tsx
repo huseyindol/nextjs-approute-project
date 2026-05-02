@@ -2,11 +2,11 @@
 
 import React from 'react'
 import {
-  Stage,
-  Sprite,
-  useSprite,
   Easing,
+  Sprite,
+  Stage,
   animate,
+  useSprite,
 } from './animations/AnimationEngine'
 
 const W = 1920
@@ -297,13 +297,13 @@ function SceneTitle() {
           opacity: titleOp,
           fontSize: 220,
           fontWeight: 700,
-          letterSpacing: -10,
+          letterSpacing: -2,
           background:
             'linear-gradient(135deg, #ffffff 30%, oklch(78% 0.18 255))',
           WebkitBackgroundClip: 'text',
           backgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          lineHeight: 0.9,
+          lineHeight: 1.1,
         }}
       >
         Elly
