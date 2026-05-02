@@ -5,7 +5,7 @@ publishedAt: '2026-04-22'
 category: 'AI'
 author: 'Hüseyin DOL'
 coverImage: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=2000&auto=format&fit=crop'
-readingTime: '8'
+readingTime: '14'
 order: 4
 ---
 
@@ -132,6 +132,52 @@ Projelerde yarattığımız bu interaktif AI proxy'si sayesinde:
 - **DevOps Analizi:** CI/CD pipeline hatalarını otomatik analiz edip çözüm önerileri sunuyor
 - **Log İnceleme:** Binlerce satırlık log dosyasından anlamlı pattern'leri çıkarıyor
 - **Veritabanı Sorguları:** Doğal dildeki soruları SQL'e çevirip güvenli bir şekilde çalıştırıyor
+
+## Hata Yönetimi, Zaman Aşımı ve Idempotent Tasarım
+
+Tool gövdesinde her dış çağrı için makul **`AbortSignal`** / timeout süresi tanımlanmalı; aksi halde model uzun süre askıda kalır ve bağlam penceresi şişer. HTTP 429 veya geçici 5xx durumlarında backoff + kullanıcıya anlamlı metin dönmek (`retry_after` başlığı varsa kullanmak) modelin tekrar vahşi denemeler yapmasını engeller.
+
+Yazıcı araçlarında (**mutation**) aynı isteğin iki kez gitmesi senaryosu için istemci tarafından gelen bir **idempotency key** veya sunucunun doğal olarak tekil olan iş kimliği zorunludur; "siparişi iki kez iptal et" gibi yarış koşulları böyle minimize edilir.
+
+## Büyük Yanıtlar ve Sayfalama
+
+Binlerce satırlık JSON tek seferde modele gönderilirse bağlam maliyeti patlar ve gecikme artar. `list_*` araçlarında `cursor`, `pageSize`, `filters` parametreleri ve sunucunun **toplam özet** döndürüp detayı ikinci çağrıya bırakması daha sürdürülebilirdir.
+
+## Versiyonlama ve Geriye Uyumluluk
+
+Sunucu `capabilities` veya araç şema sürümü ile kendini duyurabilir; istemci yeni parametreleri kullanmadan önce uyumluluğu doğrular. Kırıcı değişiklik yapılacaksa `search_orders_v2` gibi ayrı araç adı açmak, eskisini deprecation süresi ile kapatmak daha güvenli bir yol haritası sunar.
+
+## Transport Seçimi: stdio Yerine HTTP Ne Zaman?
+
+Yerelde IDE ve Claude Desktop ile **stdio** en düşük sürtünmedir. Kurumsal paylaşım, merkezi loglama ve yatay ölçek için SSE/HTTP transport devreye alınır; bu durumda kimlik doğrulama katmanı, istek gövdesi boyutu limitleri ve streaming chunk hata kodları tasarımın parçası olmalıdır.
+
+## Observability
+
+Her `tools/call` için yapısal log (latency, outbound status code, araç adı — hassas parametreleri maskeleyerek) merkezi toplanırsa, hangi iş akışında model sık sık zaman aşımına düştüğünü grafiklemek kolaylaşır.
+
+## Yapılandırma ve Yerel — Uzak Tutarlılığı
+
+Stdio MCP süreçleri genelde IDE ortam değişkenlerinden beslenir; HTTP transport’ta ise aynı değişkenleri container secret’larıyla eşlemek gerekebilir. `API_BASE_URL` gibi parametreleri hem development hem staging için doğrulamak için basit bir “bağlantı self-check” endpoint’i (health) tool başlamadan tetiklenebilir; böylece model boş liste döndüğünde kökünün yanlış URL olduğu hemen anlaşılır.
+
+## Model Bağlamı ve Araç Sayısı
+
+Çok fazla tanımlı araç bağlam şişmesine ve yanlış çağrı olasılığına yol açar; bu yüzden ekiplere göre **araç kümesi** ayrımı yapılır — örneğin sadece SRE MCP’sinde `restart_service`. İsim verme kabı: araç tanımında `description` alanı doğal dil için tektir ve modele yanlış yönlendirmeyecek kadar öz olmalıdır.
+
+## Operasyonel Güvenilirlik Kontrol Listesi
+
+- Zod doğrulaması olmadan dış dünyaya istek çıkmaması
+- Timeout + circuit breaker politikası
+- Yazma araçlarında idempotent veya onay gerektiren akış
+- Log’da parametre masking
+- Güncellenen araçların sürüm notuyla birlikte dağıtılması
+
+Bu kontrol listesi MCP’yi yalnızca demo seviyesinde bırakmayıp gün içi güvenilir bir entegrasyon hattına dönüştürür.
+
+Son olarak, MCP sunucunuzu kod incelemesinden geçiren küçük bir **ADR (Architecture Decision Record)** yazmak ekip içi hizalamayı güçlendirir: hangi veri kaynakları seçildi, neden doğrudan veritabanı yerine bounded API seçildi ve hangi hata kodları kullanıcıya nasıl sızdırılmadan loglanır? Bu üç sorunun cevabı netleştikçe yeni araç katmanız bile kontrollü kalır ve “shadow IT” MCP’si çıkmaz.
+
+Geliştirici deneyimi tarafında, yerel MCP’yi sıfır konfig ile ayağa kaldırıp tek komutla doğrulama script’i (`mcp-health`) eklemek, PR şablonuna “breaking tool parametresi mi?” kutucuğu koymak gibi küçük ritüeller uzun ömürlü sürdürülebilirlik sağlar.
+
+Üretimde aynı MCP binary’sinin farklı ortamlarda aynı özellik bayraklarıyla çalışması (feature flag kaosu yok) beklenir; aksi halde model bir ortamda gördüğü aracı diğerinde bulamayınca gereksiz yeniden deneme döngüleri üretir — bu da hem gecikme hem de yanlış alarm yaratır.
 
 **Detaylı inceleme ve açık kaynak (Open Source) kodları için GitHub repomuza göz atmayı unutmayın:**
 [McpProjectScaffold - Github Reposunu İnceleyin](https://github.com/huseyindol/McpProjectScaffold)

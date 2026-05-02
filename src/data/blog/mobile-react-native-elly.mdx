@@ -5,7 +5,7 @@ publishedAt: '2026-04-21'
 category: 'Mobile'
 author: 'Hüseyin DOL'
 coverImage: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=2000&auto=format&fit=crop'
-readingTime: '8'
+readingTime: '14'
 order: 4
 ---
 
@@ -126,6 +126,38 @@ function RegisterForm() {
   )
 }
 ```
+
+## Veri Katmanı: Sunucu Durumu ve Önbellek
+
+Liste ve detay ekranlarında tekrar tekrar aynı fetch'i tetiklememek için **TanStack Query** (React Query) benzeri bir sunucu durum katmanı kullanıyoruz. Stale-while-revalidate stratejisi mobilde hem hızlı ilk boyama hem de arka planda tazeleme sağlar; `focus` ve `reconnect` refetch politikaları metroda veya zayıf ağda kullanıcıyı bilgilendirmeden veriyi sessizce yeniler. Mutation sonrası `queryClient.invalidateQueries` ile ilgili listelerin tutarlı kalması, optimistik güncellemelerin ise yalnızca düşük riskli alanlarda (örneğin favori işareti) kullanılması tercih edilir.
+
+## Hata Sınırları, Boş Durumlar ve Offline
+
+Kurumsal uygulamalarda `ErrorBoundary` + ekran bazlı fallback, kullanıcıyı beyaz ekranda bırakmaz. Ağ hatalarında mesajı **eylem odaklı** tutuyoruz ("Tekrar dene", "Destek ile iletişime geç") ve mümkünse son başarılı cache ile read-only mod sunuyoruz. Tam offline senaryosu her ürün için şart olmasa da, kritik formların `NetInfo` ile gönderim öncesi kontrol edilmesi veri kaybını azaltır.
+
+## Güvenlik ve Dağıtım Notları
+
+Token saklama için platform **Keychain / EncryptedSharedPreferences** kullanımı, loglarda PII dökülmemesi ve release build'lerde `__DEV__` köprülerinin kapatılması temel checklist'tir. CodePush veya benzeri OTA güncellemeleri kullanılacaksa, imzalama zinciri ve kanarya rollout politikası dokümante olmalıdır.
+
+## Kalite: Test Piramidi
+
+Birim testleri iş mantığı ve reducer'lara; **`@testing-library/react-native`** ile smoke testler kritik akışlara (giriş, sipariş detayı); E2E'de ise maestro veya Detox ile en azından "golden path" senaryoları seçilir. Görsel regresyon ihtiyacı varsa Storybook ile bileşen kataloğu önce web paylaşımına yakın tutulur.
+
+## Liste Performansı ve Donanım Farkları
+
+Uzun sipariş listelerinde `FlashList` veya doğru şekilde `memo` edilmiş `FlatList` ile windowing seçimi doğrudan frame süresini etkiler. Elly tarafında görsel karmaşıklığı yüksek satırlarda `getItemLayout` mümkünse verilir; aksi halde dinamik yükseklikler için minimum ve maksimum satır tahminleriyle scroll offset sıçraması azaltılır. Apple ve Qualcomm GPU farkları shadow ve blur kullanımında hissiyat yarattığı için, tasarımda tek bir “premium” kart varyantına kilitleme yerine iki yoğunluk seviyesi tanımlanması uzun vadede destek maliyetini düşürür.
+
+## Yerelleştirme ve Biçimlendirme
+
+Tarih-saat, para birimi ve adres formatları kullanıcı bölgesine göre **`Intl`** ve seçilen locale paketiyle render edilir. Bu, yalın bir `toLocaleString()` çağrısından öte form alanlarındaki masking (IBAN, telefon) doğruluğunu etkiler. Çoklu dil gereksinimi henüz tüm projede yoğun olmasa da, string’lerin doğrudan TSX içine gömülmemesi gelecek çeviri sürüşünü kolaylaştırır.
+
+## Kod Paylaşımı: Mobil ve Panel
+
+Elly’nin bir kısmı Next.js ile yönetim panelinden beslendiği için, validasyon şemaları (`zod`), tip tanımları ve seçili yardımcı fonksiyonlar mümkün olduğunca paket olarak paylaşılır; böylece web ve mobil aynı iş kuralına iki kez sahip çıkmaz. Karmaşık render farklarında ise ortak olan “saf” mantığı npm workspace veya dahili paket ile taşımak, dalgalanmayı keser.
+
+Son olarak kullanıcıdan gelen görsel geri bildirim (beta kanalı, mağaza yorumları) sprint planına “UX borç kalemi” olarak işlendiğinde, navigasyon karmaşıklığı veya tema uyumsuzlukları küçük yamalar yerine yapısal çözümle kalıcı olarak kapanır. Bu yaklaşım Elly’nin teknik borcunu kullanıcı memnuniyeti metrikleriyle aynı tabloda tutmayı kolaylaştırır.
+
+Mağaza inceleme süreleri ve kritik KPI’ların (crash-free users, ortalama oturum süresi) ekip toplantılarında düzenli olarak okunması, mimari seçimleri yalın tutup kullanıcı değeri üzerinden tartışmayı sağlar — bu bağlam mobil üründe gereksiz soyutlamaları doğal olarak eleyen bir filtredir.
 
 ## Sonuç: Cross-Platform Tutarlılık
 

@@ -106,7 +106,7 @@ const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     getNextPageParam: lastPage => lastPage.nextCursor ?? undefined,
   })
 
-;<FlatList
+<FlatList
   data={data?.pages.flatMap(page => page.items) ?? []}
   onEndReached={() => hasNextPage && fetchNextPage()}
   onEndReachedThreshold={0.5}
@@ -119,6 +119,84 @@ const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
 Optimizasyonların gerçekten işe yarayıp yaramadığını ölçmek için Flipper'ın Performance plugin'ini ve React DevTools Profiler'ı kullanıyoruz. JS frame rate ve UI frame rate metriklerini ayrı ayrı izleyerek darboğazın hangi thread'de olduğunu tespit ediyoruz.
 
 Yüksek resource'lu görsel medyalarla bile uygulamanın FPS çökmesini bertaraf edebiliyor, kullanıcının sanki native Kotlin/Swift dilinde yazılmış bir uygulamada geziyormuş hissiyatını güçlendiriyoruz.
+
+## FlashList ve Yeni Mimari Seçimi
+
+Çok daha agresif recycling ile `FlashList`, belirli senaryolarda FlatList’ten daha iyi düşük uçlu cihaz FPS’i verir; migration maliyeti vardır fakat liste ağırlıklı ürünlerde POC değer.
+
+## InteractionManager ve Navigasyon
+
+Ağır listeyi açmadan önce `InteractionManager.runAfterInteractions` ile geçiş animasyonunun bitmesini beklemek, giriş anındaki frame düşüşünü yumuşatır.
+
+## SectionList ve Karmaşık Düzen
+
+Başlık + grid karışımı gerekiyorsa `SectionList` veya iki sütunlu `numColumns` yerine doğru araç seçimi ölçülmelidir; yanlış yapı `_keyExtractor` ve recycle sorunları doğurur.
+
+## Bellek Üst Sınırı
+
+`maxToRenderPerBatch` ile oynamak tek başına yetmez — görsel önbellek ve liste uzunluğu birlikte izlenmeli; düşük bellek uyarılarında küçültülmüş küçük resim politikası hayat kurtarır.
+
+## Hermes ve JS Thread Gözlemi
+
+Hermes motoru ve yeni mimari kombinasyonu cihaz sınıfına göre farklı kare hızı verir; tek cihazda ölçülen sonuç her zaman genellenemez. Düşük RAM’li Android cihaz seti smoke testlerinde tutulmalıdır.
+
+## Animasyon ve Liste Birlikte
+
+Liste scroll sırasında ağır `Animated` interpolasyonları JS thread’e baskı yapabilir; native driver kullanımı ve basitleştirilmiş easing seçimi tercih edilir.
+
+## State Normalizasyonu
+
+Geniş feed’lerde nested state güncellemeleri render maliyetini artırır; düz kayıt haritası ve seçici güncelleme listeyi hafifletir.
+
+## Ağ Katmanı ve Önbellek Politikası
+
+Sunucudan gelen payload şişkinse istemci optimizasyonu yetmez; alan seçimi ve sıkıştırma backend ile birlikte ele alınır.
+
+## Kullanıcı Geri Bildirimi ve Telemetri
+
+Frame drop veya takılma olaylarının anonim telemetri ile toplanması hangi ekranın öncelikli iyileştirme adayı olduğunu gösterir; yalnızca geliştirici hissiyle önceliklendirme yapılmamalıdır.
+
+## Native Modül Sınırı
+
+Köprü üzerinden geçen ağır çağrılar JS thread’i bloke edebilir; mümkün olduğunda işi native tarafta tamamlamak veya async sonuç dinlemek gerekir.
+
+## Bellek Profili ve Görsel Önbellek Temizliği
+
+Çok sekmeli navigasyonda ekranlar unmount olmazsa görsel önbellek birikir; focus/blur veya navigation event’lerinde bilinçli temizlik planı yapılmalıdır.
+
+## Zayıf Ağ Senaryosu
+
+Yavaş ağda skeleton ve retry UX’i öne çıkar; aşırı agresif yeniden deneme sunucuyu da zorlar. Backoff ve kullanıcıya görünür durum metni birlikte düşünülür.
+
+## Test Cihazı Çeşitliliği
+
+Flagship telefonda pürüzsüz akış, giriş segmentinde takılma anlamına gelebilir; minimum desteklenen cihaz listesi ürün kararıyla netleşir.
+
+## Profiling Sonrası Aksiyon Disiplini
+
+Profiler ekranı açılıp kapandıktan sonra bulguya göre küçük deneyler sırayla uygulanmaz ise ölçüm boşa gider ve ekip hayal kırıklığı yaşar.
+
+## Liste Dışı Bildirim ve Arka Plan Güncellemeleri
+
+FlatList içinde canlı veri akışı olacaksa gereksiz sık state güncellemesi kare düşüşü yaratır; batching ve küçük throttle ile denge aranır.
+
+## Ekran Parlaklığı ve Pil
+
+Sürekli animasyon ve yoğun liste birleştiğinde düşük güç modunda cihaz kısma yapabilir; kullanıcı algısı için sade mod veya azaltılmış medya politikası düşünülür.
+
+## Klavye ve Erişilebilirlik ile Liste Birlikte
+
+Liste odak yönetimi karmaşıksa VoiceOver veya TalkBack ile kaydırma deneyimi kırılganlaşır; karmaşık hücre içleri yerine tek odaklı satır yapısı ve anlamlı erişilebilirlik etiketleri daha az JS maliyetiyle daha iyi sonuç verir.
+
+## Release Öncesi Kontrol Listesi
+
+Store build’inde Hermes + Proguard/R8 etkileşimi veya yanlış Metro ayarı prod’da liste performansını beklenmedik şekilde değiştirir; release adayında profil build üzerinde kısa liste smoke testi beklenmedik regresyonları erken yakalamaya yardım eder.
+
+Sonuç olarak mobil listede kazanılan kare hızı, tek optimizasyon yerine ölçüm ritüeli ve cihaz çeşitliliği ile kalıcı hale gelir.
+
+Performans iyileştirmelerinin etkisini sürdürmek için her major sürümde kısa regresyon turu yapmak maliyeti düşük tutar ve “bir kez iyileştirdik bitti” yanılgısını kırar.
+
+Liste ekranı her ürünün vitrinidir; kullanıcı akışına en yakın yerde titreşimi azaltmak tüm uygulama algısını yükseltir ve geri bildirimi olumlu yönde etkiler.
 
 ---
 

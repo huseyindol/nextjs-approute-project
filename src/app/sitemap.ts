@@ -44,6 +44,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.9,
     },
+    {
+      url: `${BASE_URL}/arcade`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.65,
+    },
+    {
+      url: `${BASE_URL}/projects/elly`,
+      lastModified,
+      changeFrequency: 'monthly',
+      priority: 0.85,
+    },
+    ...(
+      [
+        'elly-architecture',
+        'elly-video',
+        'elly-sunum',
+        'elly-presentation',
+      ] as const
+    ).map(slug => ({
+      url: `${BASE_URL}/projects/${slug}`,
+      lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })),
   ]
 
   // Higher priority for deep technical articles (Backend/DevOps)

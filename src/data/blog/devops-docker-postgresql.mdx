@@ -5,7 +5,7 @@ publishedAt: '2026-04-12'
 category: 'DevOps'
 author: 'Hüseyin DOL'
 coverImage: 'https://images.unsplash.com/photo-1605745341112-85968b19335b?q=80&w=2000&auto=format&fit=crop'
-readingTime: '9'
+readingTime: '12'
 ---
 
 Bu makale, önceki **Modern PostgreSQL Kullanımı ve İpuçları** yazımızın bir devamı niteliğindedir. Uygulamalarımızı geliştirirken her ortamda (Local, Staging, Production) birebir aynı bağımlılık altyapısını kurabilmenin en iyi yolu Container (Docker vb.) mimarisinden geçer. Bu yazıda [`elly`](https://github.com/huseyindol/elly) projesinden örneklerle hem PostgreSQL'i hem de uygulama imajını multi-stage build ile nasıl ürettiğimi paylaşıyorum.
@@ -189,5 +189,17 @@ docker compose ps
 ```
 
 Yeni bir developer takıma katıldığında "onboarding süresi" artık 3-4 saatten 15 dakikaya düştü. Ayrıca CI pipeline'ında GitHub Actions, aynı multi-stage Dockerfile'ı kullanarak her PR için test imajı oluşturabiliyor — yerel ile CI arasında **deterministic parity** sağlanıyor.
+
+## 7. Compose Profilleri ve Gizli Anahtarlar
+
+Geliştirme makinesinde `pgadmin`, `mailhog` veya ağır profiling araçlarını herkesin açmasına gerek yok. `profiles: ["tools"]` ile bu servisleri isteğe bağlı başlatmak (`docker compose --profile tools up -d`) hem RAM tüketimini hem de port karmaşasını azaltır. Parolaları `.env` dosyasında düz metin tutmak yerine geliştirici ortamında bile **Docker secrets** veya en azından `.env` dosyasının `.gitignore`'da kalması ve örnek için `env.example` kullanılması şart; production'da ise mutlaka secret manager (Vault, Kubernetes Secret, CI encrypted variables) kullanılmalıdır. Compose ağında servisler birbirini servis adıyla görür; host'tan erişim için publish edilen portlar dışında trafik izole kalır — bu da yanlışlıkla yan servise bağlanma riskini düşürür.
+
+## 8. Kaynak Limitleri ve Üretim Farkı
+
+Yerelde sınırsız CPU bellek vermek kolaydır; fakat staging'de **production'a yakın limitler** koymadığınızda OOM ve yavaş disk I/O gibi problemler üretime taşınır. `deploy.resources.limits` (Swarm) veya K8s `resources.requests/limits` ile uyumlu düşünmek için compose'ta en azından `mem_limit` ve `cpus` tanımlamak faydalıdır. PostgreSQL volume'ü için bind mount yerine named volume kullanmamızın bir sebebi de I/O tutarlılığı ve yedekleme senaryolarında taşınabilirlik; bulut ortamında ise block storage snapshot stratejisi ile eşleştirilmesi gerekir.
+
+## 9. Sorun Giderme Kısa Rehberi
+
+`docker compose logs -f postgres-tenant1` ile başlayın; ardından konteyner içinde `psql -U ... -c "SELECT version();"`. `pg_isready` başarılı olsa bile disk doluysa (`No space left on device`) WAL yazılamaz — host disk ve volume quota'larını izleyin. İmaj sürümünü (`postgres:16-alpine`) pin'leyip major upgrade'i kontrollü migration ile yapın; patch seviyesinde `docker compose pull && up -d` yeterli olabilir.
 
 Bir sonraki durağımız, tüm bu yapıların yatayda sonsuz ölçüde nasıl scale edildiği yer olan **Kubernetes** olacak!

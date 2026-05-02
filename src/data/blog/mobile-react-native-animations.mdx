@@ -5,7 +5,7 @@ publishedAt: '2026-04-21'
 category: 'Mobile'
 author: 'Hüseyin DOL'
 coverImage: 'https://images.unsplash.com/photo-1491895200222-0fc4a4c35e18?q=80&w=2000&auto=format&fit=crop'
-readingTime: '5'
+readingTime: '13'
 order: 99
 ---
 
@@ -156,6 +156,34 @@ Her animasyon türü için doğru easing fonksiyonu seçmek UX kalitesini belirl
 | Toast bildirimi | `withTiming`                 | Sabit sürede giriş/çıkış   |
 
 Kullanıcının tıkladığı nesnenin yumuşakça esnemesi, sayfalar arasındaki sürükleme ivmesinin parmak hızını algılayıp tepki vermesi, UI/UX deneyimi açısından ürünümüzün kalitesini premium segmente yükseltti.
+
+## Erişilebilirlik: Reduce Motion ve Boyut Tercihleri
+
+iOS ve Android, sistem düzeyinde **animasyonları azalt** (Reduce motion) seçeneği sunar. `AccessibilityInfo.isReduceMotionEnabled()` veya Reanimated ile `ReducedMotionConfig` kullanarak ağır spring ve büyük ölçek animasyonlarını `withTiming(..., { duration: 0 })` veya basit opacity geçişine indirgemek inclusivity açısından zorunludur. Ayrıca animasyonların yalnızca süslenme değil, odak sırasını ve aksiyonu anlatması gerekir; hareket eden bileşen `accessibilityLiveRegion` veya uygun aria benzeri etiketlerle ekran okuyucuya anlamlı geri bildirim vermelidir.
+
+## `interpolate` ve Türev Değerler
+
+Parmağın konumunu 0–1 aralığına map edip opacity veya blur ile bağlamak için `interpolate` vazgeçilmezdir. `Extrapolation.CLAMP` ile sınır taşmasındaki sıçramaları keserek rubber-band hissi oluştururken taşmayı kontrol altında tutarız; `extend` seçeneği bilinçli overscroll senaryoları içindir. Birden fazla shared value zincirinde `useDerivedValue` kullanmak, gereksiz `useAnimatedStyle` içi hesapları azaltır ve okunabilirliği artırır.
+
+## Performans Ölçümü ve Yaygın Tuzaklar
+
+Reanimated görünmez olsa bile, **liste içinde yüzlerce satırın aynı anda layout animasyonu** veya görüntü üzerinde ağır blur animasyonları frame bütçesini doldurur. Flashlight / Xcode Instruments veya RN'nin perf monitor'ü ile `_getAnimationTimestamp` yaklaşımı kullanılabilir; pratikte en çok rastladığım hatalar: `runOnJS` ile her frame JS'e dönmek, shadow + scale kombinasyonunu eski mimaride düşük uçlu cihazda zorlamak ve `animatedProps` kullanırken native prop uyumsuzluğu. Karmaşık ekranlarda animasyonu alt bileşenlere bölmek ve `React.memo` ile props stabilitesini korumak, reconciliation maliyetini düşürür.
+
+## Fabric, Hermes ve Gelecek
+
+Yeni Mimari (Fabric + Hermes) ile UI thread zamanlaması daha tutarlı; Reanimated zaten native tarafa yakın çalıştığı için özellikle **takılmasız** hissiyat daha az cihaza göre sapıyor. Yine de kütüphane sürümlerini React Native ile senkron tutmak ve breaking change öncesi [Reanimated sürüm notlarını](https://docs.swmansion.com/react-native-reanimated/) takip etmek gerekiyor. Uzun vadede, animasyon mantığını tasarımla birlikte “token” halinde dokümante etmek (spring stiffness haritası vb.) tasarımcı–mühendis uyumunu hızlandırır.
+
+## Reanimated ile Test ve CI
+
+Pure JS tarafında worklet kodunu doğrudan koşturmak zordur; bu yüzden animasyon kritik bileşenlerinde en azından **snapshot** ve görsel doğrulama veya küçük integration testleriyle “scale 0.95'ten 1'e dönüş” gibi kritik süreleri assert ediyoruz. Jest kullanıcıları `setUpTests` ile Reanimated mock'unu yüklemezse testler flaky olur — bu konfigürasyonun repoda sabit kalması onboarding'i kolaylaştırır.
+
+## Özet: Kullanıcıya Değen Net Kazanımlar
+
+Kısa özetle: kullanıcı hareketine anında tepki, liste geçişlerinde akıcı layout animasyonları, erişilebilirlik seçeneklerine saygı ve düşük uçlu cihazda ölçülen frame bütçesi — bu dörtlü profesyonel mobil ürün algısı yaratır. Reanimated yalnızca “güzel görünsün” değil, **etkileşimin gecikmesiz hissedilmesi** için kullanılıyor; bu yüzden JS thread'e geri düşecek tasarımlardan kaçınmak ilk günden tasarım kısıtı olmalıdır.
+
+Ek olarak tasarımda sürekli hareket (sonsuz döngü animasyonlar) kullanıcıyı yorabileceği için yalnızca dikkat çekmesi gereken anlarda veya bildirimlerde tercih edilmelidir. Motion referans kartları çıkarılıp backlog’a küçük “polish” maddesi olarak yazıldığında, sprint sonlarında bile kalite çıtası yükselmeye devam eder; çünkü animasyon kodu doğru mimaride refactor maliyeti düşüktür.
+
+Uygulama içi kritik bildirimlerde kısa haptic ile görsel geri bildirimi eşlemek kullanıcıya ek güven verir — bu uyarı bile animasyon tasarımının yalnızca piksel hareketinden ibaret olmadığını gösterir.
 
 ---
 

@@ -128,64 +128,6 @@ const articlesData = [
     readingTime: '5',
     content: `Geliştirdiğimiz UI-Kit NPM paketinin içerisindeki bileşenleri takım arkadaşlarına ve tasarımcılarına tanıtmak adına Storybook kullanarak elde ettiğimiz hız kazanımlarını değerlendiriyoruz.`,
   },
-  {
-    slug: 'frontend-storybook-args',
-    title: 'Storybook Args ve Controls İle Bileşen Testleri',
-    category: 'Frontend',
-    author: 'Hüseyin DOL',
-    coverImage:
-      'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2000&auto=format&fit=crop',
-    publishedAt: '2026-04-19',
-    readingTime: '4',
-    content: `Props değiştirmelerini kod yazmadan Visual (Görsel) arayüzde test etme deneyimi. Tasarım departmanı ve Developer iletişimsizliğini Storybook aracılığıyla minimuma indirmenin formülleri.`,
-  },
-  {
-    slug: 'frontend-storybook-addons',
-    title: 'Storybook Eklentileri: Dark Mode, A11y ve Dokümantasyon',
-    category: 'Frontend',
-    author: 'Hüseyin DOL',
-    coverImage:
-      'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?q=80&w=2000&auto=format&fit=crop',
-    publishedAt: '2026-04-19',
-    readingTime: '6',
-    content: `Makine okunabilir otomatik dokümantasyon (MDX tabanlı), Dark Mode testleri ve Accessibility (Erişilebilirlik) puanlarını kontrol eden araçlar ile Storybook yapımızı nasıl şaha kaldırdık?`,
-  },
-
-  // --- FRONTEND: GROWTHBOOK ---
-  {
-    slug: 'frontend-growthbook-ab-testing',
-    title: 'Growthbook İle A/B Testleri ve Feature Flag Yönetimi',
-    category: 'Frontend',
-    author: 'Hüseyin DOL',
-    order: 5,
-    coverImage:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop',
-    publishedAt: '2026-04-20',
-    readingTime: '7',
-    content: `Yeni bir Newsletter arayüzünün konversiyon (dönüşüm) oranını etkileyip etkilemeyeceğini test etmek için projeye Growthbook SDK ekleyip %50 trafikli A/B test senaryosu yürüttük.`,
-  },
-  {
-    slug: 'frontend-growthbook-nextjs',
-    title: 'Next.js App Router İçerisinde Growthbook Entegrasyonu',
-    category: 'Frontend',
-    author: 'Hüseyin DOL',
-    coverImage:
-      'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=2000&auto=format&fit=crop',
-    publishedAt: '2026-04-20',
-    readingTime: '5',
-    content: `Server Side Rendering tarafında feature flag'ları okuyarak (Next.js Middleware üzerinden) kullanıcılara statik gecikme olmadan ilgili deneyi sunma metotlarımız.`,
-  },
-  {
-    slug: 'frontend-growthbook-metrics',
-    title: 'A/B Testlerinde Veriye Dayalı Karar Alma (Metrics)',
-    category: 'Frontend',
-    author: 'Hüseyin DOL',
-    coverImage:
-      'https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=2000&auto=format&fit=crop',
-    publishedAt: '2026-04-20',
-    readingTime: '6',
-    content: `Growthbook raporlamalarından elde ettiğimiz p-value ve istatistiksel sonuçlara göre, arayüzde tasarladığımız değişiklikleri kalıcı hale getirme sürecimiz.`,
-  },
 
   // --- MOBILE: REACT NATIVE ---
   {
@@ -225,17 +167,6 @@ const articlesData = [
 
   // --- AI: MCP ---
   {
-    slug: 'ai-mcp-architecture',
-    title: 'Model Context Protocol (MCP) Neden Devrimseldir?',
-    category: 'AI',
-    author: 'Hüseyin DOL',
-    coverImage:
-      'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=2000&auto=format&fit=crop',
-    publishedAt: '2026-04-22',
-    readingTime: '7',
-    content: `Github'daki McpProjectScaffold yapımızdan öğrendiğimiz; LLM modellerinin external dünyayla standart biçimde konuşabilmesini sağlayan bu protokolün yazılım geliştirme metodolojisini nasıl değiştirdiğine odaklanıyoruz.`,
-  },
-  {
     slug: 'ai-mcp-integration',
     title: 'Kendi MCP Sunucunuzu Java/Node İle Yazmak',
     category: 'AI',
@@ -270,17 +201,6 @@ const articlesData = [
     publishedAt: '2026-04-23',
     readingTime: '10',
     content: `Artık sadece kod yazmak yetmiyor, kod yazdıran sistemleri (Agent, Antigravity, Claude, vs.) mimarimize entegre etmek gerekiyor. Kodlamadaki Agentic Workflow (ajan tabanlı akış) devrimi.`,
-  },
-  {
-    slug: 'ai-agents-pair-programming',
-    title: "Pair Programming'de Yapay Zeka Devrimi",
-    category: 'AI',
-    author: 'Hüseyin DOL',
-    coverImage:
-      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2000&auto=format&fit=crop',
-    publishedAt: '2026-04-23',
-    readingTime: '6',
-    content: `Github Copilot'un ötesinde, ortam farkındalığına sahip model asistanlarla problem çözümü, log analizi, hata giderme ve baştan sona modül yaratımında elde edilen zaman kazanımları.`,
   },
   {
     slug: 'ai-agents-future',
@@ -337,26 +257,6 @@ articlesData.forEach(article => {
 
     case 'frontend-storybook-playground':
       customBody = `Geliştirdiğiniz bir Button bileşeninin loading, disabled, error, success, farklı boyut ve renk varyasyonlarını görmek için projeyi çalıştırıp ilgili sayfaya navigasyonla ulaşmak, o state'i manuel oluşturmak ve ekran görüntüsü almak — bu akış 10 dakikanızı alır ve tekrar edilemez. Storybook ile bu 10 dakika 5 saniyeye düşer.\n\n"Component-Driven Development" (CDD) kültürü ile her bileşeni projenin routing, state management ve API bağımlılıklarından tamamen kopararak izole bir sandbox'ta geliştiriyoruz. Storybook her bileşen için bir "hikaye" (story) dosyası tutar ve bu hikâyeler bileşenin tüm olası durumlarını sergiler:\n\n\`\`\`tsx\n// Button.stories.tsx\nimport type { Meta, StoryObj } from '@storybook/react';\nimport { Button } from './Button';\n\nconst meta: Meta<typeof Button> = {\n  title: 'UI/Button',\n  component: Button,\n  tags: ['autodocs'], // Otomatik doküman oluştur\n};\n\nexport default meta;\ntype Story = StoryObj<typeof Button>;\n\nexport const Default: Story = { args: { children: 'Kaydet' } };\nexport const Loading: Story = { args: { children: 'Yükleniyor...', isLoading: true } };\nexport const Disabled: Story = { args: { children: 'Pasif', disabled: true } };\nexport const Destructive: Story = { args: { children: 'Sil', variant: 'destructive' } };\n\`\`\`\n\nEkibin yazılımcı olmayan üyeleri — tasarımcılar, ürün sahipleri, QA mühendisleri — Storybook'un deploy edilmiş web arayüzüne girip bileşen kataloğunu sanki bir vitrin inceler gibi gezebiliyor. "Bu butonun hover rengini değiştirelim" gibi geri bildirimler, artık Slack mesajlarında değil doğrudan bileşenin yanında comment olarak bırakılıyor.\n\nStorybook aynı zamanda visual regression testing için de temel oluşturuyor: Chromatic entegrasyonuyla her PR'da bileşenlerin pixel-level karşılaştırması yapılıyor, istem dışı görsel değişiklikler anında yakalanıyor.`
-      break
-
-    case 'frontend-storybook-args':
-      customBody = `Storybook'un asıl gücü sadece bir bileşen kataloğu sunması değil; Args ve Controls sistemiyle interaktif bir deney laboratuvarı yaratmasıdır. TypeScript interface'inizdeki her prop otomatik olarak bir kontrol paneli elemanına dönüşür: string prop'lar text input, boolean'lar toggle switch, enum'lar select dropdown olarak görünür.\n\nBu mekanizma sayesinde bir bileşenin davranışını anlamak için kaynak kodunu okumak gerekmez. Controls panelinde \`variant\`, \`size\`, \`isLoading\`, \`disabled\` gibi prop'ları gerçek zamanlı değiştirip sonucu anında görebilirsiniz.\n\n\`\`\`tsx\n// Input.stories.tsx\nimport type { Meta, StoryObj } from '@storybook/react';\nimport { Input } from './Input';\n\nconst meta: Meta<typeof Input> = {\n  title: 'Forms/Input',\n  component: Input,\n  argTypes: {\n    variant: {\n      control: 'select',\n      options: ['default', 'error', 'success'],\n      description: 'Input görsel durumu',\n    },\n    size: {\n      control: 'radio',\n      options: ['sm', 'md', 'lg'],\n    },\n    placeholder: { control: 'text' },\n    disabled: { control: 'boolean' },\n  },\n};\n\nexport default meta;\ntype Story = StoryObj<typeof Input>;\n\nexport const Default: Story = {\n  args: {\n    placeholder: 'E-posta adresiniz',\n    variant: 'default',\n    size: 'md',\n  },\n};\n\nexport const WithError: Story = {\n  args: {\n    placeholder: 'Geçersiz e-posta',\n    variant: 'error',\n    helperText: 'Lütfen geçerli bir e-posta adresi girin',\n  },\n};\n\`\`\`\n\nTasarımcılar artık "Bu input hata durumunda nasıl görünüyor?", "Large boyutta label taşıyor mu?", "Disabled iken focus ring kalıyor mu?" sorularının cevabını bana sormak yerine Storybook üzerinden saniyeler içinde kendileri keşfedebiliyor.\n\nActions addon'u ile de bileşenin emit ettiği event'ler (onChange, onClick, onSubmit) konsolda loglanıyor. Bu sayede bir form bileşeninin doğru değerleri doğru zamanda gönderip göndermediğini, interaktif olarak doğrulayabiliyoruz. Uçtan uca iletişim maliyeti dramatik biçimde düştü ve PR review süreleri ortalama %30 kısaldı.`
-      break
-
-    case 'frontend-storybook-addons':
-      customBody = `Vanilla Storybook faydalıdır ama onu kurumsal bir araç haline getiren şey eklenti (addon) ekosistemidir. Elly UI Kit projemizde kullandığımız kritik addon'lar ve her birinin sağladığı değer şöyledir:\n\n**@storybook/addon-a11y (Accessibility):** Her bileşenin WCAG 2.1 standartlarına uygunluğunu canlı olarak test eder. Renk kontrastı yetersizliği, eksik ARIA label'ları, keyboard navigation sorunları gibi erişilebilirlik hatalarını bileşen render edildiği anda yakalar. Projemizde bu addon sayesinde 47 erişilebilirlik sorunu prod'a çıkmadan tespit edildi.\n\n\`\`\`tsx\n// .storybook/main.ts\nconst config: StorybookConfig = {\n  addons: [\n    '@storybook/addon-essentials',  // Controls, Actions, Viewport\n    '@storybook/addon-a11y',        // Accessibility\n    '@storybook/addon-themes',      // Dark/Light mode\n    '@storybook/addon-interactions', // Play functions\n  ],\n  docs: {\n    autodocs: 'tag', // 'autodocs' tag'i olan bileşenlere otomatik doküman\n  },\n};\n\`\`\`\n\n**@storybook/addon-themes:** Dark Mode / Light Mode geçişlerini tek tıkla yapabilme imkanı sağlar. Bileşenlerimizin her iki temada da doğru görünüp görünmediğini yan yana karşılaştırmalı test edebiliyoruz. Bu özellik özellikle Elly mobil uygulamasının dark-mode ağırlıklı tasarımı için kritikti.\n\n**MDX Docs ve Autodocs:** TypeScript interface'lerinden otomatik oluşturulan prop tabloları, kullanım örnekleri ve tasarım kılavuzları. Her bileşenin yanında "ne zaman kullanılmalı", "hangi variant ne işe yarar" gibi bilgiler MDX formatında yaşıyor. Yeni katılan developer'lar hiçbir PDF veya Confluence sayfasına ihtiyaç duymadan, Storybook üzerinden tüm design system'i keşfedebiliyor.\n\n**Play Functions ve Interaction Testing:** Storybook 7+ ile gelen bu özellik sayesinde, story dosyalarının içine kullanıcı etkileşim senaryoları yazılabiliyor. Bir formun doldurulması, submit edilmesi ve validasyon mesajının görünmesi gibi akışlar otomatik test edilebiliyor — vitest/jest'e ek olarak görsel seviyede integration test imkanı.\n\nSağlanan bu altyapı, UI Kit'i tüketen tüm ekiplerin bileşen davranışlarını, erişilebilirlik durumlarını ve tema uyumluluğunu tek bir merkezden doğrulamasını mümkün kıldı.`
-      break
-
-    case 'frontend-growthbook-ab-testing':
-      customBody = `Yeni tasarladığınız bir sayfa düzeninin konversiyon oranını gerçekten artıracağından emin misiniz? Sezgilere dayalı kararlar risk barındırır; veriye dayalı kararlar ise ölçülebilir başarı getirir. Elly platformunda Newsletter abonelik oranını artırmak için "büyük yeşil CTA" vs "minimal floating button" denemesi yapmamız gerekiyordu. Growthbook tam bu noktada devreye girdi.\n\nGrowthbook açık kaynaklı bir feature flag ve A/B test platformudur. SDK'sını projeye entegre ettikten sonra, deneyler Growthbook Dashboard'unda tanımlanır ve kod tarafında hangi varyantın gösterileceği runtime'da belirlenir. Her kullanıcı deterministik olarak (user ID veya cookie bazlı) bir gruba atanır, böylece aynı kullanıcı her zaman aynı varyantı görür.\n\n\`\`\`tsx\n// providers/GrowthbookProvider.tsx\nimport { GrowthBook, GrowthBookProvider } from '@growthbook/growthbook-react';\n\nconst gb = new GrowthBook({\n  apiHost: 'https://cdn.growthbook.io',\n  clientKey: process.env.NEXT_PUBLIC_GROWTHBOOK_KEY,\n  enableDevMode: process.env.NODE_ENV === 'development',\n  trackingCallback: (experiment, result) => {\n    // Google Analytics'e deney verisi gönder\n    gtag('event', 'experiment_viewed', {\n      experiment_id: experiment.key,\n      variation_id: result.key,\n    });\n  },\n});\n\nexport function AppGrowthbookProvider({ children }) {\n  return <GrowthBookProvider growthbook={gb}>{children}</GrowthBookProvider>;\n}\n\`\`\`\n\nKomponent seviyesinde deney uygulamak son derece temizdir:\n\n\`\`\`tsx\nimport { useFeatureIsOn } from '@growthbook/growthbook-react';\n\nexport function NewsletterSection() {\n  const isNewDesign = useFeatureIsOn('newsletter-v2');\n\n  return isNewDesign ? <NewsletterV2 /> : <NewsletterV1 />;\n}\n\`\`\`\n\nGrowthbook'un en değerli özelliklerinden biri **kill switch** mekanizmasıdır. Yeni varyant canlıya çıktıktan sonra ani bir hata artışı veya konversiyon düşüşü görülürse, kod deploy etmeden Growthbook panelinden feature flag tek tıkla kapatılır ve tüm kullanıcılar anında eski varyanta döner. Bu mekanizma sayesinde risk kontrollü deployment kültürünü ekibe yerleştirdik.\n\nDeney sonuçları yeterli istatistiksel güce (statistical power) ulaştığında, başarılı varyant kalıcı hale getirilir ve feature flag kodu temizlenir (technical debt önleme). Başarısız varyant ise değerli bir öğrenme kaynağı olarak dokümante edilir.`
-      break
-
-    case 'frontend-growthbook-nextjs':
-      customBody = `Client-side A/B testlerinin en büyük sorunu "flickering" efektidir: kullanıcı sayfayı açtığında önce varsayılan varyantı görür, JavaScript yüklendikten sonra Growthbook SDK çalışır ve alternatif varyanta geçiş olur. Bu 200-500ms'lik sıçrama UX'i bozan, CLS (Cumulative Layout Shift) metriğini kötüleştiren ve güven hissi zedeleyen bir problemdir.\n\nBu problemi çözmek için Growthbook feature evaluation'ını Next.js'in sunucu katmanına taşıdık. İki farklı yaklaşımı denedik ve ikisini de birlikte kullanıyoruz:\n\n**Yaklaşım 1 — Middleware ile Edge Evaluation:** Next.js middleware katmanında (Edge Runtime) kullanıcının cookie'sindeki experiment assignment'ını okuyup, doğru varyantın server component'e iletilmesini sağlıyoruz.\n\n\`\`\`ts\n// middleware.ts\nimport { GrowthBook } from '@growthbook/growthbook';\n\nexport async function middleware(request: NextRequest) {\n  const gb = new GrowthBook({\n    apiHost: process.env.GROWTHBOOK_API_HOST,\n    clientKey: process.env.GROWTHBOOK_CLIENT_KEY,\n  });\n\n  // Kullanıcı ID'sini cookie'den al veya oluştur\n  const userId = request.cookies.get('gb_user_id')?.value || crypto.randomUUID();\n\n  gb.setAttributes({ id: userId });\n  await gb.init({ timeout: 1000 });\n\n  const response = NextResponse.next();\n  response.cookies.set('gb_user_id', userId, { maxAge: 60 * 60 * 24 * 365 });\n\n  // Feature flag değerlerini header olarak ilet\n  response.headers.set('x-gb-features', JSON.stringify(gb.getFeatures()));\n  return response;\n}\n\`\`\`\n\n**Yaklaşım 2 — Server Component'te Evaluation:** Async server component'lerde Growthbook instance'ını oluşturup, varyant değerlendirmesini sunucuda yapıyoruz. Bu sayede istemciye gönderilen HTML zaten doğru varyantı içeriyor — sıfır flickering.\n\n\`\`\`tsx\n// app/page.tsx (Server Component)\nexport default async function HomePage() {\n  const gb = await getServerGrowthbook(); // Server-side init\n  const showNewHero = gb.isOn('hero-redesign-2025');\n\n  return showNewHero ? <HeroV2 /> : <HeroV1 />;\n}\n\`\`\`\n\nBu yaklaşımla CLS skoru sıfıra indi, arama motorları testlerimizi kötü amaçlı cloaking olarak algılamıyor ve Lighthouse Performance metrikleri deneylerden bağımsız olarak stabil kalıyor. SEO ve A/B testing arasındaki geleneksel çatışma, SSR tabanlı bu mimariyle tamamen çözülmüş oldu.`
-      break
-
-    case 'frontend-growthbook-metrics':
-      customBody = `Feature flag ile canlıya çıkan bir deneyin ne zaman "kazandı" veya "kaybetti" ilan edileceğine duygular değil, istatistik karar verir. Yetersiz veriyle erken karar vermek (peeking problem) yanıltıcı sonuçlara yol açar; çok uzun beklemek ise fırsat maliyeti yaratır. Growthbook bu dengeyi otomatik olarak yönetir.\n\nGrowthbook panelinde her deney için tanımladığımız metrikler:\n\n- **Primary Metric (Birincil Metrik):** Newsletter kayıt oranı, buton tıklama oranı veya sepete ekleme gibi doğrudan ölçülmek istenen KPI.\n- **Guardrail Metrics (Koruma Metrikleri):** Sayfa yüklenme süresi, hata oranı, bounce rate gibi "bozulmaması gereken" metrikler. Yeni varyant konversiyon artırsa bile sayfa hızını düşürüyorsa, deney başarısız sayılır.\n\n\`\`\`\nDeney: newsletter-cta-redesign\n──────────────────────────────────\nVaryant A (Kontrol):  %2.3 konversiyon  (n=12,450)\nVaryant B (Yeni CTA): %3.1 konversiyon  (n=12,380)\n\nRelative Uplift: +34.8%\nP-Value: 0.003 (< 0.05 ✅)\nStatistical Power: 92% (> 80% ✅)\nBayesian Probability: 99.2% chance to win\n\nGuardrail: Page Load Time\n  A: 1.2s  |  B: 1.3s  (△+0.1s, kabul edilebilir)\n──────────────────────────────────\nSonuç: ✅ Varyant B KAZANDI — kalıcı hale getir\n\`\`\`\n\nP-Value 0.05'in altına düştüğünde ve yeterli sample size'a ulaşıldığında, Growthbook otomatik olarak "95% confidence ile Varyant B kazandı" sonucunu üretir. Bu noktada takım kararı alır:\n\n**Başarılıysa:** Feature flag kaldırılır, Varyant B kodu kalıcı hale getirilir. Bu aşama kritiktir çünkü temizlenmeyen feature flag'ler technical debt yaratır. Her temizleme işlemi bir PR ile yapılır ve \`EXPERIMENT_CLEANUP\` etiketi ile işaretlenir.\n\n**Başarısızsa:** Deney dokümante edilir, öğrenimler Notion'a kaydedilir. "Neden işe yaramadı?" analizi yapılır ve bir sonraki hipotez oluşturulur.\n\nBu döngüyü son 6 ayda 8 deney için uyguladık. Bunların 5'i başarılı oldu ve toplamda Newsletter kayıt oranını %2.1'den %3.8'e çıkardık. Veriye dayalı karar alma kültürü, ürün ekibinin "en yüksek sesli kişinin fikri kazanır" mentalitesinden çıkmasını sağladı.`
       break
 
     case 'mobile-react-native-elly':
@@ -718,63 +618,6 @@ Her animasyon türü için doğru easing fonksiyonu seçmek UX kalitesini belirl
 Kullanıcının tıkladığı nesnenin yumuşakça esnemesi, sayfalar arasındaki sürükleme ivmesinin parmak hızını algılayıp tepki vermesi, UI/UX deneyimi açısından ürünümüzün kalitesini premium segmente yükseltti.`
       break
 
-    case 'ai-mcp-architecture':
-      customBody = `Yapay zekanın sadece kod üreten bir asistan değil, arka plan ekosisteminize tamamen dahil olabildiği bir iletişim katmanı var: Model Context Protocol (MCP). Bu, Büyük Dil Modellerinin (LLM) dış API'ler ve cihazlarla otonom görüşebilmesinin köprüsüdür.
-
-## MCP Nedir? Temel Kavramlar
-
-MCP, Anthropic tarafından geliştirilen ve LLM'lerin dış dünyayla standart bir arayüz üzerinden etkileşim kurmasını sağlayan açık bir protokoldür. Tıpkı HTTP'nin web iletişimi için standart oluşturması gibi, MCP de yapay zeka ile araçlar arasında standart bir iletişim katmanı kurar.
-
-\`\`\`
-┌─────────────┐     MCP Protocol     ┌─────────────────┐
-│  LLM Client │ ◄──────────────────► │   MCP Server    │
-│  (Claude,   │   JSON-RPC 2.0      │  (Your Tools)   │
-│   GPT, vs.) │   over stdio/SSE    │                 │
-└─────────────┘                      └────────┬────────┘
-                                              │
-                                    ┌─────────▼─────────┐
-                                    │  External Systems  │
-                                    │  - Database        │
-                                    │  - REST API        │
-                                    │  - File System     │
-                                    │  - CI/CD Pipeline  │
-                                    └───────────────────┘
-\`\`\`
-
-Protokolün üç temel yapı taşı vardır:
-
-- **Tools (Araçlar):** Model'in çağırabileceği fonksiyonlar. Örneğin \`search_database\`, \`create_ticket\`, \`deploy_service\`.
-- **Resources (Kaynaklar):** Model'in okuyabileceği veri kaynakları. Dosya sistemindeki loglar, veritabanı tabloları, API yanıtları.
-- **Prompts (Şablonlar):** Önceden tanımlanmış görev şablonları. "Bu log dosyasını analiz et" gibi yapılandırılmış komut setleri.
-
-## McpProjectScaffold: Kendi Deneyimimiz
-
-Kendi geliştirdiğimiz \`McpProjectScaffold\` yapısında, Claude ve diğer LLM agent'larına kurumsal dosya sistemimizi ve SQL database loglarımızı context olarak beslemeyi başardık.
-
-\`\`\`json
-{
-  "mcpServers": {
-    "elly-backend": {
-      "command": "node",
-      "args": ["./mcp-server/index.js"],
-      "env": {
-        "DB_CONNECTION": "postgresql://...",
-        "API_BASE_URL": "https://api.internal"
-      }
-    }
-  }
-}
-\`\`\`
-
-Bu konfigürasyon sayesinde Claude, "Son 24 saatte en çok hata veren endpoint hangisi?" sorusuna doğrudan veritabanı sorgusu yaparak cevap verebiliyor. Agent'lar artık dış API'lere sadece soru sorma yetkisinden çıkıp eyleme (Action) dönüşüyorlar.
-
-## Neden Devrimsel?
-
-Geleneksel API entegrasyonlarında her LLM sağlayıcısı için ayrı entegrasyon kodu yazılması gerekiyordu. MCP ile tek bir sunucu yazıyorsunuz ve bu sunucu Claude, GPT, Gemini veya herhangi bir MCP uyumlu istemciyle çalışabiliyor. Bu "write once, connect everywhere" felsefesi, yapay zeka entegrasyonu maliyetini dramatik biçimde düşürüyor.
-
-Bu protokol entegrasyonu, yazılım endüstrisinde bir modelin kod dizinine dışarıdan bakması yerine bizzat ekosistemin omurgasına girerek orkestrasyona kılavuzluk yapmasını, iş yapma paradigmalarımızı derinden değiştirdiğini ispatlıyor.`
-      break
-
     case 'ai-mcp-integration':
       customBody = `Şirketinizdeki çok değerli backend metrikleri ya da CI/CD süreçlerinizi yöneten araçlarınız yapay zekanın doğrudan müdahalesine tamamen uzağa konuşlandırılmış durumda. Bunu kırmanın anahtarı kendi özel MCP sunucunuzu (Server) inşa etmektir.
 
@@ -1061,71 +904,6 @@ Her agent kendi sorumluluğundaki dosyalarda çalışır, aynı dosyaya birden f
 Agent'ların projeyi anlaması için \`CLAUDE.md\` dosyası kritik öneme sahiptir. Bu dosya projenin tech stack'ini, kodlama kurallarını, dizin yapısını ve kaçınılması gereken anti-pattern'leri içerir. Agent her oturum başında bu dosyayı okuyarak projenin bağlamını kavrar.
 
 Junior ya da Senior ayırt etmeksizin tüm ekibin sadece bir kodlayıcıdan ziyade, bir planlayıcı ve Geliştirici Mühendis gibi projeye geniş tepeden bakabilen mimar seviyesine yükselmesi artık bu akışlarla saatler değil dakikalar alıyor.`
-      break
-
-    case 'ai-agents-pair-programming':
-      customBody = `Eskiden "Pair Programming" dediğimiz yan yana oturup kod analiz eden iki yazılımcı mentalitesi, Github Copilot'un bile ötesine geçen "Workspace-aware" ajanlarla devasa bir verimlilik partnerliğine dönüştü.
-
-## Copilot'un Ötesi: Context-Aware Asistanlar
-
-Github Copilot satır bazlı otomatik tamamlama sunar — faydalıdır ama sınırlıdır. Yeni nesil AI pair programming asistanları ise **tüm projeyi** anlayan, git geçmişini bilen, CI/CD sonuçlarını okuyabilen ve hatta Slack konuşmalarınızdan bağlam çıkarabilen otonom partnerlerdir.
-
-\`\`\`
-Copilot:
-  Kapsamı: Mevcut dosya + açık tab'lar
-  Yeteneği: Satır/blok tamamlama
-  Etkileşim: Pasif (siz yazarsınız, o tamamlar)
-
-Context-Aware Agent:
-  Kapsamı: Tüm repo + git history + CI logs + issue tracker
-  Yeteneği: Multi-file refactoring, test yazma, PR açma
-  Etkileşim: Aktif (siz talimat verirsiniz, o uygular)
-\`\`\`
-
-## Gerçek Dünya Pair Programming Senaryoları
-
-**Senaryo 1 — Log Tabanlı Debug:**
-Production'da bir performance degradation fark ettik. Agent'a Trace ID verdik ve şu akış gerçekleşti:
-
-\`\`\`
-Ben: "Bu trace ID'deki yavaşlığın kaynağını bul: abc-123-def"
-
-Agent:
-1. Backend log dosyalarını taradı (Elasticsearch MCP aracılığıyla)
-2. OrderService.calculateDiscount() metodunun 3.2s sürdüğünü tespit etti
-3. İlgili Java kaynak kodunu okudu
-4. N+1 query problemi tespit etti: her sipariş için ayrı DB sorgusu
-5. Batch query ile çözüm önerdi ve PoC kodu yazdı
-6. Benchmark sonucu: 3.2s → 180ms
-
-Toplam süre: 12 dakika (manuel debug ile: tahminen 3-4 saat)
-\`\`\`
-
-**Senaryo 2 — Yeni Modül Geliştirme:**
-"Notification modülü ekle: push notification, in-app notification ve email notification desteklesin" talimatıyla agent şunları üretti:
-
-- \`src/features/notifications/\` dizin yapısı
-- TypeScript interface'leri ve enum'lar
-- Service katmanı (strategy pattern ile notification channel seçimi)
-- API route handlers
-- React hook'ları (\`useNotifications\`, \`useNotificationPreferences\`)
-- Vitest test dosyaları (%80+ coverage)
-
-**Senaryo 3 — Cross-Stack Debugging:**
-Frontend'de görünen bir hata aslında backend'den kaynaklanıyor olabilir. Agent hem TypeScript hem Java tarafını anlayabildiği için, HTTP response'daki hata kodundan yola çıkıp backend'deki Spring controller'ı inceleyip root cause'u tespit edebiliyor.
-
-## Verimlilik Metrikleri
-
-Agent destekli çalışma modelini son 3 ayda uygulayarak ölçtüğümüz sonuçlar:
-
-| Metrik | Agent Öncesi | Agent Sonrası | İyileşme |
-|--------|-------------|---------------|----------|
-| Bug fix ortalama süresi | 4.2 saat | 1.1 saat | %74 |
-| Yeni feature teslim süresi | 3.5 gün | 1.8 gün | %49 |
-| PR review süresi | 2.1 saat | 0.8 saat | %62 |
-| Test coverage | %45 | %72 | +27 puan |
-
-Bu sayede sadece klavye vuruşlarımız azalmakla kalmıyor, projelerin günlerce süren debug krizleri yarım saatte otonom bir test doğrulamasıyla başarıya ulaşıyor.`
       break
 
     case 'ai-agents-future':
