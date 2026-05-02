@@ -40,6 +40,9 @@ next-env.d.ts
 .cache/
 .parcel-cache/
 
+# Static presentation HTML (exports; avoid Prettier reflow)
+public/docs/elly_*.html
+
 # API and documentation
 public/openapi-generated.json
 next.openapi.json
