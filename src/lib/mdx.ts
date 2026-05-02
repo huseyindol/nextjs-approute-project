@@ -86,7 +86,7 @@ export const getAllPosts = unstable_cache(
       return []
     }
   },
-  ['all-posts'],
+  ['blog-posts-fs-v2026-05'],
   { revalidate: 86400, tags: ['blog-posts'] },
 )
 

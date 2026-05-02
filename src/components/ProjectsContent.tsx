@@ -135,7 +135,7 @@ const projects: Project[] = [
     ],
     highlights: [
       "Elly CMS'den beslenen dinamik sayfa sistemi",
-      'MDX tabanlı teknik blog (31+ makale)',
+      'MDX tabanlı teknik blog (24 makale)',
       'unstable_cache ile 24 saatlik blog cache',
       'Framer Motion scroll animasyonları',
     ],
