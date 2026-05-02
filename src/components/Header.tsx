@@ -17,6 +17,7 @@ const mainNavLinks = [
 ]
 
 const ellyNavLinks = [
+  { href: '/projects/elly', label: 'Elly' },
   { href: '/projects/elly-architecture', label: 'Architecture' },
   { href: '/projects/elly-sunum', label: 'Sunum' },
   { href: '/projects/elly-presentation', label: 'Sunum (EN)' },
@@ -37,6 +38,7 @@ export default function Header() {
   }, [])
 
   function isActive(href: string) {
+    if (href === '/projects/elly') return pathname === '/projects/elly'
     return pathname === href || pathname.startsWith(href + '/')
   }
 

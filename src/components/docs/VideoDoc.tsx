@@ -9,15 +9,23 @@ import {
   animate,
 } from './animations/AnimationEngine'
 
-// --- Helpers from original docs ---
+const W = 1920
+const H = 1080
+const FONT = "'DM Sans', sans-serif"
+const MONO = "'DM Mono', monospace"
+
 const BG = '#0d0e12'
 const SURFACE = '#15171e'
+const SURF2 = '#1c1e28'
 const BORDER = '#252736'
 const TEXT = '#e6e8f0'
 const MUTED = '#5a5e75'
 const ACCENT = 'oklch(68% 0.20 255)'
 const ACCENT2 = 'oklch(68% 0.20 185)'
 const ACCENT3 = 'oklch(68% 0.20 320)'
+const RED_C = 'oklch(65% 0.18 25)'
+
+type EasingFn = (t: number) => number
 
 function tv(
   t: number,
@@ -25,7 +33,7 @@ function tv(
   e: number,
   from: number,
   to: number,
-  ease = Easing.easeInOutCubic,
+  ease: EasingFn = Easing.easeInOutCubic,
 ) {
   return animate({ from, to, start: s, end: e, ease })(t)
 }
@@ -40,8 +48,6 @@ function withAlpha(color: string, a: number) {
   return color.replace(')', ` / ${a})`)
 }
 
-// --- Scene Components ---
-
 function Scene({ children }: { children: React.ReactNode }) {
   const { localTime, duration } = useSprite()
   const d = 0.4
@@ -55,7 +61,7 @@ function Scene({ children }: { children: React.ReactNode }) {
         position: 'absolute',
         inset: 0,
         opacity: op,
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: FONT,
         color: TEXT,
       }}
     >
@@ -65,9 +71,17 @@ function Scene({ children }: { children: React.ReactNode }) {
   )
 }
 
-function EyeLabel({ text, color, appear }: any) {
+function EyeLabel({
+  text,
+  color,
+  appear,
+}: {
+  text: string
+  color?: string
+  appear?: number
+}) {
   const { localTime } = useSprite()
-  const a = appear || 0.3
+  const a = appear ?? 0.3
   return (
     <div
       style={{
@@ -76,11 +90,11 @@ function EyeLabel({ text, color, appear }: any) {
         top: 62,
         transform: 'translateX(-50%)',
         opacity: tv(localTime, a, a + 0.5, 0, 1),
-        fontFamily: 'JetBrains Mono, monospace',
+        fontFamily: MONO,
         fontSize: 17,
         letterSpacing: 4,
         textTransform: 'uppercase',
-        color: color || ACCENT,
+        color: color ?? ACCENT,
         whiteSpace: 'nowrap',
       }}
     >
@@ -89,9 +103,9 @@ function EyeLabel({ text, color, appear }: any) {
   )
 }
 
-function SlideTitle({ text, appear }: any) {
+function SlideTitle({ text, appear }: { text: string; appear?: number }) {
   const { localTime } = useSprite()
-  const a = appear || 0.5
+  const a = appear ?? 0.5
   const op = tv(localTime, a, a + 0.55, 0, 1)
   const ty = tv(localTime, a, a + 0.55, 22, 0, Easing.easeOutCubic)
   return (
@@ -114,7 +128,115 @@ function SlideTitle({ text, appear }: any) {
   )
 }
 
-// --- Individual Scenes ---
+function ConnLine({
+  x1,
+  y1,
+  x2,
+  y2,
+  appear = 0,
+  drawDur = 0.5,
+  color = BORDER,
+  width = 2,
+}: {
+  x1: number
+  y1: number
+  x2: number
+  y2: number
+  appear?: number
+  drawDur?: number
+  color?: string
+  width?: number
+}) {
+  const { localTime } = useSprite()
+  const len = Math.hypot(x2 - x1, y2 - y1)
+  const p = tv(localTime, appear, appear + drawDur, 0, 1)
+  return (
+    <line
+      x1={x1}
+      y1={y1}
+      x2={x2}
+      y2={y2}
+      stroke={color}
+      strokeWidth={width}
+      strokeDasharray={len}
+      strokeDashoffset={len * (1 - p)}
+      strokeLinecap="round"
+    />
+  )
+}
+
+function BoxNode({
+  cx,
+  cy,
+  w = 220,
+  h = 85,
+  label,
+  sub,
+  color = ACCENT,
+  appear = 0,
+}: {
+  cx: number
+  cy: number
+  w?: number
+  h?: number
+  label: string
+  sub?: string
+  color?: string
+  appear?: number
+}) {
+  const { localTime } = useSprite()
+  const op = tv(localTime, appear, appear + 0.5, 0, 1)
+  const sc = tv(localTime, appear, appear + 0.5, 0.8, 1, Easing.easeOutBack)
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: cx - w / 2,
+        top: cy - h / 2,
+        width: w,
+        height: h,
+        background: withAlpha(color, 0.12),
+        border: `1px solid ${withAlpha(color, 0.42)}`,
+        borderRadius: 14,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 5,
+        opacity: op,
+        transform: `scale(${sc})`,
+        transformOrigin: 'center',
+      }}
+    >
+      <div
+        style={{
+          fontFamily: MONO,
+          fontSize: 17,
+          color,
+          fontWeight: 500,
+          textAlign: 'center',
+          padding: '0 12px',
+        }}
+      >
+        {label}
+      </div>
+      {sub && (
+        <div
+          style={{
+            fontSize: 14,
+            color: MUTED,
+            textAlign: 'center',
+            padding: '0 10px',
+          }}
+        >
+          {sub}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ──────────── SCENE 1 · TITLE (0–5s) ────────────
 
 function SceneTitle() {
   const { localTime: lt } = useSprite()
@@ -156,7 +278,7 @@ function SceneTitle() {
           top: '27%',
           transform: 'translateX(-50%)',
           opacity: eyeOp,
-          fontFamily: 'JetBrains Mono, monospace',
+          fontFamily: MONO,
           fontSize: 18,
           letterSpacing: 5,
           textTransform: 'uppercase',
@@ -220,7 +342,7 @@ function SceneTitle() {
               background: withAlpha(ACCENT, 0.12),
               border: `1px solid ${withAlpha(ACCENT, 0.35)}`,
               borderRadius: 10,
-              fontFamily: 'JetBrains Mono, monospace',
+              fontFamily: MONO,
               fontSize: 17,
               color: TEXT,
               opacity: tv(lt, 2.1 + i * 0.22, 2.7 + i * 0.22, 0, 1),
@@ -235,6 +357,8 @@ function SceneTitle() {
     </Scene>
   )
 }
+
+// ──────────── SCENE 2 · ENTITIES (5–13s) ────────────
 
 function SceneEntities() {
   const { localTime: lt } = useSprite()
@@ -291,8 +415,8 @@ function SceneEntities() {
       ],
     },
   ]
-  const GAP = 430,
-    PX0 = 120
+  const GAP = 430
+  const PX0 = 120
 
   return (
     <Scene>
@@ -321,7 +445,7 @@ function SceneEntities() {
                 border: `1px solid ${withAlpha(p.color, 0.45)}`,
                 borderRadius: 14,
                 padding: '14px 20px',
-                fontFamily: 'JetBrains Mono, monospace',
+                fontFamily: MONO,
                 fontSize: 22,
                 color: p.color,
                 fontWeight: 600,
@@ -341,7 +465,7 @@ function SceneEntities() {
                     border: `1px solid ${BORDER}`,
                     borderRadius: 9,
                     padding: '10px 18px',
-                    fontFamily: 'JetBrains Mono, monospace',
+                    fontFamily: MONO,
                     fontSize: 18,
                     color: TEXT,
                   }}
@@ -357,25 +481,1700 @@ function SceneEntities() {
   )
 }
 
-// --- Main Component ---
+// ──────────── SCENE 3 · AUTH (13–21s) ────────────
+
+function SceneAuth() {
+  const { localTime: lt } = useSprite()
+
+  const loginSteps = [
+    {
+      label: 'POST /api/auth/login',
+      sub: 'AdminLoginInterceptor · TenantLoginInterceptor',
+      color: ACCENT,
+      a: 0.8,
+    },
+    {
+      label: 'JWT Üretimi',
+      sub: 'Access + Refresh · loginSource + tenantId claim',
+      color: ACCENT,
+      a: 1.6,
+    },
+    {
+      label: 'POST /api/auth/refresh',
+      sub: 'RefreshToken doğrulama · revoke kontrolü · yeni token',
+      color: ACCENT,
+      a: 2.4,
+    },
+  ]
+  const oauthSteps = [
+    {
+      label: 'POST /api/auth/register',
+      sub: 'User oluştur · Rol ata · RabbitMQ doğrulama maili',
+      color: ACCENT2,
+      a: 0.8,
+    },
+    {
+      label: 'OAuth2 Providers',
+      sub: 'Google · Facebook · GitHub → SuccessHandler → JWT',
+      color: ACCENT2,
+      a: 1.6,
+    },
+    {
+      label: 'Redis Auth Cache',
+      sub: 'auth:user:{username} · TTL 30dk · 3 SQL → 1 Redis GET',
+      color: ACCENT2,
+      a: 2.4,
+    },
+  ]
+
+  const SW = 760
+  const SH = 110
+  const lx = 120
+  const rx = 1020
+
+  return (
+    <Scene>
+      <EyeLabel text="Kimlik & Erişim" />
+      <SlideTitle text="Auth Mimarisi" />
+
+      {loginSteps.map((s, i) => {
+        const op = tv(lt, s.a, s.a + 0.5, 0, 1)
+        const tx = tv(lt, s.a, s.a + 0.5, -40, 0, Easing.easeOutCubic)
+        return (
+          <div key={`login-${i}`}>
+            <div
+              style={{
+                position: 'absolute',
+                left: lx,
+                top: 230 + i * 190,
+                width: SW,
+                height: SH,
+                opacity: op,
+                transform: `translateX(${tx}px)`,
+                background: withAlpha(s.color, 0.1),
+                border: `1px solid ${withAlpha(s.color, 0.4)}`,
+                borderRadius: 13,
+                padding: '18px 24px',
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: MONO,
+                  fontSize: 20,
+                  color: s.color,
+                  fontWeight: 600,
+                  marginBottom: 8,
+                }}
+              >
+                {s.label}
+              </div>
+              <div style={{ fontSize: 18, color: MUTED }}>{s.sub}</div>
+            </div>
+            {i < loginSteps.length - 1 && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: lx + SW / 2 - 1,
+                  top: 230 + i * 190 + SH,
+                  width: 2,
+                  height: 80,
+                  background: `linear-gradient(180deg, ${s.color}, transparent)`,
+                  opacity: tv(lt, s.a + 0.4, s.a + 0.7, 0, 1),
+                }}
+              />
+            )}
+          </div>
+        )
+      })}
+
+      {oauthSteps.map((s, i) => {
+        const op = tv(lt, s.a, s.a + 0.5, 0, 1)
+        const tx = tv(lt, s.a, s.a + 0.5, 40, 0, Easing.easeOutCubic)
+        return (
+          <div key={`oauth-${i}`}>
+            <div
+              style={{
+                position: 'absolute',
+                left: rx,
+                top: 230 + i * 190,
+                width: SW,
+                height: SH,
+                opacity: op,
+                transform: `translateX(${tx}px)`,
+                background: withAlpha(s.color, 0.1),
+                border: `1px solid ${withAlpha(s.color, 0.4)}`,
+                borderRadius: 13,
+                padding: '18px 24px',
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: MONO,
+                  fontSize: 20,
+                  color: s.color,
+                  fontWeight: 600,
+                  marginBottom: 8,
+                }}
+              >
+                {s.label}
+              </div>
+              <div style={{ fontSize: 18, color: MUTED }}>{s.sub}</div>
+            </div>
+            {i < oauthSteps.length - 1 && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: rx + SW / 2 - 1,
+                  top: 230 + i * 190 + SH,
+                  width: 2,
+                  height: 80,
+                  background: `linear-gradient(180deg, ${s.color}, transparent)`,
+                  opacity: tv(lt, s.a + 0.4, s.a + 0.7, 0, 1),
+                }}
+              />
+            )}
+          </div>
+        )
+      })}
+
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          bottom: 70,
+          transform: 'translateX(-50%)',
+          opacity: tv(lt, 4.5, 5.2, 0, 1),
+          display: 'flex',
+          gap: 32,
+          alignItems: 'center',
+          fontFamily: MONO,
+          fontSize: 18,
+          color: MUTED,
+        }}
+      >
+        {[
+          'token: UUID',
+          'expiryDate: LocalDateTime',
+          'revoked: Boolean',
+          'user: ManyToOne',
+        ].map(f => (
+          <div
+            key={f}
+            style={{
+              padding: '8px 18px',
+              background: SURFACE,
+              border: `1px solid ${BORDER}`,
+              borderRadius: 8,
+              color: TEXT,
+            }}
+          >
+            {f}
+          </div>
+        ))}
+      </div>
+    </Scene>
+  )
+}
+
+// ──────────── SCENE 4 · FORM (21–29s) ────────────
+
+function SceneForm() {
+  const { localTime: lt } = useSprite()
+
+  const schemaFields = [
+    { k: 'id', v: 'UUID · Primary Key', a: 0.9 },
+    { k: 'version', v: 'Integer · şema versiyonlama', a: 1.2 },
+    { k: 'schema', v: 'JSONB → FormSchema (fields + config)', a: 1.5 },
+    { k: 'active', v: 'Boolean · yayın durumu', a: 1.8 },
+  ]
+  const fieldDef = [
+    { k: 'type', v: 'text · select · number', a: 2.3 },
+    { k: 'required', v: 'Boolean', a: 2.5 },
+    { k: 'validation', v: 'min · max · regex pattern', a: 2.7 },
+    { k: 'condition', v: 'field · operator · value', a: 2.9 },
+  ]
+  const validators = [
+    {
+      label: 'TextFieldValidator',
+      desc: 'min/max uzunluk, regex',
+      color: ACCENT3,
+      a: 3.5,
+    },
+    {
+      label: 'NumberFieldValidator',
+      desc: 'aralık, tam sayı kontrolü',
+      color: ACCENT3,
+      a: 3.9,
+    },
+    {
+      label: 'SelectFieldValidator',
+      desc: 'izin verilen değerler',
+      color: ACCENT3,
+      a: 4.3,
+    },
+  ]
+  const flow = [
+    'FormDefinition çek',
+    'Alanları iterate et',
+    'ConditionEvaluator',
+    'FieldValidator çalıştır',
+    'FormSubmission kaydet (JSONB)',
+  ]
+
+  return (
+    <Scene>
+      <EyeLabel text="Şema Güdümlü UI" />
+      <SlideTitle text="Form & Dinamik Alanlar" />
+
+      <div style={{ position: 'absolute', left: 100, top: 220, width: 500 }}>
+        <div
+          style={{
+            fontFamily: MONO,
+            fontSize: 16,
+            color: MUTED,
+            letterSpacing: 2,
+            textTransform: 'uppercase',
+            marginBottom: 12,
+            opacity: tv(lt, 0.7, 1.1, 0, 1),
+          }}
+        >
+          FormDefinition
+        </div>
+        {schemaFields.map(f => (
+          <div
+            key={f.k}
+            style={{
+              display: 'flex',
+              gap: 16,
+              marginBottom: 10,
+              opacity: tv(lt, f.a, f.a + 0.4, 0, 1),
+              transform: `translateX(${tv(lt, f.a, f.a + 0.4, -20, 0, Easing.easeOutCubic)}px)`,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: MONO,
+                fontSize: 19,
+                color: ACCENT,
+                width: 110,
+                flexShrink: 0,
+              }}
+            >
+              {f.k}
+            </div>
+            <div style={{ fontSize: 18, color: MUTED }}>{f.v}</div>
+          </div>
+        ))}
+        <div
+          style={{
+            margin: '20px 0 12px',
+            fontFamily: MONO,
+            fontSize: 16,
+            color: MUTED,
+            letterSpacing: 2,
+            textTransform: 'uppercase',
+            opacity: tv(lt, 2.0, 2.4, 0, 1),
+          }}
+        >
+          FieldDefinition
+        </div>
+        {fieldDef.map(f => (
+          <div
+            key={f.k}
+            style={{
+              display: 'flex',
+              gap: 16,
+              marginBottom: 10,
+              opacity: tv(lt, f.a, f.a + 0.4, 0, 1),
+              transform: `translateX(${tv(lt, f.a, f.a + 0.4, -20, 0, Easing.easeOutCubic)}px)`,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: MONO,
+                fontSize: 19,
+                color: ACCENT2,
+                width: 110,
+                flexShrink: 0,
+              }}
+            >
+              {f.k}
+            </div>
+            <div style={{ fontSize: 18, color: MUTED }}>{f.v}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ position: 'absolute', left: 700, top: 220, width: 520 }}>
+        <div
+          style={{
+            fontFamily: MONO,
+            fontSize: 16,
+            color: MUTED,
+            letterSpacing: 2,
+            textTransform: 'uppercase',
+            marginBottom: 16,
+            opacity: tv(lt, 3.2, 3.6, 0, 1),
+          }}
+        >
+          Strateji Deseni
+        </div>
+        {validators.map(v => (
+          <div
+            key={v.label}
+            style={{
+              marginBottom: 14,
+              opacity: tv(lt, v.a, v.a + 0.5, 0, 1),
+              transform: `translateY(${tv(lt, v.a, v.a + 0.5, 16, 0, Easing.easeOutBack)}px)`,
+              background: withAlpha(v.color, 0.1),
+              border: `1px solid ${withAlpha(v.color, 0.35)}`,
+              borderRadius: 10,
+              padding: '14px 20px',
+            }}
+          >
+            <div
+              style={{
+                fontFamily: MONO,
+                fontSize: 19,
+                color: v.color,
+                fontWeight: 600,
+              }}
+            >
+              {v.label}
+            </div>
+            <div style={{ fontSize: 17, color: MUTED, marginTop: 5 }}>
+              {v.desc}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ position: 'absolute', left: 1320, top: 220, width: 480 }}>
+        <div
+          style={{
+            fontFamily: MONO,
+            fontSize: 16,
+            color: MUTED,
+            letterSpacing: 2,
+            textTransform: 'uppercase',
+            marginBottom: 16,
+            opacity: tv(lt, 4.8, 5.2, 0, 1),
+          }}
+        >
+          Gönderim Akışı
+        </div>
+        {flow.map((s, i) => (
+          <div
+            key={i}
+            style={{ opacity: tv(lt, 5.0 + i * 0.3, 5.5 + i * 0.3, 0, 1) }}
+          >
+            <div
+              style={{
+                background: SURFACE,
+                border: `1px solid ${BORDER}`,
+                borderRadius: 9,
+                padding: '12px 18px',
+                fontFamily: MONO,
+                fontSize: 17,
+                color: TEXT,
+                marginBottom: 4,
+              }}
+            >
+              {i + 1}. {s}
+            </div>
+            {i < flow.length - 1 && (
+              <div
+                style={{
+                  textAlign: 'center',
+                  color: ACCENT,
+                  fontSize: 18,
+                  marginBottom: 4,
+                }}
+              >
+                ↓
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </Scene>
+  )
+}
+
+// ──────────── SCENE 5 · EMAIL (29–37s) ────────────
+
+function SceneEmail() {
+  const { localTime: lt } = useSprite()
+
+  const flowSteps = [
+    {
+      label: 'POST /api/v1/emails/send',
+      sub: 'JWT korumalı · @PreAuthorize',
+      color: ACCENT,
+      a: 0.7,
+    },
+    {
+      label: 'EmailLog PENDING',
+      sub: "DB'ye kaydedilir · 202 Accepted döner",
+      color: ACCENT,
+      a: 1.5,
+    },
+    {
+      label: 'RabbitMQ email-queue',
+      sub: 'Sadece emailLogId yayınlanır',
+      color: ACCENT2,
+      a: 2.3,
+    },
+    {
+      label: 'Consumer',
+      sub: 'Log çek → Thymeleaf render → TenantMailSenderFactory',
+      color: ACCENT2,
+      a: 3.1,
+    },
+    {
+      label: 'Gmail SMTP',
+      sub: 'Kiracının AES-256 şifreli SMTP bilgileri',
+      color: ACCENT3,
+      a: 3.9,
+    },
+    {
+      label: 'Retry / DLQ',
+      sub: 'max 3× · TTL 30sn → FAILED + Dead Letter Queue',
+      color: RED_C,
+      a: 4.7,
+    },
+  ]
+
+  const FW = 270
+  const FH = 110
+  const totalW = flowSteps.length * (FW + 40) - 40
+  const startX = (W - totalW) / 2
+
+  return (
+    <Scene>
+      <EyeLabel text="Asenkron Mesajlaşma" />
+      <SlideTitle text="E-posta Sistemi" />
+
+      <svg
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: W,
+          height: H,
+          pointerEvents: 'none',
+        }}
+      >
+        {flowSteps.slice(0, -1).map((s, i) => {
+          const x1 = startX + i * (FW + 40) + FW
+          const x2 = startX + (i + 1) * (FW + 40)
+          const my = 360 + FH / 2
+          return (
+            <ConnLine
+              key={i}
+              x1={x1}
+              y1={my}
+              x2={x2}
+              y2={my}
+              appear={s.a + 0.3}
+              color={flowSteps[i + 1].color}
+              drawDur={0.4}
+            />
+          )
+        })}
+      </svg>
+
+      {flowSteps.map((s, i) => {
+        const bx = startX + i * (FW + 40)
+        const op = tv(lt, s.a, s.a + 0.5, 0, 1)
+        const ty2 = tv(lt, s.a, s.a + 0.5, 20, 0, Easing.easeOutBack)
+        return (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: bx,
+              top: 360,
+              width: FW,
+              height: FH,
+              opacity: op,
+              transform: `translateY(${ty2}px)`,
+              background: withAlpha(s.color, 0.12),
+              border: `1px solid ${withAlpha(s.color, 0.42)}`,
+              borderRadius: 12,
+              padding: '14px 16px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 6,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: MONO,
+                fontSize: 16,
+                color: s.color,
+                fontWeight: 600,
+              }}
+            >
+              {s.label}
+            </div>
+            <div style={{ fontSize: 14, color: MUTED, lineHeight: 1.4 }}>
+              {s.sub}
+            </div>
+          </div>
+        )
+      })}
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 140,
+          bottom: 90,
+          opacity: tv(lt, 5.5, 6.2, 0, 1),
+          display: 'flex',
+          gap: 40,
+        }}
+      >
+        <div
+          style={{
+            background: SURFACE,
+            border: `1px solid ${BORDER}`,
+            borderRadius: 12,
+            padding: '18px 24px',
+            minWidth: 380,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: MONO,
+              fontSize: 16,
+              color: ACCENT,
+              letterSpacing: 2,
+              textTransform: 'uppercase',
+              marginBottom: 12,
+            }}
+          >
+            MailAccount (Kiracı Başına)
+          </div>
+          {[
+            'smtpHost · smtpPort · username',
+            'password: AES-256 şifreli',
+            'verify: Göndermeden SMTP test',
+          ].map(f => (
+            <div
+              key={f}
+              style={{ fontSize: 17, color: MUTED, marginBottom: 6 }}
+            >
+              — {f}
+            </div>
+          ))}
+        </div>
+        <div
+          style={{
+            background: SURFACE,
+            border: `1px solid ${BORDER}`,
+            borderRadius: 12,
+            padding: '18px 24px',
+            minWidth: 480,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: MONO,
+              fontSize: 16,
+              color: ACCENT2,
+              letterSpacing: 2,
+              textTransform: 'uppercase',
+              marginBottom: 12,
+            }}
+          >
+            EmailRescueJob
+          </div>
+          {[
+            '@Scheduled her 5 dakika',
+            'PENDING > 5dk kayıtları bulur',
+            "Parti 50 → RabbitMQ'ya yeniden iter",
+          ].map(f => (
+            <div
+              key={f}
+              style={{ fontSize: 17, color: MUTED, marginBottom: 6 }}
+            >
+              — {f}
+            </div>
+          ))}
+        </div>
+      </div>
+    </Scene>
+  )
+}
+
+// ──────────── SCENE 6 · ARCHITECTURE (37–45s) ────────────
+
+const ARCH_LAYERS = [
+  {
+    label: 'IController',
+    detail: 'Arayüz kontratları · endpoint imzaları',
+    badge: '@RestController',
+    color: ACCENT,
+  },
+  {
+    label: 'Controller',
+    detail: 'HTTP katmanı · RootEntityResponse<T>',
+    badge: null as string | null,
+    color: ACCENT,
+  },
+  {
+    label: 'IService → Service',
+    detail: 'İş mantığı · önbellek · tenant bağlamı',
+    badge: '@Cacheable',
+    color: ACCENT2,
+  },
+  {
+    label: 'Repository',
+    detail: 'Spring Data JPA · Entity Graph sorguları',
+    badge: '@EntityGraph',
+    color: ACCENT2,
+  },
+  {
+    label: 'Entity + DTO',
+    detail: "MapStruct eşleme · Entity API'ye açılmaz",
+    badge: 'MapStruct',
+    color: ACCENT3,
+  },
+]
+
+function SceneArchitecture() {
+  const { localTime: lt } = useSprite()
+  const LW = 1140
+  const LH = 84
+  const LX = (W - LW) / 2
+  const SY = 210
+  const GAP = 98
+  const TECH = [
+    { label: 'Java 21', color: ACCENT },
+    { label: 'Spring Boot 3.5', color: ACCENT },
+    { label: 'PostgreSQL', color: ACCENT2 },
+    { label: 'Redis', color: ACCENT2 },
+    { label: 'RabbitMQ', color: ACCENT3 },
+    { label: 'Kubernetes', color: ACCENT3 },
+  ]
+
+  return (
+    <Scene>
+      <EyeLabel text="Mimari" />
+      <SlideTitle text="Katmanlı Mimari" />
+
+      {ARCH_LAYERS.map((layer, i) => {
+        const a = 0.85 + i * 0.48
+        const op = tv(lt, a, a + 0.38, 0, 1)
+        const tx = tv(lt, a, a + 0.38, 180, 0, Easing.easeOutCubic)
+        return (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: LX,
+              top: SY + i * GAP,
+              width: LW,
+              height: LH,
+              opacity: op,
+              transform: `translateX(${tx}px)`,
+              background: withAlpha(layer.color, 0.1),
+              border: `1px solid ${withAlpha(layer.color, 0.35)}`,
+              borderRadius: 13,
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0 28px',
+              gap: 24,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: MONO,
+                fontSize: 13,
+                color: MUTED,
+                width: 22,
+                flexShrink: 0,
+              }}
+            >
+              {i + 1}
+            </div>
+            <div
+              style={{
+                fontFamily: MONO,
+                fontSize: 19,
+                color: layer.color,
+                fontWeight: 500,
+                width: 240,
+                flexShrink: 0,
+              }}
+            >
+              {layer.label}
+            </div>
+            <div style={{ fontSize: 18, color: MUTED, flex: 1 }}>
+              {layer.detail}
+            </div>
+            {layer.badge && (
+              <div
+                style={{
+                  fontFamily: MONO,
+                  fontSize: 14,
+                  color: MUTED,
+                  background: SURF2,
+                  border: `1px solid ${BORDER}`,
+                  borderRadius: 6,
+                  padding: '5px 14px',
+                  flexShrink: 0,
+                }}
+              >
+                {layer.badge}
+              </div>
+            )}
+          </div>
+        )
+      })}
+
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: 860,
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: 14,
+          opacity: tv(lt, 3.4, 4.1, 0, 1),
+        }}
+      >
+        {TECH.map(t2 => (
+          <div
+            key={t2.label}
+            style={{
+              padding: '9px 20px',
+              background: withAlpha(t2.color, 0.1),
+              border: `1px solid ${withAlpha(t2.color, 0.35)}`,
+              borderRadius: 9,
+              fontFamily: MONO,
+              fontSize: 16,
+              color: t2.color,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {t2.label}
+          </div>
+        ))}
+      </div>
+    </Scene>
+  )
+}
+
+// ──────────── SCENE 7 · MULTI-TENANCY (45–54s) ────────────
+
+function SceneMultiTenancy() {
+  const { localTime: lt } = useSprite()
+  const MY = H / 2 + 30
+  const jx = 280
+  const fx = 660
+  const rx = 1060
+  const dbx = 1440
+  const dbYs = [MY - 150, MY, MY + 150]
+
+  const flowNodes = [
+    {
+      cx: jx,
+      cy: MY,
+      label: 'JWT Token',
+      sub: 'tenantId claim',
+      color: ACCENT,
+      a: 0.7,
+      w: 220,
+    },
+    {
+      cx: fx,
+      cy: MY,
+      label: 'JwtTenantFilter',
+      sub: 'TenantContext.set()',
+      color: ACCENT,
+      a: 1.5,
+      w: 220,
+    },
+    {
+      cx: rx,
+      cy: MY,
+      label: 'TenantDataSourceRouter',
+      sub: 'AbstractRoutingDataSource',
+      color: ACCENT2,
+      a: 2.4,
+      w: 270,
+    },
+  ]
+  const dbs = [
+    { cy: dbYs[0], label: 'elly_basedb', color: ACCENT2, a: 3.3 },
+    { cy: dbYs[1], label: 'elly_tenant1', color: ACCENT3, a: 3.8 },
+    { cy: dbYs[2], label: 'elly_tenant2', color: MUTED, a: 4.3 },
+  ]
+  const flowLines = [
+    { x1: jx + 110, y1: MY, x2: fx - 110, y2: MY, a: 1.2, c: ACCENT },
+    { x1: fx + 110, y1: MY, x2: rx - 135, y2: MY, a: 2.1, c: ACCENT },
+    { x1: rx + 135, y1: MY, x2: dbx - 100, y2: dbYs[0], a: 3.1, c: ACCENT2 },
+    { x1: rx + 135, y1: MY, x2: dbx - 100, y2: dbYs[1], a: 3.6, c: ACCENT3 },
+    { x1: rx + 135, y1: MY, x2: dbx - 100, y2: dbYs[2], a: 4.1, c: MUTED },
+  ]
+  const principles = [
+    { t: 'ThreadLocal — her istek için izole bağlam', a: 5.2 },
+    { t: 'HikariCP — kiracı başına bağlantı havuzu', a: 5.8 },
+    { t: 'Redis — {tenantId}::{cache}::{key} prefix', a: 6.4 },
+  ]
+
+  return (
+    <Scene>
+      <EyeLabel text="Temel Mimari" />
+      <SlideTitle text="Kiracı Başına Veritabanı" />
+
+      <svg
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: W,
+          height: H,
+          pointerEvents: 'none',
+        }}
+      >
+        {flowLines.map((l, i) => (
+          <ConnLine
+            key={i}
+            x1={l.x1}
+            y1={l.y1}
+            x2={l.x2}
+            y2={l.y2}
+            appear={l.a}
+            color={l.c}
+            drawDur={0.45}
+          />
+        ))}
+      </svg>
+
+      {flowNodes.map((n, i) => (
+        <BoxNode
+          key={i}
+          cx={n.cx}
+          cy={n.cy}
+          w={n.w}
+          h={90}
+          label={n.label}
+          sub={n.sub}
+          color={n.color}
+          appear={n.a}
+        />
+      ))}
+      {dbs.map((d, i) => (
+        <BoxNode
+          key={i + 10}
+          cx={dbx}
+          cy={d.cy}
+          w={200}
+          h={72}
+          label={d.label}
+          color={d.color}
+          appear={d.a}
+        />
+      ))}
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 160,
+          bottom: 140,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 18,
+        }}
+      >
+        {principles.map((p, i) => (
+          <div
+            key={i}
+            style={{
+              opacity: tv(lt, p.a, p.a + 0.5, 0, 1),
+              transform: `translateX(${tv(lt, p.a, p.a + 0.5, -24, 0, Easing.easeOutCubic)}px)`,
+              fontFamily: MONO,
+              fontSize: 19,
+              color: MUTED,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+            }}
+          >
+            <div
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: ACCENT,
+                flexShrink: 0,
+              }}
+            />
+            {p.t}
+          </div>
+        ))}
+      </div>
+    </Scene>
+  )
+}
+
+// ──────────── SCENE 8 · SECURITY (54–62s) ────────────
+
+function SceneSecurity() {
+  const { localTime: lt } = useSprite()
+  const RBAC = [
+    {
+      label: 'SUPER_ADMIN',
+      w: 340,
+      desc: 'Tam sistem erişimi',
+      color: ACCENT,
+      a: 1.6,
+    },
+    {
+      label: 'ADMIN',
+      w: 500,
+      desc: 'Kiracı yönetimi',
+      color: ACCENT2,
+      a: 2.1,
+    },
+    {
+      label: 'EDITOR',
+      w: 660,
+      desc: 'İçerik oluşturma & yayın',
+      color: ACCENT3,
+      a: 2.6,
+    },
+    {
+      label: 'VIEWER',
+      w: 820,
+      desc: 'Salt okunur erişim',
+      color: MUTED,
+      a: 3.1,
+    },
+  ]
+  const pCount = Math.round(tv(lt, 4.0, 5.6, 0, 40))
+
+  const cards = [
+    {
+      title: 'JWT Auth',
+      color: ACCENT,
+      a: 0.8,
+      items: [
+        'Access + Refresh token çifti',
+        'tenantId & loginSource claim',
+        'Redis auth cache — TTL 30dk',
+        '3 SQL yerine 1 Redis GET',
+      ],
+    },
+    {
+      title: 'OAuth2',
+      color: ACCENT2,
+      a: 1.2,
+      items: [
+        'Google, Facebook, GitHub',
+        'Durumsuz tasarım',
+        'JWT ile sorunsuz entegrasyon',
+      ],
+    },
+  ]
+
+  return (
+    <Scene>
+      <EyeLabel text="Kimlik & Erişim" />
+      <SlideTitle text="Güvenlik & Kimlik Doğrulama" />
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 110,
+          top: 220,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 22,
+          width: 380,
+        }}
+      >
+        {cards.map(card => (
+          <div
+            key={card.title}
+            style={{
+              background: withAlpha(card.color, 0.1),
+              border: `1px solid ${withAlpha(card.color, 0.35)}`,
+              borderRadius: 14,
+              padding: '22px 26px',
+              opacity: tv(lt, card.a, card.a + 0.5, 0, 1),
+              transform: `translateX(${tv(lt, card.a, card.a + 0.5, -32, 0, Easing.easeOutCubic)}px)`,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: MONO,
+                fontSize: 18,
+                color: card.color,
+                fontWeight: 600,
+                marginBottom: 14,
+              }}
+            >
+              {card.title}
+            </div>
+            {card.items.map(item => (
+              <div
+                key={item}
+                style={{
+                  fontSize: 16,
+                  color: MUTED,
+                  marginBottom: 7,
+                  paddingLeft: 16,
+                  position: 'relative',
+                  lineHeight: 1.4,
+                }}
+              >
+                <span style={{ position: 'absolute', left: 0, color: BORDER }}>
+                  —
+                </span>
+                {item}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 560,
+          top: 210,
+          width: 960,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 18,
+          alignItems: 'center',
+        }}
+      >
+        {RBAC.map(r => (
+          <div
+            key={r.label}
+            style={{
+              width: r.w,
+              height: 72,
+              background: withAlpha(r.color, 0.12),
+              border: `1px solid ${withAlpha(r.color, 0.42)}`,
+              borderRadius: 11,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '0 26px',
+              opacity: tv(lt, r.a, r.a + 0.5, 0, 1),
+              transform: `scaleX(${tv(lt, r.a, r.a + 0.5, 0.55, 1, Easing.easeOutBack)})`,
+              transformOrigin: 'center',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: MONO,
+                fontSize: 18,
+                color: r.color,
+                fontWeight: 600,
+              }}
+            >
+              {r.label}
+            </span>
+            <span style={{ fontSize: 16, color: MUTED }}>{r.desc}</span>
+          </div>
+        ))}
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          right: 140,
+          bottom: 150,
+          opacity: tv(lt, 3.8, 4.4, 0, 1),
+          textAlign: 'center',
+        }}
+      >
+        <div
+          style={{
+            fontSize: 110,
+            fontWeight: 700,
+            letterSpacing: -5,
+            lineHeight: 1,
+            background: `linear-gradient(135deg, ${TEXT}, ${ACCENT})`,
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          {pCount}+
+        </div>
+        <div
+          style={{
+            fontFamily: MONO,
+            fontSize: 16,
+            color: MUTED,
+            letterSpacing: 2,
+            marginTop: 6,
+          }}
+        >
+          GRANÜLER İZİN
+        </div>
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 560,
+          bottom: 110,
+          opacity: tv(lt, 5.8, 6.5, 0, 1),
+          fontFamily: MONO,
+          fontSize: 19,
+          color: ACCENT2,
+          background: SURF2,
+          border: `1px solid ${BORDER}`,
+          borderRadius: 10,
+          padding: '13px 26px',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        @PreAuthorize(&quot;hasPermission(&apos;content&apos;,
+        &apos;write&apos;)&quot;)
+      </div>
+    </Scene>
+  )
+}
+
+// ──────────── SCENE 9 · PERFORMANCE (62–70s) ────────────
+
+function ScenePerformance() {
+  const { localTime: lt } = useSprite()
+  const xform = tv(lt, 2.8, 4.8, 0, 1, Easing.easeInOutCubic)
+  const BASE = 780
+
+  const METRICS = [
+    {
+      label: 'Yanıt Süresi p95',
+      beforeVal: 2340,
+      afterVal: 456,
+      unit: 'ms',
+      beforeH: 360,
+      afterH: 70,
+      cx: 420,
+    },
+    {
+      label: 'Verim',
+      beforeVal: 18,
+      afterVal: 187,
+      unit: 'req/s',
+      beforeH: 28,
+      afterH: 300,
+      cx: 960,
+    },
+    {
+      label: 'DB Sorgu / İstek',
+      beforeVal: 47,
+      afterVal: 1,
+      unit: 'sorgu',
+      beforeH: 360,
+      afterH: 8,
+      cx: 1500,
+    },
+  ]
+
+  const improvOp = tv(lt, 5.3, 6.1, 0, 1)
+  const improvSc = tv(lt, 5.3, 6.1, 0.65, 1, Easing.easeOutBack)
+
+  return (
+    <Scene>
+      <EyeLabel text="Optimizasyon" />
+      <SlideTitle text="Performans Profili" />
+
+      <div
+        style={{
+          position: 'absolute',
+          left: 200,
+          top: 190,
+          opacity: Math.max(0, tv(lt, 1.0, 1.5, 0, 1) - xform * 1.5),
+          fontFamily: MONO,
+          fontSize: 22,
+          color: RED_C,
+          letterSpacing: 2,
+        }}
+      >
+        ◆ ÖNCE
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          left: 200,
+          top: 190,
+          opacity: Math.min(1, xform * 2),
+          fontFamily: MONO,
+          fontSize: 22,
+          color: ACCENT2,
+          letterSpacing: 2,
+        }}
+      >
+        ◆ SONRA
+      </div>
+
+      {METRICS.map((m, i) => {
+        const a = 1.0 + i * 0.28
+        const barH = m.beforeH + (m.afterH - m.beforeH) * xform
+        const val = Math.round(m.beforeVal + (m.afterVal - m.beforeVal) * xform)
+        const barColor = xform < 0.5 ? RED_C : ACCENT2
+        const BAR_W = 180
+
+        return (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: m.cx - BAR_W / 2,
+              top: 0,
+              width: BAR_W,
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                bottom: H - BASE,
+                left: 0,
+                right: 0,
+                height: barH,
+                background: barColor,
+                borderRadius: '8px 8px 0 0',
+                opacity: tv(lt, a, a + 0.4, 0, 1),
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                bottom: H - BASE + barH + 12,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                fontFamily: MONO,
+                fontSize: 22,
+                fontWeight: 600,
+                color: barColor,
+                opacity: tv(lt, a, a + 0.4, 0, 1),
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {val} {m.unit}
+            </div>
+            <div
+              style={{
+                position: 'absolute',
+                top: BASE + 20,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                fontSize: 19,
+                color: MUTED,
+                textAlign: 'center',
+                opacity: tv(lt, a, a + 0.4, 0, 1),
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {m.label}
+            </div>
+            <div
+              style={{
+                position: 'absolute',
+                top: BASE,
+                left: -24,
+                width: BAR_W + 48,
+                height: 2,
+                background: BORDER,
+              }}
+            />
+          </div>
+        )
+      })}
+
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: 860,
+          transform: `translate(-50%, -50%) scale(${improvSc})`,
+          opacity: improvOp,
+          textAlign: 'center',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        <span
+          style={{
+            fontSize: 88,
+            fontWeight: 700,
+            letterSpacing: -4,
+            background: `linear-gradient(135deg, ${ACCENT2}, ${ACCENT})`,
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          10× İyileşme!
+        </span>
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 52,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: 14,
+          opacity: tv(lt, 6.5, 7.2, 0, 1),
+        }}
+      >
+        {[
+          'N+1 Düzeltme',
+          'DB İndeksi',
+          'Pool 10→50',
+          'Redis Cache',
+          'Sayfalama',
+        ].map(b => (
+          <div
+            key={b}
+            style={{
+              padding: '8px 20px',
+              background: SURF2,
+              border: `1px solid ${BORDER}`,
+              borderRadius: 8,
+              fontFamily: MONO,
+              fontSize: 16,
+              color: MUTED,
+            }}
+          >
+            {b}
+          </div>
+        ))}
+      </div>
+    </Scene>
+  )
+}
+
+// ──────────── SCENE 10 · INFRASTRUCTURE (70–78s) ────────────
+
+function SceneInfrastructure() {
+  const { localTime: lt } = useSprite()
+  const CX = W / 2
+  const CY = 590
+  const R = 290
+
+  const outerNodes = [
+    {
+      label: 'PostgreSQL',
+      sub: 'Multi-DB',
+      color: ACCENT2,
+      angle: -90,
+      a: 1.5,
+    },
+    { label: 'Redis', sub: 'Cache', color: ACCENT2, angle: -30, a: 2.0 },
+    { label: 'RabbitMQ', sub: 'Kuyruk', color: ACCENT3, angle: 30, a: 2.5 },
+    { label: 'Prometheus', sub: 'Metrikler', color: ACCENT, angle: 90, a: 3.0 },
+    { label: 'Grafana', sub: 'Dashboard', color: ACCENT, angle: 150, a: 3.5 },
+    {
+      label: 'GitHub Actions',
+      sub: 'CI/CD',
+      color: MUTED,
+      angle: -150,
+      a: 4.0,
+    },
+  ]
+
+  const details = [
+    { t: 'HPA Otomatik Ölçekleme', a: 5.2 },
+    { t: 'Backup CronJob', a: 5.7 },
+    { t: 'Ingress + TLS (cert-manager)', a: 6.2 },
+    { t: 'SonarQube kalite kapısı', a: 6.7 },
+  ]
+
+  return (
+    <Scene>
+      <EyeLabel text="DevOps & Altyapı" />
+      <SlideTitle text="Dağıtım & Altyapı" />
+
+      <svg
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: W,
+          height: H,
+          pointerEvents: 'none',
+        }}
+      >
+        {outerNodes.map((n, i) => {
+          const rad = (n.angle * Math.PI) / 180
+          const nx = CX + R * Math.cos(rad)
+          const ny = CY + R * Math.sin(rad)
+          return (
+            <ConnLine
+              key={i}
+              x1={CX}
+              y1={CY}
+              x2={nx}
+              y2={ny}
+              appear={n.a - 0.35}
+              color={n.color}
+              drawDur={0.4}
+            />
+          )
+        })}
+      </svg>
+
+      <BoxNode
+        cx={CX}
+        cy={CY}
+        w={250}
+        h={100}
+        label="Kubernetes"
+        sub="Orkestrasyon"
+        color={ACCENT}
+        appear={0.8}
+      />
+      {outerNodes.map((n, i) => {
+        const rad = (n.angle * Math.PI) / 180
+        const nx = CX + R * Math.cos(rad)
+        const ny = CY + R * Math.sin(rad)
+        return (
+          <BoxNode
+            key={i}
+            cx={nx}
+            cy={ny}
+            w={210}
+            h={82}
+            label={n.label}
+            sub={n.sub}
+            color={n.color}
+            appear={n.a}
+          />
+        )
+      })}
+
+      <div
+        style={{
+          position: 'absolute',
+          right: 80,
+          top: 250,
+          width: 340,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 18,
+        }}
+      >
+        {details.map((d, i) => (
+          <div
+            key={i}
+            style={{
+              opacity: tv(lt, d.a, d.a + 0.5, 0, 1),
+              transform: `translateX(${tv(lt, d.a, d.a + 0.5, 28, 0, Easing.easeOutCubic)}px)`,
+              fontFamily: MONO,
+              fontSize: 18,
+              color: MUTED,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+            }}
+          >
+            <div
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: ACCENT,
+                flexShrink: 0,
+              }}
+            />
+            {d.t}
+          </div>
+        ))}
+      </div>
+    </Scene>
+  )
+}
+
+// ──────────── SCENE 11 · CLOSING (78–92s) ────────────
+
+function SceneClosing() {
+  const { localTime: lt } = useSprite()
+
+  const stats = [
+    { val: 3, suffix: '', label: 'Kiracı', a: 0.5 },
+    { val: 40, suffix: '+', label: 'İzin', a: 1.0 },
+    { val: 10, suffix: '×', label: 'Kazanım', a: 1.5 },
+  ]
+
+  const glowOp = tv(lt, 0.1, 1.0, 0, 1)
+  const ellyOp = tv(lt, 3.0, 3.9, 0, 1)
+  const ellySc = tv(lt, 3.0, 3.9, 0.5, 1, Easing.easeOutBack)
+
+  return (
+    <Scene>
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%,-50%)',
+          opacity: glowOp,
+          width: 900,
+          height: 900,
+          borderRadius: '50%',
+          background:
+            'radial-gradient(circle, oklch(40% 0.18 255 / 0.16) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '26%',
+          transform: 'translateX(-50%)',
+          display: 'flex',
+          gap: 44,
+        }}
+      >
+        {stats.map(s => {
+          const sOp = tv(lt, s.a, s.a + 0.6, 0, 1)
+          const sSc = tv(lt, s.a, s.a + 0.6, 0.65, 1, Easing.easeOutBack)
+          const count = Math.round(tv(lt, s.a, s.a + 1.4, 0, s.val))
+          return (
+            <div
+              key={s.label}
+              style={{
+                opacity: sOp,
+                transform: `scale(${sSc})`,
+                background: SURFACE,
+                border: `1px solid ${BORDER}`,
+                borderRadius: 22,
+                padding: '38px 52px',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+                minWidth: 250,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 100,
+                  fontWeight: 700,
+                  letterSpacing: -4,
+                  lineHeight: 1,
+                  background: `linear-gradient(135deg, ${TEXT}, ${ACCENT})`,
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                {count}
+                {s.suffix}
+              </div>
+              <div
+                style={{
+                  fontFamily: MONO,
+                  fontSize: 17,
+                  color: MUTED,
+                  letterSpacing: 2,
+                  textTransform: 'uppercase',
+                }}
+              >
+                {s.label}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '60%',
+          transform: 'translate(-50%,-50%)',
+          opacity: tv(lt, 2.2, 2.9, 0, 1),
+          background: withAlpha(ACCENT2, 0.14),
+          border: `1px solid ${withAlpha(ACCENT2, 0.5)}`,
+          borderRadius: 50,
+          padding: '16px 40px',
+          fontFamily: MONO,
+          fontSize: 22,
+          color: ACCENT2,
+          letterSpacing: 2,
+          whiteSpace: 'nowrap',
+        }}
+      >
+        ✓ ÜRETIME HAZIR · Kubernetes · PostgreSQL · Redis
+      </div>
+
+      <div
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '76%',
+          transform: `translate(-50%,-50%) scale(${ellySc})`,
+          opacity: ellyOp,
+          fontSize: 130,
+          fontWeight: 700,
+          letterSpacing: -6,
+          lineHeight: 1,
+          background:
+            'linear-gradient(135deg, #ffffff 30%, oklch(78% 0.18 255))',
+          WebkitBackgroundClip: 'text',
+          backgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          fontFamily: FONT,
+        }}
+      >
+        Elly
+      </div>
+    </Scene>
+  )
+}
+
+// ──────────── MAIN ────────────
 
 export default function VideoDoc() {
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-black shadow-2xl">
-      <Stage width={1920} height={1080} duration={60}>
+      <Stage width={W} height={H} duration={92}>
         <Sprite start={0} end={5}>
           <SceneTitle />
         </Sprite>
         <Sprite start={5} end={13}>
           <SceneEntities />
         </Sprite>
-        {/* Diğer sahneler buraya eklenebilir */}
-        <Sprite start={13} end={60}>
-          <Scene>
-            <div className="flex h-full items-center justify-center text-xl italic text-muted-foreground">
-              Sunum devam ediyor... (Tüm sahneler port edilebilir)
-            </div>
-          </Scene>
+        <Sprite start={13} end={21}>
+          <SceneAuth />
+        </Sprite>
+        <Sprite start={21} end={29}>
+          <SceneForm />
+        </Sprite>
+        <Sprite start={29} end={37}>
+          <SceneEmail />
+        </Sprite>
+        <Sprite start={37} end={45}>
+          <SceneArchitecture />
+        </Sprite>
+        <Sprite start={45} end={54}>
+          <SceneMultiTenancy />
+        </Sprite>
+        <Sprite start={54} end={62}>
+          <SceneSecurity />
+        </Sprite>
+        <Sprite start={62} end={70}>
+          <ScenePerformance />
+        </Sprite>
+        <Sprite start={70} end={78}>
+          <SceneInfrastructure />
+        </Sprite>
+        <Sprite start={78} end={92}>
+          <SceneClosing />
         </Sprite>
       </Stage>
     </div>
