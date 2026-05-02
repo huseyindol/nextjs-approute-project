@@ -171,10 +171,11 @@ export default function BlogContent({
                   ),
                 )
                 const items: React.ReactNode[] = []
+                const showListAds = categoryFilter === undefined
                 posts.forEach((post, i) => {
                   items.push(<PostCard key={post.slug} post={post} />)
                   const adIdx = adPositions.indexOf(i + 1)
-                  if (adIdx !== -1) {
+                  if (showListAds && adIdx !== -1) {
                     items.push(
                       <div key={`ad-${adIdx}`} className="col-span-full">
                         <AdSenseAd
