@@ -25,6 +25,21 @@ type PageTemplateProps = {
   searchParams?: { industry?: string }
 }
 
+// Module-level cache — dynamic() must not be called inside render
+const componentCache = new Map<string, React.ComponentType<PageTemplateProps>>()
+
+function getTemplateComponent(template: string) {
+  if (!componentCache.has(template)) {
+    componentCache.set(
+      template,
+      dynamicImport<PageTemplateProps>(
+        () => import(`@/components/dynamic/pages/${template}`),
+      ),
+    )
+  }
+  return componentCache.get(template)!
+}
+
 // Default fallback metadata
 const DEFAULT_METADATA: Metadata = {
   title: `${SITE_NAME} | Arcade Oyunlar`,
@@ -45,39 +60,32 @@ const DEFAULT_METADATA: Metadata = {
 export default async function ArcadePage({ searchParams }: ArcadePageProps) {
   const resolvedSearchParams = await searchParams
 
+  let response: PageResponseType | null = null
   try {
-    const response: PageResponseType = await getPageBySlugService(PAGE_SLUG)
-
-    const DynamicComponent = response.data.template
-      ? dynamicImport<PageTemplateProps>(
-          () => import(`@/components/dynamic/pages/${response.data.template}`),
-        )
-      : null
-
-    return (
-      <>
-        {/* Sayfanın CMS'ten gelen içerikleri varsa burada render edilecek */}
-        {DynamicComponent && (
-          <DynamicComponent
-            pageInfo={response.data as PageType}
-            searchParams={resolvedSearchParams as { industry?: string }}
-          />
-        )}
-
-        {/* CMS'ten gelen bileşenlerin altına oyunu entegre ediyoruz */}
-        <GameComponent />
-      </>
-    )
+    response = await getPageBySlugService(PAGE_SLUG)
   } catch (error) {
     console.error('Arcade page render error:', error)
-
-    // Fallback: API'den sayfa çekilemezse sadece oyunu render et
-    return (
-      <>
-        <GameComponent />
-      </>
-    )
   }
+
+  const DynamicComponent = response?.data.template
+    ? getTemplateComponent(response.data.template)
+    : null
+
+  return (
+    <>
+      {/* Sayfanın CMS'ten gelen içerikleri varsa burada render edilecek */}
+      {DynamicComponent && response && (
+        // eslint-disable-next-line react-hooks/static-components -- template from API, memoised in module cache
+        <DynamicComponent
+          pageInfo={response.data as PageType}
+          searchParams={resolvedSearchParams as { industry?: string }}
+        />
+      )}
+
+      {/* CMS'ten gelen bileşenlerin altına oyunu entegre ediyoruz */}
+      <GameComponent />
+    </>
+  )
 }
 
 export async function generateMetadata(): Promise<Metadata> {

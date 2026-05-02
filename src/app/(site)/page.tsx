@@ -25,6 +25,26 @@ type PageTemplateProps = {
   searchParams?: { industry?: string }
 }
 
+// Module-level cache — dynamic() must not be called inside render
+const componentCache = new Map<string, React.ComponentType<PageTemplateProps>>()
+
+function getTemplateComponent(template: string) {
+  if (!componentCache.has(template)) {
+    componentCache.set(
+      template,
+      dynamicImport<PageTemplateProps>(
+        () => import(`@/components/dynamic/pages/${template}`),
+      ),
+    )
+  }
+  return componentCache.get(template)!
+}
+
+// Fallback always loads APage — defined at module level so dynamic() is not called in render
+const FallbackPage = dynamicImport<PageTemplateProps>(
+  () => import('@/components/dynamic/pages/APage'),
+)
+
 // Default fallback metadata
 const DEFAULT_METADATA: Metadata = {
   title: `${SITE_NAME} | Senior Frontend Developer`,
@@ -45,33 +65,14 @@ const DEFAULT_METADATA: Metadata = {
 export default async function Home({ searchParams }: HomeProps) {
   const resolvedSearchParams = await searchParams
 
+  let response: PageResponseType | null = null
   try {
-    const response: PageResponseType = await getPageBySlugService(HOME_SLUG)
-
-    const DynamicComponent = response.data.template
-      ? dynamicImport<PageTemplateProps>(
-          () => import(`@/components/dynamic/pages/${response.data.template}`),
-        )
-      : null
-
-    return (
-      <>
-        {DynamicComponent && (
-          <DynamicComponent
-            pageInfo={response.data as PageType}
-            searchParams={resolvedSearchParams as { industry?: string }}
-          />
-        )}
-      </>
-    )
+    response = await getPageBySlugService(HOME_SLUG)
   } catch (error) {
     console.error('Home page render error:', error)
+  }
 
-    // Fallback: statik olarak APage'i yükle
-    const FallbackPage = dynamicImport<PageTemplateProps>(
-      () => import('@/components/dynamic/pages/APage'),
-    )
-
+  if (!response) {
     return (
       <FallbackPage
         pageInfo={
@@ -86,6 +87,22 @@ export default async function Home({ searchParams }: HomeProps) {
       />
     )
   }
+
+  const DynamicComponent = response.data.template
+    ? getTemplateComponent(response.data.template)
+    : null
+
+  return (
+    <>
+      {DynamicComponent && (
+        // eslint-disable-next-line react-hooks/static-components -- template from API, memoised in module cache
+        <DynamicComponent
+          pageInfo={response.data as PageType}
+          searchParams={resolvedSearchParams as { industry?: string }}
+        />
+      )}
+    </>
+  )
 }
 
 export async function generateMetadata(): Promise<Metadata> {

@@ -23,34 +23,49 @@ type PageTemplateProps = {
   searchParams?: { industry?: string }
 }
 
+// Module-level cache — dynamic() must not be called inside render
+const componentCache = new Map<string, React.ComponentType<PageTemplateProps>>()
+
+function getTemplateComponent(template: string) {
+  if (!componentCache.has(template)) {
+    componentCache.set(
+      template,
+      dynamicImport<PageTemplateProps>(
+        () => import(`@/components/dynamic/pages/${template}`),
+      ),
+    )
+  }
+  return componentCache.get(template)!
+}
+
 export default async function Page(props: Props) {
   const params = await props.params
   const searchParams = await props.searchParams
 
+  let response: PageResponseType
   try {
-    const response: PageResponseType = await getPageBySlugService(params.pages)
-
-    const DynamicComponent = response.data.template
-      ? dynamicImport<PageTemplateProps>(
-          () => import(`@/components/dynamic/pages/${response.data.template}`),
-        )
-      : null
-
-    return (
-      <>
-        {/* burada template bilgisi ne geliyorsa o component render edilecek ilgili component ise components/dynamic/pages altında aranacak */}
-        {DynamicComponent && (
-          <DynamicComponent
-            pageInfo={response.data as PageType}
-            searchParams={searchParams as { industry?: string }}
-          />
-        )}
-      </>
-    )
+    response = await getPageBySlugService(params.pages)
   } catch (error) {
     console.error(`Page render error for slug "${params.pages}":`, error)
     notFound()
   }
+
+  const DynamicComponent = response!.data.template
+    ? getTemplateComponent(response!.data.template)
+    : null
+
+  return (
+    <>
+      {/* burada template bilgisi ne geliyorsa o component render edilecek ilgili component ise components/dynamic/pages altında aranacak */}
+      {DynamicComponent && (
+        // eslint-disable-next-line react-hooks/static-components -- template from API, memoised in module cache
+        <DynamicComponent
+          pageInfo={response!.data as PageType}
+          searchParams={searchParams as { industry?: string }}
+        />
+      )}
+    </>
+  )
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

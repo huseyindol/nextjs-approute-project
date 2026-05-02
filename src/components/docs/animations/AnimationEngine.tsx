@@ -7,7 +7,6 @@ import React, {
   useEffect,
   useRef,
   useMemo,
-  useCallback,
 } from 'react'
 
 // --- Easing functions ---
@@ -55,8 +54,8 @@ const TimelineContext = createContext({
   time: 0,
   duration: 10,
   playing: false,
-  setTime: (t: number) => {},
-  setPlaying: (p: boolean) => {},
+  setTime: (_t: number) => {},
+  setPlaying: (_p: boolean) => {},
 })
 
 export const useTime = () => useContext(TimelineContext).time
@@ -71,12 +70,26 @@ const SpriteContext = createContext({
 export const useSprite = () => useContext(SpriteContext)
 
 // --- Components ---
+type SpriteCtx = {
+  localTime: number
+  progress: number
+  duration: number
+  visible: boolean
+}
+
+interface SpriteProps {
+  start?: number
+  end?: number
+  children: React.ReactNode | ((ctx: SpriteCtx) => React.ReactNode)
+  keepMounted?: boolean
+}
+
 export function Sprite({
   start = 0,
   end = Infinity,
   children,
   keepMounted = false,
-}: any) {
+}: SpriteProps) {
   const { time } = useTimeline()
   const visible = time >= start && time <= end
   const duration = end - start
@@ -100,6 +113,16 @@ export function Sprite({
   )
 }
 
+interface StageProps {
+  width?: number
+  height?: number
+  duration?: number
+  background?: string
+  autoplay?: boolean
+  loop?: boolean
+  children: React.ReactNode
+}
+
 export function Stage({
   width = 1920,
   height = 1080,
@@ -108,7 +131,7 @@ export function Stage({
   autoplay = true,
   loop = true,
   children,
-}: any) {
+}: StageProps) {
   const [time, setTime] = useState(0)
   const [playing, setPlaying] = useState(autoplay)
   const [scale, setScale] = useState(1)
@@ -197,7 +220,21 @@ export function Stage({
   )
 }
 
-function PlaybackBar({ time, duration, playing, onToggle, onSeek }: any) {
+interface PlaybackBarProps {
+  time: number
+  duration: number
+  playing: boolean
+  onToggle: () => void
+  onSeek: (t: number) => void
+}
+
+function PlaybackBar({
+  time,
+  duration,
+  playing,
+  onToggle,
+  onSeek,
+}: PlaybackBarProps) {
   const fmt = (t: number) => {
     const m = Math.floor(t / 60)
     const s = Math.floor(t % 60)
