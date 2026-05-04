@@ -20,7 +20,7 @@ export default function GameComponent() {
 
       {/* Oyunun derlenmiş (Vite) module dosyası. type="module" olarak yüklenmeli. */}
       <Script
-        src="/assets/games/overtakeandparking/index-DXeAlBpy.js"
+        src="/assets/games/overtakeandparking/game.js"
         type="module"
         strategy="lazyOnload"
       />
