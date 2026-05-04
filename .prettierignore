@@ -43,6 +43,13 @@ next-env.d.ts
 # Static presentation HTML (exports; avoid Prettier reflow)
 public/docs/elly_*.html
 
+# Game bundles / vendor (minified; Prettier destabilizes or is pointless)
+public/assets/games/overtakeandparking/game.js
+public/assets/games/overtakeandparking/phaser.js
+
+# Sync/build output
+src/lib/game-asset-version.generated.ts
+
 # API and documentation
 public/openapi-generated.json
 next.openapi.json

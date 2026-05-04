@@ -8,6 +8,8 @@ import tseslint from 'typescript-eslint'
 export default [
   {
     ignores: [
+      'public/assets/games/**/*.js',
+      'src/**/*.generated.ts',
       '.next/**',
       'node_modules/**',
       'out/**',
