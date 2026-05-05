@@ -183,7 +183,9 @@ export default async function BlogPostPage({ params }: Readonly<Props>) {
             alt={post.frontmatter.title}
             fill
             className="object-cover"
+            sizes="100vw"
             priority
+            fetchPriority="high"
           />
           <div className="via-background/40 absolute inset-0 bg-gradient-to-t from-background to-transparent" />
         </div>

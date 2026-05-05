@@ -123,39 +123,25 @@ function HeroBanner() {
       />
 
       <div className="container relative mx-auto px-6">
-        <motion.div
-          className="mx-auto max-w-4xl text-center"
-          initial="hidden"
-          animate="visible"
-          variants={stagger}
-        >
-          <motion.div variants={fadeInUp}>
-            <Badge className="mb-6 border border-blue-400/30 bg-blue-500/20 px-4 py-1.5 text-sm font-medium text-blue-200">
-              {siteInfo.sayHi}
-            </Badge>
-          </motion.div>
+        <div className="mx-auto max-w-4xl text-center">
+          <Badge className="mb-6 border border-blue-400/30 bg-blue-500/20 px-4 py-1.5 text-sm font-medium text-blue-200">
+            {siteInfo.sayHi}
+          </Badge>
 
-          <motion.h1
-            className="mb-6 text-5xl font-extrabold leading-tight md:text-7xl"
-            variants={fadeInUp}
-          >
+          <h1 className="mb-6 text-5xl font-extrabold leading-tight md:text-7xl">
             <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent">
               {siteInfo.title.highlight}
             </span>
             <br />
             <span className="text-white/90">{siteInfo.title.rest}</span>
-          </motion.h1>
+          </h1>
 
-          <motion.p
+          <p
             className="mx-auto mb-10 max-w-3xl text-xl leading-relaxed text-slate-300 md:text-2xl"
-            variants={fadeInUp}
             dangerouslySetInnerHTML={{ __html: siteInfo.description }}
           />
 
-          <motion.div
-            className="mb-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
-            variants={fadeInUp}
-          >
+          <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button
               size="lg"
               className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30 transition-all hover:scale-105 hover:shadow-blue-500/50"
@@ -179,12 +165,9 @@ function HeroBanner() {
               <Download className="mr-2 h-5 w-5" />
               CV İndir
             </Button>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="flex flex-wrap items-center justify-center gap-4"
-            variants={fadeInUp}
-          >
+          <div className="flex flex-wrap items-center justify-center gap-4">
             {siteInfo.socialLinks.map(link => (
               <Link
                 key={link.platform}
@@ -201,8 +184,8 @@ function HeroBanner() {
                 {link.platform === 'email' && <Mail className="h-4 w-4" />}
               </Link>
             ))}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   )
