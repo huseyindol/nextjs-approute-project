@@ -109,7 +109,7 @@ export default function Hero() {
 
 function HeroBanner() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 py-36 pt-36 text-white md:py-48 md:pt-48">
+    <section className="relative -mt-20 overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 py-36 pt-36 text-white md:py-48 md:pt-48">
       <div className="animate-orb-1 pointer-events-none absolute -left-52 -top-52 h-[500px] w-[500px] rounded-full bg-blue-600/15 blur-3xl" />
       <div className="animate-orb-2 pointer-events-none absolute -bottom-52 -right-52 h-[500px] w-[500px] rounded-full bg-violet-600/15 blur-3xl" />
       <div className="animate-orb-pulse pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 rounded-full bg-indigo-500/10 blur-3xl" />

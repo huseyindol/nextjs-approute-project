@@ -33,7 +33,7 @@ export default async function ProjectDocsPage({
   }
 
   return (
-    <div className="container mx-auto min-h-screen px-6 py-20 pt-32">
+    <div className="container mx-auto min-h-screen px-6 py-20 pt-12">
       <Component />
     </div>
   )

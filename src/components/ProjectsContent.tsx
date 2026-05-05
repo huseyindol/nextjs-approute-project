@@ -11,6 +11,7 @@ import {
   GlobeIcon,
   LayersIcon,
   GamepadIcon,
+  JoystickIcon,
   GithubIcon,
 } from 'lucide-react'
 import Link from 'next/link'
@@ -193,6 +194,33 @@ const projects: Project[] = [
     liveUrl: '/arcade',
     liveLabel: 'Oyna',
   },
+  {
+    id: 'godot-engine-games',
+    title: 'Godot Engine Games',
+    subtitle: 'Eğitici Eşleştirme (Web)',
+    description:
+      'Godot 4.x ile geliştirilmiş, WebAssembly export üzerinde çalışan eğitici eşleştirme oyunu. 24 seviyede renk, hayvan ve meyve eşleştirme; oturum metrikleri ve final ekranındaki ebeveyn paneli ile öğrenme özetleri.',
+    icon: JoystickIcon,
+    gradient: 'from-cyan-500 to-sky-600',
+    status: 'live',
+    statusLabel: 'Oyna',
+    techStack: [
+      'Godot 4',
+      'GDScript',
+      'WebAssembly',
+      'HTML5 Canvas',
+      'Next.js 16',
+    ],
+    highlights: [
+      'Godot Engine web export (WASM + .pck) ile tek tıkla tarayıcıda çalışma',
+      '24 veri odaklı seviye; renk, hayvan ve meyve katalogları',
+      'Analytics ve ebeveyn paneli ile doğruluk, tepki süresi ve seri istatistikleri',
+      'Eksik asset toleransı: görsel/ses yoksa uyarı ile güvenli düşüş (crash yok)',
+    ],
+    githubUrl: 'https://github.com/huseyindol/game-ge',
+    liveUrl: '/games/matching',
+    liveLabel: 'Oyna',
+  },
 ]
 
 const statusConfig = {
@@ -210,7 +238,7 @@ export default function ProjectsContent() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 py-32 pt-32 text-white md:py-40 md:pt-40">
+      <section className="relative -mt-20 overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 py-32 pt-32 text-white md:py-40 md:pt-40">
         <div className="animate-orb-1 pointer-events-none absolute -left-40 -top-40 h-96 w-96 rounded-full bg-violet-600/15 blur-3xl" />
         <div className="animate-orb-2 pointer-events-none absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-emerald-600/15 blur-3xl" />
         <div
@@ -243,11 +271,11 @@ export default function ProjectsContent() {
 
             <div className="mt-10 flex justify-center gap-8 text-sm text-slate-400">
               <div className="text-center">
-                <p className="text-2xl font-bold text-white">5</p>
+                <p className="text-2xl font-bold text-white">6</p>
                 <p>Proje</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-white">4</p>
+                <p className="text-2xl font-bold text-white">5</p>
                 <p>Canlı</p>
               </div>
               <div className="text-center">
@@ -289,8 +317,17 @@ export default function ProjectsContent() {
                   icon: GamepadIcon,
                   target: 'arcade-games',
                 },
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2 md:gap-3">
+                {
+                  label: 'Godot Games',
+                  color: 'cyan',
+                  icon: JoystickIcon,
+                  target: 'godot-engine-games',
+                },
+              ].map((item, idx, items) => (
+                <div
+                  key={item.target}
+                  className="flex items-center gap-2 md:gap-3"
+                >
                   <div
                     onClick={() => {
                       document
@@ -306,7 +343,9 @@ export default function ProjectsContent() {
                             ? 'border-violet-500/30 bg-violet-500/10 text-violet-300'
                             : item.color === 'pink'
                               ? 'border-pink-500/30 bg-pink-500/10 text-pink-300'
-                              : 'border-orange-500/50 bg-orange-500/20 text-orange-300 shadow-[0_0_15px_rgba(249,115,22,0.4)] ring-1 ring-orange-500/40'
+                              : item.color === 'cyan'
+                                ? 'border-cyan-500/35 bg-cyan-500/10 text-cyan-200'
+                                : 'border-orange-500/50 bg-orange-500/20 text-orange-300 shadow-[0_0_15px_rgba(249,115,22,0.4)] ring-1 ring-orange-500/40'
                     }`}
                   >
                     <item.icon
@@ -314,7 +353,7 @@ export default function ProjectsContent() {
                     />
                     {item.label}
                   </div>
-                  {idx !== 4 && (
+                  {idx !== items.length - 1 && (
                     <div className="hidden h-px w-3 bg-slate-700/50 xl:block" />
                   )}
                 </div>

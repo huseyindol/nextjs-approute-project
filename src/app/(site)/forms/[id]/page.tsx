@@ -38,7 +38,7 @@ export default async function FormPage({ params }: Props) {
   }
 
   return (
-    <section className="py-24 pt-24 md:pt-32">
+    <section className="py-24 pt-4 md:pt-12">
       <FormSubmitWrapper formId={form.id} schema={form} />
     </section>
   )

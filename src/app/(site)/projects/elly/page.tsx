@@ -55,7 +55,7 @@ export default function EllyEcosystemPage() {
   const ecoInView = useInView(ecoRef, { once: true, margin: '-80px' })
 
   return (
-    <div className="min-h-screen bg-background pt-32">
+    <div className="min-h-screen bg-background pt-12">
       <section className="py-20" id="elly-ecosystem">
         <div className="container mx-auto px-6">
           <motion.div
