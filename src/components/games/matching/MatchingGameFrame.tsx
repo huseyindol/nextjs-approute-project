@@ -4,14 +4,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Maximize2, Minimize2 } from 'lucide-react'
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
-
-const MATCHING_GAME_INDEX = '/assets/games/matching/index.html'
-
-function getMatchingIframeSrc() {
-  const v = process.env.NEXT_PUBLIC_MATCHING_GAME_ASSET_VERSION?.trim()
-  if (!v) return MATCHING_GAME_INDEX
-  return `${MATCHING_GAME_INDEX}?v=${encodeURIComponent(v)}`
-}
+import { GAME_GE_ASSET_CACHE_KEY } from '../../../lib/game-ge-asset-version.generated'
 
 type WebKitDocument = Document & {
   webkitFullscreenElement?: Element | null
@@ -127,7 +120,7 @@ export function MatchingGameFrame() {
         isFullscreen &&
           cn(
             'h-dvh max-h-dvh min-h-0 w-full max-w-none rounded-none border-0 shadow-none',
-            'max-md:pb-[max(env(safe-area-inset-bottom,0px),10px)] max-md:pt-[calc(env(safe-area-inset-top,0px)+12px)]',
+            'max-md:pb-[max(env(safe-area-inset-bottom,0px),0px)] max-md:pt-[calc(env(safe-area-inset-top,0px)+10px)]',
             'md:pb-[env(safe-area-inset-bottom,0px)] md:pt-[env(safe-area-inset-top,0px)]',
           ),
         pseudoFullscreen && 'z-200 fixed inset-0',
@@ -153,7 +146,7 @@ export function MatchingGameFrame() {
 
       <iframe
         title="Eğitici Eşleştirme Oyunu"
-        src={getMatchingIframeSrc()}
+        src={`/assets/games/matching/index.html?v=${GAME_GE_ASSET_CACHE_KEY}`}
         allow="autoplay; fullscreen; gamepad"
         allowFullScreen
         className={cn(

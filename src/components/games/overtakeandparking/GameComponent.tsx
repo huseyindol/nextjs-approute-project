@@ -1,6 +1,7 @@
 'use client'
 import Script from 'next/script'
 import { useEffect } from 'react'
+import { GAME_ASSET_CACHE_KEY } from '../../../lib/game-asset-version.generated'
 
 export default function GameComponent() {
   useEffect(() => {
@@ -20,7 +21,7 @@ export default function GameComponent() {
 
       {/* Oyunun derlenmiş (Vite) module dosyası. type="module" olarak yüklenmeli. */}
       <Script
-        src="/assets/games/overtakeandparking/game.js"
+        src={`/assets/games/overtakeandparking/game.js?v=${GAME_ASSET_CACHE_KEY}`}
         type="module"
         strategy="lazyOnload"
       />
