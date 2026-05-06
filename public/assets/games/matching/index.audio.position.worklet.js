@@ -29,41 +29,38 @@
 /**************************************************************************/
 
 class GodotPositionReportingProcessor extends AudioWorkletProcessor {
-  static get parameterDescriptors() {
-    return [
-      {
-        name: 'reset',
-        defaultValue: 0,
-        minValue: 0,
-        maxValue: 1,
-        automationRate: 'k-rate',
-      },
-    ]
-  }
+	static get parameterDescriptors() {
+		return [
+			{
+				name: 'reset',
+				defaultValue: 0,
+				minValue: 0,
+				maxValue: 1,
+				automationRate: 'k-rate',
+			},
+		];
+	}
 
-  constructor(...args) {
-    super(...args)
-    this.position = 0
-  }
+	constructor(...args) {
+		super(...args);
+		this.position = 0;
+	}
 
-  process(inputs, _outputs, parameters) {
-    if (parameters['reset'][0] > 0) {
-      this.position = 0
-    }
+	process(inputs, _outputs, parameters) {
+		if (parameters['reset'][0] > 0) {
+			this.position = 0;
+		}
 
-    if (inputs.length > 0) {
-      const input = inputs[0]
-      if (input.length > 0) {
-        this.position += input[0].length
-        this.port.postMessage({ type: 'position', data: this.position })
-      }
-    }
+		if (inputs.length > 0) {
+			const input = inputs[0];
+			if (input.length > 0) {
+				this.position += input[0].length;
+				this.port.postMessage({ type: 'position', data: this.position });
+			}
+		}
 
-    return true
-  }
+		return true;
+	}
 }
 
-registerProcessor(
-  'godot-position-reporting-processor',
-  GodotPositionReportingProcessor,
-)
+registerProcessor('godot-position-reporting-processor', GodotPositionReportingProcessor);
