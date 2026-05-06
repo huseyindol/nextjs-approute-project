@@ -53,6 +53,9 @@ const envSchema = z.object({
       message: 'Secret must be at least 6 characters or empty',
     }),
 
+  /** Manuel oyun sürümü (opsiyonel). Boşsa next.config build’de VERCEL_GIT_COMMIT_SHA kısaltması kullanılır. */
+  NEXT_PUBLIC_MATCHING_GAME_ASSET_VERSION: z.string().optional().default(''),
+
   // Vercel
   VERCEL_URL: z.string().optional(),
   VERCEL_ENV: z.enum(['production', 'preview', 'development']).optional(),

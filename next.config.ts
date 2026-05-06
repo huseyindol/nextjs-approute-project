@@ -8,8 +8,18 @@ const withBundleAnalyzer = bundleAnalyzer({
   openAnalyzer: true,
 })
 
+/** Oyun export’u aynı dosya adlarıyla güncellenince mobil cache kırılsın diye (iframe + revalidate). */
+const matchingGameAssetVersion =
+  process.env.NEXT_PUBLIC_MATCHING_GAME_ASSET_VERSION?.trim() ||
+  process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 12) ||
+  ''
+
 const nextConfig = {
   output: 'standalone' as const,
+
+  env: {
+    NEXT_PUBLIC_MATCHING_GAME_ASSET_VERSION: matchingGameAssetVersion,
+  },
 
   experimental: {
     optimizeCss: true,
@@ -77,7 +87,7 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: 'public, max-age=1800, s-maxage=1800, must-revalidate',
           },
           {
             key: 'Cross-Origin-Opener-Policy',
