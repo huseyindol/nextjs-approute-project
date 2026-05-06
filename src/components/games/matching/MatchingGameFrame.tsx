@@ -125,7 +125,11 @@ export function MatchingGameFrame() {
       className={cn(
         'relative z-0 flex w-full flex-col overflow-hidden rounded-xl border border-border bg-black shadow-2xl',
         isFullscreen &&
-          'h-dvh max-h-dvh min-h-0 w-full max-w-none rounded-none border-0 shadow-none',
+          cn(
+            'h-dvh max-h-dvh min-h-0 w-full max-w-none rounded-none border-0 shadow-none',
+            'max-md:pb-[max(env(safe-area-inset-bottom,0px),10px)] max-md:pt-[calc(env(safe-area-inset-top,0px)+12px)]',
+            'md:pb-[env(safe-area-inset-bottom,0px)] md:pt-[env(safe-area-inset-top,0px)]',
+          ),
         pseudoFullscreen && 'z-200 fixed inset-0',
       )}
     >
