@@ -1,3 +1,3 @@
 /** game-ge — GitHub Actions; elle düzenlemeyin. */
-export const GAME_GE_ASSET_CACHE_KEY = '25462297705'
-export const GAME_GE_ASSET_SHA = '0407a7d68ac4054b6c76ca13a0b354c5edd0b847'
+export const GAME_GE_ASSET_CACHE_KEY = "25465591749";
+export const GAME_GE_ASSET_SHA = "8ff0328280aa6d4751fa11fb35c96d94cf73ee52";
