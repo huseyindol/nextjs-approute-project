@@ -1,10 +1,9 @@
 'use client'
-import { AnimatePresence, motion, useInView } from 'framer-motion'
-import { useRef, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { INDUSTRIES } from '@/schemas/constants'
 import type { ExperienceType } from '@/schemas/dynamic/experienceSchema'
+import { AnimatePresence, motion, useInView } from 'framer-motion'
 import {
   Building,
   Calendar,
@@ -13,6 +12,7 @@ import {
   MapPin,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useRef, useState } from 'react'
 
 const fadeInLeft = {
   hidden: { opacity: 0, x: -30 },

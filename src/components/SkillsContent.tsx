@@ -1,13 +1,13 @@
 'use client'
-import { motion, useInView } from 'framer-motion'
-import { useRef } from 'react'
-import type { LucideIcon } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
+import type { SkillType } from '@/components/Skills'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
+import { motion, useInView } from 'framer-motion'
+import type { LucideIcon } from 'lucide-react'
 import { Cloud, Database, Monitor, Server, Wrench } from 'lucide-react'
-import type { SkillType } from '@/components/Skills'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRef } from 'react'
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },

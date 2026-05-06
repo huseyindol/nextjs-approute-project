@@ -1,12 +1,12 @@
 'use client'
-import { AnimatePresence, motion } from 'framer-motion'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { sendGTMEvent } from '@next/third-parties/google'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 const mainNavLinks = [
   { href: '/about', label: 'Hakkında' },

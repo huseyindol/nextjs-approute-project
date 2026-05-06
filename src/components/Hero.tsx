@@ -1,12 +1,11 @@
 'use client'
-import { motion, useInView } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
-import type { LucideIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { siteInfo } from '@/data/mockData'
 import { sendGTMEvent } from '@next/third-parties/google'
+import { motion, useInView } from 'framer-motion'
+import type { LucideIcon } from 'lucide-react'
 import {
   Code2,
   Download,
@@ -18,6 +17,7 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },

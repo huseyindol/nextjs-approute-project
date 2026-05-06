@@ -5,14 +5,14 @@ import { Card } from '@/components/ui/card'
 import { motion, useInView } from 'framer-motion'
 import {
   ExternalLinkIcon,
+  GamepadIcon,
+  GithubIcon,
+  GlobeIcon,
+  JoystickIcon,
+  LayersIcon,
+  LayoutDashboardIcon,
   ServerIcon,
   SmartphoneIcon,
-  LayoutDashboardIcon,
-  GlobeIcon,
-  LayersIcon,
-  GamepadIcon,
-  JoystickIcon,
-  GithubIcon,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRef } from 'react'

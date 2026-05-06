@@ -1,13 +1,13 @@
 'use client'
-import { motion, useInView } from 'framer-motion'
-import { CalendarIcon, ClockIcon, BookOpenIcon } from 'lucide-react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useRef } from 'react'
+import AdSenseAd from '@/components/AdSenseAd'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import type { BlogPost } from '@/lib/mdx'
-import AdSenseAd from '@/components/AdSenseAd'
+import { motion, useInView } from 'framer-motion'
+import { BookOpenIcon, CalendarIcon, ClockIcon } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRef } from 'react'
 
 const BLOG_LIST_AD_SLOTS = [
   '7448731904',
