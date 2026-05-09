@@ -48,6 +48,7 @@ public/assets/games/**
 
 # Sync/build output
 src/lib/game-asset-version.generated.ts
+src/lib/game-ge-asset-version.generated.ts
 
 # API and documentation
 public/openapi-generated.json

@@ -112,9 +112,6 @@ export default function SkillsContent({
   title,
   description,
 }: SkillsContentProps) {
-  const headerRef = useRef(null)
-  const headerInView = useInView(headerRef, { once: true, margin: '-80px' })
-
   return (
     <div className="min-h-screen">
       {/* Hero header */}
@@ -131,13 +128,7 @@ export default function SkillsContent({
         />
 
         <div className="container relative mx-auto px-6">
-          <motion.div
-            ref={headerRef}
-            className="mx-auto max-w-3xl text-center"
-            initial={{ opacity: 0, y: 40 }}
-            animate={headerInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7 }}
-          >
+          <div className="mx-auto max-w-3xl text-center">
             <Badge className="mb-6 border border-blue-400/30 bg-blue-500/20 px-4 py-1.5 text-sm font-medium text-blue-200">
               Teknoloji Yığını
             </Badge>
@@ -145,7 +136,7 @@ export default function SkillsContent({
               {title}
             </h1>
             <p className="text-lg text-slate-300 md:text-xl">{description}</p>
-          </motion.div>
+          </div>
         </div>
       </section>
 

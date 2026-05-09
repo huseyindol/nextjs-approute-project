@@ -51,8 +51,6 @@ export default function ExperienceTimeline({
 }: ExperienceTimelineProps) {
   const router = useRouter()
   const [selectedIndustry, setSelectedIndustry] = useState(initialIndustry)
-  const headerRef = useRef(null)
-  const headerInView = useInView(headerRef, { once: true, margin: '-80px' })
 
   const filtered =
     selectedIndustry === 'all'
@@ -82,13 +80,7 @@ export default function ExperienceTimeline({
         />
 
         <div className="container relative mx-auto px-6">
-          <motion.div
-            ref={headerRef}
-            className="mx-auto max-w-3xl text-center"
-            initial={{ opacity: 0, y: 40 }}
-            animate={headerInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7 }}
-          >
+          <div className="mx-auto max-w-3xl text-center">
             <Badge className="mb-6 border border-blue-400/30 bg-blue-500/20 px-4 py-1.5 text-sm font-medium text-blue-200">
               Kariyer Yolculuğu
             </Badge>
@@ -96,15 +88,10 @@ export default function ExperienceTimeline({
               {title}
             </h1>
             <p className="text-lg text-slate-300 md:text-xl">{description}</p>
-          </motion.div>
+          </div>
 
           {/* Career summary stats */}
-          <motion.div
-            className="mx-auto mt-14 grid max-w-2xl grid-cols-3 gap-6 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={headerInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.2 }}
-          >
+          <div className="mx-auto mt-14 grid max-w-2xl grid-cols-3 gap-6 text-center">
             {[
               { value: '10+', label: 'Yıl Kariyer' },
               { value: '7', label: 'Şirket' },
@@ -117,7 +104,7 @@ export default function ExperienceTimeline({
                 <div className="mt-1 text-sm text-slate-400">{s.label}</div>
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
