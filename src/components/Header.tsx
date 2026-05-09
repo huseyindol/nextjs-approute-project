@@ -1,7 +1,6 @@
 'use client'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -102,11 +101,7 @@ export default function Header() {
             >
               {link.label}
               {isActive(link.href) && (
-                <motion.div
-                  layoutId="nav-underline"
-                  className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-primary"
-                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                />
+                <span className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-primary" />
               )}
             </Link>
           ))}
@@ -139,43 +134,34 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            key="mobile-menu"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className="bg-background/95 border-b border-border px-6 pb-6 pt-2 backdrop-blur-md md:hidden"
-          >
-            <nav className="flex flex-col gap-1">
-              {navLinksToUse.map(link => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                    isActive(link.href)
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+      {/* Mobile menu — pure CSS, runtime maliyeti yok */}
+      {isOpen && (
+        <div className="animate-mobile-menu bg-background/95 border-b border-border px-6 pb-6 pt-2 backdrop-blur-md md:hidden">
+          <nav className="flex flex-col gap-1">
+            {navLinksToUse.map(link => (
               <Link
-                href="mailto:huseyindol@gmail.com"
+                key={link.href}
+                href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="mt-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white"
+                className={`rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                  isActive(link.href)
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                }`}
               >
-                İletişime Geç
+                {link.label}
               </Link>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            ))}
+            <Link
+              href="mailto:huseyindol@gmail.com"
+              onClick={() => setIsOpen(false)}
+              className="mt-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white"
+            >
+              İletişime Geç
+            </Link>
+          </nav>
+        </div>
+      )}
     </header>
   )
 }

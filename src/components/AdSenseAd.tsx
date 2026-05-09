@@ -13,6 +13,7 @@ interface AdSenseAdProps {
 }
 
 const AD_CLIENT = 'ca-pub-8068794859489939'
+const RESERVED_HEIGHT = 280
 
 export default function AdSenseAd({ slot, layoutKey }: AdSenseAdProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -48,20 +49,44 @@ export default function AdSenseAd({ slot, layoutKey }: AdSenseAdProps) {
       pushed.current = true
       return
     }
-    try {
-      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
-      pushed.current = true
-    } catch {
-      // adsbygoogle script henüz yüklenmedi; lazyOnload Script
-      // yüklenince bir sonraki visibility tetiklemesinde push tekrar denenir.
+    // INP iyileştirmesi: push işini idle callback'e al, main thread'e basmayalım.
+    const idle =
+      typeof window !== 'undefined' &&
+      typeof window.requestIdleCallback === 'function'
+        ? window.requestIdleCallback
+        : (cb: IdleRequestCallback) =>
+            window.setTimeout(() => cb(undefined as unknown as IdleDeadline), 1)
+    const id = idle(() => {
+      try {
+        ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+        pushed.current = true
+      } catch {
+        // adsbygoogle script henüz yüklenmedi; lazyOnload Script
+        // yüklenince bir sonraki visibility tetiklemesinde push tekrar denenir.
+      }
+    })
+    return () => {
+      if (
+        typeof window !== 'undefined' &&
+        typeof window.cancelIdleCallback === 'function'
+      ) {
+        window.cancelIdleCallback(id as number)
+      } else {
+        clearTimeout(id as unknown as number)
+      }
     }
   }, [isVisible, slot, layoutKey])
 
+  // CLS fix: sabit yükseklik + contain:layout ile reklam yüklendiğinde
+  // dış DOM'u shift etmesi önlenir. height (min-height değil) net rezervasyon.
   return (
     <div
       ref={containerRef}
       className="my-8 w-full overflow-hidden"
-      style={{ minHeight: 250 }}
+      style={{
+        height: RESERVED_HEIGHT,
+        contain: 'layout style',
+      }}
     >
       {isVisible &&
         (layoutKey ? (
@@ -69,7 +94,11 @@ export default function AdSenseAd({ slot, layoutKey }: AdSenseAdProps) {
             ref={insRef}
             key={`${slot}-${layoutKey}`}
             className="adsbygoogle"
-            style={{ display: 'block', minHeight: 250, width: '100%' }}
+            style={{
+              display: 'block',
+              height: RESERVED_HEIGHT,
+              width: '100%',
+            }}
             data-ad-format="fluid"
             data-ad-layout-key={layoutKey}
             data-ad-client={AD_CLIENT}
@@ -83,7 +112,7 @@ export default function AdSenseAd({ slot, layoutKey }: AdSenseAdProps) {
             style={{
               display: 'block',
               textAlign: 'center',
-              minHeight: 250,
+              height: RESERVED_HEIGHT,
               width: '100%',
             }}
             data-ad-layout="in-article"
