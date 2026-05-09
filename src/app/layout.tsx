@@ -17,19 +17,19 @@ import './globals.css'
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
-  display: 'swap', // FOUT (Flash of Unstyled Text) yerine swap kullan
-  preload: true, // Fontları daha erken yükle
-  adjustFontFallback: true, // CLS için fallback font ayarla
-  weight: ['400', '500', '600', '700'], // Sadece kullanılan ağırlıklar
+  display: 'swap',
+  preload: true,
+  adjustFontFallback: true, // CLS için fallback font metrik eşleme
+  weight: ['400', '500', '600', '700', '800'], // 800 = font-extrabold
 })
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
   display: 'swap',
-  preload: true,
+  preload: false, // Mono sadece kod blokları için, kritik path'te değil
   adjustFontFallback: true,
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500'], // Sadece gerçekten kullanılan weight'lar
 })
 
 const SITE_URL =
@@ -129,6 +129,21 @@ export default async function RootLayout({
   // console.log('APP - LAYOUT')
   return (
     <html lang="tr" suppressHydrationWarning>
+      <head>
+        {/* DNS/TLS handshake'i kritik 3rd party kaynaklar için önceden yap */}
+        <link
+          rel="preconnect"
+          href="https://pagead2.googlesyndication.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://www.googletagmanager.com"
+          crossOrigin="anonymous"
+        />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://api.huseyindol.com" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >

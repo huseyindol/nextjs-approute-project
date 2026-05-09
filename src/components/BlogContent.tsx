@@ -53,8 +53,6 @@ export default function BlogContent({
   categories,
   categoryFilter,
 }: BlogContentProps) {
-  const headerRef = useRef(null)
-  const headerInView = useInView(headerRef, { once: true, margin: '-80px' })
   const gridRef = useRef(null)
   const gridInView = useInView(gridRef, { once: true, margin: '-60px' })
 
@@ -74,13 +72,7 @@ export default function BlogContent({
         />
 
         <div className="container relative mx-auto px-6">
-          <motion.div
-            ref={headerRef}
-            className="mx-auto max-w-3xl text-center"
-            initial={{ opacity: 0, y: 40 }}
-            animate={headerInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7 }}
-          >
+          <div className="mx-auto max-w-3xl text-center">
             <Badge className="mb-6 border border-emerald-400/30 bg-emerald-500/20 px-4 py-1.5 text-sm font-medium text-emerald-200">
               Teknik Makaleler
             </Badge>
@@ -105,7 +97,7 @@ export default function BlogContent({
                 <p>Kategori</p>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
