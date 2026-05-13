@@ -1,5 +1,5 @@
-import { apiRateLimiter, generalRateLimiter } from '@/lib/rate-limiter-store'
-import { generateCSP, getClientIp } from '@/lib/security'
+// import { apiRateLimiter, generalRateLimiter } from '@/lib/rate-limiter-store'
+import { generateCSP } from '@/lib/security'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 import { refreshTokenProxy } from './proxy/refreshTokenProxy'
@@ -12,16 +12,12 @@ import { CookieEnum } from './utils/constant/cookieConstant'
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next()
 
-  // Get client IP for rate limiting
+  // Rate limiting devre dışı (429'dan kaçınmak için). Tekrar açmak için üstteki import'ları ve bloğu uncomment edin.
+  /*
   const clientIp = getClientIp(request.headers)
-
-  // Apply rate limiting
   const isApiRoute = request.nextUrl.pathname.startsWith('/api/')
   const rateLimiter = isApiRoute ? apiRateLimiter : generalRateLimiter
-
   const rateLimitResult = await rateLimiter.check(clientIp)
-
-  // Add rate limit headers
   response.headers.set('X-RateLimit-Limit', String(rateLimitResult.limit))
   response.headers.set(
     'X-RateLimit-Remaining',
@@ -31,8 +27,6 @@ export async function proxy(request: NextRequest) {
     'X-RateLimit-Reset',
     new Date(rateLimitResult.reset).toISOString(),
   )
-
-  // If rate limit exceeded, return 429
   if (!rateLimitResult.success) {
     return new NextResponse('Too Many Requests', {
       status: 429,
@@ -47,6 +41,7 @@ export async function proxy(request: NextRequest) {
       },
     })
   }
+  */
 
   // Security Headers
   // Prevent DNS prefetching

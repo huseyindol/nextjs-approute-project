@@ -1,8 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { type NextRequest, NextResponse } from 'next/server'
-import { apiRateLimiter } from '@/lib/rate-limiter-store'
-import { getClientIp } from '@/lib/security'
+// import { apiRateLimiter } from '@/lib/rate-limiter-store'
+// import { getClientIp } from '@/lib/security'
 
 const VALID_TYPES = ['pages', 'posts', 'components', 'widgets'] as const
 type TemplateType = (typeof VALID_TYPES)[number]
@@ -27,8 +27,8 @@ function readTemplates(type: TemplateType): TemplateOption[] {
 }
 
 export async function GET(request: NextRequest) {
-  const ip = getClientIp(request.headers)
-  const limit = await apiRateLimiter.check(ip)
+  // const ip = getClientIp(request.headers)
+  // const limit = await apiRateLimiter.check(ip)
   const adminOrigin = process.env.NEXT_PUBLIC_ADMIN_URL ?? '*'
 
   const headers = {
@@ -37,12 +37,14 @@ export async function GET(request: NextRequest) {
     'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
   }
 
+  /*
   if (!limit.success) {
     return NextResponse.json(
       { error: 'Too many requests' },
       { status: 429, headers },
     )
   }
+  */
 
   const type = request.nextUrl.searchParams.get('type') as TemplateType | null
 
