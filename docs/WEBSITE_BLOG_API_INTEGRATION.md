@@ -35,7 +35,7 @@ export interface BlogFrontmatter {
   description: string | null
   category: string | null
   coverImage: string | null
-  publishedAt: string | null   // ISO date string
+  publishedAt: string | null // ISO date string
   author: string | null
   readingTime: string | null
   order: number
@@ -44,7 +44,7 @@ export interface BlogFrontmatter {
 export interface BlogPost {
   id: number
   slug: string
-  content: string              // MDX string (getPostBySlug'dan gelir, getAllPosts'ta boş)
+  content: string // MDX string (getPostBySlug'dan gelir, getAllPosts'ta boş)
   status: boolean
   frontmatter: BlogFrontmatter
 }
@@ -134,7 +134,7 @@ export const getAllPosts = unstable_cache(
   async (): Promise<BlogPost[]> => {
     const posts = await fetchAllPosts()
     return posts
-      .filter((p) => p.status)
+      .filter(p => p.status)
       .map(toBlogPost)
       .sort((a, b) => {
         if (a.frontmatter.order !== b.frontmatter.order)
