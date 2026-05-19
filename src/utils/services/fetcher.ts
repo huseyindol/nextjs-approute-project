@@ -48,7 +48,6 @@ export const fetcher = async <T>(
   url: string,
   options: RequestInit = {},
 ): Promise<T> => {
-  console.log('fetcherqq 1')
   if (typeof window === 'undefined') {
     options = await prepareRequestSSROptions(options)
   } else {
@@ -57,10 +56,8 @@ export const fetcher = async <T>(
   if (url.includes('/auth/refresh') || url.includes('/auth/login')) {
     delete (options.headers as Record<string, string>)?.Authorization
   }
-  console.log('fetcherqq 2')
 
   const fullUrl = await buildApiUrl(url)
-  console.log('fetcherqq fullUrl', fullUrl)
   let response = await fetch(fullUrl, options)
   if (!response.ok) {
     if (response.status === 401) {
