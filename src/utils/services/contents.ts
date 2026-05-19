@@ -4,7 +4,7 @@ import {
   SectionData,
   SectionInfo,
 } from '@/types/content'
-import { buildApiUrl } from '@/utils/helpers/tenant'
+import { fetcher } from '@/utils/services/fetcher'
 
 /**
  * Site-side content fetcher - Server Component'lerde kullanılır
@@ -14,23 +14,13 @@ export async function getContentsBySectionKey<T = Record<string, unknown>>(
   sectionKey: string,
 ): Promise<T[]> {
   try {
-    const url = await buildApiUrl(`/contents/section/${sectionKey}`)
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
+    const data = await fetcher<ContentListResponse<T>>(
+      `/contents/section/${sectionKey}`,
+      {
+        method: 'GET',
+        next: { revalidate: 60 },
       },
-      next: {
-        revalidate: 60, // 1 dakika cache
-      },
-    })
-
-    if (!response.ok) {
-      console.error(`Failed to fetch contents for section ${sectionKey}`)
-      return []
-    }
-
-    const data: ContentListResponse<T> = await response.json()
+    )
 
     if (!data.result) {
       console.error(`API error for section ${sectionKey}`)
@@ -58,23 +48,13 @@ export async function getContentItemsBySectionKey<T = Record<string, unknown>>(
   sectionKey: string,
 ): Promise<ContentItem<T>[]> {
   try {
-    const url = await buildApiUrl(`/contents/section/${sectionKey}`)
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
+    const data = await fetcher<ContentListResponse<T>>(
+      `/contents/section/${sectionKey}`,
+      {
+        method: 'GET',
+        next: { revalidate: 60 },
       },
-      next: {
-        revalidate: 60,
-      },
-    })
-
-    if (!response.ok) {
-      console.error(`Failed to fetch contents for section ${sectionKey}`)
-      return []
-    }
-
-    const data: ContentListResponse<T> = await response.json()
+    )
 
     if (!data.result) {
       console.error(`API error for section ${sectionKey}`)
@@ -107,23 +87,13 @@ export async function getSectionDataBySectionKey<T = Record<string, unknown>>(
   }
 
   try {
-    const url = await buildApiUrl(`/contents/section/${sectionKey}`)
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
+    const data = await fetcher<ContentListResponse<T>>(
+      `/contents/section/${sectionKey}`,
+      {
+        method: 'GET',
+        next: { revalidate: 60 },
       },
-      next: {
-        revalidate: 60, // 1 dakika cache
-      },
-    })
-
-    if (!response.ok) {
-      console.error(`Failed to fetch contents for section ${sectionKey}`)
-      return { sectionInfo: defaultInfo, items: [] }
-    }
-
-    const data: ContentListResponse<T> = await response.json()
+    )
 
     if (!data.result || !data.data?.length) {
       console.error(`API error or empty data for section ${sectionKey}`)

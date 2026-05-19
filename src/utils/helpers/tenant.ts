@@ -1,5 +1,5 @@
-import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { getGlobalCookies } from '@/context/CookieContext'
+import { CookieEnum } from '@/utils/constant/cookieConstant'
 
 /**
  * Cookie'den tenantId değerini okur.

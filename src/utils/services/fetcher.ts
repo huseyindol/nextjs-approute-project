@@ -18,12 +18,18 @@ const removeAllAuthCookies = () => {
 }
 
 const prepareRequestSSROptions = async (options: RequestInit) => {
-  const cookiesStore = import('next/headers').then(module => module.cookies())
-  const cookies = await cookiesStore
-  const accessToken = cookies.get(CookieEnum.ACCESS_TOKEN)
-  options.headers = {
-    ...options.headers,
-    ...(accessToken && { Authorization: `Bearer ${accessToken?.value}` }),
+  // generateStaticParams / build-time'da request context olmadığı için
+  // cookies() throw atar; bu durumda Authorization header'sız devam ederiz.
+  try {
+    const { cookies } = await import('next/headers')
+    const cookieStore = await cookies()
+    const accessToken = cookieStore.get(CookieEnum.ACCESS_TOKEN)
+    options.headers = {
+      ...options.headers,
+      ...(accessToken && { Authorization: `Bearer ${accessToken.value}` }),
+    }
+  } catch {
+    // No request context (örn. generateStaticParams) — auth header eklenmez.
   }
   return options
 }
@@ -42,6 +48,7 @@ export const fetcher = async <T>(
   url: string,
   options: RequestInit = {},
 ): Promise<T> => {
+  console.log('fetcherqq 1')
   if (typeof window === 'undefined') {
     options = await prepareRequestSSROptions(options)
   } else {
@@ -50,9 +57,10 @@ export const fetcher = async <T>(
   if (url.includes('/auth/refresh') || url.includes('/auth/login')) {
     delete (options.headers as Record<string, string>)?.Authorization
   }
+  console.log('fetcherqq 2')
 
   const fullUrl = await buildApiUrl(url)
-  console.log('fullUrl', fullUrl)
+  console.log('fetcherqq fullUrl', fullUrl)
   let response = await fetch(fullUrl, options)
   if (!response.ok) {
     if (response.status === 401) {

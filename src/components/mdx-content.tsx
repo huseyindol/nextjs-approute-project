@@ -1,9 +1,9 @@
 import { MDXRemote } from 'next-mdx-remote/rsc'
-import Image from 'next/image'
 import React from 'react'
 import remarkGfm from 'remark-gfm'
 import rehypePrettyCode from 'rehype-pretty-code'
 import type { PluggableList } from 'unified'
+import { ImageWithFallback } from './image-with-fallback'
 
 const components = {
   h1: (props: React.ComponentPropsWithoutRef<'h1'>) => (
@@ -75,18 +75,11 @@ const components = {
       {props.children}
     </blockquote>
   ),
-  img: (props: React.ComponentPropsWithoutRef<'img'>) => (
-    <div className="relative my-8 w-full overflow-hidden rounded-xl bg-slate-100 shadow-xl dark:bg-slate-800">
-      <Image
-        alt={props.alt || 'Blog Image'}
-        src={(props.src as string) || ''}
-        style={{ width: '100%', height: 'auto' }}
-        width={1200}
-        height={630}
-        className="object-cover"
-      />
-    </div>
-  ),
+  img: (props: React.ComponentPropsWithoutRef<'img'>) => {
+    const src = typeof props.src === 'string' ? props.src : ''
+    if (!src) return null
+    return <ImageWithFallback src={src} alt={props.alt || 'Blog Image'} />
+  },
   pre: (props: React.ComponentPropsWithoutRef<'pre'>) => (
     <pre
       className="my-6 overflow-x-auto rounded-lg border border-slate-200 bg-slate-950 p-4 text-sm shadow-lg dark:border-slate-800"

@@ -1,10 +1,7 @@
-import { unstable_cache } from 'next/cache'
 import type { BlogFrontmatter, BlogPost } from '@/types/blog'
+import { fetcher } from '@/utils/services/fetcher'
 
 export type { BlogFrontmatter, BlogPost }
-
-const API_BASE = process.env.NEXT_PUBLIC_API
-const TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'tenant1'
 
 interface CmsPost {
   id: number
@@ -33,26 +30,25 @@ interface ApiResponse<T> {
 }
 
 async function fetchAllPosts(): Promise<CmsPost[]> {
-  const res = await fetch(
-    `${API_BASE}/api/v1/public/${TENANT_ID}/posts/list/summary`,
-    { next: { tags: ['cms-posts'] } },
-  )
-  if (!res.ok) throw new Error(`Posts fetch failed: ${res.status}`)
-  const json: ApiResponse<CmsPost[]> = await res.json()
+  const json = await fetcher<ApiResponse<CmsPost[]>>('/posts/list/summary', {
+    method: 'GET',
+    next: { tags: ['cms-posts'], revalidate: 86400 },
+  })
   if (!json.result) throw new Error(json.message ?? 'API error')
   return json.data
 }
 
 async function fetchPostBySlug(slug: string): Promise<CmsPost | null> {
-  const res = await fetch(
-    `${API_BASE}/api/v1/public/${TENANT_ID}/posts/slug/${slug}`,
-    { next: { tags: ['cms-posts', `cms-post-${slug}`] } },
-  )
-  if (res.status === 404) return null
-  if (!res.ok) throw new Error(`Post fetch failed: ${res.status}`)
-  const json: ApiResponse<CmsPost> = await res.json()
-  if (!json.result) return null
-  return json.data
+  try {
+    const json = await fetcher<ApiResponse<CmsPost>>(`/posts/slug/${slug}`, {
+      method: 'GET',
+      next: { tags: ['cms-posts', `cms-post-${slug}`], revalidate: 86400 },
+    })
+    if (!json.result) return null
+    return json.data
+  } catch {
+    return null
+  }
 }
 
 function toBlogPost(post: CmsPost): BlogPost {
@@ -74,37 +70,29 @@ function toBlogPost(post: CmsPost): BlogPost {
   }
 }
 
-export const getAllCmsPosts = unstable_cache(
-  async (): Promise<BlogPost[]> => {
-    const posts = await fetchAllPosts()
-    return posts
-      .filter(p => p.status)
-      .map(toBlogPost)
-      .sort((a, b) => {
-        if (a.frontmatter.order !== b.frontmatter.order)
-          return a.frontmatter.order - b.frontmatter.order
-        const dateA = a.frontmatter.publishedAt
-          ? new Date(a.frontmatter.publishedAt).getTime()
-          : 0
-        const dateB = b.frontmatter.publishedAt
-          ? new Date(b.frontmatter.publishedAt).getTime()
-          : 0
-        return dateB - dateA
-      })
-  },
-  ['cms-posts'],
-  { revalidate: 86400, tags: ['cms-posts'] },
-)
+export async function getAllCmsPosts(): Promise<BlogPost[]> {
+  const posts = await fetchAllPosts()
+  return posts
+    .filter(p => p.status)
+    .map(toBlogPost)
+    .sort((a, b) => {
+      if (a.frontmatter.order !== b.frontmatter.order)
+        return a.frontmatter.order - b.frontmatter.order
+      const dateA = a.frontmatter.publishedAt
+        ? new Date(a.frontmatter.publishedAt).getTime()
+        : 0
+      const dateB = b.frontmatter.publishedAt
+        ? new Date(b.frontmatter.publishedAt).getTime()
+        : 0
+      return dateB - dateA
+    })
+}
 
-export const getCmsPostBySlug = unstable_cache(
-  async (slug: string): Promise<BlogPost | null> => {
-    const post = await fetchPostBySlug(slug)
-    if (!post) return null
-    return toBlogPost(post)
-  },
-  ['cms-post'],
-  { revalidate: 86400, tags: ['cms-posts'] },
-)
+export async function getCmsPostBySlug(slug: string): Promise<BlogPost | null> {
+  const post = await fetchPostBySlug(slug)
+  if (!post) return null
+  return toBlogPost(post)
+}
 
 export async function getAllCmsCategories(): Promise<string[]> {
   const posts = await getAllCmsPosts()

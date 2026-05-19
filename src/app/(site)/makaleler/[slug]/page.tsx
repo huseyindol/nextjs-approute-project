@@ -1,5 +1,5 @@
 import { getCmsPostBySlug, getAllCmsPosts } from '@/lib/blog'
-import { MdxContent } from '@/components/mdx-content'
+import { HtmlContent } from '@/components/html-content'
 import AdSenseAd from '@/components/AdSenseAd'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
@@ -270,8 +270,8 @@ export default async function MakaleDetayPage({ params }: Readonly<Props>) {
           {/* Ad — makale başlangıcı */}
           <AdSenseAd slot="1350227419" />
 
-          {/* MDX content */}
-          <MdxContent source={post.content} />
+          {/* HTML content (CMS WYSIWYG output) */}
+          <HtmlContent source={post.content} />
 
           {/* Ad — makale sonu */}
           <AdSenseAd slot="3777093516" />

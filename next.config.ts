@@ -75,6 +75,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https' as const,
+        hostname: '**.pollinations.ai',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 
