@@ -2,17 +2,9 @@
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { logoutService } from '../../services/auth/authService'
 import { CookieEnum } from '../../utils/constant/cookieConstant'
 
 export const siteLogout = async () => {
-  // Backend token'ı geçersiz kıl (best-effort — başarısız olsa da devam)
-  try {
-    await logoutService()
-  } catch {
-    // logout API yoksa veya token süresi dolmuşsa sessizce geç
-  }
-
   const cookieStore = await cookies()
   const delOpts = {
     httpOnly: true,

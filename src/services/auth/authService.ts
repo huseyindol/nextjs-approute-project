@@ -1,5 +1,5 @@
-import { fetcher } from '@/utils/services/fetcher'
 import { BaseResponse } from '@/types/BaseResponse'
+import { fetcher } from '@/utils/services/fetcher'
 
 // --- Register ---
 
@@ -60,12 +60,6 @@ export const loginService = async (
   })
   if (!res.result) throw new Error(res.message ?? 'Giriş başarısız')
   return res.data
-}
-
-// --- Logout ---
-
-export const logoutService = async (): Promise<void> => {
-  await fetcher<BaseResponse<null>>('/auth/logout', { method: 'POST' })
 }
 
 // --- Email Verify ---
