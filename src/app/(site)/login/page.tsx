@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { loginService } from '@/services/auth/authService'
 import { saveTokens } from '@/actions/auth/saveTokens'
+import { updateGlobalCookie } from '@/context/CookieContext'
+import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -25,6 +27,7 @@ const TENANT_ID =
 
 export default function LoginPage() {
   const router = useRouter()
+  const [, startTransition] = useTransition()
   const [form, setForm] = useState({ usernameOrEmail: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -52,7 +55,14 @@ export default function LoginPage() {
         expiredDate: 0,
         userCode: String(result.userId),
       })
-      router.push('/')
+      updateGlobalCookie(CookieEnum.ACCESS_TOKEN, result.token)
+      updateGlobalCookie(CookieEnum.REFRESH_TOKEN, result.refreshToken)
+      updateGlobalCookie(CookieEnum.EXPIRED_DATE, '0')
+      updateGlobalCookie(CookieEnum.USER_CODE, String(result.userId))
+      startTransition(() => {
+        router.push('/')
+        router.refresh()
+      })
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Giriş başarısız.')
     } finally {

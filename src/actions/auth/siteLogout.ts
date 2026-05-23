@@ -1,10 +1,9 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
 import { CookieEnum } from '../../utils/constant/cookieConstant'
 
-export const siteLogout = async () => {
+export async function siteLogout() {
   const cookieStore = await cookies()
   const delOpts = {
     httpOnly: true,
@@ -17,5 +16,4 @@ export const siteLogout = async () => {
   cookieStore.set(CookieEnum.REFRESH_TOKEN, '', delOpts)
   cookieStore.set(CookieEnum.EXPIRED_DATE, '', delOpts)
   cookieStore.set(CookieEnum.USER_CODE, '', delOpts)
-  redirect('/login')
 }

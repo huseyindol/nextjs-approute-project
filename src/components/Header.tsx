@@ -1,13 +1,13 @@
 'use client'
 import { siteLogout } from '@/actions/auth/siteLogout'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { useCookie } from '@/context/CookieContext'
+import { removeGlobalCookie, useCookie } from '@/context/CookieContext'
 import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { LogOut, Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 
 const mainNavLinks = [
@@ -26,8 +26,16 @@ const ellyNavLinks = [
   { href: '/projects/elly-video', label: 'Video' },
 ]
 
+const authCookies = [
+  CookieEnum.ACCESS_TOKEN,
+  CookieEnum.REFRESH_TOKEN,
+  CookieEnum.EXPIRED_DATE,
+  CookieEnum.USER_CODE,
+] as const
+
 export default function Header() {
   const pathname = usePathname()
+  const router = useRouter()
   const isEllyPage = pathname.startsWith('/projects/elly')
   const navLinksToUse = isEllyPage ? ellyNavLinks : mainNavLinks
   const [scrolled, setScrolled] = useState(false)
@@ -39,6 +47,9 @@ export default function Header() {
   const handleLogout = () => {
     startTransition(async () => {
       await siteLogout()
+      authCookies.forEach(removeGlobalCookie)
+      router.push('/login')
+      router.refresh()
     })
   }
 
