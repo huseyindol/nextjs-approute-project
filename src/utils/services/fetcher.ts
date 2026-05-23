@@ -53,7 +53,12 @@ export const fetcher = async <T>(
   } else {
     options = prepareRequestCSROptions(options)
   }
-  if (url.includes('/auth/refresh') || url.includes('/auth/login')) {
+  if (
+    url.includes('/auth/refresh') ||
+    url.includes('/auth/login') ||
+    url.includes('/auth/register') ||
+    url.includes('/auth/verify')
+  ) {
     delete (options.headers as Record<string, string>)?.Authorization
   }
 
