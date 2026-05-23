@@ -62,6 +62,10 @@ export const fetcher = async <T>(
     delete (options.headers as Record<string, string>)?.Authorization
   }
 
+  // credentials: 'include' — cross-origin Set-Cookie header'larının browser tarafından
+  // kabul edilmesi için zorunlu (backend CORS: credentials=true, origin=specific olmalı)
+  options.credentials = 'include'
+
   const fullUrl = await buildApiUrl(url)
   let response = await fetch(fullUrl, options)
   if (!response.ok) {
