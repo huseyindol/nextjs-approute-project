@@ -120,22 +120,21 @@ export default function Header() {
 
           <div className="ml-2 flex items-center gap-2">
             <ThemeToggle />
-            {isLoggedIn ? (
+            <Link
+              href="mailto:huseyindol@gmail.com"
+              className="ml-1 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-all hover:scale-105 hover:shadow-blue-500/40"
+            >
+              İletişime Geç
+            </Link>
+            {isLoggedIn && (
               <button
                 onClick={handleLogout}
                 disabled={isPending}
-                className="ml-1 flex items-center gap-2 rounded-full bg-gradient-to-r from-red-500 to-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-red-500/20 transition-all hover:scale-105 hover:shadow-red-500/40 disabled:opacity-50"
+                title="Çıkış Yap"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-red-500/10 text-red-500 transition-colors hover:bg-red-500/20 disabled:opacity-50"
               >
                 <LogOut className="h-4 w-4" />
-                Çıkış Yap
               </button>
-            ) : (
-              <Link
-                href="mailto:huseyindol@gmail.com"
-                className="ml-1 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-all hover:scale-105 hover:shadow-blue-500/40"
-              >
-                İletişime Geç
-              </Link>
             )}
           </div>
         </nav>
@@ -175,27 +174,28 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            {isLoggedIn ? (
-              <button
-                onClick={() => {
-                  setIsOpen(false)
-                  handleLogout()
-                }}
-                disabled={isPending}
-                className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-red-500 to-rose-600 px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
-              >
-                <LogOut className="h-4 w-4" />
-                Çıkış Yap
-              </button>
-            ) : (
+            <div className="mt-2 flex items-center gap-2">
               <Link
                 href="mailto:huseyindol@gmail.com"
                 onClick={() => setIsOpen(false)}
-                className="mt-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white"
+                className="flex-1 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-3 text-center text-sm font-semibold text-white"
               >
                 İletişime Geç
               </Link>
-            )}
+              {isLoggedIn && (
+                <button
+                  onClick={() => {
+                    setIsOpen(false)
+                    handleLogout()
+                  }}
+                  disabled={isPending}
+                  title="Çıkış Yap"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-500 transition-colors hover:bg-red-500/20 disabled:opacity-50"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              )}
+            </div>
           </nav>
         </div>
       )}

@@ -62,6 +62,12 @@ export const loginService = async (
   return res.data
 }
 
+// --- Logout ---
+
+export const logoutService = async (): Promise<void> => {
+  await fetcher<BaseResponse<null>>('/auth/logout', { method: 'POST' })
+}
+
 // --- Email Verify ---
 
 export const verifyEmailService = async (

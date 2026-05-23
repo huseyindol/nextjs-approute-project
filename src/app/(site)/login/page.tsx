@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { loginService } from '@/services/auth/authService'
+import { saveTokens } from '@/actions/auth/saveTokens'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -38,13 +39,19 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      await loginService({
+      const result = await loginService({
         usernameOrEmail: form.usernameOrEmail.trim(),
         password: form.password,
         tenantId: TENANT_ID,
         loginType: 'tenant',
       })
-      // Cookie'ler backend tarafından set edildi
+      // Next.js tarafında da httpOnly kopyalar sakla → siteLogout güvenilir silebilsin
+      await saveTokens({
+        token: result.token,
+        refreshToken: result.refreshToken,
+        expiredDate: 0,
+        userCode: String(result.userId),
+      })
       router.push('/')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Giriş başarısız.')
