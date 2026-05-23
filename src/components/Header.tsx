@@ -1,11 +1,14 @@
 'use client'
+import { siteLogout } from '@/actions/auth/siteLogout'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
+import { useCookie } from '@/context/CookieContext'
+import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { Menu, X } from 'lucide-react'
+import { LogOut, Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 
 const mainNavLinks = [
   { href: '/about', label: 'Hakkında' },
@@ -29,6 +32,15 @@ export default function Header() {
   const navLinksToUse = isEllyPage ? ellyNavLinks : mainNavLinks
   const [scrolled, setScrolled] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const { cookies } = useCookie()
+  const isLoggedIn = !!cookies[CookieEnum.ACCESS_TOKEN]
+
+  const handleLogout = () => {
+    startTransition(async () => {
+      await siteLogout()
+    })
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -108,6 +120,20 @@ export default function Header() {
 
           <div className="ml-2 flex items-center gap-2">
             <ThemeToggle />
+            {isLoggedIn && (
+              <button
+                onClick={handleLogout}
+                disabled={isPending}
+                title="Çıkış Yap"
+                className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
+                  scrolled
+                    ? 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    : 'text-white/70 hover:bg-white/10 hover:text-white'
+                } disabled:opacity-50`}
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            )}
             <Link
               href="mailto:huseyindol@gmail.com"
               className="ml-1 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-all hover:scale-105 hover:shadow-blue-500/40"
@@ -159,6 +185,19 @@ export default function Header() {
             >
               İletişime Geç
             </Link>
+            {isLoggedIn && (
+              <button
+                onClick={() => {
+                  setIsOpen(false)
+                  handleLogout()
+                }}
+                disabled={isPending}
+                className="mt-1 flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
+              >
+                <LogOut className="h-4 w-4" />
+                Çıkış Yap
+              </button>
+            )}
           </nav>
         </div>
       )}
