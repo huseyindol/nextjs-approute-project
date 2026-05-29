@@ -1,6 +1,7 @@
 'use client'
 
-import { useGuestChatSocket } from '@/hooks/chat/useGuestChatSocket'
+import { useGuestChat } from '@/hooks/chat/useGuestChat'
+import { ChatGroup } from '@/types/chat'
 import { useEffect, useRef } from 'react'
 import { ChatComposer } from './ChatComposer'
 import { MessageBubble } from './MessageBubble'
@@ -8,11 +9,13 @@ import { MessageBubble } from './MessageBubble'
 export function ChatView({
   token,
   myName,
+  group,
 }: {
   token: string
   myName: string | null
+  group: ChatGroup
 }) {
-  const { messages, connected, sendMessage } = useGuestChatSocket(token)
+  const { messages, connected, sendMessage } = useGuestChat(token, group.id)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -27,7 +30,7 @@ export function ChatView({
       <div className="flex-1 space-y-3 overflow-y-auto p-3">
         {messages.length === 0 && (
           <p className="text-xs text-muted-foreground">
-            Henüz mesaj yok. İlk mesajı siz yazın 👋
+            İlk mesajı siz yazın 👋
           </p>
         )}
         {messages.map(msg => (

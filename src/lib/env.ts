@@ -21,13 +21,12 @@ const envSchema = z.object({
   NEXT_PUBLIC_API: z.string().optional(),
   NEXT_PUBLIC_DEFAULT_TENANT: z.string().optional(),
 
-  // Chat Widget (Elly tenant chat — guest/anonim akış)
+  // Chat Widget (Elly tenant chat — guest/anonim akış, WebSocket host)
   NEXT_PUBLIC_ELLY_API_URL: z
     .string()
     .url()
     .optional()
     .default('https://api.huseyindol.com'),
-  NEXT_PUBLIC_SUPPORT_GROUP_ID: z.string().optional(),
 
   // Email Service (Resend)
   NEXT_PUBLIC_RESEND_API_KEY: z.string().optional(),

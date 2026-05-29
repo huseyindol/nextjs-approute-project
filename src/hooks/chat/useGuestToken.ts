@@ -1,7 +1,6 @@
 'use client'
 
-import { CHAT_TENANT_ID } from '@/lib/chat-config'
-import { fetchGuestToken } from '@/services/chat/guestChatService'
+import { publicChatApi } from '@/services/chat/publicChatApi'
 import { GuestTokenResponse } from '@/types/chat'
 import { useCallback, useState } from 'react'
 
@@ -23,7 +22,7 @@ export function useGuestToken() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetchGuestToken(name.trim(), CHAT_TENANT_ID)
+        const res = await publicChatApi.guestToken(name.trim())
         sessionStorage.setItem(SS_TOKEN, res.token)
         sessionStorage.setItem(SS_NAME, res.displayName)
         setToken(res.token)

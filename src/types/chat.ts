@@ -5,6 +5,18 @@ export interface GuestTokenResponse {
   tenantId: string
 }
 
+export interface ChatGroup {
+  id: string
+  name: string | null
+  description: string | null
+  type: 'GROUP' | 'DM'
+  visibilityLevel: number
+  tenantId: string
+  visitorAccess: boolean // bu listede hep true
+  createdAt: string
+  updatedAt: string
+}
+
 export type ChatSenderType = 'ADMIN' | 'VISITOR' | 'GUEST'
 
 export type ChatContentType = 'TEXT' | 'IMAGE' | 'FILE' | 'SYSTEM'
