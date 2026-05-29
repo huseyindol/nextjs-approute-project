@@ -1,0 +1,32 @@
+export interface GuestTokenResponse {
+  token: string
+  expiresIn: number // saniye (varsayılan 3600)
+  displayName: string // backend sanitize eder (HTML strip)
+  tenantId: string
+}
+
+export type ChatSenderType = 'ADMIN' | 'VISITOR' | 'GUEST'
+
+export type ChatContentType = 'TEXT' | 'IMAGE' | 'FILE' | 'SYSTEM'
+
+export interface ChatMessage {
+  id: string
+  groupId: string
+  senderType: ChatSenderType
+  senderId: number | null // ADMIN ise dolu (basedb users.id)
+  visitorId: number | null // VISITOR ise dolu (tenant DB visitor_identities.id)
+  senderUsername: string // backend pre-resolved — GUEST'te display name; direkt göster
+  content: string
+  contentType: ChatContentType
+  fileUrl: string | null
+  parentId: string | null
+  deleted: boolean
+  editedAt: string | null
+  createdAt: string
+}
+
+// Guest gönderiminde WS payload — sadece content yeterli
+export interface SendMessagePayload {
+  content: string
+  contentType?: 'TEXT' | 'IMAGE' | 'FILE'
+}
