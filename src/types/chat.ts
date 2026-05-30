@@ -45,3 +45,12 @@ export interface SendMessagePayload {
   content: string
   contentType?: 'TEXT' | 'IMAGE' | 'FILE'
 }
+
+// Typing event — WS /topic/tenant/{tid}/group/{gid}/typing
+export interface ChatTyping {
+  groupId: string
+  userId: number | null // ADMIN ise dolu; GUEST'te null
+  username: string | null // yazan kişinin görünen adı
+  typing: boolean
+  sessionId: string | null // GUEST ise dolu — kendi typing echo'sunu ayırt etmek için
+}

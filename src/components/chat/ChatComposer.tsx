@@ -8,9 +8,11 @@ import { FormEvent, useState } from 'react'
 export function ChatComposer({
   onSubmit,
   disabled,
+  onTyping,
 }: {
   onSubmit: (content: string) => Promise<unknown> | void
   disabled?: boolean
+  onTyping?: () => void
 }) {
   const [content, setContent] = useState('')
   const [sending, setSending] = useState(false)
@@ -35,7 +37,10 @@ export function ChatComposer({
       <Input
         type="text"
         value={content}
-        onChange={e => setContent(e.target.value)}
+        onChange={e => {
+          setContent(e.target.value)
+          if (e.target.value.trim()) onTyping?.()
+        }}
         placeholder="Mesajınızı yazın…"
         disabled={sending || disabled}
         maxLength={4000}

@@ -15,20 +15,28 @@ export function ChatView({
   mySessionId: string | null
   group: ChatGroup
 }) {
-  const { messages, connected, sendMessage } = useGuestChat(token, group.id)
+  const { messages, connected, typingUsers, sendMessage, sendTyping } =
+    useGuestChat(token, group.id, mySessionId)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   // "Kendi mesajım": GUEST + mesajın sessionId'si benim oturum kimliğime eşit.
   // sessionId cihaz bazlı kalıcı (localStorage) olduğu için aynı tarayıcıdan dönen
-  // guest'in eski mesajları da "kendi" olarak eşleşir. (displayName ile DEĞİL — o çakışabilir.)
+  // guest'in eski mesajları da "kendi" olarak eşleşir. (displayName ile DEĞİL — çakışabilir.)
   const isOwnMessage = (msg: (typeof messages)[number]) =>
     msg.senderType === 'GUEST' &&
     mySessionId !== null &&
     msg.sessionId === mySessionId
 
+  const typingLabel =
+    typingUsers.length === 0
+      ? null
+      : typingUsers.length === 1
+        ? `${typingUsers[0]} yazıyor…`
+        : `${typingUsers.length} kişi yazıyor…`
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages.length])
+  }, [messages.length, typingLabel])
 
   return (
     <div className="flex h-full flex-col">
@@ -46,9 +54,15 @@ export function ChatView({
         ))}
         <div ref={bottomRef} />
       </div>
+      {typingLabel && (
+        <p className="animate-pulse px-3 py-1 text-xs italic text-muted-foreground">
+          {typingLabel}
+        </p>
+      )}
       <ChatComposer
         disabled={!connected}
         onSubmit={content => sendMessage(content)}
+        onTyping={sendTyping}
       />
     </div>
   )

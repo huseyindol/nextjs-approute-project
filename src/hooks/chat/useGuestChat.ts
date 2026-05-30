@@ -2,7 +2,7 @@
 
 import { CHAT_TENANT_ID, ELLY_API_URL } from '@/lib/chat-config'
 import { publicChatApi } from '@/services/chat/publicChatApi'
-import { ChatMessage } from '@/types/chat'
+import { ChatMessage, ChatTyping } from '@/types/chat'
 import { Client } from '@stomp/stompjs'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import SockJS from 'sockjs-client'
@@ -12,23 +12,56 @@ function byCreatedAtAsc(a: ChatMessage, b: ChatMessage): number {
   return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
 }
 
+const TYPING_TTL_MS = 5500 // bu süre yeni event gelmezse "yazıyor" kalkar (backend ile uyumlu)
+const TYPING_THROTTLE_MS = 2500 // typing event'ini en sık bu aralıkla gönder
+
 /**
- * Bir grubun geçmişini (anonim public GET) yükler + canlı WS akışına bağlanır.
+ * Bir grubun geçmişini (anonim public GET) + canlı WS akışını (mesaj & typing) yönetir.
  *
- * - Geçmiş: GET /tenant-chat/groups/{groupId}/messages (client'ta ASC sıralanır)
- * - Canlı: WS CONNECT(+guest token) → SUBSCRIBE topic → SEND
- * - "Kendi mesajım" tespiti ChatView'de sessionId ile yapılır; bu hook ownership tutmaz.
+ * - "Kendi mesajım": ChatView'de sessionId ile.
+ * - Typing: hem dinler (kim yazıyorsa gösterir, kendi sessionId'si hariç) hem gönderir.
  */
-export function useGuestChat(token: string, groupId: string) {
+export function useGuestChat(
+  token: string,
+  groupId: string,
+  mySessionId: string | null,
+) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [connected, setConnected] = useState(false)
+  const [typingUsers, setTypingUsers] = useState<string[]>([])
   const clientRef = useRef<Client | null>(null)
+  const mySessionIdRef = useRef(mySessionId)
+  useEffect(() => {
+    mySessionIdRef.current = mySessionId
+  }, [mySessionId])
+  const lastTypingSentRef = useRef(0)
+  const typingTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
+    new Map(),
+  )
 
   const upsert = useCallback((msg: ChatMessage) => {
     setMessages(prev =>
       prev.some(m => m.id === msg.id)
         ? prev
         : [...prev, msg].sort(byCreatedAtAsc),
+    )
+  }, [])
+
+  const handleTyping = useCallback((data: ChatTyping) => {
+    // Kendi typing echo'mu gösterme
+    if (data.sessionId && data.sessionId === mySessionIdRef.current) return
+    const name = data.username
+    if (!name) return
+    setTypingUsers(prev => (prev.includes(name) ? prev : [...prev, name]))
+    const timers = typingTimersRef.current
+    const existing = timers.get(name)
+    if (existing) clearTimeout(existing)
+    timers.set(
+      name,
+      setTimeout(() => {
+        setTypingUsers(prev => prev.filter(n => n !== name))
+        timers.delete(name)
+      }, TYPING_TTL_MS),
     )
   }, [])
 
@@ -48,7 +81,7 @@ export function useGuestChat(token: string, groupId: string) {
     }
   }, [groupId])
 
-  // 2) Canlı (WS + guest token)
+  // 2) Canlı (WS): mesaj + typing
   useEffect(() => {
     if (!token) return
 
@@ -60,16 +93,21 @@ export function useGuestChat(token: string, groupId: string) {
       heartbeatOutgoing: 10000,
       onConnect: () => {
         setConnected(true)
-        client.subscribe(
-          `/topic/tenant/${CHAT_TENANT_ID}/group/${groupId}`,
-          frame => {
-            try {
-              upsert(JSON.parse(frame.body) as ChatMessage)
-            } catch (e) {
-              console.error('Failed to parse chat message', e)
-            }
-          },
-        )
+        const base = `/topic/tenant/${CHAT_TENANT_ID}/group/${groupId}`
+        client.subscribe(base, frame => {
+          try {
+            upsert(JSON.parse(frame.body) as ChatMessage)
+          } catch (e) {
+            console.error('Failed to parse chat message', e)
+          }
+        })
+        client.subscribe(`${base}/typing`, frame => {
+          try {
+            handleTyping(JSON.parse(frame.body) as ChatTyping)
+          } catch (e) {
+            console.error('Failed to parse typing', e)
+          }
+        })
       },
       onDisconnect: () => setConnected(false),
       onWebSocketClose: () => setConnected(false),
@@ -80,12 +118,16 @@ export function useGuestChat(token: string, groupId: string) {
     client.activate()
     clientRef.current = client
 
+    const timers = typingTimersRef.current
     return () => {
       void client.deactivate()
       clientRef.current = null
       setConnected(false)
+      timers.forEach(t => clearTimeout(t))
+      timers.clear()
+      setTypingUsers([])
     }
-  }, [token, groupId, upsert])
+  }, [token, groupId, upsert, handleTyping])
 
   const sendMessage = useCallback(
     (content: string) => {
@@ -100,5 +142,18 @@ export function useGuestChat(token: string, groupId: string) {
     [groupId],
   )
 
-  return { messages, connected, sendMessage }
+  // Yazarken çağrılır; throttle ile en sık TYPING_THROTTLE_MS aralıkla yayınlar.
+  const sendTyping = useCallback(() => {
+    const c = clientRef.current
+    if (!c || !c.connected) return
+    const now = Date.now()
+    if (now - lastTypingSentRef.current < TYPING_THROTTLE_MS) return
+    lastTypingSentRef.current = now
+    c.publish({
+      destination: `/app/tenant-chat/${CHAT_TENANT_ID}/${groupId}/typing`,
+      body: '',
+    })
+  }, [groupId])
+
+  return { messages, connected, typingUsers, sendMessage, sendTyping }
 }
