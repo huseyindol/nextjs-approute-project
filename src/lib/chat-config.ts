@@ -11,8 +11,26 @@
  * Grup id'si runtime'da listelenir (GET /tenant-chat/groups) — sabit env gerekmez.
  */
 
-export const ELLY_API_URL =
-  process.env.NEXT_PUBLIC_ELLY_API_URL ?? 'https://api.huseyindol.com'
+/**
+ * WS host: SockJS endpoint'i API KÖKÜNDEDIR (`/ws`) — REST prefix'i (`/api/v1/public`)
+ * DAHIL OLMAMALI. Env yanlışlıkla REST base'iyle (`.../api/v1/public`) set edilse bile
+ * burada origin'e (scheme+host) indirgenir. Aksi halde SockJS `/api/v1/public/ws/info`'ya
+ * gider; PublicApiFilter bunu `{tenantId}=ws` sanıp "Unknown tenant: ws" (400) döner →
+ * WS bağlanamaz → chat input pasif kalır.
+ */
+function deriveApiOrigin(): string {
+  const raw =
+    process.env.NEXT_PUBLIC_ELLY_API_URL ??
+    process.env.NEXT_PUBLIC_API ??
+    'https://api.huseyindol.com'
+  try {
+    return new URL(raw).origin
+  } catch {
+    return raw.replace(/\/api\/.*$/, '').replace(/\/+$/, '')
+  }
+}
+
+export const ELLY_API_URL = deriveApiOrigin()
 
 export const CHAT_TENANT_ID =
   process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'tenant1'
