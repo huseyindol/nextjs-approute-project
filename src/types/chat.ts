@@ -27,7 +27,7 @@ export interface ChatMessage {
   senderType: ChatSenderType
   senderId: number | null // ADMIN ise dolu (basedb users.id)
   visitorId: number | null // VISITOR ise dolu (tenant DB visitor_identities.id)
-  senderUsername: string // backend pre-resolved — GUEST'te display name; direkt göster
+  senderUsername: string | null // backend pre-resolved — GUEST'te display name; null olabilir
   content: string
   contentType: ChatContentType
   fileUrl: string | null

@@ -26,7 +26,8 @@ export function ChatView({
     ownIds.has(msg.id) ||
     (msg.senderType === 'GUEST' &&
       normalizedMyName !== null &&
-      msg.senderUsername.trim().toLocaleLowerCase('tr-TR') === normalizedMyName)
+      msg.senderUsername?.trim().toLocaleLowerCase('tr-TR') ===
+        normalizedMyName)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })

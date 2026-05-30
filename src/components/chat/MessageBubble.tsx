@@ -18,7 +18,7 @@ export function MessageBubble({
       <div className={isOwn ? 'flex flex-col items-end' : 'flex flex-col'}>
         <div className="mb-1 flex items-center gap-2 text-xs">
           <span className="font-semibold text-foreground">
-            {message.senderUsername}
+            {message.senderUsername ?? 'Ziyaretçi'}
           </span>
           {isAdmin && (
             <span className="rounded bg-blue-500/15 px-1.5 py-0.5 text-[10px] font-medium text-blue-500">
