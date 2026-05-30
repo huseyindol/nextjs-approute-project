@@ -15,8 +15,18 @@ export function ChatView({
   myName: string | null
   group: ChatGroup
 }) {
-  const { messages, connected, sendMessage } = useGuestChat(token, group.id)
+  const { messages, connected, sendMessage, ownIds } = useGuestChat(
+    token,
+    group.id,
+  )
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  const normalizedMyName = myName?.trim().toLocaleLowerCase('tr-TR') ?? null
+  const isOwnMessage = (msg: (typeof messages)[number]) =>
+    ownIds.has(msg.id) ||
+    (msg.senderType === 'GUEST' &&
+      normalizedMyName !== null &&
+      msg.senderUsername.trim().toLocaleLowerCase('tr-TR') === normalizedMyName)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -34,11 +44,7 @@ export function ChatView({
           </p>
         )}
         {messages.map(msg => (
-          <MessageBubble
-            key={msg.id}
-            message={msg}
-            isOwn={msg.senderType === 'GUEST' && msg.senderUsername === myName}
-          />
+          <MessageBubble key={msg.id} message={msg} isOwn={isOwnMessage(msg)} />
         ))}
         <div ref={bottomRef} />
       </div>

@@ -17,21 +17,42 @@ import SockJS from 'sockjs-client'
 export function useGuestChat(token: string, groupId: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [connected, setConnected] = useState(false)
+  // Bu cihazdan gönderilip echo ile geri dönen mesaj id'leri ("benim mesajım")
+  const [ownIds, setOwnIds] = useState<Set<string>>(new Set())
   const clientRef = useRef<Client | null>(null)
+  // Henüz echo ile eşleşmemiş, gönderilen mesaj içerikleri (FIFO kuyruk)
+  const pendingSentRef = useRef<string[]>([])
 
   const upsert = useCallback((msg: ChatMessage) => {
     setMessages(prev =>
       prev.some(m => m.id === msg.id) ? prev : [...prev, msg],
     )
+    // Guest echo'su gönderdiğim içerikle eşleşiyorsa bu mesaj benimdir.
+    if (msg.senderType === 'GUEST') {
+      const idx = pendingSentRef.current.indexOf(msg.content)
+      if (idx !== -1) {
+        pendingSentRef.current.splice(idx, 1)
+        setOwnIds(prev => {
+          if (prev.has(msg.id)) return prev
+          const next = new Set(prev)
+          next.add(msg.id)
+          return next
+        })
+      }
+    }
   }, [])
 
   // 1) Geçmiş (anonim public GET)
   useEffect(() => {
     let alive = true
+    pendingSentRef.current = []
     publicChatApi
       .getHistory(groupId)
       .then(h => {
-        if (alive) setMessages(h)
+        if (alive) {
+          setMessages(h)
+          setOwnIds(new Set())
+        }
       })
       .catch(() => {
         /* geçmiş yoksa boş başlar */
@@ -83,14 +104,17 @@ export function useGuestChat(token: string, groupId: string) {
   const sendMessage = useCallback(
     (content: string) => {
       const c = clientRef.current
-      if (!c || !c.connected || !content.trim()) return
+      const trimmed = content.trim()
+      if (!c || !c.connected || !trimmed) return
+      // Echo geri dönünce "benim" diye işaretlemek için içeriği kaydet
+      pendingSentRef.current.push(trimmed)
       c.publish({
         destination: `/app/tenant-chat/${CHAT_TENANT_ID}/${groupId}/send`,
-        body: JSON.stringify({ content: content.trim() }),
+        body: JSON.stringify({ content: trimmed }),
       })
     },
     [groupId],
   )
 
-  return { messages, connected, sendMessage }
+  return { messages, connected, sendMessage, ownIds }
 }
