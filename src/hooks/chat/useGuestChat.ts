@@ -7,52 +7,38 @@ import { Client } from '@stomp/stompjs'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import SockJS from 'sockjs-client'
 
+/** Mesajları createdAt'e göre ASC (eskiden yeniye) sıralar — API/realtime sırasından bağımsız. */
+function byCreatedAtAsc(a: ChatMessage, b: ChatMessage): number {
+  return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+}
+
 /**
  * Bir grubun geçmişini (anonim public GET) yükler + canlı WS akışına bağlanır.
  *
- * - Geçmiş: GET /tenant-chat/groups/{groupId}/messages
+ * - Geçmiş: GET /tenant-chat/groups/{groupId}/messages (client'ta ASC sıralanır)
  * - Canlı: WS CONNECT(+guest token) → SUBSCRIBE topic → SEND
- * - Gönderilen mesaj aynı topic'ten server id'siyle döner → optimistic ekleme YOK.
+ * - "Kendi mesajım" tespiti ChatView'de sessionId ile yapılır; bu hook ownership tutmaz.
  */
 export function useGuestChat(token: string, groupId: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [connected, setConnected] = useState(false)
-  // Bu cihazdan gönderilip echo ile geri dönen mesaj id'leri ("benim mesajım")
-  const [ownIds, setOwnIds] = useState<Set<string>>(new Set())
   const clientRef = useRef<Client | null>(null)
-  // Henüz echo ile eşleşmemiş, gönderilen mesaj içerikleri (FIFO kuyruk)
-  const pendingSentRef = useRef<string[]>([])
 
   const upsert = useCallback((msg: ChatMessage) => {
     setMessages(prev =>
-      prev.some(m => m.id === msg.id) ? prev : [...prev, msg],
+      prev.some(m => m.id === msg.id)
+        ? prev
+        : [...prev, msg].sort(byCreatedAtAsc),
     )
-    // Guest echo'su gönderdiğim içerikle eşleşiyorsa bu mesaj benimdir.
-    if (msg.senderType === 'GUEST') {
-      const idx = pendingSentRef.current.indexOf(msg.content)
-      if (idx !== -1) {
-        pendingSentRef.current.splice(idx, 1)
-        setOwnIds(prev => {
-          if (prev.has(msg.id)) return prev
-          const next = new Set(prev)
-          next.add(msg.id)
-          return next
-        })
-      }
-    }
   }, [])
 
   // 1) Geçmiş (anonim public GET)
   useEffect(() => {
     let alive = true
-    pendingSentRef.current = []
     publicChatApi
       .getHistory(groupId)
       .then(h => {
-        if (alive) {
-          setMessages(h)
-          setOwnIds(new Set())
-        }
+        if (alive) setMessages([...h].sort(byCreatedAtAsc))
       })
       .catch(() => {
         /* geçmiş yoksa boş başlar */
@@ -106,8 +92,6 @@ export function useGuestChat(token: string, groupId: string) {
       const c = clientRef.current
       const trimmed = content.trim()
       if (!c || !c.connected || !trimmed) return
-      // Echo geri dönünce "benim" diye işaretlemek için içeriği kaydet
-      pendingSentRef.current.push(trimmed)
       c.publish({
         destination: `/app/tenant-chat/${CHAT_TENANT_ID}/${groupId}/send`,
         body: JSON.stringify({ content: trimmed }),
@@ -116,5 +100,5 @@ export function useGuestChat(token: string, groupId: string) {
     [groupId],
   )
 
-  return { messages, connected, sendMessage, ownIds }
+  return { messages, connected, sendMessage }
 }

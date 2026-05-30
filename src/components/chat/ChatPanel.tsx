@@ -75,7 +75,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
         ) : (
           <ChatView
             token={guest.token}
-            myName={guest.displayName}
+            mySessionId={guest.sessionId}
             group={group}
           />
         )}

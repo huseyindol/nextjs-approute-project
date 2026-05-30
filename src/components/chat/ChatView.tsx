@@ -8,26 +8,23 @@ import { MessageBubble } from './MessageBubble'
 
 export function ChatView({
   token,
-  myName,
+  mySessionId,
   group,
 }: {
   token: string
-  myName: string | null
+  mySessionId: string | null
   group: ChatGroup
 }) {
-  const { messages, connected, sendMessage, ownIds } = useGuestChat(
-    token,
-    group.id,
-  )
+  const { messages, connected, sendMessage } = useGuestChat(token, group.id)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const normalizedMyName = myName?.trim().toLocaleLowerCase('tr-TR') ?? null
+  // "Kendi mesajım": GUEST + mesajın sessionId'si benim oturum kimliğime eşit.
+  // sessionId cihaz bazlı kalıcı (localStorage) olduğu için aynı tarayıcıdan dönen
+  // guest'in eski mesajları da "kendi" olarak eşleşir. (displayName ile DEĞİL — o çakışabilir.)
   const isOwnMessage = (msg: (typeof messages)[number]) =>
-    ownIds.has(msg.id) ||
-    (msg.senderType === 'GUEST' &&
-      normalizedMyName !== null &&
-      msg.senderUsername?.trim().toLocaleLowerCase('tr-TR') ===
-        normalizedMyName)
+    msg.senderType === 'GUEST' &&
+    mySessionId !== null &&
+    msg.sessionId === mySessionId
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })

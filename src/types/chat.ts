@@ -3,6 +3,7 @@ export interface GuestTokenResponse {
   expiresIn: number // saniye (varsayılan 3600)
   displayName: string // backend sanitize eder (HTML strip)
   tenantId: string
+  sessionId: string // bu guest oturumunun kimliği (gönderilen clientId ile eşit) — "kendi mesajım" eşleşmesi için
 }
 
 export interface ChatGroup {
@@ -28,6 +29,8 @@ export interface ChatMessage {
   senderId: number | null // ADMIN ise dolu (basedb users.id)
   visitorId: number | null // VISITOR ise dolu (tenant DB visitor_identities.id)
   senderUsername: string | null // backend pre-resolved — GUEST'te display name; null olabilir
+  sessionId: string | null // GUEST'te guest oturum kimliği — isOwn için (msg.sessionId === mySessionId)
+  senderDisplayName: string | null // GUEST'te ekran adı (denormalize); ADMIN/VISITOR'da null
   content: string
   contentType: ChatContentType
   fileUrl: string | null

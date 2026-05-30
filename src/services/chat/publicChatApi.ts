@@ -24,10 +24,12 @@ async function publicRequest<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const publicChatApi = {
   // tenantId path'ten gelir; body'de göndermeye gerek yok
-  guestToken: (displayName: string) =>
+  // clientId: cihaz bazlı kalıcı guest kimliği (localStorage). Backend geçerli UUID ise
+  // onu sessionId yapar → aynı tarayıcıdan dönen guest eski mesajlarını "kendi" görür.
+  guestToken: (displayName: string, clientId: string) =>
     publicRequest<GuestTokenResponse>('/auth/guest-token', {
       method: 'POST',
-      body: JSON.stringify({ displayName }),
+      body: JSON.stringify({ displayName, clientId }),
     }),
   listGroups: () => publicRequest<ChatGroup[]>('/tenant-chat/groups'),
   getHistory: (groupId: string, before?: string, limit = 50) => {
