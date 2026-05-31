@@ -51,6 +51,9 @@ const envSchema = z.object({
 
   // Analytics
   NEXT_PUBLIC_GA_ID: z.string().optional(),
+  // Hotjar — heatmap & session recording (ID set edilmezse hiç yüklenmez)
+  NEXT_PUBLIC_HOTJAR_ID: z.string().optional(),
+  NEXT_PUBLIC_HOTJAR_SV: z.string().optional().default('6'),
 
   // Revalidation
   NEXT_PUBLIC_REVALIDATE_SECRET: z
