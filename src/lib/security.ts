@@ -103,13 +103,18 @@ export function generateCSP(): string {
     'https://*.googletagmanager.com',
   ].join(' ')
 
+  const clarityDomains = [
+    'https://www.clarity.ms',
+    'https://*.clarity.ms',
+  ].join(' ')
+
   const policies = [
     "default-src 'self'",
-    `script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com ${googleAdsDomains}`,
+    `script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com ${clarityDomains} ${googleAdsDomains}`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
-    `connect-src 'self' https://vercel.live https://*.vercel-insights.com https://raw.githubusercontent.com https://avatars.githubusercontent.com http://localhost:8080 https://api.huseyindol.com ${googleAdsDomains}`,
+    `connect-src 'self' https://vercel.live https://*.vercel-insights.com https://raw.githubusercontent.com https://avatars.githubusercontent.com http://localhost:8080 https://api.huseyindol.com ${clarityDomains} ${googleAdsDomains}`,
     `frame-src 'self' https://vercel.live ${googleAdsDomains}`,
     "object-src 'none'",
     "base-uri 'self'",

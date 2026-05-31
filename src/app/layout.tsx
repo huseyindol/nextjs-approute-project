@@ -1,4 +1,4 @@
-import { HotjarAnalytics } from '@/components/HotjarAnalytics'
+import { ClarityAnalytics } from '@/components/ClarityAnalytics'
 import { PersonJsonLd } from '@/components/JsonLd'
 import ScrollToTop from '@/components/ScrollToTopButton'
 import { WebVitals } from '@/components/WebVitals'
@@ -144,7 +144,7 @@ export default async function RootLayout({
         />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://api.huseyindol.com" />
-        <link rel="dns-prefetch" href="https://static.hotjar.com" />
+        <link rel="dns-prefetch" href="https://www.clarity.ms" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
@@ -156,7 +156,7 @@ export default async function RootLayout({
           crossOrigin="anonymous"
         />
         <GoogleAnalytics gaId="G-ETR2NBJH5V" />
-        <HotjarAnalytics />
+        <ClarityAnalytics />
         <NextTopLoader
           color="#6366f1"
           height={3}
