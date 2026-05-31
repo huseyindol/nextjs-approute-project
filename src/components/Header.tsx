@@ -2,6 +2,7 @@
 import { siteLogout } from '@/actions/auth/siteLogout'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { removeGlobalCookie, useCookie } from '@/context/CookieContext'
+import { clearGuestStorage } from '@/hooks/chat/useGuestToken'
 import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { LogOut, Menu, X } from 'lucide-react'
@@ -48,6 +49,9 @@ export default function Header() {
     startTransition(async () => {
       await siteLogout()
       authCookies.forEach(removeGlobalCookie)
+      removeGlobalCookie(CookieEnum.USERNAME)
+      // Chat guest kimliğini de temizle → tekrar girişte eski guest adı kalmasın
+      clearGuestStorage()
       router.push('/login')
       router.refresh()
     })

@@ -34,6 +34,19 @@ function getOrCreateGuestClientId(): string {
 const readSession = (k: string): string | null =>
   typeof window !== 'undefined' ? sessionStorage.getItem(k) : null
 
+/**
+ * Chat guest kimliğini tamamen temizler (logout'ta çağrılır):
+ * aktif oturum (sessionStorage) + cihaz bazlı kalıcı kimlik (localStorage).
+ * Hook değil — event handler'larda doğrudan çağrılabilir.
+ */
+export function clearGuestStorage(): void {
+  if (typeof window === 'undefined') return
+  sessionStorage.removeItem(SS_TOKEN)
+  sessionStorage.removeItem(SS_NAME)
+  sessionStorage.removeItem(SS_SID)
+  localStorage.removeItem(LS_GUEST_ID)
+}
+
 export function useGuestToken() {
   const [token, setToken] = useState<string | null>(() => readSession(SS_TOKEN))
   const [displayName, setDisplayName] = useState<string | null>(() =>

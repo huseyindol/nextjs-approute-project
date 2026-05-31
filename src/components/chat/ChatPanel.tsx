@@ -1,16 +1,42 @@
 'use client'
 
+import { useCookie } from '@/context/CookieContext'
 import { useGuestToken } from '@/hooks/chat/useGuestToken'
 import { ChatGroup } from '@/types/chat'
-import { ArrowLeft, LogOut, X } from 'lucide-react'
-import { useState } from 'react'
+import { CookieEnum } from '@/utils/constant/cookieConstant'
+import { ArrowLeft, Loader2, LogOut, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { ChatView } from './ChatView'
 import { GroupList } from './GroupList'
 import { GuestNameGate } from './GuestNameGate'
 
 export function ChatPanel({ onClose }: { onClose: () => void }) {
   const guest = useGuestToken()
+  const {
+    token: guestToken,
+    displayName: guestDisplayName,
+    start: guestStart,
+  } = guest
   const [group, setGroup] = useState<ChatGroup | null>(null)
+
+  // Login olmuşsa chat adını ad-girme ekranı yerine otomatik login username yap
+  const { cookies } = useCookie()
+  const loginUsername = cookies[CookieEnum.USERNAME] || null
+  const autoStartRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!loginUsername) return
+    if (autoStartRef.current === loginUsername) return
+    // Zaten bu isimle bağlıysak tekrar başlatma
+    if (guestToken && guestDisplayName === loginUsername) {
+      autoStartRef.current = loginUsername
+      return
+    }
+    autoStartRef.current = loginUsername
+    guestStart(loginUsername).catch(() => {
+      autoStartRef.current = null // başarısızsa tekrar denenebilsin
+    })
+  }, [loginUsername, guestToken, guestDisplayName, guestStart])
 
   // Sohbetteyken geri = grup listesine dön; değilse paneli kapat
   const handleBack = group ? () => setGroup(null) : onClose
@@ -41,7 +67,8 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
           </div>
         </div>
         <div className="flex items-center gap-1">
-          {guest.token && (
+          {/* Reset yalnızca anonim guest için — login'liyken isim login'e bağlı */}
+          {guest.token && !loginUsername && (
             <button
               onClick={() => {
                 setGroup(null)
@@ -65,11 +92,18 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
 
       <div className="flex-1 overflow-hidden">
         {!guest.token ? (
-          <GuestNameGate
-            onSubmit={guest.start}
-            loading={guest.loading}
-            error={guest.error}
-          />
+          loginUsername ? (
+            // Login'li: ad girme yok, token otomatik alınıyor
+            <div className="flex h-full items-center justify-center p-4">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          ) : (
+            <GuestNameGate
+              onSubmit={guest.start}
+              loading={guest.loading}
+              error={guest.error}
+            />
+          )
         ) : !group ? (
           <GroupList onSelect={setGroup} />
         ) : (
