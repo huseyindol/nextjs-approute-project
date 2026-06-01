@@ -35,7 +35,7 @@ export function ChatWidget() {
       <aside
         role="dialog"
         aria-label="Destek sohbeti"
-        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-border bg-card text-card-foreground shadow-2xl transition-transform duration-300 ease-out ${
+        className={`fixed right-0 top-0 z-50 flex h-dvh w-full max-w-md flex-col border-l border-border bg-card text-card-foreground shadow-2xl transition-transform duration-300 ease-out ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
