@@ -81,6 +81,16 @@
       'rlig' 1,
       'calt' 1;
   }
+
+  /* iOS Safari auto-zoom prevention: font-size < 16px triggers zoom on focus.
+     Only applies on touch devices — manual zoom (accessibility) unaffected. */
+  @media (hover: none) and (pointer: coarse) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
 }
 
 @layer components {
