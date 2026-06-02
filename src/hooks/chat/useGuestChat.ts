@@ -51,31 +51,49 @@ export function useGuestChat(
     new Map(),
   )
 
-  const upsert = useCallback((msg: ChatMessage) => {
-    setMessages(prev =>
-      prev.some(m => m.id === msg.id)
-        ? prev
-        : [...prev, msg].sort(byCreatedAtAsc),
+  // Bir kullanıcının "yazıyor" göstergesini ve zamanlayıcısını anında temizler
+  const clearTyping = useCallback((name: string) => {
+    setTypingUsers(prev =>
+      prev.includes(name) ? prev.filter(n => n !== name) : prev,
     )
+    const timers = typingTimersRef.current
+    const t = timers.get(name)
+    if (t) {
+      clearTimeout(t)
+      timers.delete(name)
+    }
   }, [])
 
-  const handleTyping = useCallback((data: ChatTyping) => {
-    // Kendi typing echo'mu gösterme
-    if (data.sessionId && data.sessionId === mySessionIdRef.current) return
-    const name = data.username
-    if (!name) return
-    setTypingUsers(prev => (prev.includes(name) ? prev : [...prev, name]))
-    const timers = typingTimersRef.current
-    const existing = timers.get(name)
-    if (existing) clearTimeout(existing)
-    timers.set(
-      name,
-      setTimeout(() => {
-        setTypingUsers(prev => prev.filter(n => n !== name))
-        timers.delete(name)
-      }, TYPING_TTL_MS),
-    )
-  }, [])
+  const upsert = useCallback(
+    (msg: ChatMessage) => {
+      setMessages(prev =>
+        prev.some(m => m.id === msg.id)
+          ? prev
+          : [...prev, msg].sort(byCreatedAtAsc),
+      )
+      // Mesaj geldi → göndericinin "yazıyor"unu hemen kaldır (TTL'i bekleme)
+      if (msg.senderUsername) clearTyping(msg.senderUsername)
+    },
+    [clearTyping],
+  )
+
+  const handleTyping = useCallback(
+    (data: ChatTyping) => {
+      // Kendi typing echo'mu gösterme
+      if (data.sessionId && data.sessionId === mySessionIdRef.current) return
+      const name = data.username
+      if (!name) return
+      setTypingUsers(prev => (prev.includes(name) ? prev : [...prev, name]))
+      const timers = typingTimersRef.current
+      const existing = timers.get(name)
+      if (existing) clearTimeout(existing)
+      timers.set(
+        name,
+        setTimeout(() => clearTyping(name), TYPING_TTL_MS),
+      )
+    },
+    [clearTyping],
+  )
 
   // 1) Geçmiş (anonim public GET)
   useEffect(() => {
