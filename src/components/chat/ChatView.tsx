@@ -10,13 +10,15 @@ export function ChatView({
   token,
   mySessionId,
   group,
+  onAuthExpired,
 }: {
   token: string
   mySessionId: string | null
   group: ChatGroup
+  onAuthExpired?: () => void
 }) {
   const { messages, connected, typingUsers, sendMessage, sendTyping } =
-    useGuestChat(token, group.id, mySessionId)
+    useGuestChat(token, group.id, mySessionId, onAuthExpired)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   // "Kendi mesajım": GUEST + mesajın sessionId'si benim oturum kimliğime eşit.

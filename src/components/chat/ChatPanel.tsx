@@ -5,17 +5,22 @@ import { useGuestToken } from '@/hooks/chat/useGuestToken'
 import { ChatGroup } from '@/types/chat'
 import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { ArrowLeft, Loader2, LogOut, X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChatView } from './ChatView'
 import { GroupList } from './GroupList'
 import { GuestNameGate } from './GuestNameGate'
+
+// Token bitmeden bu kadar önce sessizce yenile
+const REFRESH_LEAD_MS = 30_000
 
 export function ChatPanel({ onClose }: { onClose: () => void }) {
   const guest = useGuestToken()
   const {
     token: guestToken,
     displayName: guestDisplayName,
+    expiresAt: guestExpiresAt,
     start: guestStart,
+    refresh: guestRefresh,
   } = guest
   const [group, setGroup] = useState<ChatGroup | null>(null)
 
@@ -37,6 +42,23 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
       autoStartRef.current = null // başarısızsa tekrar denenebilsin
     })
   }, [loginUsername, guestToken, guestDisplayName, guestStart])
+
+  // Token süresi dolmadan sessizce yenile (süresi geçmişse hemen)
+  useEffect(() => {
+    if (!guestToken || !guestExpiresAt) return
+    const delay = guestExpiresAt - Date.now() - REFRESH_LEAD_MS
+    if (delay <= 0) {
+      void guestRefresh()
+      return
+    }
+    const t = setTimeout(() => void guestRefresh(), delay)
+    return () => clearTimeout(t)
+  }, [guestToken, guestExpiresAt, guestRefresh])
+
+  // WS auth hatası (token reddedildi) → yeni token al
+  const handleAuthExpired = useCallback(() => {
+    void guestRefresh()
+  }, [guestRefresh])
 
   // Sohbetteyken geri = grup listesine dön; değilse paneli kapat
   const handleBack = group ? () => setGroup(null) : onClose
@@ -111,6 +133,7 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
             token={guest.token}
             mySessionId={guest.sessionId}
             group={group}
+            onAuthExpired={handleAuthExpired}
           />
         )}
       </div>

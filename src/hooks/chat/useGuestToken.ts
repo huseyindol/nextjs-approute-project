@@ -7,6 +7,7 @@ import { useCallback, useState } from 'react'
 const SS_TOKEN = 'elly_guest_token'
 const SS_NAME = 'elly_guest_name'
 const SS_SID = 'elly_guest_session_id'
+const SS_EXP = 'elly_guest_exp' // token son geçerlilik anı (epoch ms)
 const LS_GUEST_ID = 'elly_guest_id' // cihaz bazlı KALICI kimlik (localStorage)
 
 function uuidV4Fallback(): string {
@@ -44,6 +45,7 @@ export function clearGuestStorage(): void {
   sessionStorage.removeItem(SS_TOKEN)
   sessionStorage.removeItem(SS_NAME)
   sessionStorage.removeItem(SS_SID)
+  sessionStorage.removeItem(SS_EXP)
   localStorage.removeItem(LS_GUEST_ID)
 }
 
@@ -61,6 +63,10 @@ export function useGuestToken() {
         ? localStorage.getItem(LS_GUEST_ID)
         : null),
   )
+  const [expiresAt, setExpiresAt] = useState<number | null>(() => {
+    const v = readSession(SS_EXP)
+    return v ? Number(v) : null
+  })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -71,14 +77,17 @@ export function useGuestToken() {
       try {
         const clientId = getOrCreateGuestClientId()
         const res = await publicChatApi.guestToken(name.trim(), clientId)
+        const expAt = Date.now() + res.expiresIn * 1000
         sessionStorage.setItem(SS_TOKEN, res.token)
         sessionStorage.setItem(SS_NAME, res.displayName)
         sessionStorage.setItem(SS_SID, res.sessionId)
+        sessionStorage.setItem(SS_EXP, String(expAt))
         // localStorage'ı backend'in yetkili sessionId'sine senkronla → gelecek ziyaretlerde aynı kimlik
         localStorage.setItem(LS_GUEST_ID, res.sessionId)
         setToken(res.token)
         setDisplayName(res.displayName)
         setSessionId(res.sessionId)
+        setExpiresAt(expAt)
         return res
       } catch (e: unknown) {
         setError(e instanceof Error ? e.message : 'Bağlanılamadı')
@@ -90,15 +99,42 @@ export function useGuestToken() {
     [],
   )
 
+  /**
+   * Mevcut görünen ad + aynı clientId ile yeni token alır (sessionId korunur).
+   * Token süresi dolduğunda sessizce yenilemek için kullanılır.
+   */
+  const refresh = useCallback(async (): Promise<boolean> => {
+    const name = readSession(SS_NAME)
+    if (!name) return false
+    try {
+      await start(name)
+      return true
+    } catch {
+      return false
+    }
+  }, [start])
+
   const reset = useCallback(() => {
     // Aktif oturumu temizle; cihaz kimliğini (LS_GUEST_ID) KORU → tekrar girince aynı kimlik,
     // eski mesajlar yine "kendi" olarak eşleşir.
     sessionStorage.removeItem(SS_TOKEN)
     sessionStorage.removeItem(SS_NAME)
     sessionStorage.removeItem(SS_SID)
+    sessionStorage.removeItem(SS_EXP)
     setToken(null)
     setDisplayName(null)
+    setExpiresAt(null)
   }, [])
 
-  return { token, displayName, sessionId, loading, error, start, reset }
+  return {
+    token,
+    displayName,
+    sessionId,
+    expiresAt,
+    loading,
+    error,
+    start,
+    refresh,
+    reset,
+  }
 }

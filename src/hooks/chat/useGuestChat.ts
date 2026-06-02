@@ -21,10 +21,16 @@ const TYPING_THROTTLE_MS = 2500 // typing event'ini en sık bu aralıkla gönder
  * - "Kendi mesajım": ChatView'de sessionId ile.
  * - Typing: hem dinler (kim yazıyorsa gösterir, kendi sessionId'si hariç) hem gönderir.
  */
+/** STOMP hata mesajı token süresi/geçersizliğine işaret ediyor mu? */
+function isAuthError(frameText: string): boolean {
+  return /jwt|token|expired|unauthor|forbidden/i.test(frameText)
+}
+
 export function useGuestChat(
   token: string,
   groupId: string,
   mySessionId: string | null,
+  onAuthExpired?: () => void,
 ) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [connected, setConnected] = useState(false)
@@ -34,6 +40,12 @@ export function useGuestChat(
   useEffect(() => {
     mySessionIdRef.current = mySessionId
   }, [mySessionId])
+  const onAuthExpiredRef = useRef(onAuthExpired)
+  useEffect(() => {
+    onAuthExpiredRef.current = onAuthExpired
+  }, [onAuthExpired])
+  // Aynı (ölü) token için yenilemeyi yalnızca bir kez tetikle → sonsuz döngü olmasın
+  const authHandledRef = useRef<string | null>(null)
   const lastTypingSentRef = useRef(0)
   const typingTimersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(
     new Map(),
@@ -111,8 +123,18 @@ export function useGuestChat(
       },
       onDisconnect: () => setConnected(false),
       onWebSocketClose: () => setConnected(false),
-      onStompError: frame =>
-        console.error('STOMP error', frame.headers, frame.body),
+      onStompError: frame => {
+        console.error('STOMP error', frame.headers, frame.body)
+        const text = `${frame.headers?.message ?? ''} ${frame.body ?? ''}`
+        // Token süresi dolmuş/geçersiz → ölü token'la reconnect döngüsünü durdur,
+        // yeni token iste (token değişince effect yeniden bağlanır)
+        if (isAuthError(text) && authHandledRef.current !== token) {
+          authHandledRef.current = token
+          void client.deactivate()
+          setConnected(false)
+          onAuthExpiredRef.current?.()
+        }
+      },
     })
 
     client.activate()
