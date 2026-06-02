@@ -48,16 +48,20 @@ export default function LoginPage() {
         tenantId: TENANT_ID,
         loginType: 'tenant',
       })
-      // Next.js tarafında da kopyalar sakla → siteLogout güvenilir silebilsin,
-      // username chat'te otomatik kullanılsın
+      // Next.js tarafında da kopyalar sakla → refresh/logout için cookie seti,
+      // username chat'te otomatik kullanılsın, expiredDate refresh'i tetiklesin
       await saveTokens({
         token: result.token,
         refreshToken: result.refreshToken,
         username: result.username,
+        expiredDate: result.expiredDate,
+        userCode: result.userCode,
       })
       updateGlobalCookie(CookieEnum.ACCESS_TOKEN, result.token)
       updateGlobalCookie(CookieEnum.REFRESH_TOKEN, result.refreshToken)
       updateGlobalCookie(CookieEnum.USERNAME, result.username)
+      updateGlobalCookie(CookieEnum.EXPIRED_DATE, String(result.expiredDate))
+      updateGlobalCookie(CookieEnum.USER_CODE, result.userCode)
       startTransition(() => {
         router.push('/')
         router.refresh()

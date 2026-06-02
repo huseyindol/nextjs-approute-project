@@ -46,6 +46,8 @@ export interface LoginResult {
   userId: number
   username: string
   email: string
+  userCode: string
+  expiredDate: number
   roles: string[]
   permissions: string[]
 }

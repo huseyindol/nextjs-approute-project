@@ -1,6 +1,7 @@
 import { ClarityAnalytics } from '@/components/ClarityAnalytics'
 import { PersonJsonLd } from '@/components/JsonLd'
 import ScrollToTop from '@/components/ScrollToTopButton'
+import { SessionRefresher } from '@/components/SessionRefresher'
 import { WebVitals } from '@/components/WebVitals'
 import Providers from '@/providers/Providers'
 import { GoogleAnalytics } from '@next/third-parties/google'
@@ -176,6 +177,7 @@ export default async function RootLayout({
           <Providers cookiesData={cookiesData}>
             <WebVitals />
             <Datalayer />
+            <SessionRefresher />
             {children}
             <ScrollToTop />
             <Analytics />
