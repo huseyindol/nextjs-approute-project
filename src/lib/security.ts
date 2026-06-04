@@ -114,7 +114,7 @@ export function generateCSP(): string {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
-    `connect-src 'self' https://vercel.live https://*.vercel-insights.com https://raw.githubusercontent.com https://avatars.githubusercontent.com http://localhost:8080 https://api.huseyindol.com ${clarityDomains} ${googleAdsDomains}`,
+    `connect-src 'self' https://vercel.live https://*.vercel-insights.com https://raw.githubusercontent.com https://avatars.githubusercontent.com http://localhost:8080 ws://localhost:8080 https://api.huseyindol.com wss://api.huseyindol.com ${clarityDomains} ${googleAdsDomains}`,
     `frame-src 'self' https://vercel.live ${googleAdsDomains}`,
     "object-src 'none'",
     "base-uri 'self'",
