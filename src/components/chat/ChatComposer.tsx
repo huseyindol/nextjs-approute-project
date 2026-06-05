@@ -8,10 +8,12 @@ import { FormEvent, useState } from 'react'
 export function ChatComposer({
   onSubmit,
   disabled,
+  banned,
   onTyping,
 }: {
   onSubmit: (content: string) => Promise<unknown> | void
   disabled?: boolean
+  banned?: boolean
   onTyping?: () => void
 }) {
   const [content, setContent] = useState('')
@@ -41,7 +43,7 @@ export function ChatComposer({
           setContent(e.target.value)
           if (e.target.value.trim()) onTyping?.()
         }}
-        placeholder="Mesajınızı yazın…"
+        placeholder={banned ? 'Yazma yetkiniz yok' : 'Mesajınızı yazın…'}
         disabled={sending || disabled}
         maxLength={4000}
         className="flex-1"

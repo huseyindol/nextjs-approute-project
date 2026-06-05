@@ -54,3 +54,12 @@ export interface ChatTyping {
   typing: boolean
   sessionId: string | null // GUEST ise dolu — kendi typing echo'sunu ayırt etmek için
 }
+
+// Ban/unban event — WS /topic/tenant/{tid}/group/{gid}/bans
+export interface ChatBanEvent {
+  action: 'BANNED' | 'UNBANNED'
+  groupId: string
+  sessionId: string | null // guest hedefi
+  visitorId: number | null // kayıtlı visitor akışı
+  byUsername: string | null
+}

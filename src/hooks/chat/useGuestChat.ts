@@ -2,7 +2,7 @@
 
 import { CHAT_TENANT_ID, ELLY_API_URL } from '@/lib/chat-config'
 import { publicChatApi } from '@/services/chat/publicChatApi'
-import { ChatMessage, ChatTyping } from '@/types/chat'
+import { ChatBanEvent, ChatMessage, ChatTyping } from '@/types/chat'
 import { Client } from '@stomp/stompjs'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import SockJS from 'sockjs-client'
@@ -35,6 +35,8 @@ export function useGuestChat(
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [connected, setConnected] = useState(false)
   const [typingUsers, setTypingUsers] = useState<string[]>([])
+  // Bu ziyaretçi (mySessionId) banlı mı → composer kilitlenir, okuma serbest
+  const [banned, setBanned] = useState(false)
   const clientRef = useRef<Client | null>(null)
   const mySessionIdRef = useRef(mySessionId)
   useEffect(() => {
@@ -95,13 +97,23 @@ export function useGuestChat(
     [clearTyping],
   )
 
+  // Ban/unban olayı — yalnızca kendi sessionId'im hedeflenince state değişir
+  const handleBan = useCallback((event: ChatBanEvent) => {
+    if (event.sessionId && event.sessionId === mySessionIdRef.current) {
+      setBanned(event.action === 'BANNED')
+    }
+  }, [])
+
   // 1) Geçmiş (anonim public GET)
   useEffect(() => {
     let alive = true
     publicChatApi
       .getHistory(groupId)
       .then(h => {
-        if (alive) setMessages([...h].sort(byCreatedAtAsc))
+        if (alive) {
+          setMessages([...h].sort(byCreatedAtAsc))
+          setBanned(false) // yeni grup → ban durumu sıfırla
+        }
       })
       .catch(() => {
         /* geçmiş yoksa boş başlar */
@@ -138,12 +150,25 @@ export function useGuestChat(
             console.error('Failed to parse typing', e)
           }
         })
+        client.subscribe(`${base}/bans`, frame => {
+          try {
+            handleBan(JSON.parse(frame.body) as ChatBanEvent)
+          } catch (e) {
+            console.error('Failed to parse ban event', e)
+          }
+        })
       },
       onDisconnect: () => setConnected(false),
       onWebSocketClose: () => setConnected(false),
       onStompError: frame => {
         console.error('STOMP error', frame.headers, frame.body)
         const text = `${frame.headers?.message ?? ''} ${frame.body ?? ''}`
+        // Edge: banlı ziyaretçi yazmayı denerse backend reddeder (CHAT_BANNED) →
+        // bağlantıyı/refresh'i tetikleme, sadece composer'ı kilitle
+        if (/CHAT_BANNED/i.test(text)) {
+          setBanned(true)
+          return
+        }
         // Token süresi dolmuş/geçersiz → ölü token'la reconnect döngüsünü durdur,
         // yeni token iste (token değişince effect yeniden bağlanır)
         if (isAuthError(text) && authHandledRef.current !== token) {
@@ -167,7 +192,7 @@ export function useGuestChat(
       timers.clear()
       setTypingUsers([])
     }
-  }, [token, groupId, upsert, handleTyping])
+  }, [token, groupId, upsert, handleTyping, handleBan])
 
   const sendMessage = useCallback(
     (content: string) => {
@@ -195,5 +220,5 @@ export function useGuestChat(
     })
   }, [groupId])
 
-  return { messages, connected, typingUsers, sendMessage, sendTyping }
+  return { messages, connected, banned, typingUsers, sendMessage, sendTyping }
 }

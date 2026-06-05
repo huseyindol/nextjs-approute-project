@@ -17,7 +17,7 @@ export function ChatView({
   group: ChatGroup
   onAuthExpired?: () => void
 }) {
-  const { messages, connected, typingUsers, sendMessage, sendTyping } =
+  const { messages, connected, banned, typingUsers, sendMessage, sendTyping } =
     useGuestChat(token, group.id, mySessionId, onAuthExpired)
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -56,13 +56,19 @@ export function ChatView({
         ))}
         <div ref={bottomRef} />
       </div>
-      {typingLabel && (
+      {typingLabel && !banned && (
         <p className="animate-pulse px-3 py-1 text-xs italic text-muted-foreground">
           {typingLabel}
         </p>
       )}
+      {banned && (
+        <p className="border-destructive/30 bg-destructive/10 border-t px-3 py-2 text-center text-xs text-destructive">
+          Yazma yetkiniz kaldırıldı. Mesajları görmeye devam edebilirsiniz.
+        </p>
+      )}
       <ChatComposer
-        disabled={!connected}
+        disabled={!connected || banned}
+        banned={banned}
         onSubmit={content => sendMessage(content)}
         onTyping={sendTyping}
       />
