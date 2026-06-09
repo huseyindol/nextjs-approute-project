@@ -40,21 +40,26 @@ const SITE_URL =
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Hüseyin DOL | Senior Frontend Developer',
+    default: 'Hüseyin DOL | Software Developer',
     template: '%s | Hüseyin DOL',
   },
   description:
-    '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı ve kullanıcı dostu web uygulamaları geliştiriyorum. Ekip liderliği ve mentorluk konularında da deneyimliyim.',
+    '10+ yıllık deneyimimle React, Next.js ve TypeScript ile modern frontend, Java ve Spring Boot ile ölçeklenebilir backend çözümleri geliştiren bir Software Developer. Uçtan uca performanslı web uygulamaları, ekip liderliği ve mentorluk konularında deneyimliyim.',
   keywords: [
     'Hüseyin DOL',
     'huseyindol',
     'huseyin dol',
-    'Senior Frontend Developer',
+    'Software Developer',
+    'Full Stack Developer',
     'Frontend Developer',
+    'Backend Developer',
     'React Developer',
     'Next.js Developer',
+    'Java Developer',
+    'Spring Boot',
     'TypeScript',
     'JavaScript',
+    'Java',
     'Web Development',
     'React',
     'Next.js',
@@ -69,23 +74,23 @@ export const metadata: Metadata = {
     locale: 'tr_TR',
     url: SITE_URL,
     siteName: 'Hüseyin DOL | Portfolio',
-    title: 'Hüseyin DOL | Senior Frontend Developer',
+    title: 'Hüseyin DOL | Software Developer',
     description:
-      '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı web uygulamaları geliştiriyorum.',
+      '10+ yıllık deneyimle React, Next.js, TypeScript (frontend) ve Java, Spring Boot (backend) ile uçtan uca, ölçeklenebilir ve performanslı web uygulamaları geliştiriyorum.',
     images: [
       {
         url: '/assets/img/huseyindol.png',
         width: 1200,
         height: 630,
-        alt: 'Hüseyin DOL - Senior Frontend Developer',
+        alt: 'Hüseyin DOL - Software Developer',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Hüseyin DOL | Senior Frontend Developer',
+    title: 'Hüseyin DOL | Software Developer',
     description:
-      '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı web uygulamaları geliştiriyorum.',
+      '10+ yıllık deneyimle React, Next.js, TypeScript (frontend) ve Java, Spring Boot (backend) ile uçtan uca, ölçeklenebilir ve performanslı web uygulamaları geliştiriyorum.',
     images: ['/assets/img/huseyindol.png'],
   },
   robots: {

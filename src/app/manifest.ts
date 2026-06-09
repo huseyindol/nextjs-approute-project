@@ -2,10 +2,10 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Hüseyin DOL | Senior Frontend Developer',
+    name: 'Hüseyin DOL | Software Developer',
     short_name: 'Hüseyin DOL',
     description:
-      '10+ yıllık deneyim ile React, Next.js ve TypeScript kullanarak ölçeklenebilir, performanslı ve kullanıcı dostu web uygulamaları geliştiriyorum.',
+      '10+ yıllık deneyimle React, Next.js, TypeScript (frontend) ve Java, Spring Boot (backend) ile uçtan uca, ölçeklenebilir ve performanslı web uygulamaları geliştiriyorum.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',

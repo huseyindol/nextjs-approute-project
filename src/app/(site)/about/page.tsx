@@ -8,15 +8,19 @@ const SITE_URL =
 export const metadata: Metadata = {
   title: 'Hakkımda',
   description:
-    'Hüseyin DOL hakkında: 10+ yıllık deneyime sahip Senior Frontend Developer. React, Next.js ve TypeScript uzmanlığı, ekip liderliği ve mentorluk deneyimi.',
+    'Hüseyin DOL hakkında: 10+ yıllık deneyime sahip Software Developer. React, Next.js, TypeScript ile frontend; Java ve Spring Boot ile backend uzmanlığı, ekip liderliği ve mentorluk deneyimi.',
   keywords: [
     'Hüseyin DOL',
     'Hakkımda',
-    'Senior Frontend Developer',
+    'Software Developer',
+    'Full Stack Developer',
     'Frontend Developer',
+    'Backend Developer',
     'Yazılım Geliştirici',
     'React Developer',
     'Next.js Developer',
+    'Java Developer',
+    'Spring Boot',
     'TypeScript',
     'İstanbul',
     'Biyografi',
@@ -27,14 +31,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Hakkımda | Hüseyin DOL',
     description:
-      'Hüseyin DOL hakkında: 10+ yıllık deneyime sahip Senior Frontend Developer. React, Next.js ve TypeScript uzmanlığı.',
+      'Hüseyin DOL hakkında: 10+ yıllık deneyime sahip Software Developer. React, Next.js, TypeScript ile frontend; Java ve Spring Boot ile backend uzmanlığı.',
     url: `${SITE_URL}/about`,
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Hakkımda | Hüseyin DOL',
     description:
-      'Hüseyin DOL hakkında: 10+ yıllık deneyime sahip Senior Frontend Developer.',
+      'Hüseyin DOL hakkında: 10+ yıllık deneyime sahip Software Developer.',
   },
 }
 

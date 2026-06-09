@@ -9,7 +9,7 @@ export const siteInfo: siteInfoType = {
     rest: 'Uygulamaları Geliştiriyorum',
   },
   description:
-    '10+ yıllık deneyimim ile <strong>React, Next.js ve TypeScript</strong> kullanarak ölçeklenebilir, performanslı ve kullanıcı dostu web uygulamaları geliştiriyorum. Ekip liderliği ve mentorluk konularında da deneyimliyim.',
+    '10+ yıllık deneyimim ile <strong>React, Next.js ve TypeScript</strong> ile modern frontend, <strong>Java ve Spring Boot</strong> ile ölçeklenebilir backend çözümleri geliştiren bir Software Developer’ım. Uçtan uca performanslı, kullanıcı dostu web uygulamaları; ekip liderliği ve mentorluk konularında da deneyimliyim.',
   email: 'huseyindol@gmail.com',
   experience: '10+',
   cvUrl: '/assets/files/HuseyinDOL.pdf',

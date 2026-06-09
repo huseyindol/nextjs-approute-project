@@ -47,14 +47,14 @@ const FallbackPage = dynamicImport<PageTemplateProps>(
 
 // Default fallback metadata
 const DEFAULT_METADATA: Metadata = {
-  title: `${SITE_NAME} | Senior Frontend Developer`,
+  title: `${SITE_NAME} | Software Developer`,
   description:
-    'Hüseyin DOL - Senior Frontend Developer & Team Lead. React, Next.js, TypeScript uzmanı.',
+    'Hüseyin DOL - Software Developer & Team Lead. React, Next.js, TypeScript ile frontend, Java & Spring Boot ile backend uzmanı.',
   alternates: { canonical: SITE_URL },
   openGraph: {
-    title: `${SITE_NAME} | Senior Frontend Developer`,
+    title: `${SITE_NAME} | Software Developer`,
     description:
-      'Hüseyin DOL - Senior Frontend Developer & Team Lead. React, Next.js, TypeScript uzmanı.',
+      'Hüseyin DOL - Software Developer & Team Lead. React, Next.js, TypeScript ile frontend, Java & Spring Boot ile backend uzmanı.',
     url: SITE_URL,
     siteName: SITE_NAME,
     type: 'website',

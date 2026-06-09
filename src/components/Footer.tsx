@@ -85,8 +85,9 @@ export default function Footer() {
               <span className="text-lg font-bold">Hüseyin DOL</span>
             </Link>
             <p className="mb-6 text-sm leading-relaxed text-slate-400">
-              Senior Frontend Developer. React, Next.js ve TypeScript ile modern
-              web uygulamaları geliştiriyorum.
+              Software Developer. React, Next.js ve TypeScript ile frontend,
+              Java ve Spring Boot ile backend; uçtan uca web uygulamaları
+              geliştiriyorum.
             </p>
           </div>
 
