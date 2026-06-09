@@ -3,6 +3,7 @@ import { PersonJsonLd } from '@/components/JsonLd'
 import ScrollToTop from '@/components/ScrollToTopButton'
 import { SessionRefresher } from '@/components/SessionRefresher'
 import { WebVitals } from '@/components/WebVitals'
+import { enrichAuthCookies } from '@/lib/auth-cookies'
 import Providers from '@/providers/Providers'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
@@ -128,11 +129,11 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies()
 
-  // ReadonlyRequestCookies objesini serialize edilebilir formata çevir
-  const cookiesData: Record<string, string> = {}
+  const rawCookies: Record<string, string> = {}
   cookieStore.getAll().forEach(cookie => {
-    cookiesData[cookie.name] = cookie.value
+    rawCookies[cookie.name] = cookie.value
   })
+  const cookiesData = enrichAuthCookies(rawCookies)
   // console.log('APP - LAYOUT')
   return (
     <html lang="tr" suppressHydrationWarning>

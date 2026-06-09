@@ -51,6 +51,12 @@ export const refreshTokenProxy = async (
       sameSite: 'strict',
       maxAge: 60 * 60 * 24 * 7,
     })
+    response.cookies.set(CookieEnum.USERNAME, refreshResponse.data.username, {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 * 7,
+    })
     return true
   }
 }

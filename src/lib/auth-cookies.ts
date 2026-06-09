@@ -27,6 +27,12 @@ interface WritableCookieStore {
   ): void
 }
 
+interface JwtPayload {
+  username?: string
+  sub?: string
+  preferred_username?: string
+}
+
 const isProd = process.env.NODE_ENV === 'production'
 // Prod'da backend ile aynı domain → cookie'ler aynı isim+domain ile değişir (çift kayıt olmaz).
 // Dev'de domainsiz (host = localhost). Gerekirse NEXT_PUBLIC_COOKIE_DOMAIN ile override.
@@ -58,6 +64,51 @@ export interface AuthCookieData {
   username: string
   expiredDate: number
   userCode: string
+}
+
+function decodeJwtDisplayName(token: string): string | null {
+  try {
+    const segment = token.split('.')[1]
+    if (!segment) return null
+    const normalized = segment.replace(/-/g, '+').replace(/_/g, '/')
+    const payload = JSON.parse(atob(normalized)) as JwtPayload
+    const name =
+      payload.username ?? payload.preferred_username ?? payload.sub ?? null
+    return typeof name === 'string' && name.trim() ? name.trim() : null
+  } catch {
+    return null
+  }
+}
+
+/** accessToken + userCode'dan görünen ad çözümler (panel login'de username cookie eksik kalabilir). */
+function resolveAuthDisplayName(
+  accessToken: string,
+  userCode?: string | null,
+): string | null {
+  const fromJwt = decodeJwtDisplayName(accessToken)
+  if (fromJwt) return fromJwt
+  const code = userCode?.trim()
+  return code || null
+}
+
+/**
+ * Layout → Providers: username cookie eksikse JWT/userCode'dan tamamlar.
+ */
+export function enrichAuthCookies(
+  cookiesData: Record<string, string>,
+): Record<string, string> {
+  if (cookiesData[CookieEnum.USERNAME]?.trim()) return cookiesData
+
+  const accessToken = cookiesData[CookieEnum.ACCESS_TOKEN]
+  if (!accessToken) return cookiesData
+
+  const resolved = resolveAuthDisplayName(
+    accessToken,
+    cookiesData[CookieEnum.USER_CODE],
+  )
+  if (!resolved) return cookiesData
+
+  return { ...cookiesData, [CookieEnum.USERNAME]: resolved }
 }
 
 export function writeAuthCookies(

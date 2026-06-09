@@ -1,10 +1,13 @@
 'use client'
 
+import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useEffect, useMemo, useState } from 'react'
 import CookieContext, { initGlobalCookieStore } from '../context/CookieContext'
 import { ThemeProvider } from './ThemeProvider'
+
+const SS_GUEST_NAME = 'elly_guest_name'
 
 export default function Providers({
   children,
@@ -22,6 +25,16 @@ export default function Providers({
       [name]: value,
     }))
   }
+
+  // Chat guest token refresh için login adını sessionStorage'a yaz
+  useEffect(() => {
+    const accessToken = cookies[CookieEnum.ACCESS_TOKEN]
+    const username = cookies[CookieEnum.USERNAME]?.trim()
+    if (!accessToken || !username) return
+    if (sessionStorage.getItem(SS_GUEST_NAME) !== username) {
+      sessionStorage.setItem(SS_GUEST_NAME, username)
+    }
+  }, [cookies])
 
   // Senkron init: child effect'ler çalışmadan önce globalCookieStore hazır olsun
   // (React'te useEffect child→parent sırası ile çalışır; TanStack Query fetch'leri
