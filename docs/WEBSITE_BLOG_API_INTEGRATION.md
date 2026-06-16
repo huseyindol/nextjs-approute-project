@@ -11,7 +11,7 @@
 
 - **Base URL:** `process.env.NEXT_PUBLIC_API` (`.env.local`'da mevcut)
 - **Public endpoint pattern:** `GET /api/v1/public/{tenantId}/posts/...`
-  - `tenantId` = `process.env.NEXT_PUBLIC_TENANT_ID` (`.env.local`'a ekle, örn. `tenant1`)
+  - `tenantId` = `process.env.NEXT_PUBLIC_DEFAULT_TENANT` (`.env.local`'a ekle, örn. `tenant1`)
 - **Kimlik doğrulama gerekmez** — `PublicApiFilter` token olmadan `posts:read` yetkisi veriyor
 - **Response wrapper:** `{ result: boolean, message?: string, data: T }`
 
@@ -20,7 +20,7 @@
 ## 1. `.env.local`'a Ekle
 
 ```env
-NEXT_PUBLIC_TENANT_ID=tenant1
+NEXT_PUBLIC_DEFAULT_TENANT=tenant1
 ```
 
 ---
@@ -60,7 +60,7 @@ Mevcut `getAllPosts` / `getPostBySlug` implementasyonunu tamamen aşağıdakiyle
 import { unstable_cache } from 'next/cache'
 
 const API_BASE = process.env.NEXT_PUBLIC_API
-const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID ?? 'tenant1'
+const TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'tenant1'
 
 interface CmsPost {
   id: number

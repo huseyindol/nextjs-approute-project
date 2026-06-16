@@ -43,7 +43,7 @@ Response: { result: true, data: true }
 `.env.local`'a ekle:
 
 ```
-NEXT_PUBLIC_TENANT_ID=tenant1
+NEXT_PUBLIC_DEFAULT_TENANT=tenant1
 ```
 
 ---
@@ -161,7 +161,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { CheckCircle, AlertCircle } from 'lucide-react'
 
-const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID ?? 'tenant1'
+const TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'tenant1'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -359,7 +359,7 @@ export default function VerifyEmailPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const token = searchParams.get('token') ?? ''
-  const tenantId = searchParams.get('tenantId') ?? process.env.NEXT_PUBLIC_TENANT_ID ?? 'tenant1'
+  const tenantId = searchParams.get('tenantId') ?? process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'tenant1'
 
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [errorMessage, setErrorMessage] = useState('')
@@ -451,7 +451,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
-const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID ?? 'tenant1'
+const TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'tenant1'
 
 export default function LoginPage() {
   const router = useRouter()

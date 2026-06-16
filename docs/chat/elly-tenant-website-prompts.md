@@ -8,7 +8,7 @@
 
 - **Proje:** tenant website (Next.js), elly CMS API'sini tüketir. Tek tenant'a hizmet eder.
 - **API base:** `process.env.NEXT_PUBLIC_ELLY_API_URL` (örn. `https://api.huseyindol.com`)
-- **Tenant:** `process.env.NEXT_PUBLIC_TENANT_ID` (örn. `tenant1`)
+- **Tenant:** `process.env.NEXT_PUBLIC_DEFAULT_TENANT` (örn. `tenant1`)
 - **Public REST düzeni:** Tüm public (login'siz) çağrılar şu prefix ile gider:
   ```
   /api/v1/public/{tenantId}/...
@@ -129,7 +129,7 @@ lib/api/publicApi.ts         # /api/v1/public/{tenantId} fetch helper (RootEntit
 
 ```typescript
 const API = process.env.NEXT_PUBLIC_ELLY_API_URL!;
-const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID!;
+const TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT!;
 const BASE = `${API}/api/v1/public/${TENANT_ID}`;
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -232,7 +232,7 @@ import { publicApi } from '@/lib/api/publicApi';
 import type { ChatMessage } from '@/types/chat';
 
 const API = process.env.NEXT_PUBLIC_ELLY_API_URL!;
-const TENANT_ID = process.env.NEXT_PUBLIC_TENANT_ID!;
+const TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT!;
 
 export function useGuestChat(token: string, groupId: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -495,7 +495,7 @@ export function ChatComposer({ onSubmit }: { onSubmit: (content: string) => Prom
 
 ```
 NEXT_PUBLIC_ELLY_API_URL=https://api.huseyindol.com
-NEXT_PUBLIC_TENANT_ID=tenant1
+NEXT_PUBLIC_DEFAULT_TENANT=tenant1
 ```
 
 (Sabit grup id'sine gerek YOK — grup listesi runtime'da çekilir.)

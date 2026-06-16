@@ -17,10 +17,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { CheckCircle, AlertCircle } from 'lucide-react'
 
-const TENANT_ID =
-  process.env.NEXT_PUBLIC_TENANT_ID ??
-  process.env.NEXT_PUBLIC_DEFAULT_TENANT ??
-  'default'
+const TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'default'
 
 export default function RegisterPage() {
   const router = useRouter()

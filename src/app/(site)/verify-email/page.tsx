@@ -7,10 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 
-const TENANT_ID =
-  process.env.NEXT_PUBLIC_TENANT_ID ??
-  process.env.NEXT_PUBLIC_DEFAULT_TENANT ??
-  'default'
+const TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'default'
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams()
