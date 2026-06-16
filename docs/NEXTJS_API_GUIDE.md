@@ -127,44 +127,15 @@ Mevcut token'ın claim'lerini çözer. Token geçerliliğini ve içeriğini kont
 
 ---
 
-### GET /api/v1/auth/public-token/{tenantId}
+### Public içerik erişimi (anonim)
 
-Login gerektirmeyen public içerik erişimi için tenant token üretir.
-Next.js app startup'ta bir kez çağrılır; alınan token tüm public isteklerde `Authorization: Bearer` olarak gönderilir.
+Login gerektirmeyen public içerik (sayfalar, blog, tenant-chat) için **token üretmeye
+gerek yok**. İstekler `/api/v1/public/{tenantId}/...` prefix'iyle anonim gider; backend
+tenant'ı URL path'inden çözer (`PublicApiFilter`). Örn:
+`GET /api/v1/public/{tenantId}/pages/list`.
 
-**Path Parameters:**
-
-- `tenantId`: Tenant adı (`basedb`, `tenant1`, `tenant2`, ...)
-
-**Response:**
-
-```json
-{
-  "result": true,
-  "data": {
-    "token": "string", // Authorization: Bearer <token> olarak kullan
-    "type": "Bearer",
-    "tenantId": "tenant1"
-  }
-}
-```
-
-**Next.js Kullanımı:**
-
-```ts
-// lib/tenantClient.ts — uygulama başlarken bir kez çağır
-const res = await fetch(`${API_BASE}/api/v1/auth/public-token/${TENANT_ID}`)
-const { data } = await res.json()
-const tenantToken = data.token
-
-// Tüm public fetch'lerde
-fetch(`${API_BASE}/api/v1/pages/list`, {
-  headers: { Authorization: `Bearer ${tenantToken}` },
-})
-```
-
-> Token kullanıcı bilgisi içermez; yalnızca `tenantId` ve `type: "tenant"` claim'leri bulunur.
-> Bilinmeyen tenant ID ile istek gönderilirse `400 Bad Request` döner.
+> Eski `/api/v1/auth/public-token/{tenantId}` endpoint'i kaldırıldı; artık public
+> içerik için tenant token alınmaz.
 
 ---
 
