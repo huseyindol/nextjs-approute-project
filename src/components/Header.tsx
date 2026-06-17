@@ -94,7 +94,7 @@ export default function Header() {
           />
           <span
             className={`text-lg font-bold transition-colors ${
-              scrolled ? 'text-foreground' : 'text-white'
+              scrolled ? 'text-foreground' : 'text-foreground dark:text-white'
             }`}
           >
             Hüseyin DOL
@@ -120,10 +120,10 @@ export default function Header() {
                 isActive(link.href)
                   ? scrolled
                     ? 'text-primary'
-                    : 'text-white'
+                    : 'text-primary dark:text-white'
                   : scrolled
                     ? 'text-muted-foreground hover:text-foreground'
-                    : 'text-white/70 hover:text-white'
+                    : 'text-foreground/60 hover:text-foreground dark:text-white/70 dark:hover:text-white'
               }`}
             >
               {link.label}
@@ -163,7 +163,7 @@ export default function Header() {
             className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
               scrolled
                 ? 'bg-muted text-foreground hover:bg-accent'
-                : 'bg-white/10 text-white hover:bg-white/20'
+                : 'bg-foreground/10 hover:bg-foreground/20 text-foreground dark:bg-white/10 dark:text-white dark:hover:bg-white/20'
             }`}
           >
             {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
