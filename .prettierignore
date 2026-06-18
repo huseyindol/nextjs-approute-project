@@ -50,8 +50,9 @@ public/assets/games/**
 src/lib/game-asset-version.generated.ts
 src/lib/game-ge-asset-version.generated.ts
 
-# Reference prompt docs (gömülü kod blokları; Prettier reflow kırar, referans olarak kalır)
+# Reference/kaynak docs (gömülü kod blokları; Prettier reflow kırar, referans olarak kalır)
 docs/chat/*.md
+docs/blog/*.md
 
 # API and documentation
 public/openapi-generated.json

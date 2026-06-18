@@ -1,0 +1,292 @@
+---
+title: "Multi-Tenant SaaS'ta Tenant Routing'i Nereye Koyacağıma 3 Kez Karar Verdim"
+description: "Elly'de tenant routing'i nereye koyacağıma üç farklı kez karar verdim. Her seferinde yanıldığımı anladım — ve bu sayede temiz bir çözüme ulaştım. Multi-tenant mimari serisinin ilk bölümü."
+publishedAt: '2026-06-16'
+category: 'Backend'
+author: 'Hüseyin DOL'
+coverImage: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop'
+readingTime: '12'
+order: 1
+---
+
+> **Bu yazı 3 bölümlük bir serinin ilk bölümü.**
+> **Bölüm 1:** Tenant Routing Kararları _(buradasınız)_
+> **Bölüm 2:** [Database-per-Tenant ve Connection Pool Patlaması](/blog/elly-multitenant-bolum-2)
+> **Bölüm 3:** [Frontend'de Tenant Context — Provider'sız Yaklaşım](/blog/elly-multitenant-bolum-3)
+
+Multi-tenant bir SaaS yazarken kafayı en çok yoran soru genelde "veritabanını nasıl ayıracağım?" sanılır. Ama benim için asıl zor olan kısım başka bir yerdeydi:
+
+**Gelen bir HTTP isteğinin hangi tenant'a ait olduğunu nereden anlayacağım?**
+
+Bu sorunun cevabını Elly'de üç farklı kez verdim. Her seferinde "çözdüm" dedim, sonra duvara çarpıp geri döndüm. Sonunda doğru çözüme ulaştığımda, kaybettiğim her saatin aslında değerli bir ders olduğunu gördüm.
+
+Bu yazı o üç kararın hikayesi.
+
+## Elly'nin Mimarisi Kısaca
+
+Yazıya geçmeden önce kısa bir bağlam:
+
+**Elly**, headless CMS mimarisi barındıran bir Java Spring Boot API projesi. Üç ayrı frontend tarafından tüketiliyor:
+
+- **Backend (Java/Spring Boot)** — Tüm iş mantığı ve veri katmanı
+- **Panel (Next.js)** — Admin/içerik yönetim paneli
+- **Tenant Website (Next.js)** — Müşterinin public sitesi
+
+Database-per-tenant modelini seçtim. Yani her tenant'ın kendi PostgreSQL veritabanı var. K3s üzerinde Kubernetes ile ayağa kalkıyor, Google Cloud üzerinde host ediliyor. RabbitMQ mail kuyruğu, Redis cache.
+
+Asıl problem şu: Backend'e bir HTTP isteği geldiğinde, hangi veritabanına bağlanacağımı bilmem gerek. Bu yüzden **tenant routing** her şeyin başlangıç noktası.
+
+---
+
+## İlk Deneme: `X-Tenant-Id` Header
+
+İlk çözümüm en basit olanıydı. Frontend her API çağrısına bir custom header eklesin:
+
+```
+GET /api/v1/chat/groups
+X-Tenant-Id: acme
+Authorization: Bearer <admin-jwt>
+```
+
+Backend tarafında bir interceptor bu header'ı okuyup `ThreadLocal`'a yazıyor, sonra `AbstractRoutingDataSource` doğru tenant DB'sine yönlendiriyor. Temiz, basit, çalışıyor.
+
+İki hafta sonra bir güvenlik review'ında soru geldi:
+
+> "Bu header'ı herhangi bir client gönderebilir. Bir tenant kullanıcısı kendi JWT'siyle giriş yapıp `X-Tenant-Id: rakip-firma` header'ı atarsa ne olur?"
+
+Cevap: Olur. Engellemek için her endpoint'te "bu kullanıcının bu tenant'a erişim yetkisi var mı?" kontrolü gerekirdi. Yani **header sadece "öneri" düzeyinde, otorite değil.**
+
+Bu, "kim?" ile "nereye?" sorularını ayrı kanallardan taşımanın yarattığı klasik bir problem. Authorization katmanı tenant bağlamından habersiz olduğu için, her endpoint'in kendi kontrolünü yapması gerekiyor — ve bu hata yapmaya çok açık.
+
+**Çıkardığım ilk ders:** Tenant bilgisi keyfi bir header'da yaşayamaz. Bir otorite zincirine bağlı olmalı.
+
+---
+
+## İkinci Deneme: Tenant Switch Token
+
+İkinci çözümüm daha karmaşık bir yapıya dayanıyordu. Mantık şuydu:
+
+Kullanıcı login olduğunda admin JWT'si alıyor. Bir tenant'a erişmek istediğinde, bu admin JWT'sini kullanarak ayrı bir "tenant-scoped token" fetch ediyor. Bu yeni token kısa ömürlü ve içinde hangi tenant'a erişim hakkı olduğu yazıyor.
+
+```
+1. POST /api/v1/auth/login → admin-jwt
+2. POST /api/v1/tenants/token { tenantId: "acme" } → tenant-scoped-jwt
+3. GET /api/v1/chat/groups
+   Authorization: Bearer <tenant-scoped-jwt>
+```
+
+Teorik olarak güzel. Backend her isteği aldığında JWT'den hem kullanıcıyı hem tenant'ı çıkarıyor. Header gönderme yok, kontrol JWT içinde.
+
+Pratikte yıkımdı. Birkaç saat içinde frontend'de şu sorunlar çıktı:
+
+**Token cache yönetimi**: Panel'de kullanıcı bir tenant'tan diğerine geçtiğinde token'ı invalidate edip yeni token fetch etmek gerekiyordu. Her grup değişiminde bir extra request.
+
+**WebSocket sorunu**: Chat real-time çalışıyor. WebSocket bağlantısı kurulurken admin JWT kullanıyordu çünkü WS bağlantısı uzun ömürlü. Ama REST çağrıları tenant token kullanıyordu. Yani **WS ve REST farklı kimlik kurallarıyla çalışıyordu**. Bir grup mesajı gönderirken WS şöyle diyordu: "Ben admin'im." REST ise: "Ben acme tenant'ındayım." Hangisi gerçek?
+
+**Spring Security ile kavga**: Tenant token'ı admin token'ı ile aynı `SecurityContext` üzerinde yaşatmak Spring'in authentication mantığını kırıyordu. Filter chain içinde token değiştirmek istediğimde authentication state'i tutarsızlaşıyordu.
+
+Ama bütün bu belirtilerin altında yatan asıl kök neden şuydu: ürettiğim tenant-scoped token **kimliksizdi.** İçinde yalnızca `tenantId` ve `type: "tenant"` claim'leri vardı, kullanıcı bilgisi yoktu. Spring Security'nin `isAuthenticated()` kontrolü bu token'ı geçerli bir kimlik olarak görmüyor ve reddediyordu — sonuçta tenant chat sekmesi tamamen çalışmaz hale geldi. Token'a kullanıcıyı da gömmeye çalışınca, bu sefer "kim?" ve "nereye?" bilgisini aynı nesnede taşıma problemine geri döndüm.
+
+İki gün uğraştıktan sonra şu sonuca vardım: **Tenant bilgisini Authorization katmanına gömmek, iki ayrı endişeyi (kimlik + scope) tek bir nesneye sıkıştırıyor.** Bu da her ikisini de bozuyor.
+
+**Çıkardığım ikinci ders:** "Kim?" sorusu ve "Nereye?" sorusu farklı yerlerde yaşamalı. Kimlik JWT'de kalmalı, scope başka bir kanaldan gelmeli.
+
+---
+
+## Final: URL Path Routing
+
+Üçüncü ve son çözüm geriye dönüp baktığımda neredeyse fazla basit görünüyor — ama oraya ulaşmak için iki tane "katmanlı" çözümün başarısız olması gerekti. İlk iki denemede problemi çözmeye çalışırken sürekli katman ekliyordum: yeni token tipleri, yeni cache mekanizmaları, yeni filter'lar. Sonunda anladım ki problem ek katmanla değil, ayrımı netleştirmekle çözülüyordu.
+
+**Kimlik JWT'de, hedef tenant URL'de.**
+
+```
+GET /api/v1/chat/tenant/acme/groups
+Authorization: Bearer <admin-jwt>
+```
+
+Çözümü sadelikten yana kurdum. URL diyor ki "acme tenant'ının chat'ine bakıyorum", JWT diyor ki "ben admin'im". İki bilgi farklı katmanlarda taşınıyor, birbirine karışmıyor. Karmaşık değil, ama her satırının arkasında bir nedeni var.
+
+### `JwtTenantFilter` — Routing'in Kalbi
+
+İki resolution modu var:
+
+**A) JWT claim — normal akış:** Bir tenant kullanıcısı kendi sitesine giriş yapmışsa, JWT'sinde kendi `tenantId`'si embed edilmiş olarak gelir. Filter bunu okur, `TenantContext`'e yazar.
+
+**B) URL path — admin cross-tenant akışı:** Admin başka bir tenant'ın verisine erişmek istediğinde `/api/v1/chat/tenant/{tid}/...` path'ini kullanır. Filter regex ile `{tid}`'yi yakalar, admin kimliğini doğrular, tenant ID'yi URL'den alır.
+
+```java
+@Override
+protected void doFilterInternal(HttpServletRequest request,
+                                HttpServletResponse response,
+                                FilterChain filterChain)
+        throws ServletException, IOException {
+    try {
+        String tenantId;
+        String urlTenant = matchUrlTenant(request.getRequestURI());
+
+        if (urlTenant != null && "admin".equals(safeLoginSource(request))) {
+            // URL-tenant yalnız admin kimliğiyle: tenant user başka tenant'a sıçrayamaz.
+            if (!tenantProperties.getDatasources().containsKey(urlTenant)) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write(
+                    "{\"result\":false,\"status\":400,\"error\":\"Bad Request\","
+                  + "\"message\":\"Unknown tenant: " + urlTenant + "\"}");
+                return;
+            }
+            tenantId = urlTenant;
+        } else {
+            tenantId = resolveTenantId(request);
+        }
+
+        if (tenantId != null) {
+            TenantContext.setTenantId(tenantId);
+        }
+        log.debug("Tenant resolved: {} for URI: {}", tenantId, request.getRequestURI());
+
+        filterChain.doFilter(request, response);
+    } finally {
+        TenantContext.clear();
+    }
+}
+```
+
+Bu kodda dikkat edilmesi gereken üç şey var:
+
+**1. `loginSource == "admin"` kontrolü.** URL'den tenant okuma sadece admin kimliği varsa geçerli. Bir tenant kullanıcısı kendi JWT'siyle `/api/v1/chat/tenant/rakip-firma/...` URL'ine istek atarsa filter URL'i yok sayar ve JWT claim'ine düşer — yani kendi tenant'ında kalır. Bu, ilk denemedeki "header'ı herhangi bir client gönderebilir" probleminin tam çözümü.
+
+**2. Bilinmeyen tenant kontrolü.** URL'de gelen tenant ID `tenantProperties.getDatasources()` map'inde yoksa 400 döndürüyorum. Bu olmadan, var olmayan bir tenant ID'ye istek atılırsa `AbstractRoutingDataSource` aşağıda runtime exception fırlatır ve hata mesajı kullanıcıya ulaşırken anlamsızlaşır. Erken kesmek temizliği yüksek.
+
+**3. `finally` bloğu — Tomcat thread reuse tuzağı.** Tomcat'in thread pool'u thread'leri reuse ettiği için, eğer `TenantContext.clear()` çağrısını atlarsan **bir request'in tenant'ı sonraki request'e sızabilir.** Bu tip "intermittent" bug'ları debug etmek çok zor çünkü reprodüksiyonu thread havuzunun o anki durumuna bağlı. Bunu öğrenmem birkaç saat aldı.
+
+### `resolveTenantId` — Basit Bir Fonksiyon Değil
+
+Filter'ın URL path yakalayamadığı durumlarda — yani normal akış — devreye `resolveTenantId` giriyor. Başlangıçta "JWT'den `tenantId` claim'ini çıkar ve dön" diye basit bir fonksiyon olacağını sanmıştım. Olmadı. İçinde birden fazla mimari karar gömülü:
+
+```java
+private String resolveTenantId(HttpServletRequest request) {
+    String path = request.getRequestURI();
+
+    // 1) Chat + Notifications REST: her zaman basedb.
+    if (path.startsWith("/api/v1/chat/") || path.startsWith("/api/v1/notifications")) {
+        log.debug("Basedb-only path, forcing basedb: {}", path);
+        return null;
+    }
+
+    // 2) Authorization yoksa null (anonim akış public filter'a bırakılıyor)
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        return null;
+    }
+
+    try {
+        String jwt = authHeader.substring(7);
+        String tenantId = jwtUtil.extractTenantId(jwt);
+        String loginSource = jwtUtil.extractLoginSource(jwt);
+
+        boolean isBaseDbPath = path.startsWith("/api/v1/auth/")
+            || path.startsWith("/api/v1/users")
+            || path.startsWith("/api/v1/roles");
+
+        // Admin login: auth, user ve role endpointleri her zaman basedb kullanır
+        if ("admin".equals(loginSource) && isBaseDbPath) {
+            log.debug("Admin login source, forcing basedb for path: {}", path);
+            return null;
+        }
+
+        if (tenantId != null && !tenantId.isBlank()) {
+            return tenantId;
+        }
+        return null;
+    } catch (Exception e) {
+        log.debug("Could not extract tenantId from JWT: {}", e.getMessage());
+        return null;
+    }
+}
+```
+
+Burada üç ayrı kuralı tek bir fonksiyonda topluyorum:
+
+**Bazı path'ler her zaman basedb'ye gider.** Buradaki `/api/v1/chat/` **admin chat (AC)** demek — tenant chat (TC) zaten yukarıdaki URL-match dalında (`/api/v1/chat/tenant/{tid}`) yakalanıp tenant DB'sine yönlendiği için buraya hiç düşmez. AC mesajları ve `/api/v1/notifications` merkezi basedb'de tutulur; hangi kullanıcı, hangi tenant olursa olsun değişmez. `null` döndürmek, `AbstractRoutingDataSource`'a "varsayılan DataSource'u (basedb) kullan" demek anlamına geliyor.
+
+**Auth, users, roles admin için basedb'ye gider.** Bir tenant kullanıcısı kendi tenant'ının `/api/v1/users` endpoint'ine erişmek isterse o tenant'ın DB'sine gider. Ama admin aynı endpoint'e erişirse basedb'ye gider — çünkü admin tüm sistemdeki kullanıcıları yönetiyor. `loginSource` claim'i bu ayrımı yapan kritik bilgi.
+
+**Header yoksa anonymous demektir, public filter'a düşsün.** Anonymous istekler (public tenant sitesindeki içerik görüntüleme gibi) başka bir filter chain ile handle ediliyor — `PublicApiFilter` üzerinden `/api/v1/public/{tenantId}/...` formatıyla.
+
+Yorum satırındaki cümle bu yazının ana mesajını özetliyor:
+
+> **"Kural: kimlik her zaman JWT'de, hedef tenant her zaman URL'de. X-Tenant-Id header ve tenant-switch token desteklenmez."**
+
+İlk iki başarısız denemenin mezar taşı.
+
+### `TenantContext` — Mütevazı Ama Kritik
+
+Tüm bu routing oyununun kalbinde aslında 30 satırlık bir sınıf var:
+
+```java
+@Slf4j
+public final class TenantContext {
+
+    private static final ThreadLocal<String> CURRENT_TENANT = new ThreadLocal<>();
+
+    private TenantContext() {
+        // Utility class - instance oluşturulamaz
+    }
+
+    public static void setTenantId(String tenantId) {
+        log.debug("Setting tenant context to: {}", tenantId);
+        CURRENT_TENANT.set(tenantId);
+    }
+
+    public static String getTenantId() {
+        return CURRENT_TENANT.get();
+    }
+
+    public static void clear() {
+        log.debug("Clearing tenant context");
+        CURRENT_TENANT.remove();
+    }
+}
+```
+
+ThreadLocal en uygun yapı çünkü Spring her request'i bir thread'de işliyor ve aynı thread içindeki tüm JPA çağrıları aynı tenant'ı görmeli. Bu sınıfın `getTenantId()` metodunu, sıradaki yazıda anlatacağım `AbstractRoutingDataSource` çağırarak hangi DB pool'una bağlanacağını belirliyor.
+
+### WebSocket ile Tutarlılık
+
+Bu kararın en güzel sonucu burada ortaya çıktı. WebSocket destination'ı da aynı kurala uyuyor:
+
+```
+/app/tenant-chat/{tid}/{groupId}/typing
+```
+
+REST ile WS aynı routing mantığını paylaşıyor. Backend'de authorization middleware'i tek yerde yazılabiliyor. Önceki çözümün en büyük ağrı noktası — WS ve REST'in farklı kurallarla çalışması — tamamen ortadan kalktı.
+
+Bu değişikliği yaptığımızda frontend'den **200+ satır kod silindi.** `fetcher.ts`'den `overrideAuth` kalktı, `tenant.services.ts` dosyası tamamen silindi. Az kod, çalışan kod.
+
+---
+
+## Genel Ders
+
+Üç başarısız denemenin damıttığı tek satır:
+
+> **"Kim?" sorusu ve "Nereye?" sorusu farklı yerlerde yaşamalı.**
+
+Kimlik JWT'de kalmalı. Tenant scope URL'de olmalı. Bu iki endişeyi tek bir nesneye (header, switch token, vs.) sıkıştırmak hep aynı problemi doğuruyor: ikisi de eksik kalıyor.
+
+Multi-tenant tasarım yapacaksanız ilk gün bu ayrımı netleştirin. İki yıl sonra "neden bu kararı verdik" diye geri dönüp pişman olmazsınız.
+
+---
+
+## Sırada Ne Var?
+
+Bu yazıda **tenant routing'i** çözdük — yani gelen isteğin hangi tenant'a ait olduğunu nasıl bildiğimizi anlattım. Ama henüz **veritabanı katmanına** hiç dokunmadık.
+
+`TenantContext.getTenantId()` çağrısıyla doğru tenant'ı elde ediyoruz, peki Spring bu bilgiyle hangi PostgreSQL veritabanına nasıl bağlanıyor? Hibernate'in resmi multi-tenancy API'sini neden kullanmadım? Ve 3 tenant × 10 connection × 3 pod = 90 hesabı neden geceleri uykumu kaçırdı?
+
+Bunları sıradaki yazıda anlatacağım:
+
+**Bölüm 2 → Database-per-Tenant: AbstractRoutingDataSource ve Connection Pool Patlaması**
+
+---
+
+_Elly hakkında daha fazla yazı için: [huseyindol.com/blog](https://huseyindol.com/blog)_
