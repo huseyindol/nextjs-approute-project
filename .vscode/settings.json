@@ -5,8 +5,10 @@
   "editor.formatOnPaste": true,
   "editor.formatOnType": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.organizeImports": "explicit"
+    "source.fixAll.eslint": "explicit"
+    // Not: "source.organizeImports" bilerek kapalı — kaydetmede importları
+    // otomatik yeniden dizmesin (yerleri sabit kalsın). Elle düzenlemek için
+    // Command Palette > "Organize Imports" kullanılabilir.
   },
 
   // Dosya türlerine özel ayarlar
