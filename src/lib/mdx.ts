@@ -67,17 +67,19 @@ export const getAllPosts = unstable_cache(
           }
         })
         .sort((a, b) => {
-          const orderA = a.frontmatter.order ?? 99
-          const orderB = b.frontmatter.order ?? 99
+          // Kural: en yeni yayınlanan (publishedAt) her zaman en üstte —
+          // son eklediğimiz bloglar listede başta gelir. Aynı gün yayınlananlar
+          // `order` (asc) ile sıralanır → çok bölümlü seriler doğru sırada (1→2→3).
+          const dateA = new Date(a.frontmatter.publishedAt).getTime()
+          const dateB = new Date(b.frontmatter.publishedAt).getTime()
 
-          if (orderA !== orderB) {
-            return orderA - orderB
+          if (dateA !== dateB) {
+            return dateB - dateA
           }
 
-          return (
-            new Date(b.frontmatter.publishedAt).getTime() -
-            new Date(a.frontmatter.publishedAt).getTime()
-          )
+          const orderA = a.frontmatter.order ?? 99
+          const orderB = b.frontmatter.order ?? 99
+          return orderA - orderB
         })
 
       return posts

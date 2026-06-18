@@ -52,6 +52,18 @@ Huseyin DOL'un modern portföy ve CMS sitesi. Next.js 16 App Router, React 19, T
 - Coverage threshold: %50 branch, %30 function, %10 line
 - Test çalıştırma: `bun run test:ci`
 
+## Blog İçeriği (`/blog`)
+
+- Yazılar `src/data/blog/*.mdx` (frontmatter + MDX). Slug = dosya adı (`.mdx`siz).
+- Frontmatter: `title`, `description`, `publishedAt` (`'YYYY-MM-DD'`), `category`
+  (Frontend/Backend/DevOps/AI/Mobile — renkleri tanımlı), `author`, `coverImage`,
+  `readingTime`, `order`.
+- Body'de `# Başlık` KOYMA — detay sayfası başlığı frontmatter'dan basar.
+- **Sıralama kuralı (`src/lib/mdx.ts`):** en yeni `publishedAt` her zaman en üstte
+  (son eklenen başta). Aynı gün yayınlananlar `order` (asc) ile sıralanır →
+  çok bölümlü seriler doğru sırada. Bir seriyi başta tutmak için bölümlere
+  **aynı (en yeni) `publishedAt` + sıralı `order` (1,2,3)** ver.
+
 ## API Güvenliği
 
 - Rate limiting: `src/lib/rate-limiter.ts` — IP bazlı, 60 istek/dk
