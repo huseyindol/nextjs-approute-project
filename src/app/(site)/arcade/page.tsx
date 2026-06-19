@@ -90,7 +90,9 @@ export default async function ArcadePage({ searchParams }: ArcadePageProps) {
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const response: PageResponseType = await getPageBySlugService(PAGE_SLUG)
+    const response = await getPageBySlugService(PAGE_SLUG)
+    // CMS'te arcade sayfası yoksa sabit metadata kullan (hata değil)
+    if (!response) return DEFAULT_METADATA
 
     const { seoInfo, title, description } = response.data
     const pageTitle = seoInfo?.title || title

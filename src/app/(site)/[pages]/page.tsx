@@ -41,7 +41,7 @@ export default async function Page(props: Props) {
   const params = await props.params
   const searchParams = await props.searchParams
 
-  let response: PageResponseType
+  let response: PageResponseType | null = null
   try {
     response = await getPageBySlugService(params.pages)
   } catch (error) {
@@ -49,8 +49,13 @@ export default async function Page(props: Props) {
     notFound()
   }
 
-  const DynamicComponent = response!.data.template
-    ? getTemplateComponent(response!.data.template)
+  // Sayfa CMS'te yoksa 404
+  if (!response) {
+    notFound()
+  }
+
+  const DynamicComponent = response.data.template
+    ? getTemplateComponent(response.data.template)
     : null
 
   return (
@@ -59,7 +64,7 @@ export default async function Page(props: Props) {
       {DynamicComponent && (
         // eslint-disable-next-line react-hooks/static-components -- template from API, memoised in module cache
         <DynamicComponent
-          pageInfo={response!.data as PageType}
+          pageInfo={response.data as PageType}
           searchParams={searchParams as { industry?: string }}
         />
       )}
@@ -69,9 +74,11 @@ export default async function Page(props: Props) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    const response: PageResponseType = await getPageBySlugService(
-      (await params).pages,
-    )
+    const response = await getPageBySlugService((await params).pages)
+    // Sayfa CMS'te yoksa minimal fallback metadata (hata değil)
+    if (!response) {
+      return { title: SITE_NAME, description: `${SITE_NAME} - Portfolio` }
+    }
 
     const { seoInfo, title, description } = response.data
     const pageTitle = seoInfo?.title || title

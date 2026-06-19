@@ -106,7 +106,9 @@ export default async function Home({ searchParams }: HomeProps) {
 
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const response: PageResponseType = await getPageBySlugService(HOME_SLUG)
+    const response = await getPageBySlugService(HOME_SLUG)
+    // CMS'te home sayfası yoksa sabit metadata kullan (hata değil)
+    if (!response) return DEFAULT_METADATA
 
     const { seoInfo, title, description } = response.data
     const pageTitle = seoInfo?.title || title
