@@ -3,8 +3,7 @@ import type { Metadata } from 'next'
 import dynamicImport from 'next/dynamic'
 import { PageResponseType, Page as PageType } from '../../types/BaseResponse'
 
-// Force dynamic rendering — this page uses cookies() via fetcher/tenant
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 // Sabit SEO değerleri
 const SITE_URL =

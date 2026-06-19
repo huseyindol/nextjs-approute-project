@@ -3,12 +3,14 @@ import {
   FormSubmissionResponseType,
 } from '@/types/BaseResponse'
 import { fetcher } from '@/utils/services/fetcher'
+import { cache } from 'react'
 
 // GET - Tek form getir (ID ile) — site tarafı için
-export const getFormByIdService = async (id: string) => {
+export const getFormByIdService = cache(async (id: string) => {
   try {
     const response: FormSchemaResponseType = await fetcher(`/forms/${id}`, {
       method: 'GET',
+      next: { revalidate: 3600, tags: ['cms-forms', `cms-form-${id}`] },
     })
     if (!response.result) {
       throw new Error('Error get form', { cause: response.message })
@@ -18,7 +20,7 @@ export const getFormByIdService = async (id: string) => {
     console.error('Error get form:', error)
     throw error
   }
-}
+})
 
 // POST - Form submit et — site tarafı için
 export const submitFormService = async (

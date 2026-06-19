@@ -3,6 +3,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { FormSubmitWrapper } from './FormSubmitWrapper'
 
+export const revalidate = 3600
+
 type Props = {
   params: Promise<{ id: string }>
 }
@@ -28,7 +30,6 @@ export default async function FormPage({ params }: Props) {
   try {
     const response = await getFormByIdService(id)
     form = response.data
-    console.log('form', form)
   } catch {
     notFound()
   }

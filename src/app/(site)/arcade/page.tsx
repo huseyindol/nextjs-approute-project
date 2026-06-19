@@ -4,7 +4,7 @@ import dynamicImport from 'next/dynamic'
 import { PageResponseType, Page as PageType } from '../../../types/BaseResponse'
 import GameComponent from '@/components/games/overtakeandparking/GameComponent'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 // Sabit SEO değerleri
 const SITE_URL =
