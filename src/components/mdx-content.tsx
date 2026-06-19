@@ -105,6 +105,42 @@ const components = {
       </code>
     )
   },
+  table: (props: React.ComponentPropsWithoutRef<'table'>) => (
+    <div className="my-6 w-full overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-800">
+      <table className="w-full border-collapse text-sm" {...props}>
+        {props.children}
+      </table>
+    </div>
+  ),
+  thead: (props: React.ComponentPropsWithoutRef<'thead'>) => (
+    <thead className="bg-slate-100 dark:bg-slate-800/60" {...props}>
+      {props.children}
+    </thead>
+  ),
+  tr: (props: React.ComponentPropsWithoutRef<'tr'>) => (
+    <tr
+      className="border-b border-slate-200 last:border-0 even:bg-slate-50/60 dark:border-slate-800 dark:even:bg-slate-900/30"
+      {...props}
+    >
+      {props.children}
+    </tr>
+  ),
+  th: (props: React.ComponentPropsWithoutRef<'th'>) => (
+    <th
+      className="border-r border-slate-200 px-4 py-3 text-left align-top font-semibold text-slate-900 last:border-r-0 dark:border-slate-700 dark:text-white"
+      {...props}
+    >
+      {props.children}
+    </th>
+  ),
+  td: (props: React.ComponentPropsWithoutRef<'td'>) => (
+    <td
+      className="border-r border-slate-200 px-4 py-3 align-top text-slate-700 last:border-r-0 dark:border-slate-800 dark:text-slate-300"
+      {...props}
+    >
+      {props.children}
+    </td>
+  ),
 }
 
 const prettyCodeOptions = {
