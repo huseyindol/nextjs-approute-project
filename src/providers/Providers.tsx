@@ -18,9 +18,17 @@ const SS_GUEST_NAME = 'elly_guest_name'
 // Stable no-op: document.cookie has no change event to subscribe to.
 const subscribeToCookies = () => () => {}
 
+// useSyncExternalStore getSnapshot'ı AYNI referansı döndürmeli; aksi halde React
+// "store değişti" sanıp sonsuz render döngüsüne girer (Maximum update depth → kritik hata).
+// Bu yüzden document.cookie string'i değişmedikçe önceki parse sonucunu döndürürüz.
+let cachedCookieString: string | null = null
+let cachedCookies: Record<string, string> = {}
+
 function parseDocumentCookies(): Record<string, string> {
-  if (typeof document === 'undefined') return {}
-  return Object.fromEntries(
+  if (typeof document === 'undefined') return cachedCookies
+  if (document.cookie === cachedCookieString) return cachedCookies
+  cachedCookieString = document.cookie
+  cachedCookies = Object.fromEntries(
     document.cookie
       .split('; ')
       .filter(Boolean)
@@ -29,6 +37,7 @@ function parseDocumentCookies(): Record<string, string> {
         return [pair.slice(0, idx), decodeURIComponent(pair.slice(idx + 1))]
       }),
   )
+  return cachedCookies
 }
 
 export default function Providers({
