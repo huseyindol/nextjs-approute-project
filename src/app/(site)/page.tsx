@@ -14,15 +14,9 @@ const SITE_NAME = 'Hüseyin DOL'
 // Root URL ("/") için kullanılacak slug
 const HOME_SLUG = 'home'
 
-// Page props interface
-interface HomeProps {
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
-}
-
 // Dynamic page template component props
 type PageTemplateProps = {
   pageInfo: PageType
-  searchParams?: { industry?: string }
 }
 
 // Module-level cache — dynamic() must not be called inside render
@@ -62,9 +56,7 @@ const DEFAULT_METADATA: Metadata = {
   },
 }
 
-export default async function Home({ searchParams }: HomeProps) {
-  const resolvedSearchParams = await searchParams
-
+export default async function Home() {
   let response: PageResponseType | null = null
   try {
     response = await getPageBySlugService(HOME_SLUG)
@@ -83,7 +75,6 @@ export default async function Home({ searchParams }: HomeProps) {
             components: [],
           } as unknown as PageType
         }
-        searchParams={resolvedSearchParams as { industry?: string }}
       />
     )
   }
@@ -96,10 +87,7 @@ export default async function Home({ searchParams }: HomeProps) {
     <>
       {DynamicComponent && (
         // eslint-disable-next-line react-hooks/static-components -- template from API, memoised in module cache
-        <DynamicComponent
-          pageInfo={response.data as PageType}
-          searchParams={resolvedSearchParams as { industry?: string }}
-        />
+        <DynamicComponent pageInfo={response.data as PageType} />
       )}
     </>
   )

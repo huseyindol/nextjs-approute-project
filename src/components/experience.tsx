@@ -1,5 +1,6 @@
 import { ExperienceType } from '@/schemas/dynamic/experienceSchema'
 import { getSectionDataBySectionKey } from '@/utils/services/contents'
+import { Suspense } from 'react'
 import ExperienceTimeline from './ExperienceTimeline'
 
 const TURKISH_MONTHS: Record<string, number> = {
@@ -204,13 +205,7 @@ const DEFAULT_SECTION_INFO = {
   description: 'Çeşitli sektörlerde 10+ yıllık kariyer yolculuğum',
 }
 
-interface ExperienceProps {
-  searchParams?: { industry?: string }
-}
-
-export default async function Experience({ searchParams }: ExperienceProps) {
-  const initialIndustry = searchParams?.industry ?? 'all'
-
+export default async function Experience() {
   const { sectionInfo, items } =
     await getSectionDataBySectionKey<ExperienceType>(
       'portfolio_experience',
@@ -224,11 +219,14 @@ export default async function Experience({ searchParams }: ExperienceProps) {
     )
 
   return (
-    <ExperienceTimeline
-      experiences={allExperiences}
-      title={sectionInfo.title ?? DEFAULT_SECTION_INFO.title}
-      description={sectionInfo.description ?? DEFAULT_SECTION_INFO.description}
-      initialIndustry={initialIndustry}
-    />
+    <Suspense>
+      <ExperienceTimeline
+        experiences={allExperiences}
+        title={sectionInfo.title ?? DEFAULT_SECTION_INFO.title}
+        description={
+          sectionInfo.description ?? DEFAULT_SECTION_INFO.description
+        }
+      />
+    </Suspense>
   )
 }

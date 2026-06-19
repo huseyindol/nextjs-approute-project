@@ -11,7 +11,7 @@ import {
   ChevronUp,
   MapPin,
 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useRef, useState } from 'react'
 
 const fadeInLeft = {
@@ -40,17 +40,16 @@ interface ExperienceTimelineProps {
   experiences: ExperienceType[]
   title: string
   description: string
-  initialIndustry: string
 }
 
 export default function ExperienceTimeline({
   experiences,
   title,
   description,
-  initialIndustry,
 }: ExperienceTimelineProps) {
   const router = useRouter()
-  const [selectedIndustry, setSelectedIndustry] = useState(initialIndustry)
+  const searchParams = useSearchParams()
+  const selectedIndustry = searchParams.get('industry') ?? 'all'
 
   const filtered =
     selectedIndustry === 'all'
@@ -58,7 +57,6 @@ export default function ExperienceTimeline({
       : experiences.filter(exp => exp.industry === selectedIndustry)
 
   function handleFilter(industry: string) {
-    setSelectedIndustry(industry)
     const url =
       industry === 'all' ? '/experience' : `/experience?industry=${industry}`
     router.push(url, { scroll: false })

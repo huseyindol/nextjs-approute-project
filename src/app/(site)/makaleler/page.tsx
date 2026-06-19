@@ -1,8 +1,11 @@
 import { getAllCmsPosts, getAllCmsCategories } from '@/lib/blog'
 import MakalelerContent from '@/components/MakalelerContent'
+import { Suspense } from 'react'
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'
+
+export const revalidate = 3600
 
 export const metadata = {
   title: 'Makalelerim | Hüseyin DOL',
@@ -36,28 +39,15 @@ export const metadata = {
   },
 }
 
-type Props = {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}
-
-export default async function MakalelerPage(props: Readonly<Props>) {
-  const searchParams = await props.searchParams
-  const categoryFilter = searchParams.category as string | undefined
-
+export default async function MakalelerPage() {
   const [allPosts, categories] = await Promise.all([
     getAllCmsPosts(),
     getAllCmsCategories(),
   ])
 
-  const posts = categoryFilter
-    ? allPosts.filter(post => post.frontmatter.category === categoryFilter)
-    : allPosts
-
   return (
-    <MakalelerContent
-      posts={posts}
-      categories={categories}
-      categoryFilter={categoryFilter}
-    />
+    <Suspense>
+      <MakalelerContent posts={allPosts} categories={categories} />
+    </Suspense>
   )
 }

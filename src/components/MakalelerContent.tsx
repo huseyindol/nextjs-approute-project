@@ -7,6 +7,7 @@ import { motion, useInView } from 'framer-motion'
 import { BookOpenIcon, CalendarIcon, ClockIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useRef } from 'react'
 
 const AD_SLOTS = [
@@ -45,14 +46,17 @@ const cardCategoryColors: Record<string, string> = {
 interface MakalelerContentProps {
   posts: BlogPost[]
   categories: string[]
-  categoryFilter: string | undefined
 }
 
 export default function MakalelerContent({
   posts,
   categories,
-  categoryFilter,
 }: MakalelerContentProps) {
+  const searchParams = useSearchParams()
+  const categoryFilter = searchParams.get('category') ?? undefined
+  const filteredPosts = categoryFilter
+    ? posts.filter(p => p.frontmatter.category === categoryFilter)
+    : posts
   const gridRef = useRef(null)
   const gridInView = useInView(gridRef, { once: true, margin: '-60px' })
 
@@ -138,7 +142,7 @@ export default function MakalelerContent({
       {/* Posts grid */}
       <main className="bg-muted/20 min-h-[60vh] py-16">
         <div className="container mx-auto px-6">
-          {posts.length === 0 ? (
+          {filteredPosts.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -157,11 +161,13 @@ export default function MakalelerContent({
             >
               {(() => {
                 const adPositions = AD_SLOTS.map((_, k) =>
-                  Math.floor((posts.length * (k + 1)) / (AD_SLOTS.length + 1)),
+                  Math.floor(
+                    (filteredPosts.length * (k + 1)) / (AD_SLOTS.length + 1),
+                  ),
                 )
                 const items: React.ReactNode[] = []
                 const showListAds = categoryFilter === undefined
-                posts.forEach((post, i) => {
+                filteredPosts.forEach((post, i) => {
                   items.push(<PostCard key={post.slug} post={post} />)
                   const adIdx = adPositions.indexOf(i + 1)
                   if (showListAds && adIdx !== -1) {

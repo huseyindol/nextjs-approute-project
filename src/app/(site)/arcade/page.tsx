@@ -14,15 +14,9 @@ const SITE_NAME = 'Hüseyin DOL'
 // Arcade URL ("/arcade") için kullanılacak slug
 const PAGE_SLUG = 'arcade'
 
-// Page props interface
-interface ArcadePageProps {
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
-}
-
 // Dynamic page template component props
 type PageTemplateProps = {
   pageInfo: PageType
-  searchParams?: { industry?: string }
 }
 
 // Module-level cache — dynamic() must not be called inside render
@@ -57,9 +51,7 @@ const DEFAULT_METADATA: Metadata = {
   },
 }
 
-export default async function ArcadePage({ searchParams }: ArcadePageProps) {
-  const resolvedSearchParams = await searchParams
-
+export default async function ArcadePage() {
   let response: PageResponseType | null = null
   try {
     response = await getPageBySlugService(PAGE_SLUG)
@@ -76,10 +68,7 @@ export default async function ArcadePage({ searchParams }: ArcadePageProps) {
       {/* Sayfanın CMS'ten gelen içerikleri varsa burada render edilecek */}
       {DynamicComponent && response && (
         // eslint-disable-next-line react-hooks/static-components -- template from API, memoised in module cache
-        <DynamicComponent
-          pageInfo={response.data as PageType}
-          searchParams={resolvedSearchParams as { industry?: string }}
-        />
+        <DynamicComponent pageInfo={response.data as PageType} />
       )}
 
       {/* CMS'ten gelen bileşenlerin altına oyunu entegre ediyoruz */}
