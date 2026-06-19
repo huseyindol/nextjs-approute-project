@@ -43,7 +43,7 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const { cookies } = useCookie()
-  const isLoggedIn = !!cookies[CookieEnum.ACCESS_TOKEN]
+  const isLoggedIn = !!cookies[CookieEnum.USERNAME]
 
   const handleLogout = () => {
     startTransition(async () => {

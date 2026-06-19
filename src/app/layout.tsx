@@ -3,7 +3,6 @@ import { PersonJsonLd } from '@/components/JsonLd'
 import ScrollToTop from '@/components/ScrollToTopButton'
 import { SessionRefresher } from '@/components/SessionRefresher'
 import { WebVitals } from '@/components/WebVitals'
-import { enrichAuthCookies } from '@/lib/auth-cookies'
 import Providers from '@/providers/Providers'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { Analytics } from '@vercel/analytics/react'
@@ -11,7 +10,6 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import { ThemeProvider } from 'next-themes'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { cookies } from 'next/headers'
 import Script from 'next/script'
 import NextTopLoader from 'nextjs-toploader'
 import Datalayer from '../components/Datalayer'
@@ -122,19 +120,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const cookieStore = await cookies()
-
-  const rawCookies: Record<string, string> = {}
-  cookieStore.getAll().forEach(cookie => {
-    rawCookies[cookie.name] = cookie.value
-  })
-  const cookiesData = enrichAuthCookies(rawCookies)
-  // console.log('APP - LAYOUT')
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
@@ -180,7 +170,7 @@ export default async function RootLayout({
           themes={['light', 'dark']}
           disableTransitionOnChange
         >
-          <Providers cookiesData={cookiesData}>
+          <Providers cookiesData={{}}>
             <WebVitals />
             <Datalayer />
             <SessionRefresher />
