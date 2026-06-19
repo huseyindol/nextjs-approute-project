@@ -143,8 +143,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  const posts = await getAllCmsPosts()
-  return posts.map(post => ({ slug: post.slug }))
+  try {
+    const posts = await getAllCmsPosts()
+    return posts.map(post => ({ slug: post.slug }))
+  } catch {
+    // CMS build anında erişilemezse build'i düşürme; sayfalar ISR ile runtime'da üretilir.
+    return []
+  }
 }
 
 export default async function MakaleDetayPage({ params }: Readonly<Props>) {

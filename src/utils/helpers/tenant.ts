@@ -2,27 +2,22 @@ import { getGlobalCookies } from '@/context/CookieContext'
 import { CookieEnum } from '@/utils/constant/cookieConstant'
 
 /**
- * Cookie'den tenantId değerini okur.
- * SSR (Server Component) ve CSR (Client Component) ortamlarında çalışır.
- * Eğer tenantId yoksa env'deki NEXT_PUBLIC_DEFAULT_TENANT değerini döndürür.
+ * Aktif tenantId değerini çözer.
+ *
+ * SSR/ISR (server): yalnızca env okunur. `cookies()` BURADA ÇAĞRILMAZ — çağrılırsa
+ * fetcher'ı kullanan her sayfa dinamik render'a (ƒ) zorlanır ve ISR/static bozulur.
+ * Public site tek tenant'a hizmet ettiği için tenant cookie'si zaten set edilmez.
+ *
+ * CSR (client): runtime override gerekiyorsa cookie'den okunur, yoksa env.
  */
 export async function getTenantId(): Promise<string> {
   const defaultTenant = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'default'
 
-  // SSR: next/headers ile cookie oku
   if (globalThis.window === undefined) {
-    try {
-      const { cookies } = await import('next/headers')
-      const cookieStore = await cookies()
-      return cookieStore.get(CookieEnum.TENANT_ID)?.value ?? defaultTenant
-    } catch {
-      return defaultTenant
-    }
+    return defaultTenant
   }
 
-  // CSR: global cookie context'ten oku
-  const cookieValues = getGlobalCookies()
-  return cookieValues[CookieEnum.TENANT_ID] ?? defaultTenant
+  return getGlobalCookies()[CookieEnum.TENANT_ID] ?? defaultTenant
 }
 
 /**

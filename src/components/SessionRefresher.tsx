@@ -18,14 +18,17 @@ const LEAD_MS = 30_000
 export function SessionRefresher() {
   const { cookies } = useCookie()
   const router = useRouter()
-  const accessToken = cookies[CookieEnum.ACCESS_TOKEN]
+  // accessToken httpOnly olduğu için client'tan okunamaz; login durumunu
+  // client-readable username cookie'si ile, zamanlamayı expiredDate ile çözeriz.
+  // Asıl yenileme refreshSession() server action'ında httpOnly refreshToken ile yapılır.
+  const isLoggedIn = !!cookies[CookieEnum.USERNAME]
   const expiredRaw = cookies[CookieEnum.EXPIRED_DATE]
   const expiredDate = expiredRaw ? Number(expiredRaw) : null
   // Aynı expiredDate için tek sefer tetikle (loop önleme)
   const handledRef = useRef<number | null>(null)
 
   useEffect(() => {
-    if (!accessToken || !expiredDate || Number.isNaN(expiredDate)) return
+    if (!isLoggedIn || !expiredDate || Number.isNaN(expiredDate)) return
     if (handledRef.current === expiredDate) return
 
     const run = async () => {
@@ -43,7 +46,7 @@ export function SessionRefresher() {
     }
     const t = setTimeout(() => void run(), delay)
     return () => clearTimeout(t)
-  }, [accessToken, expiredDate, router])
+  }, [isLoggedIn, expiredDate, router])
 
   return null
 }
