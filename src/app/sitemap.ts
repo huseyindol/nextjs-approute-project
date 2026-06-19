@@ -86,6 +86,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'devops-docker-postgresql',
     'devops-postgresql',
     'frontend-js-event-loop',
+    'elly-multitenant-bolum-1',
+    'elly-multitenant-bolum-2',
+    'elly-multitenant-bolum-3',
   ])
 
   const posts = await getAllPosts()
