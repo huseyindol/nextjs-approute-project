@@ -31,5 +31,14 @@ export const fetcher = async <T>(
     return null as T
   }
 
-  return response.json() as Promise<T>
+  const text = await response.text()
+  if (!text.trim()) {
+    return null as T
+  }
+
+  try {
+    return JSON.parse(text) as T
+  } catch {
+    throw new Error(`Sunucu yanıtı geçersiz (HTTP ${response.status})`)
+  }
 }

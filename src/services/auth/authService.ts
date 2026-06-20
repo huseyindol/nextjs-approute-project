@@ -27,7 +27,7 @@ export const registerService = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
-  if (!res.result) throw new Error(res.message ?? 'Kayıt başarısız')
+  if (!res || !res.result) throw new Error(res?.message ?? 'Kayıt başarısız')
   return res.data
 }
 
@@ -60,7 +60,7 @@ export const loginService = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
-  if (!res.result) throw new Error(res.message ?? 'Giriş başarısız')
+  if (!res || !res.result) throw new Error(res?.message ?? 'Giriş başarısız')
   return res.data
 }
 
@@ -75,5 +75,5 @@ export const verifyEmailService = async (
     `/auth/verify?${params.toString()}`,
     { method: 'GET' },
   )
-  if (!res.result) throw new Error(res.message ?? 'Doğrulama başarısız')
+  if (!res || !res.result) throw new Error(res?.message ?? 'Doğrulama başarısız')
 }
