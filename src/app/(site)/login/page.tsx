@@ -5,8 +5,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { loginService } from '@/services/auth/authService'
 import { saveTokens } from '@/actions/auth/saveTokens'
-import { updateGlobalCookie } from '@/context/CookieContext'
-import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -45,8 +43,9 @@ export default function LoginPage() {
         tenantId: TENANT_ID,
         loginType: 'tenant',
       })
-      // Next.js tarafında da kopyalar sakla → refresh/logout için cookie seti,
-      // username chat'te otomatik kullanılsın, expiredDate refresh'i tetiklesin
+      // httpOnly cookie setini server-side yaz (access/refresh + username/
+      // expiredDate/userCode). UI, router.refresh() ile document.cookie'den
+      // güncel değerleri okuyup login durumuna geçer — in-memory override yok.
       await saveTokens({
         token: result.token,
         refreshToken: result.refreshToken,
@@ -54,11 +53,6 @@ export default function LoginPage() {
         expiredDate: result.expiredDate,
         userCode: result.userCode,
       })
-      updateGlobalCookie(CookieEnum.ACCESS_TOKEN, result.token)
-      updateGlobalCookie(CookieEnum.REFRESH_TOKEN, result.refreshToken)
-      updateGlobalCookie(CookieEnum.USERNAME, result.username)
-      updateGlobalCookie(CookieEnum.EXPIRED_DATE, String(result.expiredDate))
-      updateGlobalCookie(CookieEnum.USER_CODE, result.userCode)
       startTransition(() => {
         router.push('/')
         router.refresh()

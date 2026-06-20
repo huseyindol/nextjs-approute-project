@@ -57,8 +57,9 @@ export default function Providers({
     () => cookiesData,
   )
 
-  // overrides: in-memory mutations from updateCookie (login token, logout clear, etc.)
-  // These survive until page refresh; httpOnly tokens land here right after login.
+  // overrides: in-memory mutations from updateCookie — bugün yalnızca logout'ta
+  // removeGlobalCookie ile cookie'leri anında boşaltmak için (router.refresh
+  // document.cookie'yi yeniden okuyana kadarki UI flash'ını önler).
   const [overrides, setOverrides] = useState<Record<string, string>>({})
   const [queryClient] = useState(() => new QueryClient())
 

@@ -27,16 +27,8 @@ export const getGlobalCookies = (): Record<string, string> => {
   return globalCookieStore.cookies
 }
 
-// Update global cookie (can be used in fetcher.ts and other non-React files)
-export const updateGlobalCookie = (name: string, value: string) => {
-  if (!globalCookieStore) {
-    console.error('Cookie store not initialized yet')
-    return
-  }
-  globalCookieStore.updateCookie(name, value)
-}
-
-// Remove global cookie (can be used in fetcher.ts and other non-React files)
+// Remove global cookie — logout'ta in-memory cookie'leri anında temizlemek için
+// (router.refresh document.cookie'yi yeniden okuyana kadar UI flash'ını önler).
 export const removeGlobalCookie = (name: string) => {
   if (!globalCookieStore) {
     console.error('Cookie store not initialized yet')
