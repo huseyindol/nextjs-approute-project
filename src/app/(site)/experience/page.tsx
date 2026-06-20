@@ -39,19 +39,11 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600
 
-interface ExperiencePageProps {
-  searchParams?: Promise<{ industry?: string }>
-}
-
-export default async function ExperiencePage({
-  searchParams,
-}: ExperiencePageProps) {
-  const resolvedSearchParams = await searchParams
-
+export default function ExperiencePage() {
   return (
     <main className="min-h-screen">
       <ErrorBoundary>
-        <Experience searchParams={resolvedSearchParams} />
+        <Experience />
       </ErrorBoundary>
     </main>
   )

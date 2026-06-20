@@ -204,13 +204,7 @@ const DEFAULT_SECTION_INFO = {
   description: 'Çeşitli sektörlerde 10+ yıllık kariyer yolculuğum',
 }
 
-interface ExperienceProps {
-  searchParams?: { industry?: string }
-}
-
-export default async function Experience({ searchParams }: ExperienceProps) {
-  const initialIndustry = searchParams?.industry ?? 'all'
-
+export default async function Experience() {
   const { sectionInfo, items } =
     await getSectionDataBySectionKey<ExperienceType>(
       'portfolio_experience',
@@ -228,7 +222,6 @@ export default async function Experience({ searchParams }: ExperienceProps) {
       experiences={allExperiences}
       title={sectionInfo.title ?? DEFAULT_SECTION_INFO.title}
       description={sectionInfo.description ?? DEFAULT_SECTION_INFO.description}
-      initialIndustry={initialIndustry}
     />
   )
 }

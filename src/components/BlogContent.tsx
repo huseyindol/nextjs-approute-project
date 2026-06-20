@@ -7,7 +7,8 @@ import { motion, useInView } from 'framer-motion'
 import { BookOpenIcon, CalendarIcon, ClockIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import { useRef, useState } from 'react'
 
 const BLOG_LIST_AD_SLOTS = [
   '7448731904',
@@ -45,16 +46,30 @@ const cardCategoryColors: Record<string, string> = {
 interface BlogContentProps {
   posts: BlogPost[]
   categories: string[]
-  categoryFilter: string | undefined
 }
 
-export default function BlogContent({
-  posts,
-  categories,
-  categoryFilter,
-}: BlogContentProps) {
+export default function BlogContent({ posts, categories }: BlogContentProps) {
+  const router = useRouter()
   const gridRef = useRef(null)
   const gridInView = useInView(gridRef, { once: true, margin: '-60px' })
+
+  // Kategori filtresi tamamen client-side (server searchParams okunmuyor → sayfa static).
+  // Tüm postlar prerender edilir; seçim sadece görüneni süzer, URL'i de paylaşılabilir tutar.
+  const [categoryFilter, setCategoryFilter] = useState<string | undefined>(
+    undefined,
+  )
+
+  const selectCategory = (category: string | undefined) => {
+    setCategoryFilter(category)
+    router.replace(
+      category ? `/blog?category=${encodeURIComponent(category)}` : '/blog',
+      { scroll: false },
+    )
+  }
+
+  const visiblePosts = categoryFilter
+    ? posts.filter(post => post.frontmatter.category === categoryFilter)
+    : posts
 
   return (
     <div className="min-h-screen">
@@ -105,32 +120,30 @@ export default function BlogContent({
       <div className="bg-background/80 sticky top-[65px] z-40 border-b border-border backdrop-blur-sm">
         <div className="container mx-auto px-6">
           <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto py-4">
-            <Link href="/blog">
-              <span
+            <button
+              type="button"
+              onClick={() => selectCategory(undefined)}
+              className={`inline-flex shrink-0 cursor-pointer items-center rounded-full border px-4 py-1.5 text-sm font-medium transition-all ${
+                categoryFilter === undefined
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-border bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'
+              }`}
+            >
+              Tümü
+            </button>
+            {categories.map(category => (
+              <button
+                key={category}
+                type="button"
+                onClick={() => selectCategory(category)}
                 className={`inline-flex shrink-0 cursor-pointer items-center rounded-full border px-4 py-1.5 text-sm font-medium transition-all ${
-                  categoryFilter === undefined
+                  categoryFilter === category
                     ? 'border-primary bg-primary text-primary-foreground'
                     : 'border-border bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'
                 }`}
               >
-                Tümü
-              </span>
-            </Link>
-            {categories.map(category => (
-              <Link
-                key={category}
-                href={`/blog?category=${encodeURIComponent(category)}`}
-              >
-                <span
-                  className={`inline-flex shrink-0 cursor-pointer items-center rounded-full border px-4 py-1.5 text-sm font-medium transition-all ${
-                    categoryFilter === category
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-border bg-muted text-muted-foreground hover:bg-accent hover:text-foreground'
-                  }`}
-                >
-                  {category}
-                </span>
-              </Link>
+                {category}
+              </button>
             ))}
           </div>
         </div>
@@ -139,7 +152,7 @@ export default function BlogContent({
       {/* Posts grid */}
       <main className="bg-muted/20 min-h-[60vh] py-16">
         <div className="container mx-auto px-6">
-          {posts.length === 0 ? (
+          {visiblePosts.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -159,12 +172,13 @@ export default function BlogContent({
               {(() => {
                 const adPositions = BLOG_LIST_AD_SLOTS.map((_, k) =>
                   Math.floor(
-                    (posts.length * (k + 1)) / (BLOG_LIST_AD_SLOTS.length + 1),
+                    (visiblePosts.length * (k + 1)) /
+                      (BLOG_LIST_AD_SLOTS.length + 1),
                   ),
                 )
                 const items: React.ReactNode[] = []
                 const showListAds = categoryFilter === undefined
-                posts.forEach((post, i) => {
+                visiblePosts.forEach((post, i) => {
                   items.push(<PostCard key={post.slug} post={post} />)
                   const adIdx = adPositions.indexOf(i + 1)
                   if (showListAds && adIdx !== -1) {

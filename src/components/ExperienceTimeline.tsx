@@ -40,17 +40,17 @@ interface ExperienceTimelineProps {
   experiences: ExperienceType[]
   title: string
   description: string
-  initialIndustry: string
 }
 
 export default function ExperienceTimeline({
   experiences,
   title,
   description,
-  initialIndustry,
 }: ExperienceTimelineProps) {
   const router = useRouter()
-  const [selectedIndustry, setSelectedIndustry] = useState(initialIndustry)
+  // Filtre tamamen client state — server searchParams okunmuyor (sayfa static/ISR kalır).
+  // Tıklamada URL de güncellenir (paylaşılabilir); ilk yükte hep "all" başlar.
+  const [selectedIndustry, setSelectedIndustry] = useState('all')
 
   const filtered =
     selectedIndustry === 'all'

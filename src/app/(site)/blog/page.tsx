@@ -36,28 +36,13 @@ export const metadata = {
   },
 }
 
-type Props = {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}
-
-export default async function BlogIndexPage(props: Readonly<Props>) {
-  const searchParams = await props.searchParams
-  const categoryFilter = searchParams.category as string | undefined
-
-  const allPosts = await getAllPosts()
+export default async function BlogIndexPage() {
+  const posts = await getAllPosts()
   const categories = [
-    ...new Set(allPosts.map(p => p.frontmatter.category)),
+    ...new Set(posts.map(p => p.frontmatter.category)),
   ].filter(Boolean) as string[]
 
-  const posts = categoryFilter
-    ? allPosts.filter(post => post.frontmatter.category === categoryFilter)
-    : allPosts
-
-  return (
-    <BlogContent
-      posts={posts}
-      categories={categories}
-      categoryFilter={categoryFilter}
-    />
-  )
+  // Tüm postlar static prerender edilir; kategori filtresi BlogContent içinde
+  // client-side yapılır (searchParams server'da okunmaz → sayfa static/ISR).
+  return <BlogContent posts={posts} categories={categories} />
 }

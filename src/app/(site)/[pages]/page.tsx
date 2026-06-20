@@ -13,13 +13,11 @@ const SITE_NAME = 'Hüseyin DOL'
 
 type Props = {
   params: Promise<{ pages: string }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 // Dynamic page template component props
 type PageTemplateProps = {
   pageInfo: PageType
-  searchParams?: { industry?: string }
 }
 
 // Module-level cache — dynamic() must not be called inside render
@@ -39,7 +37,6 @@ function getTemplateComponent(template: string) {
 
 export default async function Page(props: Props) {
   const params = await props.params
-  const searchParams = await props.searchParams
 
   let response: PageResponseType | null = null
   try {
@@ -63,10 +60,7 @@ export default async function Page(props: Props) {
       {/* burada template bilgisi ne geliyorsa o component render edilecek ilgili component ise components/dynamic/pages altında aranacak */}
       {DynamicComponent && (
         // eslint-disable-next-line react-hooks/static-components -- template from API, memoised in module cache
-        <DynamicComponent
-          pageInfo={response.data as PageType}
-          searchParams={searchParams as { industry?: string }}
-        />
+        <DynamicComponent pageInfo={response.data as PageType} />
       )}
     </>
   )
