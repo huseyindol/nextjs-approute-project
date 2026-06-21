@@ -3,8 +3,7 @@
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { loginService } from '@/services/auth/authService'
-import { saveTokens } from '@/actions/auth/saveTokens'
+import { login } from '@/actions/auth/login'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -37,22 +36,17 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const result = await loginService({
+      // BFF: login çağrısı + cookie yazımı server-side (server-to-server → preflight/CORS yok)
+      const res = await login({
         usernameOrEmail: form.usernameOrEmail.trim(),
         password: form.password,
         tenantId: TENANT_ID,
         loginType: 'tenant',
       })
-      // httpOnly cookie setini server-side yaz (access/refresh + username/
-      // expiredDate/userCode). UI, router.refresh() ile document.cookie'den
-      // güncel değerleri okuyup login durumuna geçer — in-memory override yok.
-      await saveTokens({
-        token: result.token,
-        refreshToken: result.refreshToken,
-        username: result.username,
-        expiredDate: result.expiredDate,
-        userCode: result.userCode,
-      })
+      if (!res.ok) {
+        setError(res.error)
+        return
+      }
       startTransition(() => {
         router.push('/')
         router.refresh()

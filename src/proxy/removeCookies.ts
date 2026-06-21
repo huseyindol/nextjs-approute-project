@@ -1,14 +1,8 @@
 import { NextResponse } from 'next/server'
 import { CookieEnum } from '../utils/constant/cookieConstant'
 
-/**
- * Auth cookie'lerini siler. `domain`, yazımla aynı registrable domain olmalı
- * (aksi halde domain-scoped cookie silinmez); undefined = host-only.
- */
-export const removeCookies = async (
-  response: NextResponse,
-  domain?: string,
-) => {
+/** Auth cookie'lerini siler (host-only — yazımla aynı attribute seti). */
+export const removeCookies = async (response: NextResponse) => {
   const names = [
     CookieEnum.ACCESS_TOKEN,
     CookieEnum.REFRESH_TOKEN,
@@ -17,6 +11,6 @@ export const removeCookies = async (
     CookieEnum.USERNAME,
   ]
   for (const name of names) {
-    response.cookies.set(name, '', { path: '/', maxAge: 0, domain })
+    response.cookies.set(name, '', { path: '/', maxAge: 0 })
   }
 }
