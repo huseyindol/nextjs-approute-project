@@ -1,50 +1,44 @@
 'use client'
 
 import { useCookie } from '@/context/CookieContext'
+import { useAuthChatToken } from '@/hooks/chat/useAuthChatToken'
 import { useGuestToken } from '@/hooks/chat/useGuestToken'
 import { ChatGroup } from '@/types/chat'
 import { CookieEnum } from '@/utils/constant/cookieConstant'
 import { ArrowLeft, Loader2, LogOut, X } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ChatView } from './ChatView'
 import { GroupList } from './GroupList'
 import { GuestNameGate } from './GuestNameGate'
 
-// Token bitmeden bu kadar önce sessizce yenile
+// Guest token bitmeden bu kadar önce sessizce yenile
 const REFRESH_LEAD_MS = 30_000
 
 export function ChatPanel({ onClose }: { onClose: () => void }) {
-  const guest = useGuestToken()
+  const { cookies } = useCookie()
+  const loginUsername = cookies[CookieEnum.USERNAME] || null
+  const isAuth = !!loginUsername
+
+  // Login'li → kendi JWT'siyle (BFF /api/chat/token) GERÇEK kimlikle bağlanır.
+  // Anonim → guest-token akışı (ad-girme ekranı).
+  const { token: authToken, refresh: authRefresh } = useAuthChatToken(isAuth)
   const {
     token: guestToken,
     displayName: guestDisplayName,
+    sessionId: guestSessionId,
     expiresAt: guestExpiresAt,
     start: guestStart,
     refresh: guestRefresh,
-  } = guest
+    reset: guestReset,
+    loading: guestLoading,
+    error: guestError,
+  } = useGuestToken()
+
   const [group, setGroup] = useState<ChatGroup | null>(null)
 
-  // Login olmuşsa chat adını ad-girme ekranı yerine otomatik login username yap
-  const { cookies } = useCookie()
-  const loginUsername = cookies[CookieEnum.USERNAME] || null
-  const autoStartRef = useRef<string | null>(null)
-
+  // Guest token süresi dolmadan sessizce yenile (yalnız anonim akış)
   useEffect(() => {
-    if (!loginUsername) return
-    if (autoStartRef.current === loginUsername) return
-    // Zaten bu isimle bağlıysak tekrar başlatma
-    if (guestToken && guestDisplayName === loginUsername) {
-      autoStartRef.current = loginUsername
-      return
-    }
-    autoStartRef.current = loginUsername
-    guestStart(loginUsername).catch(() => {
-      autoStartRef.current = null // başarısızsa tekrar denenebilsin
-    })
-  }, [loginUsername, guestToken, guestDisplayName, guestStart])
-
-  // Token süresi dolmadan sessizce yenile (süresi geçmişse hemen)
-  useEffect(() => {
+    if (isAuth) return
     if (!guestToken || !guestExpiresAt) return
     const delay = guestExpiresAt - Date.now() - REFRESH_LEAD_MS
     if (delay <= 0) {
@@ -53,12 +47,19 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
     }
     const t = setTimeout(() => void guestRefresh(), delay)
     return () => clearTimeout(t)
-  }, [guestToken, guestExpiresAt, guestRefresh])
+  }, [isAuth, guestToken, guestExpiresAt, guestRefresh])
 
-  // WS auth hatası (token reddedildi) → yeni token al
+  // WS auth hatası (token reddedildi/expired) → yeni token al
   const handleAuthExpired = useCallback(() => {
-    void guestRefresh()
-  }, [guestRefresh])
+    if (isAuth) void authRefresh()
+    else void guestRefresh()
+  }, [isAuth, authRefresh, guestRefresh])
+
+  // Aktif kimlik — login'li ise gerçek kimlik, değilse guest
+  const token = isAuth ? authToken : guestToken
+  const displayName = isAuth ? loginUsername : guestDisplayName
+  const mySessionId = isAuth ? null : guestSessionId
+  const myUsername = isAuth ? loginUsername : null
 
   // Sohbetteyken geri = grup listesine dön; değilse paneli kapat
   const handleBack = group ? () => setGroup(null) : onClose
@@ -81,20 +82,20 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
           </button>
           <div className="flex min-w-0 flex-col">
             <span className="truncate font-semibold">{title}</span>
-            {guest.displayName && (
+            {displayName && (
               <span className="truncate text-xs text-muted-foreground">
-                {guest.displayName}
+                {displayName}
               </span>
             )}
           </div>
         </div>
         <div className="flex items-center gap-1">
-          {/* Reset yalnızca anonim guest için — login'liyken isim login'e bağlı */}
-          {guest.token && !loginUsername && (
+          {/* Reset yalnızca anonim guest için — login'liyken kimlik oturuma bağlı */}
+          {!isAuth && guestToken && (
             <button
               onClick={() => {
                 setGroup(null)
-                guest.reset()
+                guestReset()
               }}
               title="Sohbeti sıfırla"
               className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
@@ -113,25 +114,26 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
       </header>
 
       <div className="flex-1 overflow-hidden">
-        {!guest.token ? (
-          loginUsername ? (
-            // Login'li: ad girme yok, token otomatik alınıyor
+        {!token ? (
+          isAuth ? (
+            // Login'li: ad girme yok, token BFF'ten otomatik alınıyor
             <div className="flex h-full items-center justify-center p-4">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
             </div>
           ) : (
             <GuestNameGate
-              onSubmit={guest.start}
-              loading={guest.loading}
-              error={guest.error}
+              onSubmit={guestStart}
+              loading={guestLoading}
+              error={guestError}
             />
           )
         ) : !group ? (
           <GroupList onSelect={setGroup} />
         ) : (
           <ChatView
-            token={guest.token}
-            mySessionId={guest.sessionId}
+            token={token}
+            mySessionId={mySessionId}
+            myUsername={myUsername}
             group={group}
             onAuthExpired={handleAuthExpired}
           />

@@ -9,11 +9,14 @@ import { MessageBubble } from './MessageBubble'
 export function ChatView({
   token,
   mySessionId,
+  myUsername,
   group,
   onAuthExpired,
 }: {
   token: string
   mySessionId: string | null
+  /** Login'li kullanıcının username'i — "kendi mesajım" eşleşmesi için (guest'te null). */
+  myUsername?: string | null
   group: ChatGroup
   onAuthExpired?: () => void
 }) {
@@ -21,13 +24,16 @@ export function ChatView({
     useGuestChat(token, group.id, mySessionId, onAuthExpired)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  // "Kendi mesajım": GUEST + mesajın sessionId'si benim oturum kimliğime eşit.
-  // sessionId cihaz bazlı kalıcı (localStorage) olduğu için aynı tarayıcıdan dönen
-  // guest'in eski mesajları da "kendi" olarak eşleşir. (displayName ile DEĞİL — çakışabilir.)
+  // "Kendi mesajım":
+  // - Login'li (myUsername): mesajın senderUsername'i benimkine eşit (GUEST değil).
+  // - Guest (mySessionId): GUEST + mesajın sessionId'si benim oturum kimliğime eşit.
+  //   (sessionId cihaz bazlı kalıcı → aynı tarayıcıdan dönen guest'in eski mesajları da eşleşir.)
   const isOwnMessage = (msg: (typeof messages)[number]) =>
-    msg.senderType === 'GUEST' &&
-    mySessionId !== null &&
-    msg.sessionId === mySessionId
+    myUsername != null
+      ? msg.senderType !== 'GUEST' && msg.senderUsername === myUsername
+      : msg.senderType === 'GUEST' &&
+        mySessionId !== null &&
+        msg.sessionId === mySessionId
 
   const typingLabel =
     typingUsers.length === 0
