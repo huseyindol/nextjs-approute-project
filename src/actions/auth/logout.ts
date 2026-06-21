@@ -1,29 +1,12 @@
 'use server'
-import { cookies } from 'next/headers'
+import { clearAuthCookies } from '@/lib/auth-cookies'
+import { cookieDomainForHost } from '@/lib/cookie-domain'
+import { cookies, headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { CookieEnum } from '../../utils/constant/cookieConstant'
 
 export const logout = async () => {
   const cookieStore = await cookies()
-  cookieStore.set(CookieEnum.ACCESS_TOKEN, '', {
-    httpOnly: true,
-    sameSite: 'strict',
-    maxAge: 0,
-  })
-  cookieStore.set(CookieEnum.REFRESH_TOKEN, '', {
-    httpOnly: true,
-    sameSite: 'strict',
-    maxAge: 0,
-  })
-  cookieStore.set(CookieEnum.EXPIRED_DATE, '', {
-    httpOnly: true,
-    sameSite: 'strict',
-    maxAge: 0,
-  })
-  cookieStore.set(CookieEnum.USER_CODE, '', {
-    httpOnly: true,
-    sameSite: 'strict',
-    maxAge: 0,
-  })
+  const domain = cookieDomainForHost((await headers()).get('host'))
+  clearAuthCookies(cookieStore, domain)
   redirect('/admin/login')
 }

@@ -5,9 +5,10 @@ import { CookieEnum } from '@/utils/constant/cookieConstant'
  * aynı attribute setini üretsin diye (backend AuthCookieWriter ile aynı model:
  * access/refresh httpOnly; expiredDate/userCode/username client'tan okunabilir).
  *
- * Not: Backend prod'da Domain=.huseyindol.com ile Set-Cookie yazar; bunlar
- * tarayıcıda zaten saklanır. Bu helper Next.js tarafındaki host kopyalarını yazar
- * (özellikle localhost dev'de backend cross-site cookie set edemediği için gerekli).
+ * Cookie'yi DAİMA bu helper (BFF) yazar; domain request host'undan dinamik
+ * türetilir — her tenant kendi domain'inde cookie alır (bkz. lib/cookie-domain.ts).
+ * Backend'in cookie set/okuma'sına güvenilmez; authenticated api çağrıları SSR'da
+ * `Authorization: Bearer` ile yapılır (server-to-server).
  */
 
 const MAX_AGE = 60 * 60 * 24 * 7 // 7 gün — token JWT'si kendi expiredDate'ine göre yenilenir
@@ -34,29 +35,28 @@ interface JwtPayload {
 }
 
 const isProd = process.env.NODE_ENV === 'production'
-// Prod'da backend ile aynı domain → cookie'ler aynı isim+domain ile değişir (çift kayıt olmaz).
-// Dev'de domainsiz (host = localhost). Gerekirse NEXT_PUBLIC_COOKIE_DOMAIN ile override.
-const COOKIE_DOMAIN = isProd
-  ? (process.env.NEXT_PUBLIC_COOKIE_DOMAIN ?? '.huseyindol.com')
-  : undefined
 
-const httpOnlyOpts = {
+// Cookie domain artık sabit `.huseyindol.com` DEĞİL — request host'undan dinamik
+// türetilir (registrable domain): admin.huseyindol.com → .huseyindol.com,
+// www.acme.com → .acme.com. Çağıran (server action / middleware) host'tan domain'i
+// hesaplayıp parametre geçer; undefined = host-only. Bkz. lib/cookie-domain.ts.
+const httpOnlyOpts = (domain?: string) => ({
   httpOnly: true,
   sameSite: 'strict' as const,
   secure: isProd,
   path: '/',
   maxAge: MAX_AGE,
-  domain: COOKIE_DOMAIN,
-}
+  domain,
+})
 
-const readableOpts = {
+const readableOpts = (domain?: string) => ({
   httpOnly: false,
   sameSite: 'strict' as const,
   secure: isProd,
   path: '/',
   maxAge: MAX_AGE,
-  domain: COOKIE_DOMAIN,
-}
+  domain,
+})
 
 export interface AuthCookieData {
   token: string
@@ -114,17 +114,25 @@ export function enrichAuthCookies(
 export function writeAuthCookies(
   store: WritableCookieStore,
   data: AuthCookieData,
+  domain?: string,
 ): void {
-  store.set(CookieEnum.ACCESS_TOKEN, data.token, httpOnlyOpts)
-  store.set(CookieEnum.REFRESH_TOKEN, data.refreshToken, httpOnlyOpts)
+  store.set(CookieEnum.ACCESS_TOKEN, data.token, httpOnlyOpts(domain))
+  store.set(CookieEnum.REFRESH_TOKEN, data.refreshToken, httpOnlyOpts(domain))
   // Aşağıdakiler client'tan okunabilir (expiredDate scheduler için, userCode/username UI için)
-  store.set(CookieEnum.EXPIRED_DATE, String(data.expiredDate), readableOpts)
-  store.set(CookieEnum.USER_CODE, data.userCode, readableOpts)
-  store.set(CookieEnum.USERNAME, data.username, readableOpts)
+  store.set(
+    CookieEnum.EXPIRED_DATE,
+    String(data.expiredDate),
+    readableOpts(domain),
+  )
+  store.set(CookieEnum.USER_CODE, data.userCode, readableOpts(domain))
+  store.set(CookieEnum.USERNAME, data.username, readableOpts(domain))
 }
 
-export function clearAuthCookies(store: WritableCookieStore): void {
-  const del = { path: '/', maxAge: 0, secure: isProd, domain: COOKIE_DOMAIN }
+export function clearAuthCookies(
+  store: WritableCookieStore,
+  domain?: string,
+): void {
+  const del = { path: '/', maxAge: 0, secure: isProd, domain }
   store.set(CookieEnum.ACCESS_TOKEN, '', { ...del, httpOnly: true })
   store.set(CookieEnum.REFRESH_TOKEN, '', { ...del, httpOnly: true })
   store.set(CookieEnum.EXPIRED_DATE, '', { ...del, httpOnly: false })

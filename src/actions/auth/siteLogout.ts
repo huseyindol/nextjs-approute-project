@@ -1,9 +1,11 @@
 'use server'
 
 import { clearAuthCookies } from '@/lib/auth-cookies'
-import { cookies } from 'next/headers'
+import { cookieDomainForHost } from '@/lib/cookie-domain'
+import { cookies, headers } from 'next/headers'
 
 export async function siteLogout() {
   const store = await cookies()
-  clearAuthCookies(store)
+  const domain = cookieDomainForHost((await headers()).get('host'))
+  clearAuthCookies(store, domain)
 }

@@ -1,9 +1,10 @@
 'use server'
 
 import { clearAuthCookies, writeAuthCookies } from '@/lib/auth-cookies'
+import { cookieDomainForHost } from '@/lib/cookie-domain'
 import { RefreshTokenResponseType } from '@/types/AuthResponse'
 import { CookieEnum } from '@/utils/constant/cookieConstant'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 
 const ELLY_API_URL =
   process.env.NEXT_PUBLIC_ELLY_API_URL ?? 'https://api.huseyindol.com'
@@ -24,6 +25,8 @@ export async function refreshSession(): Promise<{
   const refreshToken = store.get(CookieEnum.REFRESH_TOKEN)?.value
   if (!refreshToken) return { ok: false }
 
+  const domain = cookieDomainForHost((await headers()).get('host'))
+
   try {
     const res = await fetch(`${ELLY_API_URL}/api/v1/auth/refresh`, {
       method: 'POST',
@@ -34,18 +37,22 @@ export async function refreshSession(): Promise<{
     const data: RefreshTokenResponseType = await res.json()
 
     if (!res.ok || !data.result || !data.data) {
-      clearAuthCookies(store)
+      clearAuthCookies(store, domain)
       return { ok: false }
     }
 
     const d = data.data
-    writeAuthCookies(store, {
-      token: d.token,
-      refreshToken: d.refreshToken,
-      username: d.username,
-      expiredDate: d.expiredDate,
-      userCode: d.userCode,
-    })
+    writeAuthCookies(
+      store,
+      {
+        token: d.token,
+        refreshToken: d.refreshToken,
+        username: d.username,
+        expiredDate: d.expiredDate,
+        userCode: d.userCode,
+      },
+      domain,
+    )
     return { ok: true, expiredDate: d.expiredDate }
   } catch {
     // Ağ hatası → cookie'lere dokunma, tekrar denenebilir
