@@ -36,7 +36,8 @@ export const registerService = async (
 export interface LoginPayload {
   usernameOrEmail: string
   password: string
-  tenantId: string
+  /** Gönderilmez — tenant URL'den (/api/v1/public/{tid}) çözülür. Opsiyonel bırakıldı. */
+  tenantId?: string
   loginType: 'tenant'
 }
 

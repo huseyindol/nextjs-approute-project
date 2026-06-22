@@ -17,8 +17,6 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
-const TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'default'
-
 export default function LoginPage() {
   const router = useRouter()
   const [, startTransition] = useTransition()
@@ -36,11 +34,11 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      // BFF: login çağrısı + cookie yazımı server-side (server-to-server → preflight/CORS yok)
+      // BFF: login server-side (server-to-server → preflight/CORS yok). tenantId GÖNDERİLMEZ —
+      // tenant URL'den (/api/v1/public/{tid}) çözülür (PublicApiFilter context'i kurar).
       const res = await login({
         usernameOrEmail: form.usernameOrEmail.trim(),
         password: form.password,
-        tenantId: TENANT_ID,
         loginType: 'tenant',
       })
       if (!res.ok) {
