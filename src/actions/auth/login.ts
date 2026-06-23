@@ -18,6 +18,7 @@ export async function login(
       refreshToken: r.refreshToken,
       username: r.username,
       expiredDate: r.expiredDate,
+      refreshExpiredDate: r.refreshExpiredDate,
       userCode: r.userCode,
     })
     return { ok: true }

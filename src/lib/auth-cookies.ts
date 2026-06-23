@@ -12,7 +12,13 @@ import { CookieEnum } from '@/utils/constant/cookieConstant'
  * gönderilmez.
  */
 
-const MAX_AGE = 60 * 60 * 24 * 7 // 7 gün — token JWT'si kendi expiredDate'ine göre yenilenir
+// Cookie max-age, backend'in döndürdüğü epoch (ms) field'larından hesaplanır:
+//   - accessToken cookie    → expiredDate
+//   - refreshToken + UI'lar → refreshExpiredDate
+// Backend JWE şifrelediği için token'ı frontend'de decode edemeyiz; backend epoch'u açıkça
+// gönderir. Backend JWT_EXPIRATION / JWT_REFRESH_EXPIRATION değiştirince burası otomatik
+// uyar (tek kaynak: backend). Fallback: epoch yoksa 1 saat.
+const FALLBACK_MAX_AGE_SEC = 60 * 60
 
 interface WritableCookieStore {
   set(
@@ -37,27 +43,28 @@ interface JwtPayload {
 
 const isProd = process.env.NODE_ENV === 'production'
 
-const httpOnlyOpts = {
-  httpOnly: true,
+const baseOpts = {
   sameSite: 'strict' as const,
   secure: isProd,
   path: '/',
-  maxAge: MAX_AGE,
 }
 
-const readableOpts = {
-  httpOnly: false,
-  sameSite: 'strict' as const,
-  secure: isProd,
-  path: '/',
-  maxAge: MAX_AGE,
+function maxAgeFromEpochMs(epochMs: number | undefined | null): number {
+  if (typeof epochMs !== 'number' || !Number.isFinite(epochMs)) {
+    return FALLBACK_MAX_AGE_SEC
+  }
+  const seconds = Math.floor((epochMs - Date.now()) / 1000)
+  return seconds > 0 ? seconds : FALLBACK_MAX_AGE_SEC
 }
 
 export interface AuthCookieData {
   token: string
   refreshToken: string
   username: string
+  /** Access token expire epoch (ms) — backend'den gelir. */
   expiredDate: number
+  /** Refresh token expire epoch (ms) — backend'den gelir. */
+  refreshExpiredDate?: number
   userCode: string
 }
 
@@ -110,12 +117,19 @@ export function writeAuthCookies(
   store: WritableCookieStore,
   data: AuthCookieData,
 ): void {
-  store.set(CookieEnum.ACCESS_TOKEN, data.token, httpOnlyOpts)
-  store.set(CookieEnum.REFRESH_TOKEN, data.refreshToken, httpOnlyOpts)
-  // Aşağıdakiler client'tan okunabilir (expiredDate scheduler için, userCode/username UI için)
-  store.set(CookieEnum.EXPIRED_DATE, String(data.expiredDate), readableOpts)
-  store.set(CookieEnum.USER_CODE, data.userCode, readableOpts)
-  store.set(CookieEnum.USERNAME, data.username, readableOpts)
+  const accessMaxAge = maxAgeFromEpochMs(data.expiredDate)
+  const refreshMaxAge = maxAgeFromEpochMs(data.refreshExpiredDate)
+  const httpOnlyAccess = { ...baseOpts, httpOnly: true, maxAge: accessMaxAge }
+  const httpOnlyRefresh = { ...baseOpts, httpOnly: true, maxAge: refreshMaxAge }
+  // Client'tan okunabilen cookie'ler (expiredDate scheduler için, userCode/username UI için)
+  // refresh token kadar yaşasın — refresh expire olduğunda kullanıcı zaten logout'a düşer.
+  const readable = { ...baseOpts, httpOnly: false, maxAge: refreshMaxAge }
+
+  store.set(CookieEnum.ACCESS_TOKEN, data.token, httpOnlyAccess)
+  store.set(CookieEnum.REFRESH_TOKEN, data.refreshToken, httpOnlyRefresh)
+  store.set(CookieEnum.EXPIRED_DATE, String(data.expiredDate), readable)
+  store.set(CookieEnum.USER_CODE, data.userCode, readable)
+  store.set(CookieEnum.USERNAME, data.username, readable)
 }
 
 export function clearAuthCookies(store: WritableCookieStore): void {

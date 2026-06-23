@@ -44,6 +44,7 @@ export async function refreshSession(): Promise<{
       refreshToken: d.refreshToken,
       username: d.username,
       expiredDate: d.expiredDate,
+      refreshExpiredDate: d.refreshExpiredDate,
       userCode: d.userCode,
     })
     return { ok: true, expiredDate: d.expiredDate }

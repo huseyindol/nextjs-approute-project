@@ -17,6 +17,7 @@ export const fetcher = async <T>(
   options: RequestInit = {},
 ): Promise<T> => {
   const fullUrl = await buildApiUrl(url)
+  console.log('fullUrl', fullUrl)
   const response = await fetch(fullUrl, options)
 
   if (response.status === 204) {

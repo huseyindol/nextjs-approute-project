@@ -9,6 +9,7 @@ export interface LoginResponse {
   email: string
   userCode: string
   expiredDate: number
+  refreshExpiredDate?: number
 }
 
 export type LoginResponseType = BaseResponse<LoginResponse>
@@ -22,6 +23,7 @@ export interface RefreshTokenResponse {
   email: string
   userCode: string
   expiredDate: number
+  refreshExpiredDate?: number
 }
 
 export type RefreshTokenResponseType = BaseResponse<RefreshTokenResponse>
