@@ -121,9 +121,10 @@ export function writeAuthCookies(
   const refreshMaxAge = maxAgeFromEpochMs(data.refreshExpiredDate)
   const httpOnlyAccess = { ...baseOpts, httpOnly: true, maxAge: accessMaxAge }
   const httpOnlyRefresh = { ...baseOpts, httpOnly: true, maxAge: refreshMaxAge }
-  // Client'tan okunabilen cookie'ler (expiredDate scheduler için, userCode/username UI için)
-  // refresh token kadar yaşasın — refresh expire olduğunda kullanıcı zaten logout'a düşer.
-  const readable = { ...baseOpts, httpOnly: false, maxAge: refreshMaxAge }
+  // expiredDate / userCode / username ACCESS süresince yaşar (panel ile tutarlı): SessionRefresher
+  // access expire'dan ÖNCE (LEAD_MS) silent refresh yapar → yeni cookie'ler yazılır. Yalnız
+  // refreshToken cookie'si refresh süresi kadar yaşar (silent refresh için elde olması gerekli).
+  const readable = { ...baseOpts, httpOnly: false, maxAge: accessMaxAge }
 
   store.set(CookieEnum.ACCESS_TOKEN, data.token, httpOnlyAccess)
   store.set(CookieEnum.REFRESH_TOKEN, data.refreshToken, httpOnlyRefresh)
