@@ -62,7 +62,6 @@ export const loginService = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
-  console.log('res', res)
   if (!res.result) throw new Error(res.message ?? 'Giriş başarısız')
   return res.data
 }
