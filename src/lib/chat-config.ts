@@ -34,3 +34,19 @@ export const ELLY_API_URL = deriveApiOrigin()
 
 export const CHAT_TENANT_ID =
   process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'tenant1'
+
+/**
+ * WebRTC ICE sunucuları. NEXT_PUBLIC_ICE_SERVERS (JSON) build-time inline edilir;
+ * yoksa public STUN. TURN eklemek (faz 2): env'e turn: girdisi + credential + rebuild.
+ */
+export const ICE_SERVERS: RTCIceServer[] = (() => {
+  const raw = process.env.NEXT_PUBLIC_ICE_SERVERS
+  if (raw) {
+    try {
+      return JSON.parse(raw) as RTCIceServer[]
+    } catch {
+      // düşer → default
+    }
+  }
+  return [{ urls: 'stun:stun.l.google.com:19302' }]
+})()

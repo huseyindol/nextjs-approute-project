@@ -3,10 +3,12 @@
 import { useCookie } from '@/context/CookieContext'
 import { useAuthChatToken } from '@/hooks/chat/useAuthChatToken'
 import { useGuestToken } from '@/hooks/chat/useGuestToken'
+import { useTenantCall } from '@/hooks/chat/useTenantCall'
 import { ChatGroup } from '@/types/chat'
 import { CookieEnum } from '@/utils/constant/cookieConstant'
-import { ArrowLeft, Loader2, LogOut, X } from 'lucide-react'
+import { ArrowLeft, Loader2, LogOut, Video, X } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
+import { CallView } from './CallView'
 import { ChatView } from './ChatView'
 import { GroupList } from './GroupList'
 import { GuestNameGate } from './GuestNameGate'
@@ -61,12 +63,16 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
   const mySessionId = isAuth ? null : guestSessionId
   const myUsername = isAuth ? loginUsername : null
 
+  // Görüntülü destek — yalnız login'li TENANT kullanıcısı (auth token'ı olan). Ring-all: tüm
+  // online panel kullanıcılarına gider, ilk cevaplayan görüşür. Anonim guest'te buton yok.
+  const call = useTenantCall(authToken ?? '', isAuth)
+
   // Sohbetteyken geri = grup listesine dön; değilse paneli kapat
   const handleBack = group ? () => setGroup(null) : onClose
   const title = group ? group.name || 'Destek' : 'Destek'
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       <header className="flex items-center justify-between border-b border-border px-3 py-3">
         <div className="flex min-w-0 items-center gap-2">
           <button
@@ -90,6 +96,16 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
           </div>
         </div>
         <div className="flex items-center gap-1">
+          {/* Görüntülü destek — yalnız login'li tenant kullanıcısı, çağrı yokken */}
+          {isAuth && authToken && call.phase === 'idle' && (
+            <button
+              onClick={call.startCall}
+              title="Görüntülü destek"
+              className="flex h-8 w-8 items-center justify-center rounded-md text-emerald-600 transition-colors hover:bg-emerald-500/10"
+            >
+              <Video className="h-5 w-5" />
+            </button>
+          )}
           {/* Reset yalnızca anonim guest için — login'liyken kimlik oturuma bağlı */}
           {!isAuth && guestToken && (
             <button
@@ -139,6 +155,19 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
           />
         )}
       </div>
+
+      {/* Görüntülü destek görüşmesi — panel üstüne biner */}
+      <CallView
+        phase={call.phase}
+        peerName={call.peerName}
+        micOn={call.micOn}
+        camOn={call.camOn}
+        localStream={call.localStream}
+        remoteStream={call.remoteStream}
+        onHangup={call.hangup}
+        onToggleMic={call.toggleMic}
+        onToggleCam={call.toggleCam}
+      />
     </div>
   )
 }
