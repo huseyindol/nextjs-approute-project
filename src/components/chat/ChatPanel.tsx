@@ -128,7 +128,6 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
           </button>
         </div>
       </header>
-
       <div className="flex-1 overflow-hidden">
         {!token ? (
           isAuth ? (
@@ -155,7 +154,6 @@ export function ChatPanel({ onClose }: { onClose: () => void }) {
           />
         )}
       </div>
-
       {/* Görüntülü destek görüşmesi — panel üstüne biner */}
       <CallView
         phase={call.phase}

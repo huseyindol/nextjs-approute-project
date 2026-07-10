@@ -5,6 +5,7 @@ import type { CallSignal, TenantCallPhase } from '@/types/call'
 import { Client } from '@stomp/stompjs'
 import { useEffect, useRef, useState } from 'react'
 import SockJS from 'sockjs-client'
+import { toast } from 'sonner'
 
 /**
  * Tenant destek araması (WebRTC caller). Login'li tenant kullanıcısı "Görüntülü destek"e
@@ -204,6 +205,10 @@ export function useTenantCall(token: string, enabled: boolean) {
 
   const startCall = () => {
     if (phaseRef.current !== 'idle') return
+    if (!clientRef.current?.connected) {
+      toast.error('Bağlantı kurulamadı — sayfayı yenileyip tekrar deneyin')
+      return
+    }
     setPhase('calling')
     setPeerName(null)
     publish(`/app/tenant-rtc/${CHAT_TENANT_ID}/call`)

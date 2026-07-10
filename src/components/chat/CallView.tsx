@@ -68,7 +68,6 @@ export function CallView({
           className="absolute bottom-3 right-3 h-24 w-32 rounded-lg object-cover ring-1 ring-white/20"
         />
       </div>
-
       <div className="flex items-center justify-center gap-4 bg-slate-900 py-4">
         {active && (
           <>
