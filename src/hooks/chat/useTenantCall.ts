@@ -22,6 +22,9 @@ export function useTenantCall(token: string, enabled: boolean) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
 
+  const [myUserId, setMyUserId] = useState<number | null>(null)
+  const [connected, setConnected] = useState(false)
+
   const clientRef = useRef<Client | null>(null)
   const callIdRef = useRef<string | null>(null)
   const pcRef = useRef<RTCPeerConnection | null>(null)
@@ -162,7 +165,22 @@ export function useTenantCall(token: string, enabled: boolean) {
     }
   }
 
-  // STOMP bağlantısı (auth token) + /user/queue/rtc aboneliği
+  // userId'yi BFF'ten al — topic aboneliği (/topic/user/{userId}/rtc) için gerekli.
+  useEffect(() => {
+    if (!enabled) return
+    let alive = true
+    fetch('/api/chat/userinfo', { cache: 'no-store' })
+      .then(r => (r.ok ? r.json() : null))
+      .then((d: { userId?: number | null } | null) => {
+        if (alive && d?.userId != null) setMyUserId(d.userId)
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [enabled])
+
+  // STOMP bağlantısı (auth token) + /user/queue/rtc (yedek) aboneliği
   useEffect(() => {
     if (!enabled || !token) return
     const client = new Client({
@@ -172,6 +190,7 @@ export function useTenantCall(token: string, enabled: boolean) {
       heartbeatIncoming: 10000,
       heartbeatOutgoing: 10000,
       onConnect: () => {
+        setConnected(true)
         client.subscribe('/user/queue/rtc', frame => {
           try {
             handlerRef.current(JSON.parse(frame.body) as CallSignal)
@@ -180,16 +199,40 @@ export function useTenantCall(token: string, enabled: boolean) {
           }
         })
       },
+      onDisconnect: () => setConnected(false),
+      onWebSocketClose: () => setConnected(false),
     })
     client.activate()
     clientRef.current = client
     return () => {
       void client.deactivate()
       clientRef.current = null
+      setConnected(false)
       teardown()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, token])
+
+  // ESAS teslim yolu: /topic/user/{userId}/rtc (bu projede user-queue teslim etmiyor).
+  // Bağlantı + userId hazır olunca abone olunur.
+  useEffect(() => {
+    const c = clientRef.current
+    if (!connected || !c || myUserId == null) return
+    const sub = c.subscribe(`/topic/user/${myUserId}/rtc`, frame => {
+      try {
+        handlerRef.current(JSON.parse(frame.body) as CallSignal)
+      } catch (e) {
+        console.error('rtc topic sinyali parse edilemedi', e)
+      }
+    })
+    return () => {
+      try {
+        sub.unsubscribe()
+      } catch {
+        // yoksay
+      }
+    }
+  }, [connected, myUserId])
 
   // Mute / kamera toggle
   useEffect(() => {
