@@ -7,6 +7,21 @@ import { useEffect, useRef, useState } from 'react'
 import SockJS from 'sockjs-client'
 import { toast } from 'sonner'
 
+/** getUserMedia hatasını kullanıcıya anlaşılır Türkçe mesaja çevirir. */
+function mediaErrorMessage(err: unknown): string {
+  const name = (err as { name?: string })?.name
+  switch (name) {
+    case 'NotAllowedError':
+      return 'Kamera/mikrofon izni reddedildi — adres çubuğundaki kamera simgesinden izin verin.'
+    case 'NotFoundError':
+      return 'Kamera veya mikrofon bulunamadı.'
+    case 'NotReadableError':
+      return 'Kamera/mikrofon başka bir uygulama tarafından kullanılıyor.'
+    default:
+      return 'Kamera/mikrofon açılamadı.'
+  }
+}
+
 /**
  * Tenant destek araması (WebRTC caller). Login'li tenant kullanıcısı "Görüntülü destek"e
  * basınca tüm online panel kullanıcılarına ring-all gider; ilk cevaplayan ile 1:1 görüşme.
@@ -68,6 +83,13 @@ export function useTenantCall(token: string, enabled: boolean) {
 
   // Caller: ANSWERED sonrası pc kur + offer üret
   const setupPeerAndOffer = async () => {
+    // getUserMedia yalnız güvenli bağlamda (HTTPS/localhost) tanımlıdır.
+    if (!navigator.mediaDevices?.getUserMedia) {
+      toast.error('Görüntülü görüşme için HTTPS veya localhost gerekir.')
+      if (callIdRef.current) publish(`/app/rtc/${callIdRef.current}/hangup`)
+      teardown()
+      return
+    }
     const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS })
     pcRef.current = pc
     remoteReady.current = false
@@ -113,6 +135,7 @@ export function useTenantCall(token: string, enabled: boolean) {
         setPhase('active')
         setupPeerAndOffer().catch(err => {
           console.error('getUserMedia/offer başarısız', err)
+          toast.error(mediaErrorMessage(err))
           if (callIdRef.current) publish(`/app/rtc/${callIdRef.current}/hangup`)
           teardown()
         })
