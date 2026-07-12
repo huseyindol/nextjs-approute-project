@@ -106,10 +106,18 @@ export function useTenantCall(token: string, enabled: boolean) {
     pc.ontrack = e => {
       if (e.streams[0]) setRemoteStream(e.streams[0])
     }
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    })
+    // Önce kamera+mikrofon; olmazsa sese düş (kamera bloklu ama mik açık olabilir).
+    // Ses de alınamazsa hata dışarı fırlar → ANSWERED catch'i toast + hangup yapar.
+    let stream: MediaStream
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      })
+    } catch {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      toast.warning('Kamera açılamadı — sesli devam ediliyor.')
+    }
     localRef.current = stream
     setLocalStream(stream)
     stream.getTracks().forEach(t => pc.addTrack(t, stream))
