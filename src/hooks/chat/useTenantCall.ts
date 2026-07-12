@@ -37,7 +37,13 @@ export function useTenantCall(token: string, enabled: boolean) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
 
-  const [myUserId, setMyUserId] = useState<number | null>(null)
+  // Client tarafı ref — caller sinyallerine /topic/rtc-client/{myRef}/rtc'den abone olunur
+  // (userId lookup gerekmez; prod'da o zincir kırılgan). Session boyunca sabit.
+  const [myRef] = useState(
+    () =>
+      globalThis.crypto?.randomUUID?.() ??
+      `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+  )
   const [connected, setConnected] = useState(false)
 
   const clientRef = useRef<Client | null>(null)
@@ -201,21 +207,6 @@ export function useTenantCall(token: string, enabled: boolean) {
     handlerRef.current = handleSignal
   })
 
-  // userId'yi BFF'ten al — topic aboneliği (/topic/user/{userId}/rtc) için gerekli.
-  useEffect(() => {
-    if (!enabled) return
-    let alive = true
-    fetch('/api/chat/userinfo', { cache: 'no-store' })
-      .then(r => (r.ok ? r.json() : null))
-      .then((d: { userId?: number | null } | null) => {
-        if (alive && d?.userId != null) setMyUserId(d.userId)
-      })
-      .catch(() => {})
-    return () => {
-      alive = false
-    }
-  }, [enabled])
-
   // STOMP bağlantısı (auth token) + /user/queue/rtc (yedek) aboneliği
   useEffect(() => {
     if (!enabled || !token) return
@@ -248,12 +239,12 @@ export function useTenantCall(token: string, enabled: boolean) {
     }
   }, [enabled, token])
 
-  // ESAS teslim yolu: /topic/user/{userId}/rtc (bu projede user-queue teslim etmiyor).
-  // Bağlantı + userId hazır olunca abone olunur.
+  // ESAS teslim yolu: /topic/rtc-client/{myRef}/rtc (userId gerekmez; user-queue teslim etmiyor).
+  // Bağlantı kurulunca abone olunur.
   useEffect(() => {
     const c = clientRef.current
-    if (!connected || !c || myUserId == null) return
-    const sub = c.subscribe(`/topic/user/${myUserId}/rtc`, frame => {
+    if (!connected || !c) return
+    const sub = c.subscribe(`/topic/rtc-client/${myRef}/rtc`, frame => {
       try {
         handlerRef.current(JSON.parse(frame.body) as CallSignal)
       } catch (e) {
@@ -267,7 +258,7 @@ export function useTenantCall(token: string, enabled: boolean) {
         // yoksay
       }
     }
-  }, [connected, myUserId])
+  }, [connected, myRef])
 
   // Mute / kamera toggle
   useEffect(() => {
@@ -289,7 +280,7 @@ export function useTenantCall(token: string, enabled: boolean) {
     }
     setPhase('calling')
     setPeerName(null)
-    publish(`/app/tenant-rtc/${CHAT_TENANT_ID}/call`)
+    publish(`/app/tenant-rtc/${CHAT_TENANT_ID}/call`, { clientRef: myRef })
   }
 
   const hangup = () => {
