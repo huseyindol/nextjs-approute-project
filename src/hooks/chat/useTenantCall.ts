@@ -131,8 +131,8 @@ export function useTenantCall(token: string, enabled: boolean) {
     }
   }
 
-  // Her render'da güncel sinyal işleyicisini ref'e koy (stale closure yok)
-  handlerRef.current = (sig: CallSignal) => {
+  // Sinyal işleyici — her render'da yeniden oluşur; ref'e effect'te bağlanır (aşağıda).
+  const handleSignal = (sig: CallSignal) => {
     switch (sig.type) {
       case 'RINGING':
         callIdRef.current = sig.callId
@@ -196,6 +196,11 @@ export function useTenantCall(token: string, enabled: boolean) {
     }
   }
 
+  // Güncel işleyiciyi ref'e effect'te bağla (render'da ref yazma — react-hooks/refs).
+  useEffect(() => {
+    handlerRef.current = handleSignal
+  })
+
   // userId'yi BFF'ten al — topic aboneliği (/topic/user/{userId}/rtc) için gerekli.
   useEffect(() => {
     if (!enabled) return
@@ -241,7 +246,6 @@ export function useTenantCall(token: string, enabled: boolean) {
       setConnected(false)
       teardown()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, token])
 
   // ESAS teslim yolu: /topic/user/{userId}/rtc (bu projede user-queue teslim etmiyor).
