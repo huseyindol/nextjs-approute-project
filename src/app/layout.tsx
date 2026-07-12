@@ -10,7 +10,6 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import type { Metadata } from 'next'
 import { ThemeProvider } from 'next-themes'
 import { Geist, Geist_Mono } from 'next/font/google'
-import Script from 'next/script'
 import NextTopLoader from 'nextjs-toploader'
 import Datalayer from '../components/Datalayer'
 import './globals.css'
@@ -115,9 +114,6 @@ export const metadata: Metadata = {
       'text/plain': `${SITE_URL}/llms.txt`,
     },
   },
-  other: {
-    'google-adsense-account': 'ca-pub-8068794859489939',
-  },
 }
 
 export default function RootLayout({
@@ -131,11 +127,6 @@ export default function RootLayout({
         {/* DNS/TLS handshake'i kritik 3rd party kaynaklar için önceden yap */}
         <link
           rel="preconnect"
-          href="https://pagead2.googlesyndication.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preconnect"
           href="https://www.googletagmanager.com"
           crossOrigin="anonymous"
         />
@@ -146,12 +137,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        <Script
-          id="adsbygoogle-init"
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8068794859489939"
-          strategy="lazyOnload"
-          crossOrigin="anonymous"
-        />
         <GoogleAnalytics gaId="G-ETR2NBJH5V" />
         <ClarityAnalytics />
         <NextTopLoader
