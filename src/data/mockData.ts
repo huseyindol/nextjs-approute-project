@@ -12,7 +12,7 @@ export const siteInfo: siteInfoType = {
     '10+ yıllık deneyimim ile <strong>React, Next.js ve TypeScript</strong> ile modern frontend, <strong>Java ve Spring Boot</strong> ile ölçeklenebilir backend çözümleri geliştiren bir Software Developer’ım. Uçtan uca performanslı, kullanıcı dostu web uygulamaları; ekip liderliği ve mentorluk konularında da deneyimliyim.',
   email: 'huseyindol@gmail.com',
   experience: '10+',
-  cvUrl: '/assets/files/HuseyinDOL.pdf',
+  cvUrl: '/assets/files/Huseyin_DOL_CV_2026.pdf',
   socialLinks: [
     {
       platform: 'github',

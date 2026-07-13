@@ -11,7 +11,7 @@ Hüseyin DOL specializes in scalable, performant, and user-friendly full-stack a
 - [Experience](https://www.huseyindol.com/experience): Career history, roles, and achievements
 - [Skills](https://www.huseyindol.com/skills): Technical skill set across frontend, backend, and tooling
 - [Blog](https://www.huseyindol.com/blog): Technical articles on Frontend, Backend, DevOps, Mobile, and AI topics
-- [CV / Resume](https://www.huseyindol.com/assets/files/HuseyinDOL.pdf): Downloadable resume (PDF)
+- [CV / Resume](https://www.huseyindol.com/assets/files/Huseyin_DOL_CV_2026.pdf): Downloadable resume (PDF)
 
 ## Blog — Featured Articles
 

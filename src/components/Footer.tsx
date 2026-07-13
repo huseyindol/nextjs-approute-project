@@ -185,7 +185,7 @@ export default function Footer() {
             using React & TypeScript
           </p>
           <a
-            href="/assets/files/HuseyinDOL.pdf"
+            href="/assets/files/Huseyin_DOL_CV_2026.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="transition-colors hover:text-white"
