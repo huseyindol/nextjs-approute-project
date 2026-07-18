@@ -1,6 +1,19 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import matter from 'gray-matter'
+import yaml from 'js-yaml'
+
+/**
+ * gray-matter'ın kendi YAML motoru js-yaml v3 API'sini (`safeLoad`) çağırır. Vercel
+ * build'inde paket çözümlemesi js-yaml v4'e düşünce (safeLoad kaldırıldı) HER dosyada
+ * parse hatası → blog listesi boş build ediliyordu. Kendi engine'imizi verip v4'ün
+ * `load`'unu kullanıyoruz — ortamdan bağımsız deterministik.
+ */
+const MATTER_OPTIONS = {
+  engines: {
+    yaml: (s: string) => yaml.load(s) as Record<string, unknown>,
+  },
+}
 
 export interface BlogFrontmatter {
   title: string
@@ -32,7 +45,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     const realSlug = slug.replace(/\.mdx$/, '')
     const filePath = path.join(rootDirectory, `${realSlug}.mdx`)
     const fileContent = fs.readFileSync(filePath, 'utf8')
-    const { data, content } = matter(fileContent)
+    const { data, content } = matter(fileContent, MATTER_OPTIONS)
 
     return {
       slug: realSlug,
@@ -58,7 +71,7 @@ export async function getAllPosts(): Promise<BlogPost[]> {
       .map(file => {
         const filePath = path.join(rootDirectory, file)
         const fileContent = fs.readFileSync(filePath, 'utf8')
-        const { data, content } = matter(fileContent)
+        const { data, content } = matter(fileContent, MATTER_OPTIONS)
         const slug = file.replace(/\.mdx$/, '')
 
         return {
