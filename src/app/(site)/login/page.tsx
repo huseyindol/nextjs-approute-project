@@ -1,9 +1,13 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { Suspense, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { login } from '@/actions/auth/login'
+import {
+  SocialAuthErrorNotice,
+  SocialLoginButtons,
+} from '@/components/SocialLoginButtons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -64,6 +68,10 @@ export default function LoginPage() {
           <CardDescription>Hesabınıza erişin.</CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Sosyal giriş callback hataları (?error=) — useSearchParams Suspense ister */}
+          <Suspense fallback={null}>
+            <SocialAuthErrorNotice />
+          </Suspense>
           {error && (
             <Alert variant="destructive" className="mb-4">
               <AlertCircle className="h-4 w-4" />
@@ -100,6 +108,9 @@ export default function LoginPage() {
               {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
             </Button>
           </form>
+          <div className="mt-4">
+            <SocialLoginButtons />
+          </div>
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Hesabınız yok mu?{' '}
             <Link

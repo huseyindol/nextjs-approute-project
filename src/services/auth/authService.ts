@@ -66,6 +66,31 @@ export const loginService = async (
   return res.data
 }
 
+// --- Sosyal Giriş (Google / GitHub) ---
+
+export type SocialProvider = 'google' | 'github'
+
+/**
+ * Provider'dan gelen authorization code'u backend'e iletir; takas + kullanıcı
+ * bul/bağla/oluştur backend'de yapılır ve normal login ile aynı LoginResult döner.
+ * Tenant URL'den çözülür (/api/v1/public/{tid}) — payload'da tenantId yok.
+ */
+export const socialLoginService = async (
+  provider: SocialProvider,
+  payload: { code: string; redirectUri: string },
+): Promise<LoginResult> => {
+  const res = await fetcher<BaseResponse<LoginResult>>(
+    `/auth/social/${provider}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    },
+  )
+  if (!res.result) throw new Error(res.message ?? 'Sosyal giriş başarısız')
+  return res.data
+}
+
 // --- Email Verify ---
 
 export const verifyEmailService = async (

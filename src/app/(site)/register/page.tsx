@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { registerService } from '@/services/auth/authService'
+import { SocialLoginButtons } from '@/components/SocialLoginButtons'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -185,6 +186,10 @@ export default function RegisterPage() {
               {loading ? 'Kaydediliyor...' : 'Hesap Oluştur'}
             </Button>
           </form>
+          <div className="mt-4">
+            {/* Sosyal kayıt: Google/GitHub e-postayı doğruladığı için mail doğrulama adımı atlanır */}
+            <SocialLoginButtons />
+          </div>
           <p className="mt-4 text-center text-sm text-muted-foreground">
             Zaten hesabınız var mı?{' '}
             <Link
