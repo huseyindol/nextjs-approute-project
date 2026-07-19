@@ -139,10 +139,13 @@ tenant'ı URL path'inden çözer (`PublicApiFilter`). Örn:
 
 ---
 
-### OAuth2 Login — KALDIRILDI
+### Sosyal Giriş (Google / GitHub)
 
-Sosyal giriş (Google / Facebook / GitHub / X) projeden tamamen kaldırıldı (backend commit `7e160df`).
-`/oauth2/**` endpoint'leri artık yok; giriş yalnız username/email + şifre (+ opsiyonel MFA) iledir.
+Tenant sitede sosyal kayıt/giriş vardır (Tem 2026'da tenant-scoped olarak yeniden eklendi).
+Akış: `/api/auth/social/start/{provider}` (Next route, state cookie + provider redirect) →
+callback → backend `POST /api/v1/public/{tid}/auth/social/{provider}` `{ code, redirectUri }` —
+code takası BACKEND'de yapılır, yanıt normal login ile aynıdır (httpOnly cookie zinciri).
+Yalnız TENANT rolü; panelde sosyal giriş yoktur. Detay: backend `docs/OAUTH2_SETUP.md`.
 
 ---
 
