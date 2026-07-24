@@ -75,5 +75,6 @@ export const verifyEmailService = async (
     `/auth/verify?${params.toString()}`,
     { method: 'GET' },
   )
-  if (!res || !res.result) throw new Error(res?.message ?? 'Doğrulama başarısız')
+  if (!res || !res.result)
+    throw new Error(res?.message ?? 'Doğrulama başarısız')
 }
