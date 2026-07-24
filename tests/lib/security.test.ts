@@ -188,5 +188,18 @@ describe('Security Utilities', () => {
       expect(csp).toContain('form-action')
       expect(csp).toContain('frame-ancestors')
     })
+
+    it('should allow the AMP CDN in script-src and connect-src (/amp page)', () => {
+      const csp = generateCSP()
+      const scriptSrc = csp
+        .split(';')
+        .find(d => d.trim().startsWith('script-src'))
+      const connectSrc = csp
+        .split(';')
+        .find(d => d.trim().startsWith('connect-src'))
+
+      expect(scriptSrc).toContain('https://cdn.ampproject.org')
+      expect(connectSrc).toContain('https://cdn.ampproject.org')
+    })
   })
 })

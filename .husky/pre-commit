@@ -1,2 +1,7 @@
+# CI kapılarıyla tam parite: lint hataları commit'e sızıp CI'da patlamasın diye
+# üç kontrol de commit öncesi çalışır (CI: bun run lint + type-check + format:check).
+bun run lint
 bun run type-check
+# lint-staged staged dosyalarda prettier --write çalıştırıp yeniden stage'ler
+# (format:check'in CI'da kırılmasını önler).
 bunx lint-staged
