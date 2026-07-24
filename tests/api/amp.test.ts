@@ -61,4 +61,46 @@ describe('GET /amp', () => {
     // Canonical ana sayfaya işaret etmeli
     expect(html).toMatch(/<link rel="canonical" href="https?:\/\/[^"]+\/">/)
   })
+
+  it('emits rich-results structured data (@graph)', async () => {
+    const html = await GET().text()
+    const match = html.match(
+      /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+    )
+    expect(match).not.toBeNull()
+
+    const data = JSON.parse(match![1]) as {
+      '@graph': Array<Record<string, unknown>>
+    }
+    const types = data['@graph'].map(node => node['@type'])
+
+    // Zengin sonuç için uygun tipler
+    expect(types).toContain('BreadcrumbList')
+    expect(types).toContain('FAQPage')
+    expect(types).toContain('ProfilePage')
+    expect(types).toContain('Person')
+    expect(types).toContain('WebSite')
+
+    // FAQPage en az 3 soru içermeli
+    const faq = data['@graph'].find(n => n['@type'] === 'FAQPage') as {
+      mainEntity: unknown[]
+    }
+    expect(faq.mainEntity.length).toBeGreaterThanOrEqual(3)
+  })
+
+  it('renders visible breadcrumb + FAQ matching the structured data (Google policy)', async () => {
+    const html = await GET().text()
+
+    // Görünür breadcrumb
+    expect(html).toContain('class="breadcrumb"')
+    expect(html).toContain('Ana Sayfa')
+
+    // Görünür SSS bölümü ve şemadaki soruların sayfada da bulunması
+    expect(html).toContain('Sıkça Sorulan Sorular')
+    expect(html).toContain('Hüseyin DOL kimdir?')
+
+    // OG/Twitter meta (paylaşım/SEO)
+    expect(html).toContain('property="og:title"')
+    expect(html).toContain('name="twitter:card"')
+  })
 })
