@@ -1,17 +1,21 @@
 import { NextResponse } from 'next/server'
 
 /**
- * Ana sayfanın AMP (Accelerated Mobile Pages) kopyası.
+ * Ana sayfanın AMP (Accelerated Mobile Pages) kopyası — zengin sonuç (rich
+ * results) için yapılandırılmış veri ile.
  *
  * Next.js App Router yerleşik AMP'i (Pages Router'daki `amp: true` / `useAmp`)
  * DESTEKLEMEZ. Bu yüzden valid AMP HTML'i bir Route Handler ile elle üretip
- * `text/html` olarak sunuyoruz. Çıktı https://validator.ampproject.org ile
- * doğrulanabilir (amp-boilerplate + v0.js + tek `<style amp-custom>` + amp-img,
- * custom JS yok).
+ * `text/html` olarak sunuyoruz. Çıktı https://validator.ampproject.org (AMP)
+ * ve https://search.google.com/test/rich-results (zengin sonuç) ile
+ * doğrulanabilir.
  *
- * Not: AMP eşlemesi için asıl (non-AMP) ana sayfaya `<link rel="amphtml"
- * href="/amp">` eklenebilir; ana sayfa CMS-dinamik olduğundan bu handler
- * kendi içinde `<link rel="canonical">` ile ana sayfaya işaret eder.
+ * Zengin sonuç için JSON-LD `@graph`: WebSite + Person + ProfilePage +
+ * BreadcrumbList + FAQPage. Google kuralı gereği yapılandırılmış verinin
+ * KARŞILIĞI sayfada GÖRÜNÜR olmalı → breadcrumb ve SSS bölümü de basılır.
+ *
+ * Not: `<link rel="canonical">` ana sayfaya işaret eder; /amp, ana sayfanın
+ * canonical kopyasıdır (bu yüzden sitemap'e ayrıca eklenmez).
  */
 
 // Statik olarak üret, ISR ile tazele (site geneli 1 saat konvansiyonu).
@@ -24,6 +28,10 @@ const SITE_NAME = 'Hüseyin DOL'
 const PAGE_TITLE = `${SITE_NAME} | Modern Web Uygulamaları Geliştiriyorum`
 const PAGE_DESCRIPTION =
   '10+ yıllık deneyimle React, Next.js, TypeScript ile modern frontend, Java ve Spring Boot ile ölçeklenebilir backend çözümleri geliştiren bir Software Developer.'
+const OG_IMAGE = `${SITE_URL}/assets/img/huseyindol.png`
+const PROFILE_IMAGE = 'https://github.com/huseyindol.png'
+const KEYWORDS =
+  'Hüseyin DOL, Software Developer, Full Stack Developer, React, Next.js, TypeScript, Java, Spring Boot, Kubernetes, React Native, Frontend, Backend, İstanbul'
 
 // Ana sayfadaki Hero içeriğiyle aynı kaynak veriler (siteInfo + stats + values).
 const HERO = {
@@ -37,6 +45,19 @@ const HERO = {
   github: 'https://github.com/huseyindol',
   linkedin: 'https://www.linkedin.com/in/huseyindol/',
 }
+
+const KNOWS_ABOUT = [
+  'React',
+  'Next.js',
+  'TypeScript',
+  'JavaScript',
+  'Java',
+  'Spring Boot',
+  'Kubernetes',
+  'React Native',
+  'Web Performance',
+  'CI/CD',
+]
 
 const STATS: ReadonlyArray<{ value: string; label: string }> = [
   { value: '10+', label: 'Yıl Deneyim' },
@@ -72,6 +93,31 @@ const TECHS = [
   'React Native',
 ]
 
+// Görünür SSS + FAQPage şeması AYNI kaynaktan üretilir (içerik–şema eşleşmesi
+// Google zorunluluğu). Cevaplar düz metin (schema text ile birebir aynı).
+const FAQ: ReadonlyArray<{ q: string; a: string }> = [
+  {
+    q: 'Hüseyin DOL kimdir?',
+    a: '10+ yıllık deneyime sahip bir Software Developer’dır. React, Next.js ve TypeScript ile modern frontend; Java ve Spring Boot ile ölçeklenebilir backend çözümleri geliştirir. Ekip liderliği ve mentorluk deneyimi vardır.',
+  },
+  {
+    q: 'Hangi teknolojilerle çalışıyor?',
+    a: 'Başlıca React, Next.js, TypeScript, JavaScript, Java, Spring Boot, Kubernetes ve React Native. Web performansı, CI/CD ve mikroservis mimarileri konularında da deneyimlidir.',
+  },
+  {
+    q: 'Hangi sektörlerde deneyimi var?',
+    a: 'E-ticaret, fintech, medya platformları ve kurumsal uygulamalar dahil çeşitli sektörlerde frontend ve full-stack projeler geliştirmiştir.',
+  },
+  {
+    q: 'Danışmanlık veya iş birliği için nasıl iletişime geçilir?',
+    a: 'E-posta (huseyindol@gmail.com) veya LinkedIn üzerinden ulaşabilirsiniz. Bağlantılar sayfanın üst kısmındaki iletişim bölümündedir.',
+  },
+  {
+    q: 'Bu AMP sayfası nedir?',
+    a: 'Ana sayfanın hızlı yüklenen AMP (Accelerated Mobile Pages) sürümüdür. Canonical bağlantısı asıl ana sayfaya işaret eder.',
+  },
+]
+
 // AMP zorunlu boilerplate (birebir bu içerik olmalı).
 const AMP_BOILERPLATE =
   '<style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>'
@@ -83,7 +129,10 @@ const AMP_CUSTOM_CSS = `
   body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6}
   a{color:inherit;text-decoration:none}
   .container{max-width:960px;margin:0 auto;padding:0 24px}
-  .hero{background:linear-gradient(135deg,#0f172a,#1e1b4b,#0f172a);padding:72px 0;text-align:center}
+  .breadcrumb{padding:14px 0;font-size:13px;color:var(--muted)}
+  .breadcrumb a{color:var(--accent)}
+  .breadcrumb span[aria-current]{color:var(--fg)}
+  .hero{background:linear-gradient(135deg,#0f172a,#1e1b4b,#0f172a);padding:56px 0 72px;text-align:center}
   .badge{display:inline-block;border:1px solid rgba(129,140,248,.35);background:rgba(99,102,241,.2);color:#c7d2fe;border-radius:999px;padding:6px 16px;font-size:14px;font-weight:500;margin-bottom:24px}
   h1{font-size:40px;line-height:1.15;font-weight:800;margin-bottom:24px}
   h1 .grad{background:linear-gradient(90deg,#60a5fa,#818cf8,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -111,20 +160,83 @@ const AMP_CUSTOM_CSS = `
   .value-card{background:var(--card);border:1px solid rgba(148,163,184,.12);border-radius:16px;padding:28px}
   .value-card h3{font-size:19px;margin-bottom:12px}
   .value-card p{color:var(--muted)}
+  .faq-list{display:grid;gap:16px;margin-top:8px}
+  .faq-item{background:var(--card);border:1px solid rgba(148,163,184,.12);border-radius:12px;padding:20px 24px}
+  .faq-item h3{font-size:17px;margin-bottom:8px;color:var(--fg)}
+  .faq-item p{color:var(--muted);font-size:15px}
   footer{padding:32px 0;text-align:center;color:var(--muted);font-size:14px;border-top:1px solid rgba(148,163,184,.12)}
   footer a{color:var(--accent)}
   @media(min-width:768px){h1{font-size:56px}.stats-grid{grid-template-columns:repeat(4,1fr)}.about{grid-template-columns:220px 1fr}.values-grid{grid-template-columns:repeat(3,1fr)}}
 `.trim()
 
-const JSON_LD = JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: SITE_NAME,
-  url: SITE_URL,
-  jobTitle: 'Software Developer',
-  image: 'https://github.com/huseyindol.png',
-  sameAs: [HERO.github, HERO.linkedin],
-})
+function buildJsonLd(): string {
+  const graph = [
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: `${SITE_URL}/`,
+      name: SITE_NAME,
+      inLanguage: 'tr-TR',
+      publisher: { '@id': `${SITE_URL}/#person` },
+    },
+    {
+      '@type': 'Person',
+      '@id': `${SITE_URL}/#person`,
+      name: SITE_NAME,
+      url: `${SITE_URL}/`,
+      image: PROFILE_IMAGE,
+      jobTitle: 'Software Developer',
+      description: PAGE_DESCRIPTION,
+      knowsAbout: KNOWS_ABOUT,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'İstanbul',
+        addressCountry: 'TR',
+      },
+      sameAs: [HERO.github, HERO.linkedin],
+    },
+    {
+      '@type': 'ProfilePage',
+      '@id': `${SITE_URL}/amp`,
+      url: `${SITE_URL}/amp`,
+      name: PAGE_TITLE,
+      inLanguage: 'tr-TR',
+      dateModified: new Date().toISOString(),
+      isPartOf: { '@id': `${SITE_URL}/#website` },
+      mainEntity: { '@id': `${SITE_URL}/#person` },
+      primaryImageOfPage: OG_IMAGE,
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${SITE_URL}/amp#breadcrumb`,
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Ana Sayfa',
+          item: `${SITE_URL}/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'AMP',
+          item: `${SITE_URL}/amp`,
+        },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${SITE_URL}/amp#faq`,
+      mainEntity: FAQ.map(f => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ]
+
+  return JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })
+}
 
 function renderAmpDocument(): string {
   const statsHtml = STATS.map(
@@ -139,6 +251,10 @@ function renderAmpDocument(): string {
       `<div class="value-card"><h3>${v.title}</h3><p>${v.description}</p></div>`,
   ).join('')
 
+  const faqHtml = FAQ.map(
+    f => `<div class="faq-item"><h3>${f.q}</h3><p>${f.a}</p></div>`,
+  ).join('')
+
   return `<!doctype html>
 <html ⚡ lang="tr">
 <head>
@@ -147,12 +263,32 @@ function renderAmpDocument(): string {
 <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
 <title>${PAGE_TITLE}</title>
 <meta name="description" content="${PAGE_DESCRIPTION}">
+<meta name="keywords" content="${KEYWORDS}">
+<meta name="author" content="${SITE_NAME}">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="${SITE_NAME}">
+<meta property="og:title" content="${PAGE_TITLE}">
+<meta property="og:description" content="${PAGE_DESCRIPTION}">
+<meta property="og:url" content="${SITE_URL}/amp">
+<meta property="og:image" content="${OG_IMAGE}">
+<meta property="og:locale" content="tr_TR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${PAGE_TITLE}">
+<meta name="twitter:description" content="${PAGE_DESCRIPTION}">
+<meta name="twitter:image" content="${OG_IMAGE}">
 ${AMP_BOILERPLATE}
 <script async src="https://cdn.ampproject.org/v0.js"></script>
-<script type="application/ld+json">${JSON_LD}</script>
+<script type="application/ld+json">${buildJsonLd()}</script>
 <style amp-custom>${AMP_CUSTOM_CSS}</style>
 </head>
 <body>
+<div class="container">
+<nav class="breadcrumb" aria-label="breadcrumb">
+<a href="${SITE_URL}/">Ana Sayfa</a> › <span aria-current="page">AMP</span>
+</nav>
+</div>
+
 <header class="hero">
 <div class="container">
 <span class="badge">${HERO.sayHi}</span>
@@ -178,7 +314,7 @@ ${AMP_BOILERPLATE}
 
 <section>
 <div class="container about">
-<amp-img class="avatar" src="https://github.com/huseyindol.png" width="180" height="180" layout="fixed" alt="${SITE_NAME}"></amp-img>
+<amp-img class="avatar" src="${PROFILE_IMAGE}" width="180" height="180" layout="fixed" alt="${SITE_NAME}"></amp-img>
 <div>
 <h2>Hakkımda</h2>
 <p>2011 yılında başladığım frontend yolculuğu bugün <strong>10+ yıllık deneyime</strong> dönüştü. E-ticaretten fintech'e, medya platformlarından kurumsal uygulamalara kadar çeşitli sektörlerde çalıştım.</p>
@@ -192,6 +328,13 @@ ${AMP_BOILERPLATE}
 <div class="container">
 <h2>Çalışma Yaklaşımım</h2>
 <div class="values-grid">${valuesHtml}</div>
+</div>
+</section>
+
+<section>
+<div class="container">
+<h2>Sıkça Sorulan Sorular</h2>
+<div class="faq-list">${faqHtml}</div>
 </div>
 </section>
 
