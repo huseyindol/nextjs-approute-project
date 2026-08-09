@@ -1,30 +1,28 @@
 ---
 title: 'Database-per-Tenant: AbstractRoutingDataSource ve Connection Pool Patlaması'
-description: "Spring'in AbstractRoutingDataSource'unu neden Hibernate'in resmi multi-tenancy API'sine tercih ettim ve 3 tenant × 10 connection × 3 pod hesabı neden uykumu kaçırdı. Multi-tenant mimari serisinin ikinci bölümü."
-publishedAt: '2026-06-18'
+description: "Spring'in AbstractRoutingDataSource'unu neden Hibernate'in resmi multi-tenancy API'sine tercih ettim, ortak veritabanını silince routing'in nasıl sadeleştiği ve tenant × pool × pod hesabının neden uykumu kaçırdığı. Multi-tenant mimari serisinin ikinci bölümü."
+publishedAt: '2026-07-20'
 category: 'Backend'
 author: 'Hüseyin DOL'
 coverImage: 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?q=80&w=2000&auto=format&fit=crop'
-readingTime: '10'
+readingTime: '12'
 order: 2
 ---
 
 > **Bu yazı 3 bölümlük bir serinin ikinci bölümü.**
-> **Bölüm 1:** [Tenant Routing'i Nereye Koyacağıma 3 Kez Karar Verdim](/blog/elly-multitenant-bolum-1)
+> **Bölüm 1:** [Tenant Routing'i Nereye Koyacağıma 4 Kez Karar Verdim](/blog/elly-multitenant-bolum-1)
 > **Bölüm 2:** Database Layer _(buradasınız)_
 > **Bölüm 3:** [Frontend'de Tenant Context — Provider'sız Yaklaşım](/blog/elly-multitenant-bolum-3)
 
-[Önceki bölümde](/blog/elly-multitenant-bolum-1) tenant routing'i çözmüştük. Yani gelen bir HTTP isteğinin hangi tenant'a ait olduğunu nereden anladığımızı anlattım — `JwtTenantFilter` URL'i ya da JWT claim'ini okuyup `TenantContext.setTenantId(...)` ile ThreadLocal'a yazıyor.
-
-Ama şimdi yeni bir soru var:
+Önceki bölümde gelen isteğin hangi tenant'a ait olduğunu nasıl çözdüğümüzü anlattım. Geriye asıl soru kaldı:
 
 **`TenantContext.getTenantId()` "acme" döndüğünde, Spring nasıl `acme_db` PostgreSQL veritabanına bağlanıyor?**
 
-Bu bölümde veritabanı katmanını anlatacağım. Hangi Spring/Hibernate mekanizmasını seçtiğimi, alternatifini neden tercih etmediğimi ve "her şey çalışıyor" dediğim noktada beni uyandıran connection pool matematiğini.
+Bu bölümde veritabanı katmanını anlatacağım: hangi Spring/Hibernate mekanizmasını seçtiğimi, resmi alternatifini neden tercih etmediğimi, ortak veritabanını silmenin bu katmanda ne değiştirdiğini ve "her şey çalışıyor" dediğim noktada beni uyandıran connection pool matematiğini.
 
 ## `AbstractRoutingDataSource` — Tek Sınıflık Çözüm
 
-Spring'in `AbstractRoutingDataSource`'unu extend ederek başladım. Bütün mekanizma aslında bu kadar küçük:
+Spring'in `AbstractRoutingDataSource`'unu extend ederek başladım. Mekanizmanın özü bu kadar küçük:
 
 ```java
 public class TenantRoutingDataSource extends AbstractRoutingDataSource {
@@ -35,26 +33,64 @@ public class TenantRoutingDataSource extends AbstractRoutingDataSource {
 }
 ```
 
-Spring, JPA üzerinden bir bağlantı (connection) edinirken — yani transaction başında — bu metodu çağırıyor. Dönen key (örn. `"tenant1"`) DataSource map'indeki HikariCP pool'unu seçiyor.
+Spring, JPA üzerinden bir bağlantı edinirken — yani transaction başında — bu metodu çağırıyor. Dönen key (örn. `"tenant1"`) DataSource map'indeki HikariCP pool'unu seçiyor.
 
-Konfigürasyon tarafında ise tenant'ları map olarak veriyorum:
+Konfigürasyon tarafında tenant'ları map olarak veriyorum:
 
 ```java
 @Bean
 public DataSource dataSource() {
     TenantRoutingDataSource routing = new TenantRoutingDataSource();
 
-    Map<Object, Object> targetDataSources = new HashMap<>();
-    targetDataSources.put("tenant1", buildDataSource(tenantProperties.getDatasources().get("tenant1")));
-    targetDataSources.put("tenant2", buildDataSource(tenantProperties.getDatasources().get("tenant2")));
+    Map<Object, Object> targets = new HashMap<>();
+    tenantProperties.getDatasources()
+        .forEach((tid, cfg) -> targets.put(tid, buildDataSource(tid, cfg)));
 
-    routing.setTargetDataSources(targetDataSources);
-    routing.setDefaultTargetDataSource(buildDataSource(baseDbProperties)); // basedb
+    routing.setTargetDataSources(targets);
+    // Boot/seed aşaması için hedef — çalışma zamanındaki "varsayılan DB" DEĞİL.
+    routing.setDefaultTargetDataSource(targets.get(bootTargetTenant));
     return routing;
 }
 ```
 
-`setDefaultTargetDataSource` kısmı önemli — Bölüm 1'de hatırlarsanız `resolveTenantId` bazı durumlarda (chat, notifications, admin auth) `null` döndürüyordu. O `null`, "varsayılan DataSource'a git" anlamına geliyor — yani basedb'ye.
+Buradaki `setDefaultTargetDataSource` satırı, mimarinin evriminde en çok anlam değiştiren yer oldu — ve hikâyenin can alıcı kısmı orada.
+
+### `null`'ın anlamı değişince mimari de değişti
+
+Projenin ilk sürümünde ortak bir `basedb` vardı ve `setDefaultTargetDataSource(basedb)` deniyordu. `determineCurrentLookupKey()` `null` döndüğünde Spring sessizce oraya gidiyordu. Yani `null` şu anlama geliyordu: *"tenant belirsiz, merkezi veritabanına düş."*
+
+Bu "güvenli varsayılan" gibi görünüyordu. Aslında **hataları gizleyen bir battaniyeydi.** Tenant context'i kurmayı unuttuğum her yerde uygulama patlamıyor, sessizce yanlış veritabanına yazıyordu.
+
+Ortak veritabanını tamamen kaldırdıktan sonra (bunun hikâyesi [Bölüm 1'de](/blog/elly-multitenant-bolum-1)) `null`'ın anlamını da değiştirdim: artık "düşülecek yer" değil, **hata**:
+
+```java
+@Override
+protected Object determineCurrentLookupKey() {
+    String tenantId = TenantContext.getTenantId();
+    if (tenantId == null || tenantId.isBlank()) {
+        if (strict) {
+            throw new TenantRequiredException(
+                "Tenant context bos — JWT tenantId claim veya /api/v1/public/{tid} URL gerekli");
+        }
+        return null;   // yalnız boot/seed aşamasında
+    }
+    return tenantId;
+}
+```
+
+`strict` bayrağı neden var? Çünkü uygulama açılırken henüz "istek" kavramı yok ama Hibernate'in bağlantıya ihtiyacı var: dialect tespiti, şema doğrulaması, tenant şemalarının seed'i. Bu yüzden bayrak açılışta `false`, `ApplicationReadyEvent` ile `true`'ya çevriliyor:
+
+```java
+@EventListener(ApplicationReadyEvent.class)
+public void enableStrictRouting() {
+    routingDataSource.enableStrict();
+    // Bundan sonra tenant'sız her sorgu = TenantRequiredException
+}
+```
+
+Sonuç: `setDefaultTargetDataSource` artık "varsayılan veritabanı" değil, sadece **boot hedefi**. Uygulama hazır olduktan sonra hiçbir istek oraya düşemez.
+
+Bu ayrım küçük görünüyor ama etkisi büyük oldu: multi-tenant sistemlerdeki en sinsi hata sınıfı — *doğru çalışıyor gibi görünüp yanlış veritabanına yazmak* — mimari olarak imkânsız hale geldi.
 
 ### Bir Tuzak: Tek Transaction İçinde Tenant Değiştirilemez
 
@@ -64,34 +100,47 @@ public DataSource dataSource() {
 @Transactional
 public void runMigration(String fromTenant, String toTenant) {
     TenantContext.setTenantId(fromTenant);
-    repo.someQuery(); // tenant1 DB'sine gider
+    repo.someQuery();   // tenant1 DB'sine gider
 
     TenantContext.setTenantId(toTenant);
-    repo.anotherQuery(); // hâlâ tenant1 DB'sinde! Çünkü transaction zaten açık.
+    repo.anotherQuery(); // hâlâ tenant1 DB'sinde! Transaction zaten açık.
 }
 ```
 
-Bir transaction içinde tenant değiştirmek istediğinde bu metod yeniden çağrılmıyor — çünkü Spring zaten bağlantıyı bir önceki tenant'tan almış durumda. Birden fazla tenant'ı tek metotta gezecek bir iş yazmak istiyorsan, transaction'ları ayırman lazım.
+Bir transaction içinde tenant değiştirmek istediğinde bu metot yeniden çağrılmıyor — Spring bağlantıyı bir önceki tenant'tan çoktan almış. Cross-tenant bir iş yazacaksan **her tenant için ayrı transaction** açman gerekiyor.
 
-Bu, mimarinin doğal bir sınırı. Cross-tenant batch işlemler için her tenant'a ayrı transaction açan bir wrapper yazmak gerekir.
+Bu kısıtın günlük hayattaki en önemli sonucu şu: tenant'ın gövdeden veya URL'den geldiği uçlarda (login, register, e-posta doğrulama, refresh) context'i **`@Transactional` metoda girmeden önce**, yani controller'da kurmak zorundasın. Servisin ilk satırında kurmak geç kalıyor — transaction zaten açılmış oluyor. Strict mod bunu affetmiyor; iyi tarafı, hatayı sessizce yutmak yerine anında yüzüne söylüyor.
+
+Aynı sebeple boot sırasında her tenant'ın şeması ayrı ayrı, kendi transaction'ında seed ediliyor:
+
+```java
+tenantProperties.getDatasources().keySet().forEach(tid -> {
+    TenantContext.setTenantId(tid);
+    try {
+        seedService.initializeTenant(tid);  // rol, izin, ilk admin, e-posta şablonları
+    } finally {
+        TenantContext.clear();
+    }
+});
+```
 
 ## Neden Hibernate Multi-Tenancy API Değil
 
-Hibernate'in resmi multi-tenancy desteği var. `MultiTenantConnectionProvider` + `CurrentTenantIdentifierResolver` ikilisi tam olarak bu işi yapmak için tasarlanmış. Mantıken ilk düşünmem gereken seçenekti. Ama denedikten sonra `AbstractRoutingDataSource`'a döndüm. Sebepleri sıralarsam:
+Hibernate'in resmi multi-tenancy desteği var: `MultiTenantConnectionProvider` + `CurrentTenantIdentifierResolver`. Mantıken ilk düşünmem gereken seçenekti; denedim ve `AbstractRoutingDataSource`'a döndüm.
 
-**1. Daha az boilerplate.** Resmi API iki ayrı interface implement etmemi gerektiriyordu (`MultiTenantConnectionProvider` + `CurrentTenantIdentifierResolver`) ve ek konfigürasyon flag'leri istiyordu (`hibernate.multiTenancy=DATABASE`, vs.). `AbstractRoutingDataSource` aynı işi tek sınıfla yapıyor.
+**1. Daha az boilerplate.** Resmi API iki ayrı arayüz implementasyonu ve ek konfigürasyon bayrakları istiyor. `AbstractRoutingDataSource` aynı işi tek sınıfla yapıyor.
 
-**2. JPA tamamen transparan kalıyor.** Entity sınıflarımda `@TenantId` annotation'ı yok, repository'lerimde tenant filter'ı yok. Tenant kavramı sadece filter katmanında ve `TenantContext` içinde yaşıyor — domain layer'a hiç sızmıyor.
+**2. JPA tamamen transparan kalıyor.** Entity'lerimde `@TenantId` yok, repository'lerimde tenant filtresi yok. Tenant kavramı yalnızca filtre katmanında ve `TenantContext` içinde yaşıyor — domain katmanına hiç sızmıyor. 30'dan fazla repository'nin tek satırı bile tenant'tan haberdar değil.
 
-**3. Hibernate version stability.** Hibernate'in multi-tenancy API'si Hibernate 5'ten 6'ya geçişte değişti. Resmi API'ye bağlanırsan version upgrade'lerde kırılma riski daha yüksek. `AbstractRoutingDataSource` Spring'in stabil bir parçası, neredeyse hiç değişmiyor.
+**3. Sürüm stabilitesi.** Hibernate'in multi-tenancy API'si 5 → 6 geçişinde değişti. `AbstractRoutingDataSource` Spring'in yıllardır neredeyse hiç değişmeyen bir parçası.
 
-**4. Database-per-tenant'a doğal oturuyor.** Hibernate'in API'si hem schema hem database (`hibernate.multiTenancy=DATABASE`) stratejisini destekler — yani database-per-tenant teknik olarak onunla da yapılabilir. Ama her tenant'ı ayrı bir `DataSource` (ayrı HikariCP pool) olarak ifade etmek istediğimde, `AbstractRoutingDataSource` tam da bunun için tasarlanmış: her şey Spring'in DataSource soyutlaması üzerinden akıyor.
+**4. Database-per-tenant'a doğal oturuyor.** Her tenant'ı ayrı bir `DataSource` (ayrı HikariCP pool) olarak ifade etmek istediğimde, bu sınıf tam da bunun için tasarlanmış.
 
-Genel ders: Framework'ün "resmi olarak desteklediği" yol her zaman senin için doğru yol olmuyor. Önemli olan, kendi domain'ine en az sürtünme yaratan yol.
+Genel ders: Framework'ün "resmi olarak desteklediği" yol her zaman senin için doğru yol olmuyor. Önemli olan kendi domain'ine en az sürtünme yaratan yol.
 
 ## HikariCP Ayarları ve Connection Pool Patlaması
 
-Her tenant için startup'ta ayrı bir HikariCP pool ayağa kalkıyor. Bu ayarları `DataSourceConfig` içinde kod ile veriyorum; okunması kolay olsun diye yaml karşılığıyla gösteriyorum:
+Her tenant için açılışta ayrı bir HikariCP pool ayağa kalkıyor:
 
 ```yaml
 hikari:
@@ -103,59 +152,60 @@ hikari:
   leak-detection-threshold: 60000 # 60 saniye
 ```
 
-Burada `max-lifetime=30dk` ve `leak-detection-threshold=60s` ayarlarını bilhassa K8s ortamı için seçtim. Cloud Run / K3s gibi yatay ölçeklendiren ortamlarda pod'lar gelip gidiyor, yük balansçısı uzun ömürlü TCP bağlantılarını ara sıra yeniden dağıtmak istiyor. `max-lifetime` ile bağlantıların belli aralıkla resetlenmesini sağlıyorum. `leak-detection-threshold` ise development sırasında bağlantı sızdırdığımı erken yakalamamı sağlıyor.
+`max-lifetime` ve `leak-detection-threshold` ayarlarını bilhassa Kubernetes ortamı için seçtim: pod'lar gelip gidiyor, yük dengeleyici uzun ömürlü TCP bağlantılarını ara sıra yeniden dağıtmak istiyor. `leak-detection-threshold` ise geliştirme sırasında bağlantı sızdırdığımı erken yakalatıyor.
 
 Tek tek bakıldığında ayarlar makul. Sonra şu hesabı yaptım:
 
 ```
-3 tenant × 10 connection × 3 pod = 90 PostgreSQL connection
+tenant sayısı × pool boyutu × pod sayısı = toplam PostgreSQL bağlantısı
 ```
 
-PostgreSQL'in `max_connections` default'u **100.** Yani 3 tenant ve 3 pod ile zaten sınıra geldim. Üstüne basedb pool'u, admin tool bağlantıları, monitoring agent'ları derken default 100 sınırını çoktan aşmış oluyorum.
-
-Multi-tenant'ın korkutucu yanı şu: bağlantı maliyeti **doğrusal değil, çarpımsal büyüyor.** Tenant ekledikçe doğrusal artmıyor — pod sayısıyla çarpılıyor. Auto-scaling ile pod sayısı 5'e çıkarsa:
+Multi-tenant'ın korkutucu yanı burada: bağlantı maliyeti **doğrusal değil, çarpımsal** büyüyor. Tenant eklediğinde artış pod sayısıyla çarpılıyor:
 
 ```
-3 tenant × 10 connection × 5 pod = 150 connection ❌
+ 3 tenant × 10 connection × 3 pod =  90 connection   (PostgreSQL default max_connections = 100)
+ 3 tenant × 10 connection × 5 pod = 150 connection ❌
 10 tenant × 10 connection × 5 pod = 500 connection ❌❌
 ```
 
-Bu hesabı production'a çıkmadan önce yaptığım için şanslıyım. İlk müdahalem `maximum-pool-size`'ı düşürmek oldu (10 → 6). Bu acil bir önlem; gerçek çözüm farklı.
+Üstüne izleme ajanları, yedekleme işleri ve admin araçlarının bağlantıları biniyor. Bugün 2 tenant ve tek replika ile rahatım; ama otomatik ölçekleme (HPA) devrede olduğu için "yoğun bir gün" bu tabloyu bir anda değiştirebilir.
+
+Bu hesabı production'a çıkmadan yaptığım için şanslıyım. İlk müdahale `maximum-pool-size`'ı düşürmek oldu — bu acil önlem; gerçek çözüm farklı.
 
 ### Gerçek Çözüm: Connection Pooler
 
-Önümdeki iki yapısal opsiyon var:
+İki yapısal seçenek var:
 
-**1. PgBouncer** — Uygulama ile PostgreSQL arasına konulan bir TCP proxy. Uygulama pool'u "logical" bağlantı görüyor, PgBouncer arkada gerçek bağlantıları çok daha az sayıda kullanıyor. Database-per-tenant ile birlikte kullanmak için ayrı pool konfigürasyonu gerekiyor.
+**1. PgBouncer** — Uygulama ile PostgreSQL arasına konan bir TCP proxy. Uygulama "mantıksal" bağlantı görür, PgBouncer arkada çok daha az sayıda gerçek bağlantı kullanır. Database-per-tenant ile birlikte kullanmak için tenant başına pool tanımı gerekiyor.
 
-**2. PostgreSQL'in `max_connections`'ını yükseltmek** — Basit ama her bağlantı memory tüketiyor (~10MB per connection). 500 bağlantıya çıkmak için PostgreSQL'in RAM ayarlarını da yeniden düşünmek gerekir.
+**2. `max_connections`'ı yükseltmek** — Basit ama her bağlantı bellek tüketiyor. 500 bağlantıya çıkmak PostgreSQL'in RAM ayarlarını yeniden düşünmeyi gerektirir.
 
-İkisi de yatırım gerektiriyor. Şimdilik düşürdüğüm pool size yetiyor, ama tenant sayısı 5'i geçtiğinde PgBouncer entegrasyonu kaçınılmaz.
+Şimdilik düşürülmüş pool boyutu yetiyor; tenant sayısı arttığında PgBouncer kaçınılmaz.
 
-**Çıkardığım ders:** Multi-tenant mimaride ölçek hesabını "kullanıcı sayısı"yla değil, "tenant × pod × pool" çarpımıyla yapın. Bu çarpım her boyutuyla seninle birlikte büyüyor.
+**Ders:** Multi-tenant mimaride ölçek hesabını "kullanıcı sayısı"yla değil, **"tenant × pod × pool" çarpımıyla** yapın.
 
 ## ThreadLocal'ın Sınırı: RabbitMQ Consumer Tuzağı
 
-Bölüm 1'de `TenantContext`'in ThreadLocal tabanlı olduğunu söylemiştim. HTTP request'lerinde Spring her isteği bir thread'e atadığı için bu mekanizma sorunsuz çalışıyor: `JwtTenantFilter` tenant'ı set ediyor, aynı thread içindeki tüm JPA çağrıları aynı tenant'ı görüyor, finally'de temizleniyor.
+`TenantContext` ThreadLocal tabanlı. HTTP isteklerinde kusursuz çalışıyor: filtre tenant'ı set ediyor, aynı thread'deki tüm JPA çağrıları onu görüyor, `finally` temizliyor.
 
-Ama bir senaryoda bu mekanizma kendi başına yetmiyor: **asenkron mesaj kuyrukları.**
+Ama bir senaryoda kendi başına yetmiyor: **asenkron mesaj kuyrukları.**
 
-Elly'de mail gönderimi RabbitMQ üzerinden yapılıyor. Bir form-to-email tetiklendiğinde:
+Elly'de mail gönderimi RabbitMQ üzerinden. Bir form-to-email tetiklendiğinde:
 
-1. HTTP request thread'i mesajı kuyruğa atıyor (`TenantContext` dolu)
+1. HTTP thread'i mesajı kuyruğa atıyor (`TenantContext` dolu)
 2. RabbitMQ consumer'ı **farklı bir thread'de** mesajı işliyor (`TenantContext` boş!)
-3. Consumer mail göndermek için DB'den şablonu çekmeye çalışıyor → `TenantContext.getTenantId()` `null` döndürüyor → basedb'ye gidiyor → yanlış şablon, ya da hiç şablon yok hatası
+3. Consumer şablonu DB'den çekmeye çalışıyor → tenant yok
 
-ThreadLocal'ın temel kısıtı bu: bir thread'de set edilen değer **başka bir thread'e otomatik taşınmıyor.** RabbitMQ consumer'ları kendi thread pool'larında çalıştığı için HTTP filter'da set ettiğim değer onlara ulaşmıyor.
+ThreadLocal'ın temel kısıtı: bir thread'de set edilen değer başka bir thread'e taşınmıyor.
+
+**Bu tuzağın sonucu, ortak veritabanını sildikten sonra kökten değişti.** Eskiden 3. adımda `null` görülüyor ve mesaj sessizce merkezi DB'ye gidiyordu — mail "gönderildi" görünüyor ama yanlış şablonla gidiyordu. Şimdi aynı durum `TenantRequiredException` fırlatıyor: mesaj işlenmiyor, retry kuyruğuna düşüyor, log'da net hata var. Sinsi bug, gürültülü bug'a dönüştü.
 
 ### Çözüm: Mesaj Payload'una Tenant Gömme
-
-Yaklaşımım şu oldu: tenant bilgisini mesajın kendisine, yani RabbitMQ payload'ına ekledim.
 
 ```java
 // Producer (HTTP request thread)
 public void sendMailTask(MailTask task) {
-    task.setTenantId(TenantContext.getTenantId()); // payload'a göm
+    task.setTenantId(TenantContext.getTenantId());   // payload'a göm
     rabbitTemplate.convertAndSend("email-queue", task);
 }
 
@@ -163,38 +213,45 @@ public void sendMailTask(MailTask task) {
 @RabbitListener(queues = "email-queue")
 public void handleMail(MailTask task) {
     try {
-        TenantContext.setTenantId(task.getTenantId()); // manuel olarak set et
+        TenantContext.setTenantId(task.getTenantId());   // elle set et
         mailService.send(task);
     } finally {
-        TenantContext.clear(); // diğer mesaj sızmasın
+        TenantContext.clear();   // sonraki mesaja sızmasın
     }
 }
 ```
 
-İki kural:
+İki kural, ikisi de pazarlıksız:
 
-**Her consumer metodu kendi `setTenantId` ve `finally`'sini yazmak zorunda.** Bunu unutmak çok kolay olduğu için takım için döküman olarak yazdım. Aspect ya da custom annotation yazarak otomatize etmek mümkün ama henüz oraya geçmedim — şu an consumer sayısı az olduğu için manuel kontrol yetiyor.
+**Her consumer kendi `setTenantId` + `finally`'sini yazar.** Unutulması kolay olduğu için proje kurallarına yazdım; strict mod da arkadan destekliyor — unutan consumer sessizce yanlış çalışmıyor, patlıyor.
 
-**Producer mesajı atarken `TenantContext.getTenantId()`'i payload'a kopyalamalı.** Bu kopyalama unutulursa consumer tarafı `null` görür, mesaj basedb'ye gider. Bu da sinsi bir bug çünkü mail "gönderildi" görünür ama yanlış DB'den şablon çekmiş olabilir.
+**Producer, tenant'ı payload'a kopyalar.** Kopyalanmazsa consumer tarafı tenant'sız kalır.
 
-Bu örüntü RabbitMQ'ya özgü değil. `@Async` ile çalıştırdığın methodlarda, scheduled task'lerde (`@Scheduled`), Kafka consumer'larında — her asenkron sınır geçişinde aynı problemi yaşıyorsun. Tenant bilgisi context'in dışına taşımayı düşünmeden tasarlanırsa kaybolur.
+Bu örüntü RabbitMQ'ya özgü değil: `@Async` metotlar, `@Scheduled` görevler, WebSocket oturumları, hatta WebRTC çağrı zaman aşımını tetikleyen zamanlayıcı — her asenkron sınır geçişinde aynı soruyu cevaplaman gerekiyor.
 
-**Çıkardığım ders:** ThreadLocal HTTP request'leri için harika, ama bir thread sınırını geçtiğin anda elle taşıma kararı vermen gerekiyor. Tenant gibi cross-cutting bir veriyi tasarlarken "bu bilgi başka bir thread'e nasıl gidecek?" sorusunu mutlaka cevaplayın.
+**Ders:** ThreadLocal HTTP istekleri için harika, ama bir thread sınırını geçtiğin anda tenant'ı elle taşımaya karar vermelisin. Tasarım aşamasında "bu bilgi başka bir thread'e nasıl gidecek?" sorusunu mutlaka sorun.
+
+## Bonus: Database-per-Tenant'ın Görünmeyen Faturası
+
+Şema yönetimi. Tek veritabanında bir migration çalıştırırsın; database-per-tenant'ta **her tenant DB'sinde** çalıştırman gerekir. Production'da `ddl-auto=validate` kullandığım için bu bir tercih değil, zorunluluk: yeni bir entity ekleyip migration'ı tenant'lardan birine uygulamayı unutursam uygulama o tenant için açılışta doğrulamayı geçemez ve pod ayağa kalkmaz.
+
+Bu, database-per-tenant'ın izolasyon avantajının faturası. Karşılığında aldığın şey de küçük değil: bir tenant'ın verisi başka bir tenant'ın sorgusunda **teknik olarak** görünemez — `WHERE tenant_id = ?` koşulunu unutma riski diye bir şey yoktur, çünkü öyle bir kolon yoktur.
 
 ---
 
 ## Sırada Ne Var?
 
-Bu yazıda backend tarafındaki veritabanı katmanını bitirdik:
+Bu yazıda backend'in veritabanı katmanını bitirdik:
 
 - `AbstractRoutingDataSource` ile tenant başına HikariCP pool seçimi
-- Hibernate multi-tenancy API yerine bu seçimin sebebi
-- Connection pool matematiği ve pgBouncer ihtiyacı
-- ThreadLocal'ın asenkron thread'lerde sınırı
+- `null`'ın "varsayılan DB" olmaktan çıkıp "hata" olmasının etkisi
+- Hibernate multi-tenancy API yerine bu seçimin sebepleri
+- Connection pool matematiği ve PgBouncer ihtiyacı
+- ThreadLocal'ın asenkron sınırdaki limiti
 
-Şimdiye kadar her şey backend tarafında geçti. Ama Elly'nin Panel ve Tenant Website projeleri Next.js — yani backend'in tenant context'ini frontend tarafında da bir şekilde taşımak gerekiyor.
+Şimdiye kadar her şey backend'de geçti. Ama Panel ve Tenant Website projeleri Next.js — tenant bağlamını frontend'de de bir şekilde taşımak gerekiyor.
 
-Bu noktada React Context API ve `TenantProvider` yazmak ilk içgüdüydü, ama sonunda farklı bir yolda karar kıldım. Sıradaki yazıda anlatacağım:
+React Context API ile bir `TenantProvider` yazmak ilk içgüdüydü. Sonunda farklı bir yolda karar kıldım:
 
 **Bölüm 3 → [Frontend'de Tenant Context — Provider'sız Yaklaşım](/blog/elly-multitenant-bolum-3)**
 
