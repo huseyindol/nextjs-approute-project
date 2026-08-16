@@ -7,7 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/example/'],
+        disallow: ['/api/'],
       },
       // OpenAI — ChatGPT Browse & Search
       {
