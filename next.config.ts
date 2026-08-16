@@ -47,12 +47,6 @@ const nextConfig = {
       },
       {
         protocol: 'https' as const,
-        hostname: 'cdn.dummyjson.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https' as const,
         hostname: 'api.huseyindol.com',
         port: '',
         pathname: '/**',
