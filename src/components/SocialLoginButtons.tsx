@@ -48,7 +48,7 @@ export function SocialLoginButtons() {
  */
 export function SocialAuthErrorNotice() {
   const searchParams = useSearchParams()
-  const error = searchParams.get('error')
+  const error = searchParams?.get('error')
   if (!error) return null
   return (
     <Alert variant="destructive" className="mb-4">

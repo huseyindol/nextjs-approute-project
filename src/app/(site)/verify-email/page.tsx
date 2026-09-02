@@ -12,8 +12,8 @@ const TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'default'
 function VerifyEmailContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const token = searchParams.get('token') ?? ''
-  const tenantId = searchParams.get('tenantId') ?? TENANT_ID
+  const token = searchParams?.get('token') ?? ''
+  const tenantId = searchParams?.get('tenantId') ?? TENANT_ID
 
   // Token yoksa hemen error state'e geç — useEffect içinde senkron setState yok
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>(

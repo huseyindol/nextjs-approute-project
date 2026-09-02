@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useLayoutEffect, useRef } from 'react'
 
 const Datalayer = () => {
-  const pathname = usePathname()
+  const pathname = usePathname() ?? ''
   const originalLocation = useRef(pathname)
   useLayoutEffect(() => {
     sendGTMEvent({

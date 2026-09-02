@@ -12,7 +12,7 @@ import { ThemeProvider } from 'next-themes'
 import { Geist, Geist_Mono } from 'next/font/google'
 import NextTopLoader from 'nextjs-toploader'
 import Datalayer from '../components/Datalayer'
-import './globals.css'
+import '../styles/globals.css'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

@@ -35,7 +35,7 @@ const authCookies = [
 ] as const
 
 export default function Header() {
-  const pathname = usePathname()
+  const pathname = usePathname() ?? ''
   const router = useRouter()
   const isEllyPage = pathname.startsWith('/projects/elly')
   const navLinksToUse = isEllyPage ? ellyNavLinks : mainNavLinks

@@ -1,14 +1,7 @@
 import { skills as mockSkills } from '@/data/mockData'
+import type { SkillType } from '@/schemas/dynamic'
 import { getSectionDataBySectionKey } from '@/utils/services/contents'
 import SkillsContent from './SkillsContent'
-
-export interface SkillType {
-  name: string
-  level: string
-  years: string
-  imageUrl: string
-  url: string
-}
 
 const DEFAULT_SECTION_INFO = {
   title: 'Teknolojiler & Yetenekler',
