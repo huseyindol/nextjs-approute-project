@@ -83,3 +83,14 @@ Claude içi tarayıcı Pages Router sayfalarını **hidrate etmiyor** → istemc
 orada test edilirse yanlış biçimde "hidrasyon kırık" görünür. Sunucu çıktısı (HTML, meta,
 route tablosu) orada doğrulanır; tıklama/state testi kullanıcının kendi tarayıcısında
 yapılır. (Tem 2026'da kullanıcı doğruladı: tema düğmesi + kategori filtresi çalışıyor.)
+
+## Faz 3b Notu — dinamik → statik kazanımı
+
+`/makaleler` App Router'da `searchParams.category`'yi SUNUCUDA okuduğu için **dinamikti (ƒ)**.
+Kategori filtresi `MakalelerContent` içine (client state + `router.replace`) alınarak sayfa
+**SSG'ye (●)** çevrildi — blog'da zaten uygulanan desen. Bu, taşımanın RPS hedefine doğrudan
+katkısı olan ilk yapısal kazanç: sayfa artık istek başına render edilmiyor.
+
+`/makaleler/[slug]` için `fallback: 'blocking'` seçildi (CMS'e yeni makale eklendiğinde
+build gerekmeden ilk istekte üretilsin); blog MDX'inde ise `fallback: false` (dosyalar
+repo'da, yeni makale zaten deploy ile gelir).

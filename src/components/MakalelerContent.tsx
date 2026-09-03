@@ -7,7 +7,8 @@ import { motion, useInView } from 'framer-motion'
 import { BookOpenIcon, CalendarIcon, ClockIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import { useRef, useState } from 'react'
 
 const AD_SLOTS = [
   '7448731904',
@@ -45,16 +46,35 @@ const cardCategoryColors: Record<string, string> = {
 interface MakalelerContentProps {
   posts: BlogPost[]
   categories: string[]
-  categoryFilter: string | undefined
 }
 
 export default function MakalelerContent({
-  posts,
+  posts: allPosts,
   categories,
-  categoryFilter,
 }: MakalelerContentProps) {
+  const router = useRouter()
   const gridRef = useRef(null)
   const gridInView = useInView(gridRef, { once: true, margin: '-60px' })
+
+  // Kategori filtresi tamamen client-side (server searchParams okunmuyor → sayfa statik).
+  // Tüm makaleler prerender edilir; seçim yalnız görüneni süzer, URL'i paylaşılabilir tutar.
+  const [categoryFilter, setCategoryFilter] = useState<string | undefined>(
+    undefined,
+  )
+
+  const selectCategory = (category: string | undefined) => {
+    setCategoryFilter(category)
+    router.replace(
+      category
+        ? `/makaleler?category=${encodeURIComponent(category)}`
+        : '/makaleler',
+      { scroll: false },
+    )
+  }
+
+  const posts = categoryFilter
+    ? allPosts.filter(post => post.frontmatter.category === categoryFilter)
+    : allPosts
 
   return (
     <div className="min-h-screen">
@@ -104,7 +124,7 @@ export default function MakalelerContent({
       <div className="bg-background/80 sticky top-[65px] z-40 border-b border-border backdrop-blur-sm">
         <div className="container mx-auto px-6">
           <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto py-4">
-            <Link href="/makaleler">
+            <button type="button" onClick={() => selectCategory(undefined)}>
               <span
                 className={`inline-flex shrink-0 cursor-pointer items-center rounded-full border px-4 py-1.5 text-sm font-medium transition-all ${
                   categoryFilter === undefined
@@ -114,11 +134,12 @@ export default function MakalelerContent({
               >
                 Tümü
               </span>
-            </Link>
+            </button>
             {categories.map(category => (
-              <Link
+              <button
+                type="button"
                 key={category}
-                href={`/makaleler?category=${encodeURIComponent(category)}`}
+                onClick={() => selectCategory(category)}
               >
                 <span
                   className={`inline-flex shrink-0 cursor-pointer items-center rounded-full border px-4 py-1.5 text-sm font-medium transition-all ${
@@ -129,7 +150,7 @@ export default function MakalelerContent({
                 >
                   {category}
                 </span>
-              </Link>
+              </button>
             ))}
           </div>
         </div>
