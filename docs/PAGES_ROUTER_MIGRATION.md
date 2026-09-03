@@ -49,3 +49,37 @@ görülmüştü; en büyük kazanç sayfayı istek başına render etmemekten ge
    tekilleştirildi.
 4. `next/font` `_app`'te yüklenip CSS değişkenleri `:root`'a enjekte ediliyor
    (globals.css'teki `body { @apply font-sans }` bunu okuyor).
+
+## Faz 2 Notları
+
+- **Veri yükleyicileri ayrıştırıldı:** async server component'ler (`Skills`, `Experience`)
+  `src/lib/section-data.ts` içindeki `loadSkillsSection()` / `loadExperienceSection()`
+  fonksiyonlarına dönüştü. Sayfalar bunları `getStaticProps`'tan çağırıyor.
+- **`APage` şablonu sync + props'lu oldu** — bölüm verisini artık kendi içinde çekmiyor,
+  props olarak alıyor (`PageTemplateProps`). CMS şablon seçimi (`dynamic()` + module cache)
+  aynen korundu.
+- Taşınan 8 rotanın tamamı **statik (○) veya SSG+ISR (●)** — istek başına render eden
+  sayfa yok.
+
+## Faz 3 Notları
+
+- **MDX derlemesi build zamanına alındı.** App Router `next-mdx-remote/rsc` ile render
+  anında derliyordu; Pages Router'da `getStaticProps` içinde `serializeMdx()` (yeni:
+  `src/lib/mdx-serialize.ts`) derler, `MdxContent` yalnız hazır çıktıyı render eder.
+- **Liste sayfasından MDX gövdeleri ayıklandı.** Pages Router'da getStaticProps çıktısı
+  `__NEXT_DATA__` ile HTML'e gömülür; 27 makalenin tam metnini göndermek sayfayı
+  yüzlerce KB şişirirdi. `/blog` yalnız `slug` + `frontmatter` alıyor.
+- **Detay sayfasında da `content` props'tan çıkarıldı** (derlenmiş hali `mdxSource`'ta
+  zaten var); `wordCount` sunucuda hesaplanıp prop olarak geçiyor.
+- **Bilinen ödün:** uzun makalelerde `mdxSource` props'u 128 kB eşiğini aşıyor (Next
+  uyarısı). Sebep yapısal: RSC'de derlenmiş MDX sunucuda kalırken Pages Router'da
+  hidrasyon için istemciye gitmek zorunda. **Sunucu RPS'ini etkilemez** (statik dosya
+  servisi), okuyucunun indirme boyutunu etkiler. Taşıma sonrası seçenek: MDX'i build'de
+  HTML'e render edip `HtmlContent` gibi basmak (etkileşimli MDX bileşeni yoksa mümkün).
+
+## Doğrulama Notu (ÖNEMLİ)
+
+Claude içi tarayıcı Pages Router sayfalarını **hidrate etmiyor** → istemci etkileşimi
+orada test edilirse yanlış biçimde "hidrasyon kırık" görünür. Sunucu çıktısı (HTML, meta,
+route tablosu) orada doğrulanır; tıklama/state testi kullanıcının kendi tarayıcısında
+yapılır. (Tem 2026'da kullanıcı doğruladı: tema düğmesi + kategori filtresi çalışıyor.)

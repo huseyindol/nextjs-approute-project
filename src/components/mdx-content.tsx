@@ -1,8 +1,5 @@
-import { MDXRemote } from 'next-mdx-remote/rsc'
+import { MDXRemote, type MDXRemoteSerializeResult } from 'next-mdx-remote'
 import React from 'react'
-import remarkGfm from 'remark-gfm'
-import rehypePrettyCode from 'rehype-pretty-code'
-import type { PluggableList } from 'unified'
 import { ImageWithFallback } from './image-with-fallback'
 
 const components = {
@@ -143,26 +140,20 @@ const components = {
   ),
 }
 
-const prettyCodeOptions = {
-  theme: 'one-dark-pro',
-  keepBackground: false,
-}
-
-export function MdxContent(props: Readonly<{ source: string }>) {
+/**
+ * MDX render — Pages Router sürümü.
+ *
+ * App Router'da `next-mdx-remote/rsc` async server component olarak MDX'i render
+ * anında derliyordu. Pages Router'da derleme `getStaticProps` içinde `serializeMdx()`
+ * ile BUILD ZAMANINDA yapılır; burada yalnız hazır çıktı render edilir
+ * (istek başına MDX derleme yok → daha hızlı ve yüksek RPS).
+ */
+export function MdxContent({
+  source,
+}: Readonly<{ source: MDXRemoteSerializeResult }>) {
   return (
     <div className="prose-emerald prose-lg dark:prose-invert w-full max-w-none">
-      <MDXRemote
-        source={props.source}
-        components={components}
-        options={{
-          mdxOptions: {
-            remarkPlugins: [remarkGfm] as PluggableList,
-            rehypePlugins: [
-              [rehypePrettyCode, prettyCodeOptions],
-            ] as PluggableList,
-          },
-        }}
-      />
+      <MDXRemote {...source} components={components} />
     </div>
   )
 }
