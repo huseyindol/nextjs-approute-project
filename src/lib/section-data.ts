@@ -1,6 +1,15 @@
+import { skills as mockSkills } from '@/data/mockData'
+import type { SkillType } from '@/schemas/dynamic'
 import { ExperienceType } from '@/schemas/dynamic/experienceSchema'
 import { getSectionDataBySectionKey } from '@/utils/services/contents'
-import ExperienceTimeline from './ExperienceTimeline'
+
+/**
+ * Bölüm verisi yükleyicileri — YALNIZ sunucuda (getStaticProps) çağrılır.
+ *
+ * Eskiden bu iş async Server Component'lerin (`Skills`, `Experience`) içindeydi.
+ * Pages Router'da server component olmadığı için veri çekimi buraya alındı; sayfalar
+ * getStaticProps'tan çağırıp sonucu props olarak geçiyor (build'de üretilir → yüksek RPS).
+ */
 
 const TURKISH_MONTHS: Record<string, number> = {
   Ocak: 1,
@@ -204,24 +213,53 @@ const DEFAULT_SECTION_INFO = {
   description: 'Çeşitli sektörlerde 10+ yıllık kariyer yolculuğum',
 }
 
-export default async function Experience() {
+export interface ExperienceSectionData {
+  experiences: ExperienceType[]
+  title: string
+  description: string
+}
+
+export async function loadExperienceSection(): Promise<ExperienceSectionData> {
   const { sectionInfo, items } =
     await getSectionDataBySectionKey<ExperienceType>(
       'portfolio_experience',
       DEFAULT_SECTION_INFO,
     )
 
-  const allExperiences = (items && items.length > 0 ? items : mockExperiences)
+  const experiences = (items && items.length > 0 ? items : mockExperiences)
     .slice()
     .sort(
       (a, b) => getPeriodStartValue(b.period) - getPeriodStartValue(a.period),
     )
 
-  return (
-    <ExperienceTimeline
-      experiences={allExperiences}
-      title={sectionInfo.title ?? DEFAULT_SECTION_INFO.title}
-      description={sectionInfo.description ?? DEFAULT_SECTION_INFO.description}
-    />
+  return {
+    experiences,
+    title: sectionInfo.title ?? DEFAULT_SECTION_INFO.title,
+    description: sectionInfo.description ?? DEFAULT_SECTION_INFO.description,
+  }
+}
+
+const SKILLS_SECTION_INFO = {
+  title: 'Teknolojiler & Yetenekler',
+  description: '10+ yıllık deneyimimde uzmanlaştığım teknolojiler ve seviyeler',
+}
+
+export interface SkillsSectionData {
+  skills: SkillType[]
+  title: string
+  description: string
+}
+
+export async function loadSkillsSection(): Promise<SkillsSectionData> {
+  const { sectionInfo, items } = await getSectionDataBySectionKey<SkillType>(
+    'portfolio_skills',
+    SKILLS_SECTION_INFO,
   )
+  const skills = items && items.length > 0 ? items : mockSkills
+
+  return {
+    skills,
+    title: sectionInfo.title ?? SKILLS_SECTION_INFO.title,
+    description: sectionInfo.description ?? SKILLS_SECTION_INFO.description,
+  }
 }
