@@ -36,15 +36,15 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <>
       {/*
-        next/font CSS değişkenlerini :root'a bağla — globals.css'te
-        `body { @apply font-sans }` bu değişkeni okuyor.
+        next/font CSS değişkenlerini :root'a bağla — globals.css'teki
+        `body { @apply font-sans }` bunu okuyor. styled-jsx yerine düz <style>
+        (proje eslint'i react/no-unknown-property ile jsx/global prop'unu yasaklıyor).
       */}
-      <style jsx global>{`
-        :root {
-          --font-geist-sans: ${geistSans.style.fontFamily};
-          --font-geist-mono: ${geistMono.style.fontFamily};
-        }
-      `}</style>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `:root{--font-geist-sans:${geistSans.style.fontFamily};--font-geist-mono:${geistMono.style.fontFamily};}`,
+        }}
+      />
 
       {/* Varsayılan meta seti — sayfalar kendi <Seo> ile aynı key'leri ezer */}
       <Seo />

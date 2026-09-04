@@ -69,6 +69,7 @@ export default function Home({ pageInfo, skills, experience, seo }: HomeProps) {
         }
         noIndex={seo.noIndex}
       />
+      {/* eslint-disable-next-line react-hooks/static-components -- template API'den, module cache'de memoize */}
       <Template
         pageInfo={pageInfo ?? FALLBACK_PAGE_INFO}
         skills={skills}

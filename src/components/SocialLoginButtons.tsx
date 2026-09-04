@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useUrlQueryParam } from '@/hooks/useUrlQueryParam'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { AlertCircle } from 'lucide-react'
@@ -48,12 +48,9 @@ export function SocialLoginButtons() {
  * App Router hem Pages Router sayfalarında çalışır (taşıma sürerken ikisi bir arada).
  */
 export function SocialAuthErrorNotice() {
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    setError(new URLSearchParams(window.location.search).get('error'))
-  }, [])
-
+  // URL'deki ?error= (useSyncExternalStore — set-state-in-effect'e takılmaz,
+  // hydration uyuşmazlığı üretmez, router'dan bağımsız).
+  const error = useUrlQueryParam('error')
   if (!error) return null
   return (
     <Alert variant="destructive" className="mb-4">

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Seo } from '@/lib/seo'
-import { useRouter } from 'next/router'
 import { login } from '@/actions/auth/login'
 import {
   SocialAuthErrorNotice,
@@ -21,7 +20,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
 
 export default function LoginPage() {
-  const router = useRouter()
   const [form, setForm] = useState({ usernameOrEmail: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
