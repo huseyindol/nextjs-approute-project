@@ -1,7 +1,6 @@
-'use client'
-
+import { Seo } from '@/lib/seo'
 import { Suspense, useEffect, useState } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/router'
 import { verifyEmailService } from '@/services/auth/authService'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -10,31 +9,43 @@ import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 const TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'default'
 
 function VerifyEmailContent() {
-  const searchParams = useSearchParams()
   const router = useRouter()
-  const token = searchParams?.get('token') ?? ''
-  const tenantId = searchParams?.get('tenantId') ?? TENANT_ID
+  // Statik sayfa: query ilk render'da boş olabilir, router.isReady sonrası dolar.
+  const token = typeof router.query.token === 'string' ? router.query.token : ''
+  const tenantId =
+    typeof router.query.tenantId === 'string'
+      ? router.query.tenantId
+      : TENANT_ID
 
-  // Token yoksa hemen error state'e geç — useEffect içinde senkron setState yok
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
-    token ? 'loading' : 'error',
-  )
-  const [errorMessage, setErrorMessage] = useState(
-    token ? '' : 'Doğrulama bağlantısı geçersiz.',
-  )
+  // Doğrulama SONUCU state'te; "token yok" durumu ise TÜRETİLİR — böylece effect
+  // içinde senkron setState yok (react-hooks/set-state-in-effect).
+  const [result, setResult] = useState<{
+    status: 'success' | 'error'
+    message?: string
+  } | null>(null)
+
+  const missingToken = router.isReady && !token
+  const status: 'loading' | 'success' | 'error' = result
+    ? result.status
+    : missingToken
+      ? 'error'
+      : 'loading'
+  const errorMessage =
+    result?.message ?? (missingToken ? 'Doğrulama bağlantısı geçersiz.' : '')
 
   useEffect(() => {
-    if (!token) return
+    // router.isReady'den önce query boştur — erkenden "geçersiz" deme.
+    if (!router.isReady || !token) return
 
     verifyEmailService(token, tenantId)
-      .then(() => setStatus('success'))
+      .then(() => setResult({ status: 'success' }))
       .catch((err: unknown) => {
-        setStatus('error')
-        setErrorMessage(
-          err instanceof Error ? err.message : 'Doğrulama başarısız.',
-        )
+        setResult({
+          status: 'error',
+          message: err instanceof Error ? err.message : 'Doğrulama başarısız.',
+        })
       })
-  }, [token, tenantId])
+  }, [router.isReady, token, tenantId])
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
@@ -90,14 +101,23 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center">
-          <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        </div>
-      }
-    >
-      <VerifyEmailContent />
-    </Suspense>
+    <>
+      <Seo
+        title="E-posta Doğrulama"
+        description="E-posta adresinizi doğrulayın."
+        canonical="/verify-email"
+        noIndex
+      />
+
+      <Suspense
+        fallback={
+          <div className="flex min-h-screen items-center justify-center">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          </div>
+        }
+      >
+        <VerifyEmailContent />
+      </Suspense>
+    </>
   )
 }

@@ -1,27 +1,25 @@
-'use server'
-
-import { saveTokens } from './saveTokens'
-import { loginService, type LoginPayload } from '@/services/auth/authService'
+import type { LoginPayload } from '@/services/auth/authService'
 
 /**
- * BFF login: backend login çağrısı SUNUCUDA yapılır (server-to-server → preflight
- * yok, tenant domain'ini api CORS'una eklemeye gerek yok). Dönen token'lar host-only
- * httpOnly cookie'ye yazılır. Tarayıcı yalnız same-origin bu server action'ı çağırır.
+ * BFF login — istemci sarmalayıcısı.
+ *
+ * Eskiden server action'dı; Pages Router'da server action olmadığı için aynı iş
+ * `/api/auth/login` route'una taşındı. GÜVENLİK MODELİ AYNI: backend çağrısı ve
+ * httpOnly cookie yazımı sunucuda olur, tarayıcı token'ı hiç görmez. Çağrı
+ * same-origin olduğu için CORS/preflight de yok.
+ *
+ * İmza bilinçli olarak korundu — çağıran sayfaların değişmesi gerekmiyor.
  */
 export async function login(
   payload: LoginPayload,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
-    const r = await loginService(payload)
-    await saveTokens({
-      token: r.token,
-      refreshToken: r.refreshToken,
-      username: r.username,
-      expiredDate: r.expiredDate,
-      refreshExpiredDate: r.refreshExpiredDate,
-      userCode: r.userCode,
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     })
-    return { ok: true }
+    return (await res.json()) as { ok: true } | { ok: false; error: string }
   } catch (e) {
     return {
       ok: false,

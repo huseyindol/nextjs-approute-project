@@ -123,3 +123,30 @@ uygulanmıyordu. Çözüm: `useUrlQueryParam` (`src/hooks/useUrlQueryParam.ts`) 
 `useSyncExternalStore` ile sunucu anlık görüntüsü `undefined`, istemcininki gerçek değer.
 Hydration uyuşmazlığı üretmez, `set-state-in-effect` lint kuralına takılmaz, sayfa
 statik kalır. Kullanıcı seçimi sonradan URL'i ezer.
+
+## Faz 4 Notları — Auth/BFF
+
+**BFF modeli AYNEN korundu.** Server action yalnız bir sözdizimi kolaylığıydı; güvenlik
+onun değil, işin sunucuda yapılmasının sonucu:
+
+| Eski (server action)                        | Yeni (Pages Router)                           |
+| ------------------------------------------- | --------------------------------------------- |
+| `login()`                                   | `POST /api/auth/login`                        |
+| `siteLogout()`                              | `POST /api/auth/logout`                       |
+| `refreshSession()`                          | `POST /api/auth/refresh`                      |
+| `saveTokens()`                              | login route'unun içinde (ayrı dosya gereksiz) |
+| `logout()` (panelden kalma, `/admin/login`) | **silindi** — kullanan yoktu                  |
+
+- `src/lib/api-cookies.ts`: `resCookieStore(res)` — `writeAuthCookies`/`clearAuthCookies`'in
+  beklediği store arayüzünü `NextApiResponse` üzerinde uygular. Cookie kuralları
+  (isimler, httpOnly/sameSite/secure, JWT süresinden türetilen max-age) TEK yerde
+  (`lib/auth-cookies.ts`) kalmaya devam ediyor. Serializer elle yazıldı — `cookie`
+  paketi yalnız transitive bağımlılık, ona yaslanmadık.
+- `src/actions/auth/*` dosyaları **aynı isim ve imzayla** istemci `fetch` sarmalayıcısına
+  dönüştü → `Header` ve `SessionRefresher` hiç değişmedi, iki router'da da çalışıyor.
+- Sosyal giriş route handler'ları `pages/api/auth/social/{start,callback}/[provider].ts`
+  oldu; `origin` `x-forwarded-proto` + `host` başlıklarından kuruluyor.
+- `/login` `router.refresh()` yerine `window.location.assign('/')` kullanıyor (Pages
+  Router'da refresh yok; girişten sonra tam gezinme zaten istenen davranış).
+- `/verify-email`: `router.query` `isReady` öncesi boş olduğu için "geçersiz bağlantı"
+  hatası erken verilmiyor; durum türetilerek `set-state-in-effect` kuralı da korunuyor.
