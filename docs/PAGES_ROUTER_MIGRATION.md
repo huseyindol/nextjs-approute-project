@@ -169,3 +169,34 @@ onun değil, işin sunucuda yapılmasının sonucu:
   linklenmiyordu, Pages Router'da anlamları kalmıyordu.
 - CMS şablon sistemi (`dynamicImport` + module cache) `[pages]` ve `arcade`'de korundu;
   `dynamicImport` her iki router'da çalışır.
+
+## Faz 6 Notları — API route'ları + Özel Dosyalar + src/app KALDIRILDI
+
+**src/app dizini artık YOK. Proje %100 Pages Router.**
+
+API route'ları (App Router route handler → pages/api handler):
+
+- chat/token, contact, templates, rate-limit/reset → düz port (req/res imzası).
+  `getClientIp(Headers)` için `req.headers` (düz obje) → `Headers`'a çeviren küçük adaptör.
+- **revalidate**: App Router'ın `revalidateTag`/`revalidatePath` ikilisinin Pages
+  karşılığı yalnız `res.revalidate(path)`. Yeni davranış: POST-only, path bazlı;
+  `tag` verilirse path'e EŞLENİR (`cms-page-<slug>` → `/` + `/<slug>`). Tag bazlı
+  cache invalidation Pages Router'da olmadığı için semantik bilinçli değişti.
+- `lib/api-cookies.ts` adaptörü chat/token dışındaki cookie işlerinde de kullanıldı.
+
+Özel dosyalar:
+
+- `robots.ts` → `pages/robots.txt.tsx` (getServerSideProps, text/plain)
+- `sitemap.ts` → `pages/sitemap.xml.tsx` (getServerSideProps, XML üretir)
+- `manifest.ts` → statik `public/site.webmanifest` (+ \_document link güncellendi)
+- `not-found.tsx` → `pages/404.tsx` (hatalı /admin/dashboard + /api/contact linkleri
+  /blog ile düzeltildi)
+- `error.tsx` + `global-error.tsx` → `pages/500.tsx` (statik hata sayfası)
+- `layout.tsx` → zaten \_document + \_app'e (Faz 1) taşınmıştı; `favicon.ico` public/'e alındı
+
+Testler: 3 API testi (contact/templates/revalidate) Pages handler imzasına uyarlandı;
+`tests/utils/test-utils.tsx`'e `createApiMocks` (req/res mock) eklendi. revalidate testi
+yeni semantiğe göre yazıldı. **17 test geçiyor.**
+
+Doğrulama: build'de "Route (app)" tablosu YOK; robots.txt/sitemap.xml/site.webmanifest/404
+canlı sunucuda doğru çıktı veriyor.

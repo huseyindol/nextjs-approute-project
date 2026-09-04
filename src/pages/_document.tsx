@@ -24,7 +24,7 @@ export default function Document() {
         <link rel="icon" href="/assets/img/favicon.ico" />
         <link rel="shortcut icon" href="/assets/img/favicon.ico" />
         <link rel="apple-touch-icon" href="/assets/img/favicon.ico" />
-        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="manifest" href="/site.webmanifest" />
       </Head>
       <body className="font-sans antialiased">
         <Main />

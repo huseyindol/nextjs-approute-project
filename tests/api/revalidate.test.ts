@@ -1,135 +1,72 @@
-import { GET, POST } from '@/app/api/revalidate/route'
-import { createMockRequest } from '@tests/utils/test-utils'
+import handler from '@/pages/api/revalidate'
+import { createApiMocks } from '@tests/utils/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 
-// Mock Next.js cache functions
-vi.mock('next/cache', () => ({
-  revalidatePath: vi.fn(),
-  revalidateTag: vi.fn(),
-}))
-
-describe('Revalidate API', () => {
-  describe('POST /api/revalidate', () => {
-    it('should return 400 when no tag or path provided', async () => {
-      const request = createMockRequest({
-        method: 'POST',
-        url: 'http://localhost:3000/api/revalidate',
-        body: {},
-      })
-
-      const response = await POST(request)
-      const data = await response.json()
-
-      expect(response.status).toBe(400)
-      expect(data.ok).toBe(false)
-      expect(data.error).toContain('Provide at least one')
-    })
-
-    it('should return 401 when unauthorized', async () => {
-      vi.stubEnv('NEXT_PUBLIC_REVALIDATE_SECRET', 'secret-key')
-
-      const request = createMockRequest({
-        method: 'POST',
-        url: 'http://localhost:3000/api/revalidate',
-        headers: {},
-        body: {
-          tag: 'test-tag',
-        },
-      })
-
-      const response = await POST(request)
-      const data = await response.json()
-
-      expect(response.status).toBe(401)
-      expect(data.error).toBe('Unauthorized')
-
-      vi.unstubAllEnvs()
-    })
-
-    it('should revalidate by tag', async () => {
-      const request = createMockRequest({
-        method: 'POST',
-        url: 'http://localhost:3000/api/revalidate',
-        body: {
-          tag: 'test-tag',
-        },
-      })
-
-      const response = await POST(request)
-      const data = await response.json()
-
-      expect(response.status).toBe(200)
-      expect(data.ok).toBe(true)
-      expect(data.revalidated).toContain('tag:test-tag')
-    })
-
-    it('should revalidate by path', async () => {
-      const request = createMockRequest({
-        method: 'POST',
-        url: 'http://localhost:3000/api/revalidate',
-        body: {
-          path: '/',
-        },
-      })
-
-      const response = await POST(request)
-      const data = await response.json()
-
-      expect(response.status).toBe(200)
-      expect(data.ok).toBe(true)
-      expect(data.revalidated).toContain('path:/')
-    })
-
-    it('should accept authorization header', async () => {
-      vi.stubEnv('NEXT_PUBLIC_REVALIDATE_SECRET', 'secret-key')
-
-      const request = createMockRequest({
-        method: 'POST',
-        url: 'http://localhost:3000/api/revalidate',
-        headers: {
-          authorization: 'Bearer secret-key',
-        },
-        body: {
-          tag: 'test-tag',
-        },
-      })
-
-      const response = await POST(request)
-      const data = await response.json()
-
-      expect(response.status).toBe(200)
-      expect(data.ok).toBe(true)
-
-      vi.unstubAllEnvs()
-    })
+/**
+ * NOT: App Router'daki revalidateTag/GET semantiği Pages Router'da yok.
+ * Yeni davranış: POST-only, res.revalidate(path). Tag'ler path'e eşlenir
+ * (cms-page-<slug> → '/' + '/<slug>').
+ */
+describe('Revalidate API (pages/api/revalidate)', () => {
+  it('405 for non-POST', async () => {
+    const { req, res, state } = createApiMocks({ method: 'GET' })
+    await handler(req, res)
+    expect(state.statusCode).toBe(405)
   })
 
-  describe('GET /api/revalidate', () => {
-    it('should revalidate using query parameters', async () => {
-      const request = createMockRequest({
-        method: 'GET',
-        url: 'http://localhost:3000/api/revalidate?tag=test-tag',
-      })
+  it('400 when no tag or path', async () => {
+    const { req, res, state } = createApiMocks({ method: 'POST', body: {} })
+    await handler(req, res)
+    expect(state.statusCode).toBe(400)
+    expect((state.jsonBody as { ok: boolean }).ok).toBe(false)
+  })
 
-      const response = await GET(request)
-      const data = await response.json()
-
-      expect(response.status).toBe(200)
-      expect(data.ok).toBe(true)
-      expect(data.revalidated).toContain('tag:test-tag')
+  it('401 when unauthorized', async () => {
+    vi.stubEnv('NEXT_PUBLIC_REVALIDATE_SECRET', 'secret-key')
+    const { req, res, state } = createApiMocks({
+      method: 'POST',
+      body: { path: '/blog' },
     })
+    await handler(req, res)
+    expect(state.statusCode).toBe(401)
+    vi.unstubAllEnvs()
+  })
 
-    it('should return 400 when no parameters', async () => {
-      const request = createMockRequest({
-        method: 'GET',
-        url: 'http://localhost:3000/api/revalidate',
-      })
-
-      const response = await GET(request)
-      const data = await response.json()
-
-      expect(response.status).toBe(400)
-      expect(data.ok).toBe(false)
+  it('revalidates by path', async () => {
+    const { req, res, state } = createApiMocks({
+      method: 'POST',
+      body: { path: '/blog' },
     })
+    const spy = vi.spyOn(res, 'revalidate')
+    await handler(req, res)
+    expect(state.statusCode).toBe(200)
+    expect(spy).toHaveBeenCalledWith('/blog')
+    expect((state.jsonBody as { revalidated: string[] }).revalidated).toContain(
+      '/blog',
+    )
+  })
+
+  it('maps cms-page-<slug> tag to paths', async () => {
+    const { req, res, state } = createApiMocks({
+      method: 'POST',
+      body: { tag: 'cms-page-hakkimda' },
+    })
+    const spy = vi.spyOn(res, 'revalidate')
+    await handler(req, res)
+    expect(state.statusCode).toBe(200)
+    expect(spy).toHaveBeenCalledWith('/hakkimda')
+    expect(spy).toHaveBeenCalledWith('/')
+  })
+
+  it('accepts Bearer authorization', async () => {
+    vi.stubEnv('NEXT_PUBLIC_REVALIDATE_SECRET', 'secret-key')
+    const { req, res, state } = createApiMocks({
+      method: 'POST',
+      headers: { authorization: 'Bearer secret-key' },
+      body: { path: '/' },
+    })
+    await handler(req, res)
+    expect(state.statusCode).toBe(200)
+    vi.unstubAllEnvs()
   })
 })

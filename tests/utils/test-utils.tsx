@@ -89,3 +89,55 @@ export function createMockRequest(options: {
 // Re-export everything from testing-library
 export * from '@testing-library/react'
 export { customRender as render }
+
+// ─── Pages Router API (NextApiRequest/Response) mock'ları ───────────────
+import type { NextApiRequest, NextApiResponse } from 'next'
+
+export function createApiMocks(options: {
+  method?: string
+  query?: Record<string, string | string[]>
+  headers?: Record<string, string>
+  cookies?: Record<string, string>
+  body?: unknown
+}) {
+  const req = {
+    method: options.method ?? 'GET',
+    query: options.query ?? {},
+    headers: options.headers ?? {},
+    cookies: options.cookies ?? {},
+    body: options.body,
+  } as unknown as NextApiRequest
+
+  const state = {
+    statusCode: 200,
+    jsonBody: undefined as unknown,
+    headers: {} as Record<string, string>,
+    ended: false,
+  }
+
+  const res = {
+    status(code: number) {
+      state.statusCode = code
+      return res
+    },
+    json(payload: unknown) {
+      state.jsonBody = payload
+      state.ended = true
+      return res
+    },
+    end() {
+      state.ended = true
+      return res
+    },
+    setHeader(k: string, v: string) {
+      state.headers[k.toLowerCase()] = v
+      return res
+    },
+    getHeader(k: string) {
+      return state.headers[k.toLowerCase()]
+    },
+    revalidate: async () => {},
+  } as unknown as NextApiResponse
+
+  return { req, res, state }
+}
