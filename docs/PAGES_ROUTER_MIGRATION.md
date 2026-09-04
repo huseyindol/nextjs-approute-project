@@ -150,3 +150,22 @@ onun değil, işin sunucuda yapılmasının sonucu:
   Router'da refresh yok; girişten sonra tam gezinme zaten istenen davranış).
 - `/verify-email`: `router.query` `isReady` öncesi boş olduğu için "geçersiz bağlantı"
   hatası erken verilmiyor; durum türetilerek `set-state-in-effect` kuralı da korunuyor.
+
+## Faz 5 Notları — Kalan Sayfalar
+
+**TÜM sayfalar Pages Router'da.** App Router'da yalnız API route'ları ve özel dosyalar
+(`robots`/`sitemap`/`manifest`/`not-found`/`layout`) kaldı.
+
+- `/[pages]` (CMS wildcard) ve `/arcade`: slug/query önceden bilinemediği için
+  **getServerSideProps** (App Router'daki ƒ davranışının aynısı). `revalidate=3600`
+  karşılığı olarak `Cache-Control: s-maxage=3600, stale-while-revalidate` header'ı elle
+  yazıldı — kullanıcı SSG'ye çevirmeyi zorunlu tutmadı, yapı dönüşümü öncelik.
+- `/forms/[id]`: getServerSideProps (form aktif değilse `notFound`).
+- `/projects/[slug]`: sabit doküman haritası → **getStaticPaths fallback:false** (4 sayfa
+  build'de üretiliyor).
+- `FormSubmitWrapper` App Router klasöründen `src/components/forms/`'a taşındı (git mv).
+- `example/*` (5 demo sayfa ~1150 satır) + `actions/posts.ts` + `PostsFetcher.tsx`
+  **silindi** (kullanıcı kararı): App Router öğretici demolarıydı, hiçbir menüden
+  linklenmiyordu, Pages Router'da anlamları kalmıyordu.
+- CMS şablon sistemi (`dynamicImport` + module cache) `[pages]` ve `arcade`'de korundu;
+  `dynamicImport` her iki router'da çalışır.
