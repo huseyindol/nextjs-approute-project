@@ -1,6 +1,6 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { AlertCircle } from 'lucide-react'
@@ -44,11 +44,16 @@ export function SocialLoginButtons() {
 
 /**
  * Callback'ten dönen `?error=` mesajını gösterir.
- * useSearchParams kullandığı için sayfada <Suspense> içinde render edilmelidir.
+ * Router'dan BAĞIMSIZ: hata mesajı window.location'dan okunur. Böylece bileşen hem
+ * App Router hem Pages Router sayfalarında çalışır (taşıma sürerken ikisi bir arada).
  */
 export function SocialAuthErrorNotice() {
-  const searchParams = useSearchParams()
-  const error = searchParams?.get('error')
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    setError(new URLSearchParams(window.location.search).get('error'))
+  }, [])
+
   if (!error) return null
   return (
     <Alert variant="destructive" className="mb-4">

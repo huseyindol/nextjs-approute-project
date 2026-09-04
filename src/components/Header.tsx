@@ -8,7 +8,7 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import { LogOut, Menu, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState, useTransition } from 'react'
 
 const mainNavLinks = [
@@ -35,8 +35,9 @@ const authCookies = [
 ] as const
 
 export default function Header() {
+  // usePathname HER İKİ router'da da çalışır (useRouter'ın aksine) — Header
+  // taşıma sürerken hem app/ hem pages/ layout'unda render ediliyor.
   const pathname = usePathname() ?? ''
-  const router = useRouter()
   const isEllyPage = pathname.startsWith('/projects/elly')
   const navLinksToUse = isEllyPage ? ellyNavLinks : mainNavLinks
   const [scrolled, setScrolled] = useState(false)
@@ -52,8 +53,9 @@ export default function Header() {
       removeGlobalCookie(CookieEnum.USERNAME)
       // Chat guest kimliğini de temizle → tekrar girişte eski guest adı kalmasın
       clearGuestStorage()
-      router.push('/login')
-      router.refresh()
+      // Router'dan bağımsız tam gezinme: çıkışta zaten tüm istemci durumu
+      // sıfırlanmalı (cookie'ler temizlendi), ayrıca iki router'da da çalışır.
+      window.location.assign('/login')
     })
   }
 

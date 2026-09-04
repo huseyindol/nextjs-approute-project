@@ -94,3 +94,32 @@ katkısı olan ilk yapısal kazanç: sayfa artık istek başına render edilmiyo
 `/makaleler/[slug]` için `fallback: 'blocking'` seçildi (CMS'e yeni makale eklendiğinde
 build gerekmeden ilk istekte üretilsin); blog MDX'inde ise `fallback: false` (dosyalar
 repo'da, yeni makale zaten deploy ile gelir).
+
+## Router Bağımlılığı — Taşımanın En Sinsi Tuzağı
+
+`next/navigation`'ın **`useRouter`**'ı Pages Router'da mount DEĞİLDİR; çağrısı event
+handler içinde patlar ve React aynı handler'daki `setState`'i de düşürür → "tıklama
+hiçbir şey yapmıyor, hata da yok". Ayrım önemli:
+
+| API                                                  | App Router                      | Pages Router  |
+| ---------------------------------------------------- | ------------------------------- | ------------- |
+| `useRouter` (`next/navigation`)                      | ✅                              | ❌ patlar     |
+| `useRouter` (`next/router`)                          | ❌ "NextRouter was not mounted" | ✅            |
+| `usePathname`, `useSearchParams` (`next/navigation`) | ✅                              | ✅ (nullable) |
+
+**Uygulanan kural:** iki router'da da render edilen ortak bileşenler (`Header`,
+`Datalayer`, `SessionRefresher`, `SocialLoginButtons`) router'a HİÇ bağlanmaz —
+`usePathname` veya doğrudan `window.location` kullanır. Yalnız Pages Router'a ait
+bileşenler `next/router` kullanabilir.
+
+Filtre bileşenlerinde router tamamen kaldırıldı: URL senkronu `history.replaceState`
+(try/catch'li) ile yapılıyor, böylece URL güncellenemese bile filtre çalışır.
+
+## Statik Sayfada Query Parametresi
+
+App Router `searchParams`'ı SUNUCUDA okuyup listeyi süzüyordu. Sayfa statiğe çevrilince
+bu kayboldu → tıklayınca filtre çalışıyor ama `?category=X` linkiyle girince
+uygulanmıyordu. Çözüm: `useUrlQueryParam` (`src/hooks/useUrlQueryParam.ts`) —
+`useSyncExternalStore` ile sunucu anlık görüntüsü `undefined`, istemcininki gerçek değer.
+Hydration uyuşmazlığı üretmez, `set-state-in-effect` lint kuralına takılmaz, sayfa
+statik kalır. Kullanıcı seçimi sonradan URL'i ezer.

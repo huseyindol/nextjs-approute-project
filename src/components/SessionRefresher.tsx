@@ -3,7 +3,7 @@
 import { refreshSession } from '@/actions/auth/refreshSession'
 import { useCookie } from '@/context/CookieContext'
 import { CookieEnum } from '@/utils/constant/cookieConstant'
-import { useRouter } from 'next/navigation'
+
 import { useEffect, useRef } from 'react'
 
 // Token bitmeden bu kadar önce sessizce yenile (saat kayması için tampon)
@@ -12,12 +12,11 @@ const LEAD_MS = 30_000
 /**
  * Login'li kullanıcının access token'ı süresi dolmadan (expiredDate) önce
  * sessizce yeniler. expiredDate cookie'si client'tan okunabilir; süresi geçmişse
- * hemen, değilse zamanında refreshSession() çağrılır. Başarılıysa router.refresh()
+ * hemen, değilse zamanında refreshSession() çağrılır. Başarılıysa sayfa tazelenir
  * ile yeni cookie'ler context'e yansır ve sonraki süre yeniden zamanlanır.
  */
 export function SessionRefresher() {
   const { cookies } = useCookie()
-  const router = useRouter()
   // accessToken httpOnly olduğu için client'tan okunamaz; login durumunu
   // client-readable username cookie'si ile, zamanlamayı expiredDate ile çözeriz.
   // Asıl yenileme refreshSession() server action'ında httpOnly refreshToken ile yapılır.
@@ -36,7 +35,9 @@ export function SessionRefresher() {
       await refreshSession()
       // Başarı: yeni cookie'ler → context güncellenir, yeni süre zamanlanır.
       // Başarısızlık: cookie'ler server'da temizlendi → isLoggedIn=false olur.
-      router.refresh()
+      // Router'dan bağımsız tazeleme: yeni cookie'ler okunsun. (router.refresh()
+      // App Router'a özgü; bu bileşen iki router'ın da kökünde render ediliyor.)
+      window.location.reload()
     }
 
     const delay = expiredDate - Date.now() - LEAD_MS
@@ -46,7 +47,7 @@ export function SessionRefresher() {
     }
     const t = setTimeout(() => void run(), delay)
     return () => clearTimeout(t)
-  }, [isLoggedIn, expiredDate, router])
+  }, [isLoggedIn, expiredDate])
 
   return null
 }

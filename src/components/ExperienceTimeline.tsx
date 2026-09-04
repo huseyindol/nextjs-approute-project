@@ -1,4 +1,5 @@
 'use client'
+import { useUrlQueryParam } from '@/hooks/useUrlQueryParam'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { INDUSTRIES } from '@/schemas/constants'
@@ -11,7 +12,6 @@ import {
   ChevronUp,
   MapPin,
 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 
 const fadeInLeft = {
@@ -42,15 +42,33 @@ interface ExperienceTimelineProps {
   description: string
 }
 
+/**
+ * Filtre seçimini URL'e yansıtır — ROUTER KULLANMADAN.
+ *
+ * Router'a bağlanmak taşımada sorun çıkardı: App Router'ın useRouter'ı Pages
+ * Router'da mount değil, çağrısı handler içinde patlayınca React aynı handler'daki
+ * setState'i de düşürüyor ve filtre hiç çalışmıyordu. Filtrelemenin URL'e ihtiyacı
+ * yok; adres yalnız paylaşılabilirlik için güncelleniyor.
+ */
+function syncFilterUrl(url: string) {
+  try {
+    window.history.replaceState(window.history.state, '', url)
+  } catch {
+    // URL güncellenemezse filtre yine çalışır — sessiz geç.
+  }
+}
+
 export default function ExperienceTimeline({
   experiences,
   title,
   description,
 }: ExperienceTimelineProps) {
-  const router = useRouter()
   // Filtre tamamen client state — server searchParams okunmuyor (sayfa static/ISR kalır).
   // Tıklamada URL de güncellenir (paylaşılabilir); ilk yükte hep "all" başlar.
-  const [selectedIndustry, setSelectedIndustry] = useState('all')
+  // İlk yük: adresteki ?industry= uygulanır; sonrası kullanıcı seçimi ezer.
+  const urlIndustry = useUrlQueryParam('industry')
+  const [selected, setSelected] = useState<string | null>(null)
+  const selectedIndustry = selected ?? urlIndustry ?? 'all'
 
   const filtered =
     selectedIndustry === 'all'
@@ -58,10 +76,10 @@ export default function ExperienceTimeline({
       : experiences.filter(exp => exp.industry === selectedIndustry)
 
   function handleFilter(industry: string) {
-    setSelectedIndustry(industry)
+    setSelected(industry)
     const url =
       industry === 'all' ? '/experience' : `/experience?industry=${industry}`
-    router.push(url, { scroll: false })
+    syncFilterUrl(url)
   }
 
   return (

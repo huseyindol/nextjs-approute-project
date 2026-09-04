@@ -1,4 +1,5 @@
 'use client'
+import { useUrlQueryParam } from '@/hooks/useUrlQueryParam'
 import AdSenseAd from '@/components/AdSenseAd'
 import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
@@ -7,7 +8,6 @@ import { motion, useInView } from 'framer-motion'
 import { BookOpenIcon, CalendarIcon, ClockIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 
 const AD_SLOTS = [
@@ -48,27 +48,42 @@ interface MakalelerContentProps {
   categories: string[]
 }
 
+/**
+ * Filtre seçimini URL'e yansıtır — ROUTER KULLANMADAN.
+ *
+ * Router'a bağlanmak taşımada sorun çıkardı: App Router'ın useRouter'ı Pages
+ * Router'da mount değil, çağrısı handler içinde patlayınca React aynı handler'daki
+ * setState'i de düşürüyor ve filtre hiç çalışmıyordu. Filtrelemenin URL'e ihtiyacı
+ * yok; adres yalnız paylaşılabilirlik için güncelleniyor.
+ */
+function syncFilterUrl(url: string) {
+  try {
+    window.history.replaceState(window.history.state, '', url)
+  } catch {
+    // URL güncellenemezse filtre yine çalışır — sessiz geç.
+  }
+}
+
 export default function MakalelerContent({
   posts: allPosts,
   categories,
 }: MakalelerContentProps) {
-  const router = useRouter()
   const gridRef = useRef(null)
   const gridInView = useInView(gridRef, { once: true, margin: '-60px' })
 
   // Kategori filtresi tamamen client-side (server searchParams okunmuyor → sayfa statik).
   // Tüm makaleler prerender edilir; seçim yalnız görüneni süzer, URL'i paylaşılabilir tutar.
-  const [categoryFilter, setCategoryFilter] = useState<string | undefined>(
-    undefined,
-  )
+  // İlk yük: adresteki ?category= uygulanır; sonrası kullanıcı seçimi ezer.
+  const urlCategory = useUrlQueryParam('category')
+  const [selected, setSelected] = useState<string | undefined | null>(null)
+  const categoryFilter = selected === null ? urlCategory : selected
 
   const selectCategory = (category: string | undefined) => {
-    setCategoryFilter(category)
-    router.replace(
+    setSelected(category)
+    syncFilterUrl(
       category
         ? `/makaleler?category=${encodeURIComponent(category)}`
         : '/makaleler',
-      { scroll: false },
     )
   }
 
