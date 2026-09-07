@@ -2,7 +2,7 @@ import MakalelerContent from '@/components/MakalelerContent'
 import { getAllCmsCategories, getAllCmsPosts } from '@/lib/blog'
 import type { BlogPost } from '@/types/blog'
 import { Seo } from '@/lib/seo'
-import type { GetStaticProps } from 'next'
+import type { GetServerSideProps } from 'next'
 
 /** Liste yalnız slug + frontmatter kullanır; CMS gövdesi taşınmaz. */
 type MakaleListItem = Omit<BlogPost, 'content'>
@@ -39,14 +39,15 @@ export default function MakalelerPage({
 }
 
 /**
- * App Router'da bu sayfa `searchParams.category`'yi SUNUCUDA okuduğu için dinamikti (ƒ).
- * Kategori filtresi MakalelerContent içine (client-side) alınarak sayfa statiğe çevrildi
- * — istek başına render yok, RPS tavanı yükseliyor.
+ * GEÇİCİ: dinamik (getServerSideProps) — "sadece router değişiminin" RPS'ini eski App
+ * Router'la (o da ƒ idi) elmayla-elma karşılaştırmak için. Ölçüm sonrası tekrar
+ * getStaticProps + revalidate:3600'e çekilecek (bkz. git: Faz 3b).
  *
- * `content` props'a konmaz: liste yalnız frontmatter kullanıyor, CMS gövdeleri
- * __NEXT_DATA__'yı gereksiz şişirirdi.
+ * `content` props'a konmaz: liste yalnız frontmatter kullanır.
  */
-export const getStaticProps: GetStaticProps<MakalelerPageProps> = async () => {
+export const getServerSideProps: GetServerSideProps<
+  MakalelerPageProps
+> = async () => {
   const [allPosts, categories] = await Promise.all([
     getAllCmsPosts(),
     getAllCmsCategories(),
@@ -54,5 +55,5 @@ export const getStaticProps: GetStaticProps<MakalelerPageProps> = async () => {
 
   const posts: MakaleListItem[] = allPosts.map(({ content, ...rest }) => rest)
 
-  return { props: { posts, categories }, revalidate: 3600 }
+  return { props: { posts, categories } }
 }
