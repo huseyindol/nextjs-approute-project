@@ -200,3 +200,17 @@ yeni semantiğe göre yazıldı. **17 test geçiyor.**
 
 Doğrulama: build'de "Route (app)" tablosu YOK; robots.txt/sitemap.xml/site.webmanifest/404
 canlı sunucuda doğru çıktı veriyor.
+
+## Faz 8 — beasties ile Kritik CSS Inline Geri Kazanıldı
+
+Faz 1'de `optimizeCss` (critters) Pages Router'ın /404-/500 prerender'ını kırdığı için
+kapatılmıştı. Taşıma bitince halef paket `beasties` ile çözüldü:
+
+- `beasties` (critters'ın bakımlı fork'u) kuruldu; Next 16 hâlâ `require('critters')`
+  dediği için `critters` adı beasties'e alias'landı: `"critters": "npm:beasties@^0.5.4"`.
+- `optimizeCss: true` geri açıldı. beasties eski `setAttribute` çökmesini düzeltmiş —
+  /404, /500, /projects/elly dahil tüm sayfalar prerender oluyor.
+- Doğrulama: ~45 KB kritik CSS `<style>` olarak inline + kalan CSS preload; build-time
+  çalışır (standalone runtime'a bağımlılık girmez). tsc+eslint temiz, 69 test geçiyor.
+
+**Taşıma TAMAMLANDI.** Proje %100 Pages Router, açık ödün kalmadı.

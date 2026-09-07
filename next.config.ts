@@ -33,6 +33,7 @@ const nextConfig = {
   // bir değişikliğe bırakıldı — bu PR yalnızca sürüm yükseltmesini kapsıyor.
 
   experimental: {
+    // Kritik CSS inline (halef paket `beasties` kurulu; deprecated critters DEĞİL).
     optimizeCss: true,
     // Not: `experimental.ppr` 16.3'te deprecate edildi (top-level `cacheComponents`'a
     // taşındı). Burada zaten `false` idi (= varsayılan davranış), o yüzden anahtar
