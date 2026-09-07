@@ -2,7 +2,7 @@ import MakalelerContent from '@/components/MakalelerContent'
 import { getAllCmsCategories, getAllCmsPosts } from '@/lib/blog'
 import type { BlogPost } from '@/types/blog'
 import { Seo } from '@/lib/seo'
-import type { GetServerSideProps } from 'next'
+import type { GetStaticProps } from 'next'
 
 /** Liste yalnız slug + frontmatter kullanır; CMS gövdesi taşınmaz. */
 type MakaleListItem = Omit<BlogPost, 'content'>
@@ -39,15 +39,13 @@ export default function MakalelerPage({
 }
 
 /**
- * GEÇİCİ: dinamik (getServerSideProps) — "sadece router değişiminin" RPS'ini eski App
- * Router'la (o da ƒ idi) elmayla-elma karşılaştırmak için. Ölçüm sonrası tekrar
- * getStaticProps + revalidate:3600'e çekilecek (bkz. git: Faz 3b).
- *
- * `content` props'a konmaz: liste yalnız frontmatter kullanır.
+ * ISR: getStaticProps + revalidate:3600 — sayfa build/revalidate anında bir kez
+ * render edilip statik servis edilir; CMS istek başına DEĞİL, saatte bir çağrılır.
+ * Ölçümle kanıtlandı: dinamik (GSSP) her istekte backend'e gidip RPS'i backend
+ * gecikmesine mahkûm ediyordu (yük altında ~42 RPS); statik backend'den bağımsız
+ * ~708 RPS. `content` props'a konmaz: liste yalnız frontmatter kullanır.
  */
-export const getServerSideProps: GetServerSideProps<
-  MakalelerPageProps
-> = async () => {
+export const getStaticProps: GetStaticProps<MakalelerPageProps> = async () => {
   const [allPosts, categories] = await Promise.all([
     getAllCmsPosts(),
     getAllCmsCategories(),
@@ -55,5 +53,5 @@ export const getServerSideProps: GetServerSideProps<
 
   const posts: MakaleListItem[] = allPosts.map(({ content, ...rest }) => rest)
 
-  return { props: { posts, categories } }
+  return { props: { posts, categories }, revalidate: 3600 }
 }
