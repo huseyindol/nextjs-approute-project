@@ -1,105 +1,89 @@
-import { GET } from '@/app/amp/route'
+import { getServerSideProps, renderAmpDocument } from '@/pages/amp'
+import { createApiMocks } from '@tests/utils/test-utils'
+import type { GetServerSidePropsContext } from 'next'
 import { describe, expect, it } from 'vitest'
 
 /**
- * /amp — ana sayfanın AMP kopyası (Route Handler).
- * Yerleşik AMP validator'ı burada çalıştırmıyoruz (ağ/paket gerektirir);
- * bunun yerine valid AMP HTML'in yapısal zorunluluklarını doğruluyoruz.
+ * /amp — ana sayfanın AMP kopyası. App Router route handler'ından Pages Router'a
+ * taşındı: HTML `renderAmpDocument()` ile üretilir, `getServerSideProps` `res`'e yazar.
+ * İçerik doğrulaması renderAmpDocument çıktısı üzerinden, header/status ise
+ * getServerSideProps üzerinden yapılır.
  */
-describe('GET /amp', () => {
-  it('returns 200 with text/html content type', async () => {
-    const res = GET()
-    expect(res.status).toBe(200)
-    expect(res.headers.get('content-type')).toContain('text/html')
+describe('/amp (Pages Router)', () => {
+  it('getServerSideProps sets 200 text/html and writes body', async () => {
+    const { req, res, state } = createApiMocks({ method: 'GET' })
+    // res.write / res.end mock'la (createApiMocks json/end sağlıyor, write ekleyelim)
+    let written = ''
+    ;(res as unknown as { write: (s: string) => void }).write = (s: string) => {
+      written += s
+    }
+    await getServerSideProps({ req, res } as unknown as GetServerSidePropsContext)
+    expect(state.headers['content-type']).toContain('text/html')
+    expect(state.headers['cache-control']).toContain('s-maxage=3600')
+    expect(written.startsWith('<!doctype html>')).toBe(true)
   })
 
-  it('is a valid AMP document skeleton', async () => {
-    const html = await GET().text()
-
-    // Zorunlu AMP işaretleri
+  it('is a valid AMP document skeleton', () => {
+    const html = renderAmpDocument()
     expect(html.startsWith('<!doctype html>')).toBe(true)
     expect(html).toContain('<html ⚡ lang="tr">')
     expect(html).toContain('<meta charset="utf-8">')
     expect(html).toContain('<link rel="canonical"')
     expect(html).toContain('width=device-width')
     expect(html).toContain('https://cdn.ampproject.org/v0.js')
-    // amp-boilerplate (normal + noscript)
     expect(html).toContain('<style amp-boilerplate>')
     expect(html).toContain('<noscript><style amp-boilerplate>')
-    // Tek bir amp-custom style bloğu olmalı
     expect(html.match(/<style amp-custom>/g)?.length).toBe(1)
   })
 
-  it('obeys AMP restrictions (no custom JS, no !important, no external stylesheet)', async () => {
-    const html = await GET().text()
-
-    // İzin verilen tek harici script v0.js; ld+json dışında custom <script src> olmamalı
+  it('obeys AMP restrictions (no custom JS, no !important, no external stylesheet)', () => {
+    const html = renderAmpDocument()
     const scriptSrcs = [...html.matchAll(/<script[^>]*\ssrc="([^"]+)"/g)].map(
       m => m[1],
     )
     expect(scriptSrcs).toEqual(['https://cdn.ampproject.org/v0.js'])
-
-    // amp-custom CSS içinde !important yasak
     expect(html).not.toContain('!important')
-
-    // Harici stylesheet (rel="stylesheet") AMP'de yasak
     expect(html).not.toContain('rel="stylesheet"')
-
-    // Görseller <amp-img> ile, ham <img> ile değil
     expect(html).toContain('<amp-img')
     expect(html).not.toMatch(/<img\s/)
   })
 
-  it('mirrors the homepage content (hero, stats, values)', async () => {
-    const html = await GET().text()
-
+  it('mirrors the homepage content (hero, stats, values)', () => {
+    const html = renderAmpDocument()
     expect(html).toContain('Modern Web')
     expect(html).toContain('Hakkımda')
     expect(html).toContain('Çalışma Yaklaşımım')
-    // Stats
     expect(html).toContain('Yıl Deneyim')
-    // Canonical ana sayfaya işaret etmeli
     expect(html).toMatch(/<link rel="canonical" href="https?:\/\/[^"]+\/">/)
   })
 
-  it('emits rich-results structured data (@graph)', async () => {
-    const html = await GET().text()
+  it('emits rich-results structured data (@graph)', () => {
+    const html = renderAmpDocument()
     const match = html.match(
       /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
     )
     expect(match).not.toBeNull()
-
     const data = JSON.parse(match![1]) as {
       '@graph': Array<Record<string, unknown>>
     }
     const types = data['@graph'].map(node => node['@type'])
-
-    // Zengin sonuç için uygun tipler
     expect(types).toContain('BreadcrumbList')
     expect(types).toContain('FAQPage')
     expect(types).toContain('ProfilePage')
     expect(types).toContain('Person')
     expect(types).toContain('WebSite')
-
-    // FAQPage en az 3 soru içermeli
     const faq = data['@graph'].find(n => n['@type'] === 'FAQPage') as {
       mainEntity: unknown[]
     }
     expect(faq.mainEntity.length).toBeGreaterThanOrEqual(3)
   })
 
-  it('renders visible breadcrumb + FAQ matching the structured data (Google policy)', async () => {
-    const html = await GET().text()
-
-    // Görünür breadcrumb
+  it('renders visible breadcrumb + FAQ matching the structured data', () => {
+    const html = renderAmpDocument()
     expect(html).toContain('class="breadcrumb"')
     expect(html).toContain('Ana Sayfa')
-
-    // Görünür SSS bölümü ve şemadaki soruların sayfada da bulunması
     expect(html).toContain('Sıkça Sorulan Sorular')
     expect(html).toContain('Hüseyin DOL kimdir?')
-
-    // OG/Twitter meta (paylaşım/SEO)
     expect(html).toContain('property="og:title"')
     expect(html).toContain('name="twitter:card"')
   })

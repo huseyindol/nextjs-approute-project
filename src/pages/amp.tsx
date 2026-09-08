@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import type { GetServerSideProps } from 'next'
 
 /**
  * Ana sayfanın AMP (Accelerated Mobile Pages) kopyası — zengin sonuç (rich
@@ -18,8 +18,6 @@ import { NextResponse } from 'next/server'
  * canonical kopyasıdır (bu yüzden sitemap'e ayrıca eklenmez).
  */
 
-// Statik olarak üret, ISR ile tazele (site geneli 1 saat konvansiyonu).
-export const revalidate = 3600
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'
@@ -238,7 +236,7 @@ function buildJsonLd(): string {
   return JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })
 }
 
-function renderAmpDocument(): string {
+export function renderAmpDocument(): string {
   const statsHtml = STATS.map(
     s =>
       `<div><div class="stat-value">${s.value}</div><div class="stat-label">${s.label}</div></div>`,
@@ -347,12 +345,20 @@ Bu, <a href="${SITE_URL}/">${SITE_NAME}</a> ana sayfasının AMP sürümüdür.
 </html>`
 }
 
-export function GET(): NextResponse {
-  return new NextResponse(renderAmpDocument(), {
-    status: 200,
-    headers: {
-      'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'public, max-age=0, s-maxage=3600, must-revalidate',
-    },
-  })
+/**
+ * App Router route handler'ından (src/app/amp/route.ts) Pages Router'a taşındı.
+ * Ham AMP HTML'i getServerSideProps'ta yazılır (robots.txt/sitemap.xml deseni);
+ * `revalidate=3600` karşılığı s-maxage Cache-Control header'ıyla korunur.
+ */
+export const getServerSideProps: GetServerSideProps = async ({ res }) => {
+  res.setHeader('Content-Type', 'text/html; charset=utf-8')
+  res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=3600, must-revalidate')
+  res.write(renderAmpDocument())
+  res.end()
+  return { props: {} }
+}
+
+// getServerSideProps yanıtı yazıp bitirir; bileşen render edilmez.
+export default function Amp() {
+  return null
 }
