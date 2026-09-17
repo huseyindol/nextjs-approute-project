@@ -93,6 +93,18 @@ const nextConfig = {
     ],
   },
 
+  // Eski /arcade → yeni /games/arcade (kalıcı). Oyun sayfası taşındı; eski URL
+  // (yer imleri, dış linkler, indeks) korunsun diye 308 yönlendirme.
+  async redirects() {
+    return [
+      {
+        source: '/arcade',
+        destination: '/games/arcade',
+        permanent: true,
+      },
+    ]
+  },
+
   // Performance: Headers for caching
   async headers() {
     return [

@@ -60,7 +60,7 @@ async function buildEntries(): Promise<UrlEntry[]> {
       priority: 0.9,
     },
     {
-      loc: `${BASE_URL}/arcade`,
+      loc: `${BASE_URL}/games/arcade`,
       lastmod: now,
       changefreq: 'monthly',
       priority: 0.65,

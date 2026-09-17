@@ -191,7 +191,7 @@ const projects: Project[] = [
       'Klavye (yön tuşları) destekli interaktif oynanış',
     ],
     githubUrl: 'https://github.com/huseyindol/nextjs-approute-project',
-    liveUrl: '/arcade',
+    liveUrl: '/games/arcade',
     liveLabel: 'Oyna',
   },
   {
