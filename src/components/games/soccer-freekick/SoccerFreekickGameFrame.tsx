@@ -145,7 +145,7 @@ export function SoccerFreekickGameFrame() {
 
       <iframe
         title="Soccer Freekick Oyunu"
-        src={`/assets/games/soccer-freekick/index.html`}
+        src={`/assets/games/soccer-freekick/index.html?v=2`}
         allow="autoplay; fullscreen; gamepad"
         allowFullScreen
         className={cn(

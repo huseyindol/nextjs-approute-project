@@ -145,7 +145,7 @@ export function DriftArcadeGameFrame() {
 
       <iframe
         title="Drift Arcade Oyunu"
-        src={`/assets/games/drift-arcade/index.html`}
+        src={`/assets/games/drift-arcade/index.html?v=2`}
         allow="autoplay; fullscreen; gamepad"
         allowFullScreen
         className={cn(

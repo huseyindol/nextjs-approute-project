@@ -145,7 +145,7 @@ export function OffroadArcadeGameFrame() {
 
       <iframe
         title="Offroad Arcade Oyunu"
-        src={`/assets/games/offroad-arcade/index.html`}
+        src={`/assets/games/offroad-arcade/index.html?v=2`}
         allow="autoplay; fullscreen; gamepad"
         allowFullScreen
         className={cn(
