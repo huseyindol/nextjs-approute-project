@@ -112,13 +112,17 @@ export function generateCSP(): string {
   // ve çalışma anında aynı origin'e istek atar. Eksikse tarayıcı v0.js'i bloklar.
   const ampDomains = 'https://cdn.ampproject.org'
 
+  // Flutter Web CanvasKit and Fonts
+  const flutterDomains =
+    'https://www.gstatic.com https://fonts.gstatic.com https://fonts.googleapis.com'
+
   const policies = [
     "default-src 'self'",
-    `script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com ${ampDomains} ${clarityDomains} ${googleAdsDomains}`,
+    `script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://va.vercel-scripts.com ${ampDomains} ${clarityDomains} ${googleAdsDomains} ${flutterDomains}`,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
-    `connect-src 'self' https://vercel.live https://*.vercel-insights.com https://raw.githubusercontent.com https://avatars.githubusercontent.com http://localhost:8080 ws://localhost:8080 https://api.huseyindol.com wss://api.huseyindol.com ${ampDomains} ${clarityDomains} ${googleAdsDomains}`,
+    `connect-src 'self' https://vercel.live https://*.vercel-insights.com https://raw.githubusercontent.com https://avatars.githubusercontent.com http://localhost:8080 ws://localhost:8080 https://api.huseyindol.com wss://api.huseyindol.com ${ampDomains} ${clarityDomains} ${googleAdsDomains} ${flutterDomains}`,
     `frame-src 'self' https://vercel.live ${googleAdsDomains}`,
     "object-src 'none'",
     "base-uri 'self'",
