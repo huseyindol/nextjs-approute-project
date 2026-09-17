@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <base href="/assets/games/offroad-arcade/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Offroad Arcade: 2.5D dağ yolu 4x4 macera oyunu.">
+  <meta name="theme-color" content="#1F5FA8">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Offroad Arcade">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Offroad Arcade</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(#1F5FA8, #A9CBE6 55%, #8C6B4E 70%, #4A3524);
+    }
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      font-family: system-ui, sans-serif;
+      color: #fff;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, .5);
+      transition: opacity .4s;
+    }
+    #loading h1 {
+      margin: 0;
+      font-size: clamp(32px, 7vw, 72px);
+      font-style: italic;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #FFC21A;
+      -webkit-text-stroke: 2px #2A1608;
+    }
+    #loading .bar {
+      width: min(320px, 50vw);
+      height: 10px;
+      border-radius: 6px;
+      background: rgba(11, 18, 24, .6);
+      overflow: hidden;
+    }
+    #loading .bar::after {
+      content: "";
+      display: block;
+      width: 40%;
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #FFC21A, #E8700C);
+      animation: slide 1.1s ease-in-out infinite;
+    }
+    @keyframes slide {
+      from { transform: translateX(-100%); }
+      to { transform: translateX(250%); }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <h1>OFFROAD</h1>
+    <div class="bar"></div>
+  </div>
+
+  <!-- flutter_soloud (ses) web modülü -->
+  <script src="assets/packages/flutter_soloud/web/libflutter_soloud_plugin.js" defer></script>
+  <script src="assets/packages/flutter_soloud/web/init_module.dart.js" defer></script>
+
+  <script>
+    // Flutter ilk kareyi çizince yükleme ekranını kaldır.
+    window.addEventListener('flutter-first-frame', function () {
+      var el = document.getElementById('loading');
+      if (!el) return;
+      el.style.opacity = '0';
+      setTimeout(function () { el.remove(); }, 450);
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
