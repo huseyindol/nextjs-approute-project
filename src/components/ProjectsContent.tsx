@@ -221,6 +221,63 @@ const projects: Project[] = [
     liveUrl: '/games/matching',
     liveLabel: 'Oyna',
   },
+  {
+    id: 'flutter-games',
+    title: 'Flutter Games',
+    subtitle: 'Offroad Arcade (Web)',
+    description:
+      'Flutter Web ile geliştirilmiş Offroad Arcade oyunu. Fizik tabanlı araç dinamikleri, engeller ve zorlu parkurlar. Flutter Engine ve WebGL ile tarayıcıda doğrudan oynanabilir.',
+    icon: GamepadIcon,
+    gradient: 'from-blue-400 to-cyan-600',
+    status: 'live',
+    statusLabel: 'Oyna',
+    techStack: ['Flutter', 'Dart', 'WebAssembly', 'Next.js 16'],
+    highlights: [
+      'Flutter Web export ile tarayıcıda doğrudan çalışma',
+      'Fizik tabanlı araç kontrolü ve dinamikleri',
+      'Mobil ve masaüstü uyumlu web arayüzü',
+    ],
+    liveUrl: '/games/offroad-arcade',
+    liveLabel: 'Oyna',
+  },
+  {
+    id: 'drift-arcade',
+    title: 'Drift Arcade',
+    subtitle: 'Drift Arcade (Web)',
+    description:
+      'Flutter Web ile geliştirilmiş Drift Arcade oyunu. Harika fizikler ve drift mekanikleri. Tarayıcıda tam ekran oynanabilir.',
+    icon: GamepadIcon,
+    gradient: 'from-orange-400 to-red-600',
+    status: 'live',
+    statusLabel: 'Oyna',
+    techStack: ['Flutter', 'Dart', 'WebAssembly', 'Next.js 16'],
+    highlights: [
+      'Flutter Web export ile tarayıcıda doğrudan çalışma',
+      'Drift mekanikleri ve araç fizikleri',
+      'Mobil ve masaüstü uyumlu web arayüzü',
+    ],
+    liveUrl: '/games/drift-arcade',
+    liveLabel: 'Oyna',
+  },
+  {
+    id: 'soccer-freekick',
+    title: 'Soccer Freekick',
+    subtitle: 'Frikik Simülasyonu (Web)',
+    description:
+      'Flutter Web ile geliştirilmiş futbol frikik atış oyunu. Akıcı top fiziği, baraj mekanikleri ve hedef vurma heyecanı. Tarayıcıda tam ekran oynanabilir.',
+    icon: GamepadIcon,
+    gradient: 'from-green-400 to-emerald-600',
+    status: 'live',
+    statusLabel: 'Oyna',
+    techStack: ['Flutter', 'Dart', 'WebAssembly', 'Next.js 16'],
+    highlights: [
+      'Flutter Web export ile tarayıcıda doğrudan çalışma',
+      'Akıcı şut ve top dinamikleri',
+      'Mobil ve masaüstü uyumlu web arayüzü',
+    ],
+    liveUrl: '/games/soccer-freekick',
+    liveLabel: 'Oyna',
+  },
 ]
 
 const statusConfig = {
@@ -263,11 +320,11 @@ export default function ProjectsContent() {
 
             <div className="mt-10 flex justify-center gap-8 text-sm text-slate-400">
               <div className="text-center">
-                <p className="text-2xl font-bold text-white">6</p>
+                <p className="text-2xl font-bold text-white">9</p>
                 <p>Proje</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-white">5</p>
+                <p className="text-2xl font-bold text-white">8</p>
                 <p>Canlı</p>
               </div>
               <div className="text-center">
@@ -314,6 +371,12 @@ export default function ProjectsContent() {
                   color: 'cyan',
                   icon: JoystickIcon,
                   target: 'godot-engine-games',
+                },
+                {
+                  label: 'Flutter Games',
+                  color: 'blue',
+                  icon: GamepadIcon,
+                  target: 'flutter-games',
                 },
               ].map((item, idx, items) => (
                 <div
