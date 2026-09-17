@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Maximize2, Minimize2 } from 'lucide-react'
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
+import { GAME_GE_ASSET_CACHE_KEY } from '@/lib/game-ge-asset-version.generated'
 
 type WebKitDocument = Document & {
   webkitFullscreenElement?: Element | null
@@ -145,7 +146,7 @@ export function DriftArcadeGameFrame() {
 
       <iframe
         title="Drift Arcade Oyunu"
-        src={`/assets/games/drift-arcade/index.html?v=2`}
+        src={`/assets/games/drift-arcade/index.html?v=${GAME_GE_ASSET_CACHE_KEY}`}
         allow="autoplay; fullscreen; gamepad"
         allowFullScreen
         className={cn(
