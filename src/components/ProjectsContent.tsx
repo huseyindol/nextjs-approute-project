@@ -297,6 +297,25 @@ const projects: Project[] = [
     liveUrl: '/games/crane-arcade',
     liveLabel: 'Oyna',
   },
+  {
+    id: 'wet-paint',
+    title: 'Wet Paint',
+    subtitle: 'Boyama ve Bulmaca (Web)',
+    description:
+      'Flutter Web ile geliştirilmiş eğlenceli boyama ve bulmaca oyunu. Renkleri karıştırma ve yaratıcılığınızı konuşturma fırsatı. Tarayıcıda tam ekran oynanabilir.',
+    icon: GamepadIcon,
+    gradient: 'from-pink-400 to-rose-600',
+    status: 'live',
+    statusLabel: 'Oyna',
+    techStack: ['Flutter', 'Dart', 'WebAssembly', 'Next.js 16'],
+    highlights: [
+      'Flutter Web export ile tarayıcıda doğrudan çalışma',
+      'Eğlenceli boyama mekanikleri ve bulmacalar',
+      'Mobil ve masaüstü uyumlu web arayüzü',
+    ],
+    liveUrl: '/games/wet-paint',
+    liveLabel: 'Oyna',
+  },
 ]
 
 const statusConfig = {
@@ -396,6 +415,12 @@ export default function ProjectsContent() {
                   color: 'violet',
                   icon: GamepadIcon,
                   target: 'crane-arcade',
+                },
+                {
+                  label: 'Wet Paint',
+                  color: 'pink',
+                  icon: GamepadIcon,
+                  target: 'wet-paint',
                 },
                 {
                   label: 'Flutter Games',
