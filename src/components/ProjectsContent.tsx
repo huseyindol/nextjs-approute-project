@@ -46,6 +46,8 @@ interface Project {
   liveLabel?: string
   ecosystemUrl?: string
   githubUrl?: string
+  engine?: string
+  appIcon?: string
 }
 
 const projects: Project[] = [
@@ -175,8 +177,9 @@ const projects: Project[] = [
   },
   {
     id: 'arcade-games',
-    title: 'Arcade Oyunlar',
-    subtitle: 'Makas & Park Etme',
+    title: 'Makas & Park Etme',
+    engine: 'Phaser 3',
+    subtitle: 'Klasik 2D Oyunlar (Web)',
     description:
       'Next.js App Router içerisine entegre edilmiş, Phaser oyun motoru ve Vite ile geliştirilmiş klasik 2D arcade oyunları. Akıcı 60fps oyun deneyimi ve modern web teknolojileri ile tarayıcıda doğrudan oynanabilir.',
     icon: GamepadIcon,
@@ -196,7 +199,9 @@ const projects: Project[] = [
   },
   {
     id: 'godot-engine-games',
-    title: 'Godot Engine Games',
+    appIcon: '/assets/games/matching/index.icon.png',
+    title: 'Eğitici Eşleştirme',
+    engine: 'Godot',
     subtitle: 'Eğitici Eşleştirme (Web)',
     description:
       'Godot 4.x ile geliştirilmiş, WebAssembly export üzerinde çalışan eğitici eşleştirme oyunu. 24 seviyede renk, hayvan ve meyve eşleştirme; oturum metrikleri ve final ekranındaki ebeveyn paneli ile öğrenme özetleri.',
@@ -222,8 +227,31 @@ const projects: Project[] = [
     liveLabel: 'Oyna',
   },
   {
+    id: 'crane-arcade',
+    appIcon: '/assets/games/crane-arcade/index.icon.png',
+    title: 'Crane Arcade',
+    engine: 'Godot',
+    subtitle: 'Vinç Simülasyonu (Web)',
+    description:
+      'Godot 4 ile geliştirilmiş vinç (crane) operatörü simülasyon oyunu. Vinç kontrolü ve yük taşıma dinamikleri. Tarayıcıda tam ekran oynanabilir.',
+    icon: JoystickIcon,
+    gradient: 'from-violet-400 to-fuchsia-600',
+    status: 'live',
+    statusLabel: 'Oyna',
+    techStack: ['Godot 4', 'GDScript', 'WebAssembly', 'Next.js 16'],
+    highlights: [
+      'Godot Engine web export ile tarayıcıda doğrudan çalışma',
+      'Gerçekçi vinç ve kargo fizikleri',
+      'Mobil ve masaüstü uyumlu web arayüzü',
+    ],
+    liveUrl: '/games/crane-arcade',
+    liveLabel: 'Oyna',
+  },
+  {
     id: 'flutter-games',
-    title: 'Flutter Games',
+    appIcon: '/assets/games/offroad-arcade/icons/Icon-192.png',
+    title: 'Offroad Arcade',
+    engine: 'Flutter',
     subtitle: 'Offroad Arcade (Web)',
     description:
       'Flutter Web ile geliştirilmiş Offroad Arcade oyunu. Fizik tabanlı araç dinamikleri, engeller ve zorlu parkurlar. Flutter Engine ve WebGL ile tarayıcıda doğrudan oynanabilir.',
@@ -242,7 +270,9 @@ const projects: Project[] = [
   },
   {
     id: 'drift-arcade',
+    appIcon: '/assets/games/drift-arcade/icons/Icon-192.png',
     title: 'Drift Arcade',
+    engine: 'Flutter',
     subtitle: 'Drift Arcade (Web)',
     description:
       'Flutter Web ile geliştirilmiş Drift Arcade oyunu. Harika fizikler ve drift mekanikleri. Tarayıcıda tam ekran oynanabilir.',
@@ -261,7 +291,9 @@ const projects: Project[] = [
   },
   {
     id: 'soccer-freekick',
+    appIcon: '/assets/games/soccer-freekick/icons/Icon-192.png',
     title: 'Soccer Freekick',
+    engine: 'Flutter',
     subtitle: 'Frikik Simülasyonu (Web)',
     description:
       'Flutter Web ile geliştirilmiş futbol frikik atış oyunu. Akıcı top fiziği, baraj mekanikleri ve hedef vurma heyecanı. Tarayıcıda tam ekran oynanabilir.',
@@ -279,27 +311,10 @@ const projects: Project[] = [
     liveLabel: 'Oyna',
   },
   {
-    id: 'crane-arcade',
-    title: 'Crane Arcade',
-    subtitle: 'Vinç Simülasyonu (Web)',
-    description:
-      'Flutter Web ile geliştirilmiş vinç (crane) operatörü simülasyon oyunu. Vinç kontrolü ve yük taşıma dinamikleri. Tarayıcıda tam ekran oynanabilir.',
-    icon: GamepadIcon,
-    gradient: 'from-violet-400 to-fuchsia-600',
-    status: 'live',
-    statusLabel: 'Oyna',
-    techStack: ['Flutter', 'Dart', 'WebAssembly', 'Next.js 16'],
-    highlights: [
-      'Flutter Web export ile tarayıcıda doğrudan çalışma',
-      'Gerçekçi vinç ve kargo fizikleri',
-      'Mobil ve masaüstü uyumlu web arayüzü',
-    ],
-    liveUrl: '/games/crane-arcade',
-    liveLabel: 'Oyna',
-  },
-  {
     id: 'wet-paint',
+    appIcon: '/assets/games/wet-paint/icons/Icon-192.png',
     title: 'Wet Paint',
+    engine: 'Flutter',
     subtitle: 'Boyama ve Bulmaca (Web)',
     description:
       'Flutter Web ile geliştirilmiş eğlenceli boyama ve bulmaca oyunu. Renkleri karıştırma ve yaratıcılığınızı konuşturma fırsatı. Tarayıcıda tam ekran oynanabilir.',
@@ -411,18 +426,6 @@ export default function ProjectsContent() {
                   target: 'godot-engine-games',
                 },
                 {
-                  label: 'Crane Arcade',
-                  color: 'violet',
-                  icon: GamepadIcon,
-                  target: 'crane-arcade',
-                },
-                {
-                  label: 'Wet Paint',
-                  color: 'pink',
-                  icon: GamepadIcon,
-                  target: 'wet-paint',
-                },
-                {
                   label: 'Flutter Games',
                   color: 'blue',
                   icon: GamepadIcon,
@@ -525,49 +528,64 @@ function ProjectCard({ project }: { project: Project }) {
           <div className="flex flex-1 flex-col p-6 md:p-8">
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
               <div>
-                <div className="mb-1 flex items-center gap-2">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
                   <h3 className="text-xl font-extrabold">{project.title}</h3>
                   <Badge
                     className={`border-0 text-xs font-semibold ${statusConfig[project.status]}`}
                   >
                     {project.statusLabel}
                   </Badge>
+                  {project.engine && (
+                    <Badge className="border-0 bg-slate-200/50 text-xs font-semibold text-slate-700 ring-1 ring-slate-300 dark:bg-slate-800/50 dark:text-slate-300 dark:ring-slate-700">
+                      {project.engine}
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-sm font-medium text-muted-foreground">
                   {project.subtitle}
                 </p>
               </div>
 
-              <div className="flex gap-2">
-                {project.githubUrl && (
-                  <Link
-                    href={project.githubUrl}
-                    target="_blank"
-                    aria-label="GitHub"
-                    className="hover:border-foreground/30 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    <GithubIcon className="h-4 w-4" />
-                  </Link>
+              <div className="flex items-center gap-4">
+                {project.appIcon && (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={project.appIcon}
+                    alt="App Icon"
+                    className="ring-border/50 h-10 w-10 rounded-xl object-cover shadow-sm ring-1"
+                  />
                 )}
-                {project.liveUrl && (
-                  <Link
-                    href={project.liveUrl}
-                    target="_blank"
-                    className="hover:border-foreground/30 inline-flex h-9 items-center gap-1.5 rounded-full border border-border bg-muted px-4 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    <ExternalLinkIcon className="h-3.5 w-3.5" />
-                    {project.liveLabel}
-                  </Link>
-                )}
-                {project.ecosystemUrl && (
-                  <Link
-                    href={project.ecosystemUrl}
-                    className="flex h-9 items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-4 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition-all hover:scale-105 hover:shadow-emerald-500/40"
-                  >
-                    <LayersIcon className="h-3.5 w-3.5" />
-                    Ekosistem
-                  </Link>
-                )}
+                <div className="flex gap-2">
+                  {project.githubUrl && (
+                    <Link
+                      href={project.githubUrl}
+                      target="_blank"
+                      aria-label="GitHub"
+                      className="hover:border-foreground/30 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <GithubIcon className="h-4 w-4" />
+                    </Link>
+                  )}
+                  {project.liveUrl && (
+                    <Link
+                      href={project.liveUrl}
+                      target="_blank"
+                      className="hover:border-foreground/30 inline-flex h-9 items-center gap-1.5 rounded-full border border-border bg-muted px-4 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <ExternalLinkIcon className="h-3.5 w-3.5" />
+                      {project.liveLabel}
+                    </Link>
+                  )}
+                  {project.ecosystemUrl && (
+                    <Link
+                      href={project.ecosystemUrl}
+                      className="flex h-9 items-center gap-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-4 text-xs font-bold text-white shadow-md shadow-emerald-500/20 transition-all hover:scale-105 hover:shadow-emerald-500/40"
+                    >
+                      <LayersIcon className="h-3.5 w-3.5" />
+                      Ekosistem
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
 
