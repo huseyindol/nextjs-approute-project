@@ -1,0 +1,43 @@
+{
+  "id": 4,
+  "mode": "classic",
+  "columns": 64,
+  "name": "Kupa",
+  "fluidity": 0.8,
+  "flowRate": 0.2,
+  "shapes": [
+    {
+      "type": "polygon",
+      "points": [
+        [
+          0.08,
+          0.3
+        ],
+        [
+          0.92,
+          0.3
+        ],
+        [
+          0.68,
+          1.05
+        ],
+        [
+          0.32,
+          1.05
+        ]
+      ]
+    }
+  ],
+  "mix": {
+    "inks": [
+      "#E63946",
+      "#FFD60A",
+      "#FFFFFF"
+    ],
+    "recipe": [
+      0.35,
+      0.4,
+      0.25
+    ]
+  }
+}

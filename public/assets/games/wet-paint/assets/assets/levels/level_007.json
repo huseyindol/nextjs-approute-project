@@ -1,0 +1,17 @@
+{
+  "id": 7,
+  "mode": "classic",
+  "columns": 64,
+  "name": "Kule",
+  "fluidity": 0.8,
+  "flowRate": 0.16,
+  "shapes": [
+    {
+      "type": "rect",
+      "x": 0.38,
+      "y": 0.1,
+      "w": 0.24,
+      "h": 1.0
+    }
+  ]
+}

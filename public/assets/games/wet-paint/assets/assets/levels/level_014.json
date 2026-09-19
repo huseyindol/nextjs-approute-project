@@ -1,0 +1,18 @@
+{
+  "id": 14,
+  "mode": "classic",
+  "columns": 64,
+  "name": "Bal",
+  "fluidity": 0.1,
+  "flowRate": 0.14,
+  "tolerance": 7,
+  "shapes": [
+    {
+      "type": "rect",
+      "x": 0.05,
+      "y": 0.55,
+      "w": 0.9,
+      "h": 0.42
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": 16,
+  "mode": "twin",
+  "columns": 80,
+  "name": "Hızlı İkizler",
+  "fluidity": 0.8,
+  "flowRate": 0.22,
+  "time": 30,
+  "shapes": [
+    {
+      "type": "rect",
+      "x": 0.05,
+      "y": 0.4,
+      "w": 0.36,
+      "h": 0.6
+    },
+    {
+      "type": "rect",
+      "x": 0.59,
+      "y": 0.4,
+      "w": 0.36,
+      "h": 0.6
+    }
+  ]
+}

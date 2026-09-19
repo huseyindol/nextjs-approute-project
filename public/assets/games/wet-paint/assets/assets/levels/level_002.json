@@ -1,0 +1,26 @@
+{
+  "id": 2,
+  "mode": "classic",
+  "columns": 64,
+  "name": "Daire",
+  "fluidity": 0.85,
+  "flowRate": 0.2,
+  "shapes": [
+    {
+      "type": "circle",
+      "cx": 0.5,
+      "cy": 0.65,
+      "r": 0.4
+    }
+  ],
+  "mix": {
+    "inks": [
+      "#E63946",
+      "#FFFFFF"
+    ],
+    "recipe": [
+      0.4,
+      0.6
+    ]
+  }
+}

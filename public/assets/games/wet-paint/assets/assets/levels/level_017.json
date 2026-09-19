@@ -1,0 +1,32 @@
+{
+  "id": 17,
+  "mode": "reverse",
+  "columns": 64,
+  "name": "Ters Rampa",
+  "target": 0.35,
+  "fluidity": 0.75,
+  "flowRate": 0.16,
+  "shapes": [
+    {
+      "type": "polygon",
+      "points": [
+        [
+          0.1,
+          0.25
+        ],
+        [
+          0.9,
+          0.25
+        ],
+        [
+          0.9,
+          1.05
+        ],
+        [
+          0.1,
+          0.7
+        ]
+      ]
+    }
+  ]
+}

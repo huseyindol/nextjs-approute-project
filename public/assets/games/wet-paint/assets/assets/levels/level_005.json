@@ -1,0 +1,43 @@
+{
+  "id": 5,
+  "mode": "classic",
+  "columns": 64,
+  "name": "Elmas",
+  "fluidity": 0.8,
+  "flowRate": 0.2,
+  "shapes": [
+    {
+      "type": "polygon",
+      "points": [
+        [
+          0.5,
+          0.12
+        ],
+        [
+          0.9,
+          0.6
+        ],
+        [
+          0.5,
+          1.1
+        ],
+        [
+          0.1,
+          0.6
+        ]
+      ]
+    }
+  ],
+  "mix": {
+    "inks": [
+      "#E63946",
+      "#2F6FED",
+      "#FFFFFF"
+    ],
+    "recipe": [
+      0.3,
+      0.3,
+      0.4
+    ]
+  }
+}

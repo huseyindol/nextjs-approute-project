@@ -1,0 +1,45 @@
+{
+  "id": 12,
+  "mode": "classic",
+  "columns": 64,
+  "name": "Kaydırak",
+  "fluidity": 0.75,
+  "flowRate": 0.2,
+  "shapes": [
+    {
+      "type": "polygon",
+      "points": [
+        [
+          0.1,
+          0.2
+        ],
+        [
+          0.9,
+          0.2
+        ],
+        [
+          0.9,
+          0.62
+        ],
+        [
+          0.1,
+          1.05
+        ]
+      ]
+    }
+  ],
+  "mix": {
+    "inks": [
+      "#E63946",
+      "#FFD60A",
+      "#2F6FED",
+      "#FFFFFF"
+    ],
+    "recipe": [
+      0.2,
+      0.4,
+      0.05,
+      0.35
+    ]
+  }
+}

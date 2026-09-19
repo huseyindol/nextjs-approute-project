@@ -1,0 +1,17 @@
+{
+  "id": 10,
+  "mode": "classic",
+  "columns": 64,
+  "name": "Havuz",
+  "fluidity": 0.8,
+  "flowRate": 0.25,
+  "shapes": [
+    {
+      "type": "rect",
+      "x": 0.15,
+      "y": 0.35,
+      "w": 0.7,
+      "h": 0.65
+    }
+  ]
+}

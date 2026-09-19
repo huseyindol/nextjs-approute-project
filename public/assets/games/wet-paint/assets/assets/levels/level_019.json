@@ -1,0 +1,17 @@
+{
+  "id": 19,
+  "mode": "classic",
+  "columns": 64,
+  "name": "Saatli Daire",
+  "fluidity": 0.85,
+  "flowRate": 0.2,
+  "time": 12,
+  "shapes": [
+    {
+      "type": "circle",
+      "cx": 0.5,
+      "cy": 0.65,
+      "r": 0.4
+    }
+  ]
+}

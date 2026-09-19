@@ -1,0 +1,16 @@
+{
+  "id": 18,
+  "mode": "classic",
+  "columns": 64,
+  "name": "Koyu Kalp",
+  "fluidity": 0.25,
+  "flowRate": 0.16,
+  "tolerance": 6,
+  "time": 30,
+  "shapes": [
+    {
+      "type": "path",
+      "d": "M 0.5 0.45 C 0.5 0.3 0.3 0.2 0.18 0.3 C 0.02 0.44 0.1 0.72 0.5 1.02 C 0.9 0.72 0.98 0.44 0.82 0.3 C 0.7 0.2 0.5 0.3 0.5 0.45 Z"
+    }
+  ]
+}
