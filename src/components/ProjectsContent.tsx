@@ -278,6 +278,25 @@ const projects: Project[] = [
     liveUrl: '/games/soccer-freekick',
     liveLabel: 'Oyna',
   },
+  {
+    id: 'crane-arcade',
+    title: 'Crane Arcade',
+    subtitle: 'Vinç Simülasyonu (Web)',
+    description:
+      'Flutter Web ile geliştirilmiş vinç (crane) operatörü simülasyon oyunu. Vinç kontrolü ve yük taşıma dinamikleri. Tarayıcıda tam ekran oynanabilir.',
+    icon: GamepadIcon,
+    gradient: 'from-violet-400 to-fuchsia-600',
+    status: 'live',
+    statusLabel: 'Oyna',
+    techStack: ['Flutter', 'Dart', 'WebAssembly', 'Next.js 16'],
+    highlights: [
+      'Flutter Web export ile tarayıcıda doğrudan çalışma',
+      'Gerçekçi vinç ve kargo fizikleri',
+      'Mobil ve masaüstü uyumlu web arayüzü',
+    ],
+    liveUrl: '/games/crane-arcade',
+    liveLabel: 'Oyna',
+  },
 ]
 
 const statusConfig = {
@@ -371,6 +390,12 @@ export default function ProjectsContent() {
                   color: 'cyan',
                   icon: JoystickIcon,
                   target: 'godot-engine-games',
+                },
+                {
+                  label: 'Crane Arcade',
+                  color: 'violet',
+                  icon: GamepadIcon,
+                  target: 'crane-arcade',
                 },
                 {
                   label: 'Flutter Games',
