@@ -15,13 +15,15 @@ const matchingGameAssetVersion =
   ''
 
 const nextConfig = {
-  // NOT: `output: 'standalone'` KALDIRILDI. Bu proje Vercel'e deploy ediliyor ve
-  // Vercel paketlemeyi/file tracing'i kendisi yapar; standalone self-host/Docker
-  // içindir ve bu repoda hiçbir şey `.next/standalone` çıktısını tüketmiyor
-  // (Dockerfile yok; docker-compose.yml yalnızca Dependency-Track için).
-  // Next 16.3.1 ile birlikte standalone, Vercel'in `onBuildComplete` adımının
-  // beklediği `.next/next-server.js.nft.json` trace dosyasını bulamamasına ve
-  // deploy'un ENOENT ile düşmesine yol açıyordu (build'in kendisi başarılıydı).
+  // Standalone çıktı YALNIZ Vercel DIŞINDA açık (panel ile aynı desen).
+  // - Vercel: kendi output file tracing'ini yapar ve build sonunda
+  //   `.next/next-server.js.nft.json` bekler. Next 16.3 + standalone kombinasyonunda
+  //   bu dosya üretilmiyor, deploy `onBuildComplete` adımında ENOENT ile düşüyordu
+  //   (vercel/next.js#96646). Vercel build'inde `VERCEL=1` tanımlı → standalone KAPALI.
+  // - Docker / Kubernetes / self-host: `.next/standalone` minimal sunucu paketi üretilir
+  //   (küçük imaj, hızlı build/deploy). Çalıştırma: `.next/static` ve `public`'i
+  //   standalone'a kopyala → `node .next/standalone/server.js`.
+  output: process.env.VERCEL ? undefined : ('standalone' as const),
 
   env: {
     NEXT_PUBLIC_MATCHING_GAME_ASSET_VERSION: matchingGameAssetVersion,
