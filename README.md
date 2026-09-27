@@ -313,6 +313,25 @@ bun run build
 bun run start
 ```
 
+## ☸️ K3d ile Lokal Kubernetes
+
+Lokalde bir Kubernetes cluster'ı kurmak ve test etmek isterseniz [k3d](https://k3d.io/) kullanabilirsiniz.
+k3d, Docker üzerinde k3s cluster'ları çalıştırır.
+
+### K3d Volume İsimlendirme (Named Volumes)
+
+k3d varsayılan olarak k3s verilerini (kubelet, cni, storage) Docker üzerinde **isimsiz (anonymous) volume'larda** saklar. Bu volume'ların daha düzenli görünmesi ve yönetilebilmesi için cluster oluştururken `-v` parametresiyle belirli isimlere (named volume) atayabilirsiniz:
+
+```bash
+k3d cluster create elly \
+  -p "8088:80@loadbalancer" \
+  -v elly-k3s-storage:/var/lib/rancher/k3s@server:0 \
+  -v elly-kubelet:/var/lib/kubelet@server:0 \
+  -v elly-cni:/var/lib/cni@server:0
+```
+
+_Bu şekilde çalıştırdığınızda isimsiz (rastgele karakterli) volume'lar yerine `elly-k3s-storage`, vb. isimlendirilmiş volume'lar oluşacaktır._
+
 ## 🤝 Contributing
 
 1. Fork the project
