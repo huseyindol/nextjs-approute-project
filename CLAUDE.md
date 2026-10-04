@@ -1,12 +1,12 @@
-# nextjs-approute-project — Claude Rehberi
+# elly-tenant — Claude Rehberi
 
 ## Proje
 
-Huseyin DOL'un modern portföy ve CMS sitesi. Next.js 16 App Router, React 19, TypeScript strict mode.
+Huseyin DOL'un modern portföy ve CMS sitesi. Next.js 16 Pages Router, React 19, TypeScript strict mode.
 
 ## Tech Stack
 
-- Framework: Next.js 16 (App Router, Server Components, Server Actions)
+- Framework: Next.js 16 (Pages Router)
 - UI: Tailwind CSS 4, Shadcn UI, Framer Motion
 - Form: React Hook Form + Zod 4
 - Data: TanStack Query 5
@@ -17,7 +17,7 @@ Huseyin DOL'un modern portföy ve CMS sitesi. Next.js 16 App Router, React 19, T
 
 ## Dizin Yapısı
 
-- `src/app/` — Sayfalar (App Router). `(site)/` public, `(admin)/` yönetim paneli
+- `src/pages/` — Sayfalar (Pages Router). `api/` route handler'lar
 - `src/components/` — React componentleri. `ui/` shadcn, `forms/` formlar, `dynamic/` dinamik içerik
 - `src/lib/` — Yardımcı araçlar (env.ts, rate-limiter.ts, security.ts, utils.ts)
 - `src/services/` — API servisleri (auth, typicode)
