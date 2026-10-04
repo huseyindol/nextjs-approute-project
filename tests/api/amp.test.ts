@@ -17,7 +17,10 @@ describe('/amp (Pages Router)', () => {
     ;(res as unknown as { write: (s: string) => void }).write = (s: string) => {
       written += s
     }
-    await getServerSideProps({ req, res } as unknown as GetServerSidePropsContext)
+    await getServerSideProps({
+      req,
+      res,
+    } as unknown as GetServerSidePropsContext)
     expect(state.headers['content-type']).toContain('text/html')
     expect(state.headers['cache-control']).toContain('s-maxage=3600')
     expect(written.startsWith('<!doctype html>')).toBe(true)

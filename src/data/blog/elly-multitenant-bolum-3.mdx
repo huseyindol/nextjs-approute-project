@@ -97,7 +97,7 @@ if (globalThis.window === undefined) {
 
 Mantık şuydu: "tenant bilgisi cookie'de olabilir, o zaman her ortamda cookie'yi kontrol edeyim." Kulağa titiz geliyor.
 
-Sorun şu ki Next.js App Router'da `cookies()` çağırmak bir **karar** anlamına geliyor: *"Bu render isteğe özgüdür."* Cookie'ye dokunan her sayfa otomatik olarak **dinamik render**'a düşüyor — statik üretim ve ISR devre dışı kalıyor.
+Sorun şu ki Next.js App Router'da `cookies()` çağırmak bir **karar** anlamına geliyor: _"Bu render isteğe özgüdür."_ Cookie'ye dokunan her sayfa otomatik olarak **dinamik render**'a düşüyor — statik üretim ve ISR devre dışı kalıyor.
 
 Bu helper `fetcher`'ın içinde olduğu için etkisi zincirleme oldu: veri çeken **her sayfa** dinamikleşti. Build çıktısında sayfaların yanındaki işaret `○` (static) yerine `ƒ` (dynamic) olarak görünmeye başladı. Blog listesi, hakkımda, yetenekler — hepsi her istekte yeniden render ediliyordu. Sunucuda gereksiz iş, ziyaretçide daha yavaş ilk byte.
 
@@ -121,11 +121,11 @@ Runtime override hâlâ mümkün — ama yalnız client tarafında, gerçekten g
 
 Elly'de tenant çözümü üç senaryoda farklı görünüyor ama altında tek prensip var:
 
-| Senaryo | URL formatı | Tenant kaynağı |
-| --- | --- | --- |
-| Public site (anonim ziyaretçi) | `/api/v1/public/{tid}/...` | URL path → `PublicApiFilter` |
-| Giriş yapmış kullanıcı (kendi sitesinde) | `/api/v1/...` | JWT `tenantId` claim → `JwtTenantFilter` |
-| Admin, başka bir tenant'ı hedeflerken | `/api/v1/chat/tenant/{tid}/...` | URL path → servis katmanındaki router |
+| Senaryo                                  | URL formatı                     | Tenant kaynağı                           |
+| ---------------------------------------- | ------------------------------- | ---------------------------------------- |
+| Public site (anonim ziyaretçi)           | `/api/v1/public/{tid}/...`      | URL path → `PublicApiFilter`             |
+| Giriş yapmış kullanıcı (kendi sitesinde) | `/api/v1/...`                   | JWT `tenantId` claim → `JwtTenantFilter` |
+| Admin, başka bir tenant'ı hedeflerken    | `/api/v1/chat/tenant/{tid}/...` | URL path → servis katmanındaki router    |
 
 Üçüncü satırda ince ama önemli bir değişiklik var. Eskiden bu URL'i de merkezî filtre çözüyordu; filtre "hangi path hangi tenant'a gider" bilgisini taşıdıkça şişiyordu ([Bölüm 1'deki istisna listesi](/blog/elly-multitenant-bolum-1)). Şimdi filtre yalnız JWT claim'ine bakıyor; "bu istek başka bir tenant'ı hedefliyor" kararı, o bilginin gerçekten ait olduğu yerde — ilgili serviste — veriliyor:
 
@@ -153,7 +153,8 @@ Bu yaklaşımın esnemek zorunda kaldığı bir yer var: chat ve WebRTC modülle
 Bu yüzden `chat-config.ts` içinde ayrı, senkron bir tanım var:
 
 ```typescript
-export const CHAT_TENANT_ID = process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'tenant1'
+export const CHAT_TENANT_ID =
+  process.env.NEXT_PUBLIC_DEFAULT_TENANT ?? 'tenant1'
 ```
 
 Yani aynı bilgi iki yoldan okunuyor: async/cookie-aware yol (`getTenantId`) ve senkron/env-only yol (`CHAT_TENANT_ID`). Tek-tenant deployment'ta ikisi aynı değeri verdiği için sorun değil — ama bu, "her yerden aynı şekilde okunabilir" idealinin bir istisnası.
@@ -168,11 +169,11 @@ Aynı dosya, sonradan eklediğim WebRTC görüntülü görüşme modülünde iki
 
 Bu seride üç katmanda aynı kararı verdiğimi fark ettim:
 
-| Katman | "Kim?" | "Nereye?" |
-| --- | --- | --- |
-| **Backend filtre** | JWT'deki kullanıcı + `loginSource` | JWT `tenantId` claim'i veya public URL'deki `{tid}` |
-| **Veritabanı** | (kimlik DB'ye dokunmuyor) | `TenantContext` → `AbstractRoutingDataSource` (boşsa **hata**) |
-| **Frontend** | httpOnly cookie'deki token | `NEXT_PUBLIC_DEFAULT_TENANT` + `buildApiUrl` |
+| Katman             | "Kim?"                             | "Nereye?"                                                      |
+| ------------------ | ---------------------------------- | -------------------------------------------------------------- |
+| **Backend filtre** | JWT'deki kullanıcı + `loginSource` | JWT `tenantId` claim'i veya public URL'deki `{tid}`            |
+| **Veritabanı**     | (kimlik DB'ye dokunmuyor)          | `TenantContext` → `AbstractRoutingDataSource` (boşsa **hata**) |
+| **Frontend**       | httpOnly cookie'deki token         | `NEXT_PUBLIC_DEFAULT_TENANT` + `buildApiUrl`                   |
 
 Üç katman aynı prensibi farklı tonlarda söylüyor:
 

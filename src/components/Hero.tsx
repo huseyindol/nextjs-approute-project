@@ -6,13 +6,7 @@ import { siteInfo } from '@/data/mockData'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { motion, useInView } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
-import {
-  Code2,
-  Download,
-  Mail,
-  Users,
-  Zap,
-} from 'lucide-react'
+import { Code2, Download, Mail, Users, Zap } from 'lucide-react'
 import { FaGithub as Github, FaLinkedin as Linkedin } from 'react-icons/fa'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -174,9 +168,7 @@ function HeroBanner() {
                 target="_blank"
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white/70 transition-all hover:scale-110 hover:bg-white/20 hover:text-white"
               >
-                {link.platform === 'github' && (
-                  <Github className="h-4 w-4" />
-                )}
+                {link.platform === 'github' && <Github className="h-4 w-4" />}
                 {link.platform === 'linkedin' && (
                   <Linkedin className="h-4 w-4" />
                 )}

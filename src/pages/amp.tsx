@@ -18,7 +18,6 @@ import type { GetServerSideProps } from 'next'
  * canonical kopyasıdır (bu yüzden sitemap'e ayrıca eklenmez).
  */
 
-
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.huseyindol.com'
 
@@ -352,7 +351,10 @@ Bu, <a href="${SITE_URL}/">${SITE_NAME}</a> ana sayfasının AMP sürümüdür.
  */
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
-  res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=3600, must-revalidate')
+  res.setHeader(
+    'Cache-Control',
+    'public, max-age=0, s-maxage=3600, must-revalidate',
+  )
   res.write(renderAmpDocument())
   res.end()
   return { props: {} }

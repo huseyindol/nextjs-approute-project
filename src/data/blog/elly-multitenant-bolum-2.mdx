@@ -57,7 +57,7 @@ Buradaki `setDefaultTargetDataSource` satırı, mimarinin evriminde en çok anla
 
 ### `null`'ın anlamı değişince mimari de değişti
 
-Projenin ilk sürümünde ortak bir `basedb` vardı ve `setDefaultTargetDataSource(basedb)` deniyordu. `determineCurrentLookupKey()` `null` döndüğünde Spring sessizce oraya gidiyordu. Yani `null` şu anlama geliyordu: *"tenant belirsiz, merkezi veritabanına düş."*
+Projenin ilk sürümünde ortak bir `basedb` vardı ve `setDefaultTargetDataSource(basedb)` deniyordu. `determineCurrentLookupKey()` `null` döndüğünde Spring sessizce oraya gidiyordu. Yani `null` şu anlama geliyordu: _"tenant belirsiz, merkezi veritabanına düş."_
 
 Bu "güvenli varsayılan" gibi görünüyordu. Aslında **hataları gizleyen bir battaniyeydi.** Tenant context'i kurmayı unuttuğum her yerde uygulama patlamıyor, sessizce yanlış veritabanına yazıyordu.
 
@@ -90,7 +90,7 @@ public void enableStrictRouting() {
 
 Sonuç: `setDefaultTargetDataSource` artık "varsayılan veritabanı" değil, sadece **boot hedefi**. Uygulama hazır olduktan sonra hiçbir istek oraya düşemez.
 
-Bu ayrım küçük görünüyor ama etkisi büyük oldu: multi-tenant sistemlerdeki en sinsi hata sınıfı — *doğru çalışıyor gibi görünüp yanlış veritabanına yazmak* — mimari olarak imkânsız hale geldi.
+Bu ayrım küçük görünüyor ama etkisi büyük oldu: multi-tenant sistemlerdeki en sinsi hata sınıfı — _doğru çalışıyor gibi görünüp yanlış veritabanına yazmak_ — mimari olarak imkânsız hale geldi.
 
 ### Bir Tuzak: Tek Transaction İçinde Tenant Değiştirilemez
 
