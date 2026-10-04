@@ -70,7 +70,7 @@ export const getServerSideProps: GetServerSideProps<CmsPageProps> = async ({
 }) => {
   const slug = params?.pages as string
 
-  let response: PageResponseType | null = null
+  let response: PageResponseType | null
   try {
     response = await getPageBySlugService(slug)
   } catch (error) {
