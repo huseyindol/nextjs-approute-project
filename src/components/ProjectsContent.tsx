@@ -6,7 +6,6 @@ import { motion, useInView } from 'framer-motion'
 import {
   ExternalLinkIcon,
   GamepadIcon,
-  GithubIcon,
   GlobeIcon,
   JoystickIcon,
   LayersIcon,
@@ -14,6 +13,7 @@ import {
   ServerIcon,
   SmartphoneIcon,
 } from 'lucide-react'
+import { FaGithub as Github } from 'react-icons/fa'
 import Link from 'next/link'
 import { useRef } from 'react'
 
@@ -563,7 +563,7 @@ function ProjectCard({ project }: { project: Project }) {
                       aria-label="GitHub"
                       className="hover:border-foreground/30 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-muted text-muted-foreground transition-colors hover:text-foreground"
                     >
-                      <GithubIcon className="h-4 w-4" />
+                      <Github className="h-4 w-4" />
                     </Link>
                   )}
                   {project.liveUrl && (

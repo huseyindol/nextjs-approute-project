@@ -1,6 +1,7 @@
 'use client'
 import { motion, useInView } from 'framer-motion'
-import { GithubIcon, Heart, LinkedinIcon, Mail } from 'lucide-react'
+import { Heart, Mail } from 'lucide-react'
+import { FaGithub as Github, FaLinkedin as Linkedin } from 'react-icons/fa'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRef } from 'react'
@@ -29,12 +30,12 @@ const techStack = [
 const socialLinks = [
   {
     href: 'https://github.com/huseyindol',
-    icon: GithubIcon,
+    icon: Github,
     label: 'GitHub',
   },
   {
     href: 'https://www.linkedin.com/in/huseyindol/',
-    icon: LinkedinIcon,
+    icon: Linkedin,
     label: 'LinkedIn',
   },
   {
@@ -131,7 +132,7 @@ export default function Footer() {
                 target="_blank"
                 className="inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
               >
-                <GithubIcon className="h-4 w-4" />
+                <Github className="h-4 w-4" />
                 Açık kaynak
               </Link>
             </div>

@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import matter from 'gray-matter'
-import yaml from 'js-yaml'
+import * as yaml from 'js-yaml'
 
 /**
  * gray-matter'ın kendi YAML motoru js-yaml v3 API'sini (`safeLoad`) çağırır. Vercel
