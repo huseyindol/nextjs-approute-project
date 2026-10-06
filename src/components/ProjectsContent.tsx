@@ -331,6 +331,27 @@ const projects: Project[] = [
     liveUrl: '/games/wet-paint',
     liveLabel: 'Oyna',
   },
+  {
+    id: 'hamur-usta',
+    appIcon: '/assets/games/hamur-usta/icons/Icon-192.png',
+    title: 'Hamur Usta',
+    engine: 'Flutter',
+    subtitle: 'Renk Karıştırma (Web Demo)',
+    description:
+      'Flutter ve Flame ile geliştirilmiş renk karıştırma oyunu. Kavanozlardan hamur topu al, kasede parmağınla yoğur, hedef rengi yap ve hikâye kitabını renklendir. Web demosunda ilk 3 seviye oynanır; tam oyun yakında App Store’da.',
+    icon: GamepadIcon,
+    gradient: 'from-emerald-400 to-teal-600',
+    status: 'live',
+    statusLabel: 'Oyna',
+    techStack: ['Flutter', 'Flame', 'Dart', 'Next.js 16'],
+    highlights: [
+      'RYB pigment modeliyle gerçekçi renk karışımı',
+      'Parmakla daire çizerek yoğurma ve anlık uyum emojisi',
+      'Prosedürel kil görünümlü hikâye kitabı',
+    ],
+    liveUrl: '/games/hamur-usta',
+    liveLabel: 'Oyna',
+  },
 ]
 
 const statusConfig = {
