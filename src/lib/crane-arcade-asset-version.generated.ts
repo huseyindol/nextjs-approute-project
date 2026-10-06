@@ -1,3 +1,3 @@
 /** crane-arcade — GitHub Actions; elle düzenlemeyin. */
-export const CRANE_ARCADE_ASSET_CACHE_KEY = '35521616991'
-export const CRANE_ARCADE_ASSET_SHA = '3572d01c1f16b10dd0dbe3fbff2ed2deed01b67c'
+export const CRANE_ARCADE_ASSET_CACHE_KEY = "37449137805";
+export const CRANE_ARCADE_ASSET_SHA = "a2e3acda42c2af0147a4228d5b69c617013716ee";
