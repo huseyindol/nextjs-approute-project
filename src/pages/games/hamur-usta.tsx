@@ -32,6 +32,20 @@ export default function HamurUstaGamePage() {
                 düğmesi veya Esc ile tam ekrandan çıkabilirsiniz.
               </p>
             </div>
+            <div className="flex items-center gap-4 sm:ml-auto">
+              <Link
+                href="/games/hamur-usta/gizlilik-politikasi"
+                className="text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground"
+              >
+                Gizlilik Politikası
+              </Link>
+              <Link
+                href="/games/hamur-usta/destek"
+                className="text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground"
+              >
+                Destek
+              </Link>
+            </div>
           </div>
 
           <HamurUstaGameFrame />
