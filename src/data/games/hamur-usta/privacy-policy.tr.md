@@ -9,10 +9,11 @@ _Yürürlük tarihi: 6 Ekim 2026_
 - Oyun, **Google AdMob** üzerinden reklam gösterir. Her reklam isteği kişiselleştirilmemiş reklam, Google'ın çocuklara yönelik işlem etiketi ve en kısıtlı içerik sınırı (G) ile yapılır. Uygulama reklam kimliği (IDFA) istemez ve izleme izni sormaz.
 - Reklamları kaldırma satın alımını **Apple** işler; ödeme bilgilerinizi biz görmeyiz.
 - Üçüncü taraf analiz (analytics) aracı yoktur.
+- **Web demosu (huseyindol.com/games/hamur-usta):** reklam, satın alma ve analiz aracı yoktur. İlerleme yalnızca tarayıcınızın yerel depolamasında (localStorage) tutulur. Sesli okuma (web'de açıksa) tarayıcının kendi konuşma motorunu kullanır. Sayfayı barındıran site, kendi sunucu kayıtlarını kendi politikasına göre tutar.
 
 ## 1. Biz kimiz
 
-Hamur Usta (İngilizce adı: Dough Master: Color Mix), bağımsız geliştirici **Hüseyin DOL** tarafından geliştirilen bir renk karıştırma oyunudur. Bu politika, uygulamanın iPhone sürümü için geçerlidir. İletişim: [huseyindol@gmail.com](mailto:huseyindol@gmail.com).
+Hamur Usta (İngilizce adı: Dough Master: Color Mix), bağımsız geliştirici **Hüseyin DOL** tarafından geliştirilen bir renk karıştırma oyunudur. Bu politika, iPhone uygulaması ve web demosu için geçerlidir. İletişim: [huseyindol@gmail.com](mailto:huseyindol@gmail.com).
 
 ## 2. Oyunun kendisi hangi bilgileri işler
 
@@ -92,6 +93,6 @@ Bu politikayı, uygulama ya da mevzuat değiştikçe güncelleyebiliriz. Güncel
 
 ## 11. İletişim
 
-Hüseyin DOL (bağımsız geliştirici) · E-posta: [huseyindol@gmail.com](mailto:huseyindol@gmail.com) · Web: [huseyindol.com](https://huseyindol.com) · Destek sayfası: [https://huseyindol.com/hamur-usta/support](https://huseyindol.com/hamur-usta/support)
+Hüseyin DOL (bağımsız geliştirici) · E-posta: [huseyindol@gmail.com](mailto:huseyindol@gmail.com) · Web: [huseyindol.com](https://huseyindol.com) · Destek sayfası: [https://huseyindol.com/games/hamur-usta/destek](https://huseyindol.com/games/hamur-usta/destek)
 
 ---

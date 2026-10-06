@@ -10,7 +10,7 @@ On the home screen (the storybook), **press and hold the gear icon (⚙︎) in t
 
 ### Why are there ads?
 
-Dough Master is free and supported by ads. Ads are served by Google AdMob; every ad request is made for non-personalized ads, with Google's child-directed treatment tag and the strictest content rating (G, general audiences). The app does not request the advertising identifier and never asks for tracking permission. Ads never appear during play; they are shown only after a level is finished, on the way back to the storybook. The first 5 games are ad-free; after that at most one ad every 3 games and no more than 6 per session. Without internet, no ads are shown. Details: [privacy policy](https://huseyindol.com/hamur-usta/privacy).
+Dough Master is free and supported by ads. Ads are served by Google AdMob; every ad request is made for non-personalized ads, with Google's child-directed treatment tag and the strictest content rating (G, general audiences). The app does not request the advertising identifier and never asks for tracking permission. Ads never appear during play; they are shown only after a level is finished, on the way back to the storybook. The first 5 games are ad-free; after that at most one ad every 3 games and no more than 6 per session. Without internet, no ads are shown. Details: [privacy policy](https://huseyindol.com/games/hamur-usta/privacy-policy).
 
 ### How do I remove ads?
 
@@ -46,4 +46,4 @@ No. The game plays offline. The internet is used only for ads, the purchase and 
 
 For questions, suggestions or problem reports: [huseyindol@gmail.com](mailto:huseyindol@gmail.com). Telling us your iPhone model, iOS version and a short description of the issue helps us help you faster.
 
-Developer: Hüseyin DOL (independent developer) · [Privacy policy](https://huseyindol.com/hamur-usta/privacy)
+Developer: Hüseyin DOL (independent developer) · [Privacy policy](https://huseyindol.com/games/hamur-usta/privacy-policy)

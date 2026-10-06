@@ -10,7 +10,7 @@ Ana ekranda (hikâye kitabı) sol üstteki **dişli simgesine (⚙︎) 1,5 saniy
 
 ### Oyunda neden reklam var?
 
-Hamur Usta ücretsizdir; geliştirilmesini reklamlar destekler. Reklamlar Google AdMob üzerinden gelir; her reklam isteği kişiselleştirilmemiş reklam, Google'ın çocuklara yönelik işlem etiketi ve en kısıtlı içerik sınırı (G, genel izleyici) ile yapılır. Uygulama reklam kimliği istemez ve izleme izni sormaz. Reklamlar oyun ortasında asla çıkmaz; yalnızca bir seviye bittikten sonra, kitaba dönerken gösterilir. İlk 5 oyun reklamsızdır; sonra en fazla her 3 oyunda bir, bir oturumda en fazla 6 reklam. İnternet yoksa reklam gösterilmez. Ayrıntılar: [gizlilik politikası](https://huseyindol.com/hamur-usta/privacy).
+Hamur Usta ücretsizdir; geliştirilmesini reklamlar destekler. Reklamlar Google AdMob üzerinden gelir; her reklam isteği kişiselleştirilmemiş reklam, Google'ın çocuklara yönelik işlem etiketi ve en kısıtlı içerik sınırı (G, genel izleyici) ile yapılır. Uygulama reklam kimliği istemez ve izleme izni sormaz. Reklamlar oyun ortasında asla çıkmaz; yalnızca bir seviye bittikten sonra, kitaba dönerken gösterilir. İlk 5 oyun reklamsızdır; sonra en fazla her 3 oyunda bir, bir oturumda en fazla 6 reklam. İnternet yoksa reklam gösterilmez. Ayrıntılar: [gizlilik politikası](https://huseyindol.com/games/hamur-usta/gizlilik-politikasi).
 
 ### Reklamları nasıl kaldırırım?
 
@@ -46,6 +46,6 @@ Hayır. Oyun internetsiz oynanır. İnternet yalnızca reklamlar, satın alma ve
 
 Soru, öneri ya da sorun bildirimi için: [huseyindol@gmail.com](mailto:huseyindol@gmail.com). Yazarken iPhone modelinizi, iOS sürümünüzü ve sorunu kısaca belirtirseniz daha hızlı yardımcı olabiliriz.
 
-Geliştirici: Hüseyin DOL (bağımsız geliştirici) · [Gizlilik politikası](https://huseyindol.com/hamur-usta/privacy)
+Geliştirici: Hüseyin DOL (bağımsız geliştirici) · [Gizlilik politikası](https://huseyindol.com/games/hamur-usta/gizlilik-politikasi)
 
 ---

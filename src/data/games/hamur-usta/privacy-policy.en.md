@@ -9,10 +9,11 @@ _Effective date: October 6, 2026_
 - The game shows ads through **Google AdMob**. Every ad request is made for non-personalized ads, with Google's child-directed treatment tag and the strictest content rating (G). The app does not request the advertising identifier (IDFA) and never asks for tracking permission.
 - The remove-ads purchase is processed by **Apple**; we never see your payment details.
 - There are no third-party analytics tools.
+- **Web demo (huseyindol.com/games/hamur-usta):** no ads, no purchases and no analytics tools. Progress is kept only in your browser's local storage (localStorage). Read-aloud (if available on the web) uses the browser's own speech engine. The site hosting the page keeps its own server logs under its own policy.
 
 ## 1. Who we are
 
-Dough Master: Color Mix (Turkish name: Hamur Usta) is a color-mixing game developed by independent developer **Hüseyin DOL**. This policy applies to the iPhone version of the app. Contact: [huseyindol@gmail.com](mailto:huseyindol@gmail.com).
+Dough Master: Color Mix (Turkish name: Hamur Usta) is a color-mixing game developed by independent developer **Hüseyin DOL**. This policy applies to the iPhone app and the web demo. Contact: [huseyindol@gmail.com](mailto:huseyindol@gmail.com).
 
 ## 2. What the game itself handles
 
@@ -92,4 +93,4 @@ We may update this policy when the app or the law changes. The current version i
 
 ## 11. Contact
 
-Hüseyin DOL (independent developer) · Email: [huseyindol@gmail.com](mailto:huseyindol@gmail.com) · Web: [huseyindol.com](https://huseyindol.com) · Support page: [https://huseyindol.com/hamur-usta/support](https://huseyindol.com/hamur-usta/support)
+Hüseyin DOL (independent developer) · Email: [huseyindol@gmail.com](mailto:huseyindol@gmail.com) · Web: [huseyindol.com](https://huseyindol.com) · Support page: [https://huseyindol.com/games/hamur-usta/support](https://huseyindol.com/games/hamur-usta/support)
