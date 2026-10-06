@@ -1,4 +1,3 @@
 /** soccer-freekick — GitHub Actions; elle düzenlemeyin. */
-export const SOCCER_FREEKICK_ASSET_CACHE_KEY = '35267234621'
-export const SOCCER_FREEKICK_ASSET_SHA =
-  '620fe6a49ec3ff1f37854bf316d7915b1617a5d0'
+export const SOCCER_FREEKICK_ASSET_CACHE_KEY = "37449130730";
+export const SOCCER_FREEKICK_ASSET_SHA = "d3d4b3b2dad6e0090fca0ed00d2903f054eb4304";
