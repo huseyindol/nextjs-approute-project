@@ -6,23 +6,15 @@ _Dough Master is a color-mixing game: tap jars to drop dough balls into a bowl, 
 
 ### How do I open Settings? (Parental gate)
 
-On the home screen (the storybook), **press and hold the gear icon (⚙︎) in the top-left corner for 1.5 seconds**. A ring fills around the icon; when it is full, Settings opens. A short tap does not open Settings, so children cannot reach purchases, reset or external links by accident.
+On the home screen (the storybook), **press and hold the gear icon (⚙︎) in the top-left corner for 1.5 seconds**. A ring fills around the icon; when it is full, Settings opens. A short tap does not open Settings, so children cannot reach reset or external links by accident.
 
 ### Why are there ads?
 
 Dough Master is free and supported by ads. Ads are served by Google AdMob; every ad request is made for non-personalized ads, with Google's child-directed treatment tag and the strictest content rating (G, general audiences). The app does not request the advertising identifier and never asks for tracking permission. Ads never appear during play; they are shown only after a level is finished, on the way back to the storybook. The first 5 games are ad-free; after that at most one ad every 3 games and no more than 6 per session. Without internet, no ads are shown. Details: [privacy policy](https://huseyindol.com/games/hamur-usta/privacy-policy).
 
-### How do I remove ads?
-
-Open Settings (press and hold the gear for 1.5 s) → **Remove ads** → **Buy**. It is a one-time purchase, not a subscription; payment is handled by Apple. After purchase, no ads are shown at all.
-
-### How do I restore my purchase?
-
-If you reinstalled the app or moved to a new iPhone: Settings → **Remove ads** → **Restore purchases**. You must be signed in with the Apple Account used for the purchase. If Ask to Buy is on, the purchase completes once the family organizer approves it.
-
 ### How do I reset progress?
 
-Settings → **Reset everything** → confirm. Stars, storybook objects, the tutorial and settings are deleted and the game starts as if newly installed. The remove-ads purchase is kept. This cannot be undone.
+Settings → **Reset everything** → confirm. Stars, storybook objects, the tutorial and settings are deleted and the game starts as if newly installed. This cannot be undone.
 
 ### How do I turn off sound, music or read-aloud?
 
@@ -40,7 +32,7 @@ Check that Read aloud is on in Settings and the phone is not on silent. Read-alo
 
 ### Does the game need the internet?
 
-No. The game plays offline. The internet is used only for ads, the purchase and the privacy policy link.
+No. The game plays offline. The internet is used only for ads and the privacy policy / support links.
 
 ## Contact
 
