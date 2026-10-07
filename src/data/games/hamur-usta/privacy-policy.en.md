@@ -1,13 +1,13 @@
 # Dough Master: Color Mix — Privacy Policy
 
-_Effective date: October 6, 2026_
+_Effective date: October 7, 2026_
 
 ## In short
 
 - Dough Master does **not collect** personal data. It asks for no account, sign-up, name, email, photos, location permission or microphone.
 - Game progress is stored **only on your device**; it is never sent to us or anyone else.
 - The game shows ads through **Google AdMob**. Every ad request is made for non-personalized ads, with Google's child-directed treatment tag and the strictest content rating (G). The app does not request the advertising identifier (IDFA) and never asks for tracking permission.
-- The remove-ads purchase is processed by **Apple**; we never see your payment details.
+- There are no in-app purchases in the app.
 - There are no third-party analytics tools.
 - **Web demo (huseyindol.com/games/hamur-usta):** no ads, no purchases and no analytics tools. Progress is kept only in your browser's local storage (localStorage). Read-aloud (if available on the web) uses the browser's own speech engine. The site hosting the page keeps its own server logs under its own policy.
 
@@ -22,7 +22,6 @@ To work, the game stores only the following information **locally on your device
 - Progress: completed levels, stars and the colors made in the storybook
 - Settings: sound effects, music, vibration, read-aloud and language preference
 - Whether the tutorial has been shown, and the number of finished games (for ad frequency)
-- Whether the remove-ads purchase has been made
 
 The game does not ask for or collect names, email addresses, phone numbers, photos, voice recordings, precise location, contacts or any other personal data. There is no chat, sharing, user-generated content or social media in the game.
 
@@ -54,9 +53,9 @@ How Google uses this information is governed by its own policies: [Google Privac
 - Tapping an ad may take you outside the app (to the App Store or a website).
 - Without an internet connection no ads are shown and the game simply continues.
 
-## 4. Remove-ads purchase
+## 4. In-app purchases
 
-Ads can be removed permanently with a one-time in-app purchase; after the purchase the app makes no ad requests at all. The purchase is only available in Settings, behind the parental gate; there are no purchase offers on game screens. Payment is handled entirely by **Apple** through your App Store account and is subject to Apple's privacy policy. We never see or store your card or payment details; the app only keeps a note on the device that the purchase was made. On a new device you can restore it via Settings → Remove ads → Restore purchases.
+There are no in-app purchases in the app; neither the game screens nor Settings contain purchase offers. The app does not ask for or process any payment information.
 
 ## 5. Read-aloud
 
@@ -71,14 +70,14 @@ The app contains no third-party analytics or crash-reporting tools (apart from t
 Because children may also play Dough Master, we designed the game not to collect personal data. We do not knowingly collect personal data from children. We aim to follow the principles of the U.S. Children's Online Privacy Protection Act (COPPA), the EU General Data Protection Regulation's provisions on children (GDPR) and Turkey's Personal Data Protection Law No. 6698 (KVKK).
 
 - Every ad request is made non-personalized and with Google's child-directed treatment tag for COPPA (see section 3).
-- Settings, the purchase and external links such as this privacy policy are behind a parental gate (press and hold the gear icon on the home screen for 1.5 seconds).
+- Settings and external links such as this privacy policy are behind a parental gate (press and hold the gear icon on the home screen for 1.5 seconds).
 - There are no accounts, chat, user-generated content or social media in the game.
 
 ## 8. Data retention and deletion
 
 Everything the game stores stays on your device. To delete it:
 
-- Settings → **Reset everything**: progress, stars, tutorial status and settings are deleted and the game starts as if newly installed. (The remove-ads purchase is kept.)
+- Settings → **Reset everything**: progress, stars, tutorial status and settings are deleted and the game starts as if newly installed.
 - Deleting the app removes all of the game's data from the device.
 
 Information processed by Google for its ad service is retained according to the periods and rules in Google's privacy policy. For requests about this you can contact Google or us ([huseyindol@gmail.com](mailto:huseyindol@gmail.com)); we will be happy to help.

@@ -6,23 +6,15 @@ _Hamur Usta bir renk karıştırma oyunudur: kavanozlardan hamur topları alın�
 
 ### Ayarlar'a nasıl girerim? (Ebeveyn kapısı)
 
-Ana ekranda (hikâye kitabı) sol üstteki **dişli simgesine (⚙︎) 1,5 saniye basılı tutun**. Simgenin etrafında bir halka dolar; dolunca Ayarlar açılır. Kısa dokunuş Ayarlar'ı açmaz; böylece çocuklar satın alma, sıfırlama ve dış bağlantılara yanlışlıkla ulaşamaz.
+Ana ekranda (hikâye kitabı) sol üstteki **dişli simgesine (⚙︎) 1,5 saniye basılı tutun**. Simgenin etrafında bir halka dolar; dolunca Ayarlar açılır. Kısa dokunuş Ayarlar'ı açmaz; böylece çocuklar sıfırlama ve dış bağlantılara yanlışlıkla ulaşamaz.
 
 ### Oyunda neden reklam var?
 
 Hamur Usta ücretsizdir; geliştirilmesini reklamlar destekler. Reklamlar Google AdMob üzerinden gelir; her reklam isteği kişiselleştirilmemiş reklam, Google'ın çocuklara yönelik işlem etiketi ve en kısıtlı içerik sınırı (G, genel izleyici) ile yapılır. Uygulama reklam kimliği istemez ve izleme izni sormaz. Reklamlar oyun ortasında asla çıkmaz; yalnızca bir seviye bittikten sonra, kitaba dönerken gösterilir. İlk 5 oyun reklamsızdır; sonra en fazla her 3 oyunda bir, bir oturumda en fazla 6 reklam. İnternet yoksa reklam gösterilmez. Ayrıntılar: [gizlilik politikası](https://huseyindol.com/games/hamur-usta/gizlilik-politikasi).
 
-### Reklamları nasıl kaldırırım?
-
-Ayarlar'a girin (dişliye 1,5 sn basılı tutun) → **Reklamları kaldır** → **Satın al**. Tek seferlik bir satın alımdır, abonelik değildir; ödeme Apple tarafından işlenir. Satın alımdan sonra hiç reklam gösterilmez.
-
-### Satın alımı nasıl geri yüklerim?
-
-Uygulamayı yeniden yüklediyseniz ya da yeni bir iPhone'a geçtiyseniz: Ayarlar → **Reklamları kaldır** → **Satın alımları geri yükle**. Satın alımı yaptığınız Apple hesabıyla giriş yapmış olmanız gerekir. "Satın Almak İçin Sor" açıksa satın alma, aile düzenleyicisi onaylayınca tamamlanır.
-
 ### İlerlemeyi nasıl sıfırlarım?
 
-Ayarlar → **Her şeyi sıfırla** → onaylayın. Yıldızlar, kitaptaki nesneler, öğretici ve ayarlar silinir; oyun ilk kez indirilmiş gibi açılır. Reklamları kaldırma satın alımı korunur. Bu işlem geri alınamaz.
+Ayarlar → **Her şeyi sıfırla** → onaylayın. Yıldızlar, kitaptaki nesneler, öğretici ve ayarlar silinir; oyun ilk kez indirilmiş gibi açılır. Bu işlem geri alınamaz.
 
 ### Sesi, müziği ya da sesli okumayı nasıl kapatırım?
 
@@ -40,7 +32,7 @@ Ayarlar'da Sesli okuma'nın açık ve telefonun sessizde olmadığını kontrol 
 
 ### Oyun internet gerektiriyor mu?
 
-Hayır. Oyun internetsiz oynanır. İnternet yalnızca reklamlar, satın alma ve gizlilik politikası bağlantısı için kullanılır.
+Hayır. Oyun internetsiz oynanır. İnternet yalnızca reklamlar ve gizlilik politikası / destek bağlantıları için kullanılır.
 
 ## İletişim
 

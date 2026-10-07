@@ -1,13 +1,13 @@
 # Hamur Usta — Gizlilik Politikası
 
-_Yürürlük tarihi: 6 Ekim 2026_
+_Yürürlük tarihi: 7 Ekim 2026_
 
 ## Kısaca
 
 - Hamur Usta kişisel veri **toplamaz**. Hesap, kayıt, ad, e-posta, fotoğraf, konum izni ya da mikrofon istemez.
 - Oyundaki ilerleme yalnızca **cihazınızda** saklanır; bize ya da başka birine gönderilmez.
 - Oyun, **Google AdMob** üzerinden reklam gösterir. Her reklam isteği kişiselleştirilmemiş reklam, Google'ın çocuklara yönelik işlem etiketi ve en kısıtlı içerik sınırı (G) ile yapılır. Uygulama reklam kimliği (IDFA) istemez ve izleme izni sormaz.
-- Reklamları kaldırma satın alımını **Apple** işler; ödeme bilgilerinizi biz görmeyiz.
+- Uygulamada uygulama içi satın alma yoktur.
 - Üçüncü taraf analiz (analytics) aracı yoktur.
 - **Web demosu (huseyindol.com/games/hamur-usta):** reklam, satın alma ve analiz aracı yoktur. İlerleme yalnızca tarayıcınızın yerel depolamasında (localStorage) tutulur. Sesli okuma (web'de açıksa) tarayıcının kendi konuşma motorunu kullanır. Sayfayı barındıran site, kendi sunucu kayıtlarını kendi politikasına göre tutar.
 
@@ -22,7 +22,6 @@ Oyun, oynanabilmesi için yalnızca aşağıdaki bilgileri **cihazınızda yerel
 - İlerleme: tamamlanan seviyeler, yıldızlar ve hikâye kitabında yapılan renkler
 - Ayarlar: ses efektleri, müzik, titreşim, sesli okuma ve dil tercihi
 - Öğreticinin görülüp görülmediği ve reklam sıklığı için bitirilen oyun sayısı
-- Reklamları kaldırma satın alımının yapılıp yapılmadığı bilgisi
 
 Oyun ad, e-posta, telefon numarası, fotoğraf, ses kaydı, kesin konum, rehber ya da başka bir kişisel veri istemez ve toplamaz. Oyunda sohbet, paylaşım, kullanıcı içeriği ya da sosyal medya özelliği yoktur.
 
@@ -54,9 +53,9 @@ Google'ın bu bilgileri nasıl kullandığı kendi politikalarına tabidir: [Goo
 - Reklama dokunmak sizi uygulamanın dışına (App Store ya da bir web sitesi) götürebilir.
 - İnternet bağlantısı yoksa reklam gösterilmez; oyun beklemeden devam eder.
 
-## 4. Reklamları kaldırma satın alımı
+## 4. Uygulama içi satın alma
 
-Reklamlar, tek seferlik bir uygulama içi satın alımla kalıcı olarak kaldırılabilir; satın alındıktan sonra uygulama hiç reklam isteği yapmaz. Satın alma yalnızca ebeveyn kapısının arkasındaki Ayarlar bölümündedir; oyun ekranlarında satın alma teklifi yoktur. Ödeme tamamen **Apple** tarafından App Store hesabınız üzerinden işlenir ve Apple'ın gizlilik politikasına tabidir. Biz kart ya da ödeme bilgilerinizi görmeyiz ve saklamayız; uygulama yalnızca satın alımın yapıldığı bilgisini cihazda tutar. Satın alımı yeni bir cihazda Ayarlar → Reklamları kaldır → Satın alımları geri yükle ile geri yükleyebilirsiniz.
+Uygulamada uygulama içi satın alma yoktur; oyun ekranlarında ve Ayarlar'da satın alma teklifi bulunmaz. Uygulama ödeme bilgisi istemez ve işlemez.
 
 ## 5. Sesli okuma
 
@@ -71,14 +70,14 @@ Uygulamada üçüncü taraf analiz ya da çökme raporlama aracı yoktur (Google
 Hamur Usta'yı çocuklar da oynayabildiği için oyunu, kişisel veri toplamayacak şekilde tasarladık. Çocuklardan bilerek kişisel veri toplamayız. ABD Çocukların Çevrimiçi Gizliliğini Koruma Yasası (COPPA), AB Genel Veri Koruma Tüzüğü'nün çocuklara ilişkin hükümleri (GDPR) ve Türkiye'deki 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK) ilkelerine uygun davranmayı amaçlarız.
 
 - Her reklam isteği, Google'ın COPPA kapsamındaki çocuklara yönelik işlem etiketiyle ve kişiselleştirilmemiş olarak yapılır (bkz. 3. bölüm).
-- Ayarlar, satın alma ve bu gizlilik politikası gibi dış bağlantılar ebeveyn kapısının arkasındadır (ana ekrandaki dişli simgesine 1,5 saniye basılı tutulur).
+- Ayarlar ve bu gizlilik politikası gibi dış bağlantılar ebeveyn kapısının arkasındadır (ana ekrandaki dişli simgesine 1,5 saniye basılı tutulur).
 - Oyunda hesap, sohbet, kullanıcı içeriği ya da sosyal medya yoktur.
 
 ## 8. Veri saklama ve silme
 
 Oyunun sakladığı tüm bilgiler yalnızca cihazınızdadır. Silmek için:
 
-- Ayarlar → **Her şeyi sıfırla**: ilerleme, yıldızlar, öğretici bilgisi ve ayarlar silinir; oyun ilk kez indirilmiş gibi açılır. (Reklamları kaldırma satın alımı korunur.)
+- Ayarlar → **Her şeyi sıfırla**: ilerleme, yıldızlar, öğretici bilgisi ve ayarlar silinir; oyun ilk kez indirilmiş gibi açılır.
 - Uygulamayı cihazdan silmek, oyunun cihazdaki tüm verisini siler.
 
 Google'ın reklam hizmeti için işlediği bilgiler Google'ın gizlilik politikasındaki süreler ve kurallara göre saklanır. Bu konudaki talepleriniz için Google ile ya da bizimle ([huseyindol@gmail.com](mailto:huseyindol@gmail.com)) iletişime geçebilirsiniz; size yardımcı oluruz.
