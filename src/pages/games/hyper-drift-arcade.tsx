@@ -16,7 +16,7 @@ export default function HyperDriftArcadeGamePage() {
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <Link
-                href="/projects#flutter-games"
+                href="/projects#hyper-drift-arcade"
                 className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 <ArrowLeftIcon className="h-4 w-4" />
@@ -30,6 +30,20 @@ export default function HyperDriftArcadeGamePage() {
                 <span className="font-medium text-foreground"> Tam ekran </span>
                 düğmesi veya Esc ile tam ekrandan çıkabilirsiniz.
               </p>
+            </div>
+            <div className="flex items-center gap-4 sm:ml-auto">
+              <Link
+                href="/games/hyper-drift-arcade/gizlilik-politikasi"
+                className="text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground"
+              >
+                Gizlilik Politikası
+              </Link>
+              <Link
+                href="/games/hyper-drift-arcade/destek"
+                className="text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground"
+              >
+                Destek
+              </Link>
             </div>
           </div>
 
