@@ -249,12 +249,12 @@ const projects: Project[] = [
   },
   {
     id: 'flutter-games',
-    appIcon: '/assets/games/offroad-arcade/icons/Icon-192.png',
-    title: 'Offroad Arcade',
+    appIcon: '/assets/games/tumble-trail/icons/Icon-192.png',
+    title: 'Tumble Trail 4x4',
     engine: 'Flutter',
-    subtitle: 'Offroad Arcade (Web)',
+    subtitle: 'Tumble Trail 4x4 (Web)',
     description:
-      'Flutter Web ile geliştirilmiş Offroad Arcade oyunu. Fizik tabanlı araç dinamikleri, engeller ve zorlu parkurlar. Flutter Engine ve WebGL ile tarayıcıda doğrudan oynanabilir.',
+      'Tumble Trail 4x4: sonsuz dağ yolunda 2.5D 4x4 macera. Süspansiyonu ayarla, kayaların üstünden tırman, devrilmeden ve yakıtı bitirmeden ilerle; jetonlarla garajda aracını geliştir. Flutter Web ile tarayıcıda doğrudan oynanabilir.',
     icon: GamepadIcon,
     gradient: 'from-blue-400 to-cyan-600',
     status: 'live',
@@ -265,7 +265,7 @@ const projects: Project[] = [
       'Fizik tabanlı araç kontrolü ve dinamikleri',
       'Mobil ve masaüstü uyumlu web arayüzü',
     ],
-    liveUrl: '/games/offroad-arcade',
+    liveUrl: '/games/tumble-trail',
     liveLabel: 'Oyna',
   },
   {
