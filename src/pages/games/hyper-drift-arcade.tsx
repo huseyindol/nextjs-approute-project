@@ -1,15 +1,15 @@
-import { DriftArcadeGameFrame } from '@/components/games/drift-arcade/DriftArcadeGameFrame'
+import { HyperDriftArcadeGameFrame } from '@/components/games/hyper-drift-arcade/HyperDriftArcadeGameFrame'
 import { Seo } from '@/lib/seo'
 import { ArrowLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 
-export default function DriftArcadeGamePage() {
+export default function HyperDriftArcadeGamePage() {
   return (
     <>
       <Seo
-        rawTitle="Drift Arcade Oyunu | Hüseyin DOL"
-        description="Flutter Web ile geliştirilmiş Drift Arcade oyunu. Tarayıcıda tam ekran oynanış ve harika fizikler."
-        canonical="/games/drift-arcade"
+        rawTitle="Hyper Drift: Arcade Oyunu | Hüseyin DOL"
+        description="Flutter Web ile geliştirilmiş Hyper Drift: Arcade oyunu. Tarayıcıda tam ekran oynanış ve harika fizikler."
+        canonical="/games/hyper-drift-arcade"
       />
       <div className="bg-muted/30 min-h-screen">
         <div className="container mx-auto max-w-5xl px-4 py-8 md:py-12">
@@ -23,7 +23,7 @@ export default function DriftArcadeGamePage() {
                 Projeler
               </Link>
               <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">
-                Drift Arcade
+                Hyper Drift: Arcade
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
                 Flutter Web Engine. Sağ alttaki
@@ -33,7 +33,7 @@ export default function DriftArcadeGamePage() {
             </div>
           </div>
 
-          <DriftArcadeGameFrame />
+          <HyperDriftArcadeGameFrame />
         </div>
       </div>
     </>
