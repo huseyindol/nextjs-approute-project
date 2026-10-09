@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Maximize2, Minimize2 } from 'lucide-react'
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
-import { OFFROAD_ARCADE_ASSET_CACHE_KEY } from '@/lib/offroad-arcade-asset-version.generated'
+import { TUMBLE_TRAIL_ASSET_CACHE_KEY } from '@/lib/tumble-trail-asset-version.generated'
 
 type WebKitDocument = Document & {
   webkitFullscreenElement?: Element | null
@@ -62,7 +62,7 @@ async function exitDomFullscreen() {
   }
 }
 
-export function OffroadArcadeGameFrame() {
+export function TumbleTrailGameFrame() {
   const [shellEl, setShellEl] = useState<HTMLDivElement | null>(null)
   const [pseudoFullscreen, setPseudoFullscreen] = useState(false)
   const fsEl = useSyncExternalStore(
@@ -145,8 +145,8 @@ export function OffroadArcadeGameFrame() {
       </div>
 
       <iframe
-        title="Offroad Arcade Oyunu"
-        src={`/assets/games/offroad-arcade/index.html?v=${OFFROAD_ARCADE_ASSET_CACHE_KEY}`}
+        title="Tumble Trail 4x4 Oyunu"
+        src={`/assets/games/tumble-trail/index.html?v=${TUMBLE_TRAIL_ASSET_CACHE_KEY}`}
         allow="autoplay; fullscreen; gamepad"
         allowFullScreen
         className={cn(

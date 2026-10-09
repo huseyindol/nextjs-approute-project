@@ -104,6 +104,18 @@ const nextConfig = {
         destination: '/games/arcade',
         permanent: true,
       },
+      // Oyun yeniden adlandırıldı: Offroad Arcade → Tumble Trail 4x4 (2026-10-09).
+      // Eski sayfa ve eski web build yolu (yer imleri, iframe gömmeleri) korunsun.
+      {
+        source: '/games/offroad-arcade',
+        destination: '/games/tumble-trail',
+        permanent: true,
+      },
+      {
+        source: '/assets/games/offroad-arcade/:path*',
+        destination: '/assets/games/tumble-trail/:path*',
+        permanent: true,
+      },
     ]
   },
 

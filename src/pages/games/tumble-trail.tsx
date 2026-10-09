@@ -1,15 +1,15 @@
-import { OffroadArcadeGameFrame } from '@/components/games/offroad-arcade/OffroadArcadeGameFrame'
+import { TumbleTrailGameFrame } from '@/components/games/tumble-trail/TumbleTrailGameFrame'
 import { Seo } from '@/lib/seo'
 import { ArrowLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 
-export default function OffroadArcadeGamePage() {
+export default function TumbleTrailGamePage() {
   return (
     <>
       <Seo
-        rawTitle="Offroad Arcade Oyunu | Hüseyin DOL"
-        description="Flutter Web ile geliştirilmiş Offroad Arcade oyunu. Tarayıcıda tam ekran oynanış ve harika fizikler."
-        canonical="/games/offroad-arcade"
+        rawTitle="Tumble Trail 4x4 Oyunu | Hüseyin DOL"
+        description="Tumble Trail 4x4: Flutter Web ile geliştirilmiş 2.5D dağ yolu macerası. Süspansiyonu ayarla, devrilmeden ilerle, garajda aracını geliştir."
+        canonical="/games/tumble-trail"
       />
       <div className="bg-muted/30 min-h-screen">
         <div className="container mx-auto max-w-5xl px-4 py-8 md:py-12">
@@ -23,7 +23,7 @@ export default function OffroadArcadeGamePage() {
                 Projeler
               </Link>
               <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">
-                Offroad Arcade
+                Tumble Trail 4x4
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
                 Flutter Web Engine. Sağ alttaki
@@ -33,7 +33,7 @@ export default function OffroadArcadeGamePage() {
             </div>
           </div>
 
-          <OffroadArcadeGameFrame />
+          <TumbleTrailGameFrame />
         </div>
       </div>
     </>
