@@ -269,13 +269,13 @@ const projects: Project[] = [
     liveLabel: 'Oyna',
   },
   {
-    id: 'drift-arcade',
-    appIcon: '/assets/games/drift-arcade/icons/Icon-192.png',
-    title: 'Drift Arcade',
+    id: 'hyper-drift-arcade',
+    appIcon: '/assets/games/hyper-drift-arcade/icons/Icon-192.png',
+    title: 'Hyper Drift: Arcade',
     engine: 'Flutter',
-    subtitle: 'Drift Arcade (Web)',
+    subtitle: 'Hyper Drift: Arcade (Web)',
     description:
-      'Flutter Web ile geliştirilmiş Drift Arcade oyunu. Harika fizikler ve drift mekanikleri. Tarayıcıda tam ekran oynanabilir.',
+      'Flutter Web ile geliştirilmiş Hyper Drift: Arcade oyunu. Harika fizikler ve drift mekanikleri. Tarayıcıda tam ekran oynanabilir.',
     icon: GamepadIcon,
     gradient: 'from-orange-400 to-red-600',
     status: 'live',
@@ -286,7 +286,7 @@ const projects: Project[] = [
       'Drift mekanikleri ve araç fizikleri',
       'Mobil ve masaüstü uyumlu web arayüzü',
     ],
-    liveUrl: '/games/drift-arcade',
+    liveUrl: '/games/hyper-drift-arcade',
     liveLabel: 'Oyna',
   },
   {

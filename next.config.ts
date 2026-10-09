@@ -116,6 +116,17 @@ const nextConfig = {
         destination: '/assets/games/tumble-trail/:path*',
         permanent: true,
       },
+      // Oyun yeniden adlandırıldı: Drift Arcade → Hyper Drift: Arcade (2026-10-10).
+      {
+        source: '/games/drift-arcade',
+        destination: '/games/hyper-drift-arcade',
+        permanent: true,
+      },
+      {
+        source: '/assets/games/drift-arcade/:path*',
+        destination: '/assets/games/hyper-drift-arcade/:path*',
+        permanent: true,
+      },
     ]
   },
 
