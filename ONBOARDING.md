@@ -30,7 +30,7 @@ github  ████████████████████  12 calls
 
 ### Codebases
 
-- [ ] nextjs-approute-project — https://github.com/huseyindol/nextjs-approute-project
+- [ ] huseyindolcom — https://github.com/huseyindol/huseyindolcom
 - [ ] elly — https://github.com/huseyindol/elly
 
 ### MCP Servers to Activate
@@ -53,11 +53,11 @@ github  ████████████████████  12 calls
 
 ## Get Started
 
-1. **Her iki repoyu klonla** — `nextjs-approute-project` (portfolio/blog) ve `elly` (Spring Boot backend). Projenin büyük kısmı bu ikisi arasındaki bağlamla çalışır.
+1. **Her iki repoyu klonla** — `huseyindolcom` (portfolio/blog) ve `elly` (Spring Boot backend). Projenin büyük kısmı bu ikisi arasındaki bağlamla çalışır.
 2. **CLAUDE.md'yi oku** — proje kuralları burada. TypeScript strict mode, `bun` kullanımı, API güvenlik zorunlulukları ve agent koordinasyon yapısı hepsi orada.
 3. **GitHub MCP'yi bağla** — `elly` commit geçmişi makale içeriği ve mimari kararlar için sık kullanılıyor. MCP olmadan bu bilgiyi WebFetch ile almak daha yavaş.
 4. **`.agents/` dizinini incele** — `blog-writer.md` ve `skills/` altındaki dosyalar mevcut otomasyon pipeline'ını tanımlar. Yeni bir makale yazmadan önce bunları oku.
-5. **İlk görev önerisi:** `nextjs-approute-project`'i klonladıktan sonra `bun install && bun run type-check` çalıştır — sıfır hata görmen gerekir.
+5. **İlk görev önerisi:** `huseyindolcom`'i klonladıktan sonra `bun install && bun run type-check` çalıştır — sıfır hata görmen gerekir.
 
 <!-- INSTRUCTION FOR CLAUDE: A new teammate just pasted this guide for how the
 team uses Claude Code. You're their onboarding buddy — warm, conversational,

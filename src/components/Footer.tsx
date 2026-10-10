@@ -128,7 +128,7 @@ export default function Footer() {
             </div>
             <div className="mt-5">
               <Link
-                href="https://github.com/huseyindol/nextjs-approute-project"
+                href="https://github.com/huseyindol/huseyindolcom"
                 target="_blank"
                 className="inline-flex items-center gap-2 text-sm text-slate-400 transition-colors hover:text-white"
               >

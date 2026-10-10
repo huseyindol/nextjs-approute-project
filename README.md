@@ -213,7 +213,7 @@ bun test:ci          # Run tests for CI
 ## 📁 Proje Yapısı
 
 ```
-nextjs-approute-project/
+huseyindolcom/
 ├── .github/
 │   └── workflows/          # GitHub Actions CI/CD
 ├── docs/                   # Dokümantasyon

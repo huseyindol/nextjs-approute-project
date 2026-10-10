@@ -118,5 +118,5 @@ Hüseyin DOL is a Senior Frontend Developer with more than 10 years of professio
 ## Open Source Projects
 
 - [elly](https://github.com/huseyindol/elly): Spring Boot 3.5 + Java 21 CMS backend. Multitenancy, RBAC, Redis, RabbitMQ, Kubernetes, GitHub Actions CI/CD.
-- [nextjs-approute-project](https://github.com/huseyindol/nextjs-approute-project): This portfolio — Next.js 16 App Router, TypeScript, Tailwind CSS 4, blog system, SEO.
+- [huseyindolcom](https://github.com/huseyindol/huseyindolcom): This portfolio — Next.js 16 App Router, TypeScript, Tailwind CSS 4, blog system, SEO.
 - [McpProjectScaffold](https://github.com/huseyindol/McpProjectScaffold): Open-source MCP server for project scaffolding.

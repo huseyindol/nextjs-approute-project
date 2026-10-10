@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "nextjs-approute-project",
+      "name": "huseyindolcom",
       "dependencies": {
         "@hookform/resolvers": "^5.9.1",
         "@next/third-parties": "^16.3.8",
