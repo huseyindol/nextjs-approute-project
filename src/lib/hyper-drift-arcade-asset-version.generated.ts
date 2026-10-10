@@ -1,3 +1,3 @@
 /** hyper-drift-arcade — GitHub Actions; elle düzenlemeyin. */
-export const HYPER_DRIFT_ARCADE_ASSET_CACHE_KEY = '37449125205'
-export const HYPER_DRIFT_ARCADE_ASSET_SHA = '0dea0cbefd31bb7a46ae2a16a53db6a8a440ed23'
+export const HYPER_DRIFT_ARCADE_ASSET_CACHE_KEY = "38007174174";
+export const HYPER_DRIFT_ARCADE_ASSET_SHA = "7d3f5fad3b8fc5b98dde2defaa644f87fe9d76b8";

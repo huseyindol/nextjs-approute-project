@@ -1,6 +1,6 @@
 {
-    "name": "drift_arcade",
-    "short_name": "drift_arcade",
+    "name": "hyper_drift_arcade",
+    "short_name": "hyper_drift_arcade",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0B0C0F",
