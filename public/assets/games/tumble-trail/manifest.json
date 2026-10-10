@@ -1,11 +1,11 @@
 {
-    "name": "Offroad Arcade",
-    "short_name": "Offroad",
+    "name": "Tumble Trail 4x4",
+    "short_name": "Tumble Trail",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#1F5FA8",
     "theme_color": "#1F5FA8",
-    "description": "2.5D dağ yolu 4x4 macera oyunu.",
+    "description": "Tumble Trail 4x4: 2.5D dağ yolu 4x4 macera oyunu.",
     "orientation": "landscape",
     "prefer_related_applications": false,
     "icons": [
